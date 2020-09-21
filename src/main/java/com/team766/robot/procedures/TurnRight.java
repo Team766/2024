@@ -11,7 +11,7 @@ public class TurnRight extends Procedure {
 
 		Robot.drive.setDrivePower(0.25, -0.25);
 
-		context.waitForSeconds(3.0);
+		context.waitForSeconds(0.903);
 
 		Robot.drive.setDrivePower(0.0, 0.0);
 	}
