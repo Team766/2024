@@ -6,29 +6,14 @@ import com.team766.framework.Context;
 public class DriveSquare extends Procedure {
 
 	public void run(Context context) {
-		// First side
-		new DriveStraight().run(context);
+		// This loop repeats 4 times.
+		for (int i = 0; i < 4; ++i) {
+			// Drive along the side of the square
+			new DriveStraight().run(context);
 
-		// First corner
-		new TurnRight().run(context);
-
-		// Second side
-		new DriveStraight().run(context);
-
-		// Second corner
-		new TurnRight().run(context);
-
-		// Third side
-		new DriveStraight().run(context);
-
-		// Third corner
-		new TurnRight().run(context);
-
-		// Fourth side
-		new DriveStraight().run(context);
-
-		// Fourth corner
-		new TurnRight().run(context);
+			// Turn at the corner
+			new TurnRight().run(context);
+		}
 	}
 
 }
