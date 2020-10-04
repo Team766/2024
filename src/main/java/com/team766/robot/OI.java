@@ -33,6 +33,13 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			log("J0 A0: " + joystick0.getAxis(0) +
+			    "  J0 A1: " + joystick0.getAxis(1) +
+			    "  J1 A0: " + joystick1.getAxis(0) +
+			    "  J1 A1: " + joystick1.getAxis(1) +
+			    "  J0 B1: " + joystick0.getButton(1) +
+			    "  J0 B2: " + joystick0.getButton(2) +
+			    "  J0 B3: " + joystick0.getButton(3));
 		}
 	}
 }
