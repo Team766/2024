@@ -39,6 +39,13 @@ public class OI extends Procedure {
 			if (joystick0.getButtonPressed(1)) {
 				context.startAsync(new Launch());
 			}
+
+			if (joystick1.getButtonPressed(2)) {
+				context.startAsync(new StartIntake());
+			}
+			if (joystick1.getButtonPressed(3)) {
+				context.startAsync(new StopIntake());
+			}
 		}
 	}
 }
