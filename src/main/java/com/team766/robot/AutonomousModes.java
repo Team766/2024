@@ -13,6 +13,7 @@ public class AutonomousModes {
 		//    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+		new AutonomousMode("Score5", () -> new Score5()),
 		new AutonomousMode("CollectBalls", () -> new CollectBalls()),
 		new AutonomousMode("Launch", () -> new Launch()),
 		new AutonomousMode("DriveSquare", () -> new DriveSquare()),
