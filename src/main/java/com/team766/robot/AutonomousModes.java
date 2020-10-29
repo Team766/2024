@@ -13,6 +13,7 @@ public class AutonomousModes {
 		//    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
+		new AutonomousMode("FollowLine", () -> new FollowLine()),
 		new AutonomousMode("DriveAngle", () -> new TurnAngle()),
 		new AutonomousMode("DriveDistance", () -> new DriveDistance()),
 		new AutonomousMode("Score5", () -> new Score5()),
