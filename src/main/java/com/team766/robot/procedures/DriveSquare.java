@@ -12,35 +12,35 @@ public class DriveSquare extends Procedure {
 
 	public void run(Context context) {
 		// First side
-		new DriveStraight().run(context);
+		new DriveDistance().run(context);
 		log("First side complete");
 
 		// First corner
-		new TurnRight().run(context);
+		new TurnAngle().run(context);
 		log("First corner complete");
 
 		// Second side
-		new DriveStraight().run(context);
+		new DriveDistance().run(context);
 		log("Second side complete");
 
 		// Second corner
-		new TurnRight().run(context);
+		new TurnAngle().run(context);
 		log("Second corner complete");
 
 		// Third side
-		new DriveStraight().run(context);
+		new DriveDistance().run(context);
 		log("Third side complete");
 
 		// Third corner
-		new TurnRight().run(context);
+		new TurnAngle().run(context);
 		log("Third corner complete");
 
 		// Fourth side
-		new DriveStraight().run(context);
+		new DriveDistance().run(context);
 		log("Fourth side complete");
 
 		// Fourth corner
-		new TurnRight().run(context);
+		new TurnAngle().run(context);
 		log("Fourth corner complete");
 	}
 
