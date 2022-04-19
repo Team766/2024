@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -96,7 +95,7 @@ public class WebServer {
 			};
 			server.createContext(page.getKey(), httpHandler);
 		}
-		addLineNumbersSvgHandler();
+		addStaticFilesHandler();
 		server.start();
 	}
 	
@@ -104,7 +103,7 @@ public class WebServer {
 		String result = "";
 		result += "<style>\n";
 		result += "textarea {\n";
-		result += "  background: url(/line_numbers.svg);\n";
+		result += "  background: url(/static/line_numbers.svg);\n";
 		result += "  background-attachment: local;\n";
 		result += "  background-repeat: no-repeat;\n";
 		result += "  padding-left: 45px;\n";
@@ -123,27 +122,61 @@ public class WebServer {
 		return result;
 	}
 	
-	private void addLineNumbersSvgHandler() {
+	private void addStaticFilesHandler() {
+		final String endpoint = "/static";
+		final String resourceFilePrefix = "static";
 		HttpHandler httpHandler = new HttpHandler() {
+			final Map<String, String> mimeTypes = Map.of(
+				".html", "text/html",
+				".js", "text/javascript",
+				".svg", "image/svg+xml"
+			);
+			private String getFileExtension(String fileName) {
+				int lastIndexOf = fileName.lastIndexOf(".");
+				if (lastIndexOf == -1) {
+					return ""; // empty extension
+				}
+				return fileName.substring(lastIndexOf);
+			}
+
 			@Override
 			public void handle(HttpExchange exchange) throws IOException {
-				String response = "<?xml version=\"1.0\"?>\n";
-				response += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
-				response += "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
-				response += "<text x=\"0\" y=\"0\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"14px\">\n";
-				for (int i = 1; i < 1000; ++i) {
-					response += "<tspan x=\"45px\" dy=\"1.143em\">" + i + ".</tspan>\n";
+				try {
+				String path = exchange.getRequestURI().getPath();
+				if (!path.startsWith(endpoint)) {
+					throw new IllegalArgumentException("Unexpected path prefix: " + path + "; expected: " + endpoint);
 				}
-				response += "</text>\n";
-				response += "</svg>";
-				exchange.getResponseHeaders().set("Content-Type", "image/svg+xml");
-				exchange.sendResponseHeaders(200, response.getBytes().length);
-				try (OutputStream os = exchange.getResponseBody()) {
-					os.write(response.getBytes());
+				path = resourceFilePrefix + path.substring(endpoint.length());
+				final var fileExtension = getFileExtension(path);
+
+				var resource = getClass().getResource(path);
+				if (resource == null) {
+					final byte[] errorMessage = ("Resource not found: " + path).getBytes();
+					exchange.sendResponseHeaders(404, errorMessage.length);
+					try (OutputStream os = exchange.getResponseBody()) {
+						os.write(errorMessage);
+					}
+					return;
+				}
+				var connection = resource.openConnection();
+				try (var is = connection.getInputStream()) {
+					final String mimeType = mimeTypes.containsKey(fileExtension) ?
+						mimeTypes.get(fileExtension) :
+						connection.getContentType();
+					exchange.getResponseHeaders().set("Content-Type", mimeType);
+					exchange.sendResponseHeaders(200, connection.getContentLengthLong());
+					try (OutputStream os = exchange.getResponseBody()) {
+						is.transferTo(os);
+					}
+				}
+				
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					throw ex;
 				}
 			}
 		};
-		server.createContext("/line_numbers.svg", httpHandler);
+		server.createContext(endpoint, httpHandler);
 	}
 	
 	public Map<String, Object> parseParams(HttpExchange exchange) throws IOException {

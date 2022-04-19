@@ -17,6 +17,7 @@ import com.team766.web.Dashboard;
 import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.ReadLogs;
+import com.team766.web.PlotViewer;
 import com.team766.web.WebServer;
 
 // Team 766 - Robot Interface Base class
@@ -43,6 +44,7 @@ public final class GenericRobotMain {
 		m_webServer.addHandler(new ConfigUI());
 		m_webServer.addHandler(new LogViewer());
 		m_webServer.addHandler(new ReadLogs());
+		m_webServer.addHandler(new PlotViewer());
 		m_webServer.addHandler(m_autonSelector);
 		m_webServer.start();
 	}
