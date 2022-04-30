@@ -33,6 +33,13 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+
+			if (joystick2.getButton(1)) {
+				context.startAsync(new IncrementElevatorPosition());
+			}
+			if (joystick2.getButton(2)) {
+				context.startAsync(new DecrementElevatorPosition());
+			}
 		}
 	}
 }
