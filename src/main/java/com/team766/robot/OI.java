@@ -25,10 +25,17 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.drive);
 		while (true) {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			
+			if (Math.abs(joystick0.getAxis(1)) > 0.01 ||
+				Math.abs(joystick0.getAxis(0)) > 0.01 ||
+				Math.abs(joystick1.getAxis(0)) > 0.01) {
+				Robot.drive.setDrive(joystick0.getAxis(1) * 4, -joystick0.getAxis(0) * 4, -joystick1.getAxis(0) * 3);
+			} else {
+				Robot.drive.setX();
+			}
 
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
