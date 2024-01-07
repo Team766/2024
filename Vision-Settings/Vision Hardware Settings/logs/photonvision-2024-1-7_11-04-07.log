@@ -1,0 +1,249 @@
+[2024-01-07 23:04:08] [General - Main] [INFO] Native libraries loaded.
+[2024-01-07 23:04:08] [Camera - LibCameraJNI] [ERROR] Couldn't load libpicam shared object
+[2024-01-07 23:04:08] [General - Main] [INFO] Logging initialized in debug mode.
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "id -u"
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:08] [General - Main] [INFO] Starting PhotonVision version v2023.4.2 on Linux AARCH64
+[2024-01-07 23:04:08] [General - ConfigManager] [INFO] Loading settings...
+[2024-01-07 23:04:08] [General - ConfigManager] [INFO] Hardware config does not exist! Loading defaults
+[2024-01-07 23:04:08] [General - NetworkTablesManager] [INFO] Starting NT Client
+[2024-01-07 23:04:08] [General - NetworkTablesManager] [ERROR] [NetworkTablesManager] Could not connect to the robot! Will retry in the background...
+[2024-01-07 23:04:08] [General - NetworkManager] [INFO] Setting DHCP with team team 0
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "cat /etc/hostname | tr -d " \t\n\r""
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "echo photonvision > /etc/hostname"
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "hostnamectl set-hostname photonvision"
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "sed -i "s/127.0.1.1.*photonvision/127.0.1.1\tphotonvision/g" /etc/hosts"
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "sudo service avahi-daemon restart"
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:08] [General - NetworkManager] [INFO] Set hostname to photonvision
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "nmcli con mod Wired\ connection\ 1 ipv4.method "auto" ipv6.method "disabled""
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 10
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Executing "dhclient eth0"
+[2024-01-07 23:04:08] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:04:09] [WebServer - DataChangeService] [DEBUG] Added subscriber - Sources: DCS_WEBSOCKET, DCS_HTTP, DCS_NETWORKTABLES, DCS_VISIONMODULE, DCS_OTHER, Destinations: DCD_UI
+[2024-01-07 23:04:09] [WebServer - DataChangeService] [DEBUG] Added subscriber - Sources: DCS_WEBSOCKET, Destinations: DCD_GENSETTINGS
+[2024-01-07 23:04:09] [General - NetworkTablesManager] [ERROR] NT Connection has failed! Will retry in background.
+[2024-01-07 23:04:10] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:04:10] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 8.179588ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 12.264862ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 10.257078ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 30.121124ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 7.7001ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 24.670301ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 110.65237ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 46.372967ms
+[2024-01-07 23:07:17] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 163.71834ms
+[2024-01-07 23:07:18] [WebServer - DataSocketHandler] [INFO] New websocket connection from /192.168.86.36:49812
+[2024-01-07 23:07:18] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 4.929338ms
+[2024-01-07 23:07:18] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 4.370809ms
+[2024-01-07 23:07:18] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 3.711075ms
+[2024-01-07 23:07:18] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 13.481669ms
+[2024-01-07 23:07:18] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 44.771774ms
+[2024-01-07 23:07:18] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 8.746577ms
+[2024-01-07 23:07:37] [General - NetworkManager] [INFO] Setting DHCP with team team 766
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "cat /etc/hostname | tr -d " \t\n\r""
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "echo photonvision > /etc/hostname"
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "hostnamectl set-hostname photonvision"
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "sed -i "s/127.0.1.1.*photonvision/127.0.1.1\tphotonvision/g" /etc/hosts"
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "sudo service avahi-daemon restart"
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:37] [General - NetworkManager] [INFO] Set hostname to photonvision
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "nmcli con mod Wired\ connection\ 1 ipv4.method "auto" ipv6.method "disabled""
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 10
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Executing "dhclient eth0"
+[2024-01-07 23:07:37] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:37] [WebServer - Server] [DEBUG] Handled HTTP POST request from 192.168.86.36 in 248.19101ms
+[2024-01-07 23:07:38] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:07:39] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:07:44] [General - MetricsManager] [DEBUG] Publishing Metrics...
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Executing "top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'"
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Executing "awk '/MemTotal:/ {print int($2 / 1000);}' /proc/meminfo"
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Executing "uptime -p | cut -c 4-"
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Executing "awk '/MemFree:/ {print int($2 / 1000);}' /proc/meminfo"
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Executing "df ./ --output=pcent | tail -n +2"
+[2024-01-07 23:07:44] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:07:44] [WebServer - Server] [DEBUG] Handled HTTP POST request from 192.168.86.36 in 252.44229ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 10.717101ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 6.939793ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.397642ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 2.134087ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 6.619549ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 6.422386ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 4.910704ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 6.063642ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 2.214878ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 16.032923ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 17.431732ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 6.756921ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 9.245085ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 3.565853ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 68.98756ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.435558ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 73.02357ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 75.78444ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 2.187753ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 0.723321ms
+[2024-01-07 23:07:45] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.895216ms
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [DEBUG] Matching 1 new cameras!
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [INFO] Adding local video device - "Vision Camera 2 1690" at "/dev/video0"
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [DEBUG] After matching loaded configs 1 cameras were unmatched.
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [INFO] Creating a new camera config for camera Vision_Camera_2_1690
+[2024-01-07 23:08:44] [Camera - CameraConfiguration] [DEBUG] Creating USB camera configuration for UsbCamera Vision Camera 2 1690 (AKA Vision_Camera_2_1690) at /dev/video0
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [DEBUG] Matched or created 1 camera configs!
+[2024-01-07 23:08:44] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [DEBUG] Matched config for camera "USBFrameProvider - opencv_Vision_Camera_2_1690" and loaded 0 pipelines
+[2024-01-07 23:08:44] [Camera - VisionSourceManager] [INFO] Adding 1 configs to VMM.
+[2024-01-07 23:08:44] [WebServer - DataChangeService] [DEBUG] Added subscriber - Sources: DCS_WEBSOCKET, DCS_HTTP, DCS_NETWORKTABLES, DCS_VISIONMODULE, DCS_OTHER, Destinations: DCD_ACTIVEMODULE, DCD_ACTIVEPIPELINESETTINGS, DCD_GENSETTINGS, DCD_UI, DCD_OTHER
+[2024-01-07 23:08:44] [Camera - SocketVideoStreamManager] [DEBUG] Added new stream for port 1181
+[2024-01-07 23:08:44] [Camera - SocketVideoStreamManager] [DEBUG] Added new stream for port 1182
+[2024-01-07 23:08:44] [General - NetworkTablesManager] [INFO] NT Connected!
+[2024-01-07 23:08:44] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to 0
+[2024-01-07 23:08:44] [General - ScriptManager] [INFO] Queued event: kNTConnected
+[2024-01-07 23:08:44] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: New Pipeline
+[2024-01-07 23:08:44] [VisionModule - PipelineManager] [DEBUG] Creating Reflective pipeline
+[2024-01-07 23:08:44] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:08:44] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 6
+[2024-01-07 23:08:44] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to false
+[2024-01-07 23:08:44] [General - NetworkTablesManager] [ERROR] NT Connection has failed! Will retry in background.
+[2024-01-07 23:08:46] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:08:46] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 3.282357ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 3.960178ms
+[2024-01-07 23:08:48] [WebServer - DataSocketHandler] [INFO] Closing websocket connection from /192.168.86.36:49812 for reason: Connection closed by client
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 2.031129ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.404057ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.320642ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.472015ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.420682ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.612887ms
+[2024-01-07 23:08:48] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.71701ms
+[2024-01-07 23:08:49] [WebServer - DataSocketHandler] [INFO] New websocket connection from /192.168.86.36:49904
+[2024-01-07 23:08:49] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.940131ms
+[2024-01-07 23:08:49] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.756968ms
+[2024-01-07 23:08:49] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.573805ms
+[2024-01-07 23:08:49] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.781467ms
+[2024-01-07 23:08:49] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 1.635053ms
+[2024-01-07 23:08:58] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to -1
+[2024-01-07 23:08:58] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: Driver Mode
+[2024-01-07 23:08:58] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:08:58] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 20
+[2024-01-07 23:08:58] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to true
+[2024-01-07 23:08:59] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to 0
+[2024-01-07 23:08:59] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: New Pipeline
+[2024-01-07 23:08:59] [VisionModule - PipelineManager] [DEBUG] Creating Reflective pipeline
+[2024-01-07 23:08:59] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:08:59] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 6
+[2024-01-07 23:08:59] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to false
+[2024-01-07 23:09:02] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:09:02] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:09:09] [VisionModule - VisionModuleChangeSubscriber - Vision_Camera_2_1690] [DEBUG] Skipping pipeline change, index 0 already active
+[2024-01-07 23:09:21] [VisionModule - VisionModuleChangeSubscriber - Vision_Camera_2_1690] [INFO] Adding a Reflective pipeline with name 2024 Comp
+[2024-01-07 23:09:23] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:09:23] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:09:23] [VisionModule - VisionModuleChangeSubscriber - Vision_Camera_2_1690] [DEBUG] Skipping pipeline change, index 0 already active
+[2024-01-07 23:09:27] [VisionModule - VisionModuleChangeSubscriber - Vision_Camera_2_1690] [INFO] Deleting current pipe at index 0
+[2024-01-07 23:09:27] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to 0
+[2024-01-07 23:09:27] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: 2024 Comp
+[2024-01-07 23:09:27] [VisionModule - PipelineManager] [DEBUG] Creating Reflective pipeline
+[2024-01-07 23:09:27] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:09:27] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 6
+[2024-01-07 23:09:27] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to false
+[2024-01-07 23:09:29] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:09:29] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:09:31] [VisionModule - PipelineManager] [INFO] Adding new pipe of type AprilTag at idx 0
+[2024-01-07 23:09:31] [VisionModule - PipelineManager] [DEBUG] Creating AprilTag pipeline
+[2024-01-07 23:09:31] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to 0
+[2024-01-07 23:09:31] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: 2024 Comp
+[2024-01-07 23:09:31] [VisionModule - PipelineManager] [DEBUG] Creating AprilTag pipeline
+[2024-01-07 23:09:31] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:09:31] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 20
+[2024-01-07 23:09:31] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to false
+[2024-01-07 23:09:33] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:09:33] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:09:36] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:09:36] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:09:40] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 1280 Height: 800 Pixel Format: kMJPEG
+[2024-01-07 23:09:42] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:09:42] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:11:14] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to -1
+[2024-01-07 23:11:14] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: Driver Mode
+[2024-01-07 23:11:14] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 320 Height: 240 Pixel Format: kMJPEG
+[2024-01-07 23:11:15] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 20
+[2024-01-07 23:11:15] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to true
+[2024-01-07 23:11:17] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:11:17] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:11:24] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 10 Width: 1280 Height: 800 Pixel Format: kYUYV
+[2024-01-07 23:11:25] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Starting calibration at resolution index 8 and settings UICalibrationData{videoModeIndex=8, count=0, minCount=12, hasEnough=false, squareSizeIn=1.0, patternWidth=8, patternHeight=8, boardType=CHESSBOARD}
+[2024-01-07 23:11:25] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to -2
+[2024-01-07 23:11:25] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: New Pipeline
+[2024-01-07 23:11:25] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 10 Width: 1280 Height: 800 Pixel Format: kYUYV
+[2024-01-07 23:11:25] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 20
+[2024-01-07 23:11:25] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to true
+[2024-01-07 23:11:26] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:11:26] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:12:57] [WebServer - RequestHandler] [INFO] Calibrating camera! This will take a long time...
+[2024-01-07 23:13:02] [General - Calibrate3dPipe] [INFO] CALIBRATION SUCCESS for res 1280x800 (with accuracy 1.8621167311381601)! camMatrix: 
+{"rows":3,"cols":3,"type":6,"data":[830.3075653100974,0.0,884.8142294191604,0.0,770.511406234307,362.7308580337733,0.0,0.0,1.0]}
+distortionCoeffs:
+{"rows":1,"cols":5,"type":6,"data":[-0.03840193302281395,0.03156865350493979,-0.0035080951720682083,0.07777935408050353,-5.289686872098068E-4]}
+With Standard Deviation Of
+1.015552772204386
+
+[2024-01-07 23:13:02] [VisionModule - PipelineManager] [DEBUG] Creating AprilTag pipeline
+[2024-01-07 23:13:02] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Setting pipeline to 0
+[2024-01-07 23:13:02] [VisionModule - VisionModule - Vision_Camera_2_1690] [INFO] Pipeline name: 2024 Comp
+[2024-01-07 23:13:02] [VisionModule - PipelineManager] [DEBUG] Creating AprilTag pipeline
+[2024-01-07 23:13:02] [VisionModule - VisionSourceSettables] [INFO] Setting video mode to FPS: 100 Width: 1280 Height: 800 Pixel Format: kMJPEG
+[2024-01-07 23:13:03] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting camera exposure to 20
+[2024-01-07 23:13:04] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to false
+[2024-01-07 23:13:04] [VisionModule - VisionModule - Vision_Camera_2_1690] [DEBUG] Saving calibration...
+[2024-01-07 23:13:04] [Camera - CameraConfiguration] [INFO] adding calibration 1280x800
+[2024-01-07 23:13:04] [WebServer - RequestHandler] [INFO] Camera calibrated!
+[2024-01-07 23:13:04] [WebServer - Server] [DEBUG] Handled HTTP POST request from 192.168.86.36 in 6481.5605ms
+[2024-01-07 23:13:05] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:13:05] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:13:17] [General - MetricsManager] [DEBUG] Publishing Metrics...
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Executing "top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'"
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Executing "uptime -p | cut -c 4-"
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Executing "awk '/MemFree:/ {print int($2 / 1000);}' /proc/meminfo"
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Executing "df ./ --output=pcent | tail -n +2"
+[2024-01-07 23:13:17] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:13:17] [WebServer - Server] [DEBUG] Handled HTTP POST request from 192.168.86.36 in 234.12766ms
+[2024-01-07 23:13:22] [WebServer - RequestHandler] [INFO] exporting settings to download...
+[2024-01-07 23:13:22] [WebServer - RequestHandler] [INFO] Uploading settings with size 5433009
+[2024-01-07 23:13:22] [WebServer - Server] [DEBUG] Handled HTTP GET request from 192.168.86.36 in 608.52295ms
+[2024-01-07 23:13:50] [VisionModule - VisionModuleChangeSubscriber - Vision_Camera_2_1690] [DEBUG] Skipping pipeline change, index 0 already active
+[2024-01-07 23:13:53] [Camera - USBCameraSource - Vision_Camera_2_1690] [DEBUG] Setting auto exposure to true
+[2024-01-07 23:13:55] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:13:55] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:13:58] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:13:58] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:14:29] [General - ConfigManager] [DEBUG] Saving to disk...
+[2024-01-07 23:14:29] [General - ConfigManager] [INFO] Settings saved!
+[2024-01-07 23:14:47] [General - MetricsManager] [DEBUG] Publishing Metrics...
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Executing "top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'"
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Executing "uptime -p | cut -c 4-"
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Executing "awk '/MemFree:/ {print int($2 / 1000);}' /proc/meminfo"
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Executing "df ./ --output=pcent | tail -n +2"
+[2024-01-07 23:14:47] [General - ShellExec] [DEBUG] Got exit code 0
+[2024-01-07 23:14:47] [WebServer - Server] [DEBUG] Handled HTTP POST request from 192.168.86.36 in 247.64464ms
+[2024-01-07 23:14:49] [WebServer - RequestHandler] [INFO] exporting settings to download...
