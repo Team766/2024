@@ -183,7 +183,7 @@ allprojects {
 }
 
 spotless {
-    ratchetFrom 'origin/master' // only check files that have changed relative to main
+    ratchetFrom 'origin/main' // only check files that have changed relative to main
     java {
         target fileTree('.') {
             include '**/*.java'
