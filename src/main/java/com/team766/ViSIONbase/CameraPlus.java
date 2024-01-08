@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 public class CameraPlus extends PhotonCamera{
 
-	/*
+	/**
 	 * This is the constructor for the CameraPlus class
 	 * @param cameraName the name of the camera
 	 * @extends the PhotonCamera class and supers the cameraName
@@ -19,7 +19,7 @@ public class CameraPlus extends PhotonCamera{
 	}
 
 
-	/* 
+	/** 
 	 * Here we can get a transform 3d of the best apriltag viewable.
 	 * @return the Transform3d object of the robot relative to the target
 	 * @throws ApriltagGeneralCheckedException the checked exception from before if there were any errors in the getter methods
@@ -33,7 +33,7 @@ public class CameraPlus extends PhotonCamera{
 		
 	}
 
-	/*
+	/**
 	 * This method gets the tag ID of the best target picked up by the camera
 	 * This is useful for knowing which tag the Transform3d is looking at
 	 * @return the tag ID of the best tracked target
@@ -47,7 +47,7 @@ public class CameraPlus extends PhotonCamera{
 		}
 	}
 
-	/*
+	/**
 	 * This method gets the best tracked target picked up by the camera
 	 * @return PhotonTrackedTarget the best tracked target picked up by the camera
 	 */
@@ -66,7 +66,7 @@ public class CameraPlus extends PhotonCamera{
         }
     }
 
-	/*
+	/**
 	 * This method gets the transform 3d of the best target picked up by the camera
 	 * @param target the target that you want to get the transform 3d of
 	 * @return Transform3d the transform 3d of the target
