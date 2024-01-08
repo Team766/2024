@@ -1,3 +1,5 @@
+package com.team766.ViSIONbase;
+
 public class ScoringPosition {
 	public double power, angle, x_position, y_position, swerve_angle;
 

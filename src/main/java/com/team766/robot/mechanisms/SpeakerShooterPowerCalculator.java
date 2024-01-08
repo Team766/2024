@@ -1,10 +1,15 @@
 package com.team766.robot.mechanisms;
+
 import com.team766.ViSIONbase.*;
 import java.util.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import com.team766.framework.AprilTagGeneralCheckedException;
+import com.team766.framework.Mechanism;
 import edu.wpi.first.math.geometry.Transform3d;
+import com.team766.robot.Robot;
+
 /*
 * This is the class where we will calculate power for the shooter when it is scoring into the speaker.
 * In order to do this, right now we will use a lookup table with values. We will use the center apriltag.
@@ -33,16 +38,23 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 		xDeadZoneAmount = null;
 		yDeadZoneAmount = null;
 
-		if(DriverStation.getAlliance() == Alliance.Red){
-			tagId = 4;
-		}else if(DriverStation.getAlliance() == Alliance.Blue){
-			tagId = 7;
-		}else{
-			throw new AprilTagGeneralCheckedException("Alliance not found correctly");
+		Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+
+		if(currentAlliance.isPresent()){
+			if(currentAlliance.get() == Alliance.Red){
+				tagId = 4;
+			}else if(currentAlliance.get() == Alliance.Blue){
+				tagId = 7;
+			}else{
+				throw new AprilTagGeneralCheckedException("Alliance not found correctly, neiter red nor blue somehow");
+			}
+		} else {
+			throw new AprilTagGeneralCheckedException("Alliance not found correctly, optional is empty.");
 		}
+
 	}
 
-	public void shoot(){
+	public void shoot() throws AprilTagGeneralCheckedException{
 		ScoringPosition score = closestTo();
 
 		if(Math.abs(getTransform3dOfRobotToTag().getY()) <= yDeadZoneAmount){
@@ -59,16 +71,16 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 			if(Math.abs(getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount){
 				// Robot is in position
 				
-				tempShooter.setAngle(score.angle);
+				Robot.tempShooter.setAngle(score.angle);
 				// set swerve angle to score.swerve_angle
-				tempShooter.shoot(score.power);
+				Robot.tempShooter.shoot(score.power);
 
 			}
 		}
 		
 	}
 
-	private Transform3d getTransform3dOfRobotToTag(){
+	private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException{
 		CameraPlus toUse;
 		try{
 			toUse = VisionUtil.findCameraThatHas(tagId);
@@ -81,7 +93,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 		return robotToTag;
 	}
 
-	private ScoringPosition closestTo(){
+	private ScoringPosition closestTo() throws AprilTagGeneralCheckedException{
 
 		// repetitive, fix later
 		CameraPlus toUse;

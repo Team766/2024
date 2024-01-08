@@ -5,6 +5,8 @@ package com.team766.robot.mechanisms;
  * It assumes it has basic methods.
  */
 
+import com.team766.framework.Mechanism;
+
 public class TempPickerUpper extends Mechanism {
 	public TempPickerUpper() {
 
