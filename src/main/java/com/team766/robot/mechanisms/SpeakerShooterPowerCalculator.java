@@ -51,8 +51,10 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
 		if(!yDone){
 			//Move robot horizontally
+			//Pid or if statment?
 		}else{
 			//Move robot vertically
+			//Pid or if statment?
 
 			if(Math.abs(getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount){
 				// Robot is in position
