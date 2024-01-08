@@ -19,9 +19,11 @@ import com.team766.robot.Robot;
 
 public class SpeakerShooterPowerCalculator extends Mechanism {
 
-	private ScoringPosition leftPosition, centerPosition, rightPosition;
-	private double yDeadZoneAmount, xDeadZoneAmount;
-
+	private ScoringPosition leftPosition;
+	private ScoringPosition centerPosition;
+	private ScoringPosition rightPosition;
+	private double yDeadZoneAmount;
+	private double xDeadZoneAmount;
 	private boolean yDone = false;
 
 	private int tagId;
@@ -40,12 +42,12 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
 		Optional<Alliance> currentAlliance = DriverStation.getAlliance();
 
-		if(currentAlliance.isPresent()){
-			if(currentAlliance.get() == Alliance.Red){
+		if (currentAlliance.isPresent()) {
+			if (currentAlliance.get() == Alliance.Red) {
 				tagId = 4;
-			}else if(currentAlliance.get() == Alliance.Blue){
+			} else if (currentAlliance.get() == Alliance.Blue) {
 				tagId = 7;
-			}else{
+			} else {
 				throw new AprilTagGeneralCheckedException("Alliance not found correctly, neiter red nor blue somehow");
 			}
 		} else {
@@ -63,21 +65,21 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 	 * @throws AprilTagGeneralCheckedException previous exceptions that could have arisen from any abstracted method calls.
 	 * @author Max Spier, 1/7/2024
 	 */
-	public void shoot() throws AprilTagGeneralCheckedException{
+	public void shoot() throws AprilTagGeneralCheckedException {
 		ScoringPosition score = closestTo();
 
-		if(Math.abs(this.getTransform3dOfRobotToTag().getY()) <= yDeadZoneAmount){
+		if (Math.abs(this.getTransform3dOfRobotToTag().getY()) <= yDeadZoneAmount) {
 			yDone = true;
 		}
 
-		if(!yDone){
+		if (!yDone) {
 			//Move robot horizontally (need swerve code in here)
 			//Pid or if statment?
-		}else{
+		} else {
 			//Move robot horizontally (need swerve code in here)
 			//Pid or if statment?
 
-			if(Math.abs(this.getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount){
+			if (Math.abs(this.getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount) {
 				// Robot is in position
 				
 				Robot.tempShooter.setAngle(score.angle);
@@ -97,11 +99,11 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 	 * @throws AprilTagGeneralCheckedException if the tag is not found by any camera
 	 * @author Max Spier, 1/7/2024
 	 */
-	private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException{
+	private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
 		CameraPlus toUse;
-		try{
+		try {
 			toUse = VisionUtil.findCameraThatHas(tagId);
-		} catch (AprilTagGeneralCheckedException e){
+		} catch (AprilTagGeneralCheckedException e) {
 			throw new AprilTagGeneralCheckedException("Cameras could not find tag, try again.");
 		}
 		
@@ -121,7 +123,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 	 * @throws AprilTagGeneralCheckedException previous exceptions that could have arisen from any abstracted method calls.
 	 * @author Max Spier, 1/7/2024
 	 */
-	private ScoringPosition closestTo() throws AprilTagGeneralCheckedException{
+	private ScoringPosition closestTo() throws AprilTagGeneralCheckedException {
 
 		Transform3d robotToTag = this.getTransform3dOfRobotToTag();
 
@@ -136,11 +138,11 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
 		double minValue = Math.min(Math.min(left, center), right);
 
-		if(minValue == center){
+		if (minValue == center) {
 			return centerPosition;
-		}else if(minValue == left){
+		} else if (minValue == left) {
 			return leftPosition;
-		} else{
+		} else {
 			return rightPosition;
 		}
 
