@@ -57,7 +57,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 	public void shoot() throws AprilTagGeneralCheckedException{
 		ScoringPosition score = closestTo();
 
-		if(Math.abs(getTransform3dOfRobotToTag().getY()) <= yDeadZoneAmount){
+		if(Math.abs(this.getTransform3dOfRobotToTag().getY()) <= yDeadZoneAmount){
 			yDone = true;
 		}
 
@@ -68,7 +68,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 			//Move robot vertically
 			//Pid or if statment?
 
-			if(Math.abs(getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount){
+			if(Math.abs(this.getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount){
 				// Robot is in position
 				
 				Robot.tempShooter.setAngle(score.angle);
@@ -95,16 +95,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
 	private ScoringPosition closestTo() throws AprilTagGeneralCheckedException{
 
-		// repetitive, fix later
-		CameraPlus toUse;
-		try{
-			toUse = VisionUtil.findCameraThatHas(tagId);
-		} catch (AprilTagGeneralCheckedException e){
-			throw new AprilTagGeneralCheckedException("Cameras could not find tag, try again.");
-		}
-		
-
-		Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
+		Transform3d robotToTag = this.getTransform3dOfRobotToTag();
 
 		double x = robotToTag.getX();
 		double y = robotToTag.getY();
