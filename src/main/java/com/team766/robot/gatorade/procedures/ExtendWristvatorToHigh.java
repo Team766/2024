@@ -5,7 +5,7 @@ import com.team766.robot.gatorade.mechanisms.Wrist;
 
 public class ExtendWristvatorToHigh extends MoveWristvator {
 
-	public ExtendWristvatorToHigh() {
-		super(Elevator.Position.HIGH, Wrist.Position.HIGH_NODE);
-	}
+    public ExtendWristvatorToHigh() {
+        super(Elevator.Position.HIGH, Wrist.Position.HIGH_NODE);
+    }
 }

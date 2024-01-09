@@ -5,9 +5,9 @@ import com.team766.framework.Procedure;
 import com.team766.robot.gatorade.Robot;
 
 public class IntakeIdle extends Procedure {
-	public void run(Context context) {
-		context.takeOwnership(Robot.intake);
+    public void run(Context context) {
+        context.takeOwnership(Robot.intake);
 
-		Robot.intake.idle();
-	}	
+        Robot.intake.idle();
+    }
 }

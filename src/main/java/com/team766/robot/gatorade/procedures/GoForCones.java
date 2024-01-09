@@ -7,10 +7,10 @@ import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 
 public class GoForCones extends Procedure {
 
-	@Override
-	public void run(Context context) {
-		context.takeOwnership(Robot.intake);
+    @Override
+    public void run(Context context) {
+        context.takeOwnership(Robot.intake);
 
-		Robot.intake.setGamePieceType(GamePieceType.CONE);
-	}
+        Robot.intake.setGamePieceType(GamePieceType.CONE);
+    }
 }
