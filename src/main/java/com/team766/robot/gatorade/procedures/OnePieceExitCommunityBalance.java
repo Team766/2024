@@ -4,16 +4,24 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.Robot;
+import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
 public class OnePieceExitCommunityBalance extends Procedure {
+    private final GamePieceType type;
+
+    public OnePieceExitCommunityBalance(GamePieceType type) {
+        this.type = type;
+    }
+
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
         // context.takeOwnership(Robot.intake);
         context.takeOwnership(Robot.gyro);
-        Robot.gyro.resetGyro();
+        Robot.gyro.resetGyro180();
+
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
@@ -33,8 +41,9 @@ public class OnePieceExitCommunityBalance extends Procedure {
             return;
         }
         log("exiting");
-        new OPECHelper().run(context);
+        new ScoreHigh(type).run(context);
+        new ExitCommunity().run(context);
         log("Transitioning");
-        new GyroBalance(alliance.get()).run(context); // already checked, alliance should be set
+        new GyroBalance(alliance.get()).run(context);
     }
 }

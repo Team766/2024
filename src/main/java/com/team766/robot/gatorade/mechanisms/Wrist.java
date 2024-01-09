@@ -29,17 +29,17 @@ public class Wrist extends Mechanism {
      */
     public enum Position {
 
-        // TODO: adjust these values.
-
         /** Wrist is in top position.  Starting position. */
-        TOP(-135),
+        TOP(-180),
         /** Wrist is in the position for moving around the field. */
-        RETRACTED(-120.0),
+        RETRACTED(-175.0),
         /** Wrist is level with ground. */
-        LEVEL(0.0),
-        HIGH_NODE(-30),
+        LEVEL(-65),
+        HIGH_NODE(-20),
         MID_NODE(-25.5),
-        /** Wrist is fully down. */
+        HUMAN_CONES(-4),
+        HUMAN_CUBES(-8),
+        /** Wrist is fully down. **/
         BOTTOM(60);
 
         private final double angle;
@@ -77,7 +77,8 @@ public class Wrist extends Mechanism {
         }
         motor = (CANSparkMax) halMotor;
 
-        resetEncoder();
+        motor.getEncoder()
+                .setPosition(EncoderUtils.wristDegreesToRotations(Position.TOP.getAngle()));
 
         // stash the PIDController for convenience.  will update the PID values to the latest from
         // the config
@@ -90,11 +91,6 @@ public class Wrist extends Mechanism {
         iGain = ConfigFileReader.getInstance().getDouble(WRIST_IGAIN);
         dGain = ConfigFileReader.getInstance().getDouble(WRIST_DGAIN);
         ffGain = ConfigFileReader.getInstance().getDouble(WRIST_FFGAIN);
-    }
-
-    public void resetEncoder() {
-        motor.getEncoder()
-                .setPosition(EncoderUtils.wristDegreesToRotations(Position.TOP.getAngle()));
     }
 
     public double getRotations() {

@@ -109,7 +109,7 @@ public class OI extends Procedure {
                             > 0) {
                 context.takeOwnership(Robot.drive);
                 // If a button is pressed, drive is just fine adjustment
-                if (leftJoystick.getButton(InputConstants.FINE_DRIVING)) {
+                if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
                     Robot.drive.controlFieldOriented(
                             Math.toRadians(Robot.gyro.getGyroYaw()),
                             (leftJoystickX * FINE_DRIVING_COEFFICIENT),
@@ -133,24 +133,29 @@ public class OI extends Procedure {
             if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
                 new GoForCones().run(context);
                 setLightsForGamePiece();
+                SmartDashboard.putBoolean("Game Piece", true);
             } else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
                 new GoForCubes().run(context);
                 setLightsForGamePiece();
+                SmartDashboard.putBoolean("Game Piece", false);
             }
 
             // look for button presses to queue placement of intake/wrist/elevator superstructure
-            if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
+            if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
+                placementPosition = PlacementPosition.NONE;
+                // setLightsForPlacement();
+            } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
                 placementPosition = PlacementPosition.LOW_NODE;
-                setLightsForPlacement();
+                // setLightsForPlacement();
             } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
                 placementPosition = PlacementPosition.MID_NODE;
-                setLightsForPlacement();
+                // setLightsForPlacement();
             } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
                 placementPosition = PlacementPosition.HIGH_NODE;
-                setLightsForPlacement();
+                // setLightsForPlacement();
             } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
                 placementPosition = PlacementPosition.HUMAN_PLAYER;
-                setLightsForPlacement();
+                // setLightsForPlacement();
             }
 
             // look for button hold to start intake, release to idle intake
@@ -158,16 +163,8 @@ public class OI extends Procedure {
                 new IntakeIn().run(context);
             } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_INTAKE_IN)) {
                 new IntakeIdle().run(context);
-            }
-
-            // see if we should reset the button states
-            if (boxopGamepad.getButton(InputConstants.BUTTON_RESET_STATE)) {
-                // stop the intake
+            } else if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
                 new IntakeStop().run(context);
-                // reset the placement position
-                placementPosition = PlacementPosition.NONE;
-                // reset the cone/cube selection to cones
-                new GoForCones().run(context);
             }
 
             // look for button hold to extend intake/wrist/elevator superstructure,
@@ -187,7 +184,7 @@ public class OI extends Procedure {
                         break;
                     case HUMAN_PLAYER:
                         context.startAsync(
-                                new ExtendWristvatorToHuman(Robot.intake.getGamePieceType()));
+                                new ExtendToHumanWithIntake(Robot.intake.getGamePieceType()));
                         break;
                     default:
                         // warn, ignore
@@ -197,84 +194,59 @@ public class OI extends Procedure {
                         break;
                 }
             } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-                context.startAsync(new RetractWristvator());
+                if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
+                    context.startAsync(new RetractWristvatorIdleIntake());
+                } else {
+                    context.startAsync(new RetractWristvator());
+                }
             }
 
-            // TODO: refactor this code.  it's getting gnarly.
             // look for manual nudges
             // we only allow these if the extend elevator trigger is extended
             if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-                // the y axis is flipped from what we expect.  invert so up is positive, down is
-                // negative.
+
+                // look for elevator nudges
                 double elevatorNudgeAxis =
                         -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
+                if (Math.abs(elevatorNudgeAxis) > 0.05) {
+                    // elevatorManual = true;
+                    context.takeOwnership(Robot.elevator);
+                    // Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
+                    if (elevatorNudgeAxis > 0) {
+                        Robot.elevator.nudgeUp();
+                    } else {
+                        Robot.elevator.nudgeDown();
+                    }
+                    context.releaseOwnership(Robot.elevator);
+                } else if (false && elevatorManual) {
+                    Robot.elevator.stopElevator();
+                    elevatorManual = false;
+                }
+
+                // look for wrist nudges
                 double wristNudgeAxis =
                         -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
-
-                if (boxopGamepad.getButtonPressed(
-                        InputConstants.BUTTON_PLACEMENT_RESET_WRISTVATOR)) {
-                    // bypass PID
-                    if (Math.abs(elevatorNudgeAxis) > 0.05) {
-                        elevatorManual = true;
-                        context.takeOwnership(Robot.elevator);
-                        Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
-                        context.releaseOwnership(Robot.elevator);
-                    } else if (elevatorManual) {
-                        context.takeOwnership(Robot.elevator);
-                        Robot.elevator.stopElevator();
-                        context.releaseOwnership(Robot.elevator);
-                        elevatorManual = false;
-                    }
-
-                    if ((Math.abs(wristNudgeAxis) > 0.05)) {
-                        wristManual = true;
-                        context.takeOwnership(Robot.wrist);
-                        Robot.wrist.nudgeNoPID(wristNudgeAxis);
-                        context.releaseOwnership(Robot.wrist);
-                    } else if (wristManual) {
-                        context.takeOwnership(Robot.wrist);
-                        Robot.wrist.stopWrist();
-                        context.releaseOwnership(Robot.wrist);
-                        elevatorManual = false;
-                    }
-                } else if (boxopGamepad.getButtonReleased(
-                        InputConstants.BUTTON_PLACEMENT_RESET_WRISTVATOR)) {
+                if (Math.abs(wristNudgeAxis) > 0.05) {
+                    // wristManual = true;
                     context.takeOwnership(Robot.wrist);
-                    context.takeOwnership(Robot.elevator);
-                    Robot.wrist.resetEncoder();
-                    Robot.elevator.resetEncoder();
+                    // Robot.wrist.nudgeNoPID(wristNudgeAxis);
+                    if (wristNudgeAxis > 0) {
+                        Robot.wrist.nudgeUp();
+                    } else {
+                        Robot.wrist.nudgeDown();
+                    }
                     context.releaseOwnership(Robot.wrist);
-                    context.releaseOwnership(Robot.elevator);
-                } else {
-                    // look for elevator nudges
-                    if (Math.abs(elevatorNudgeAxis) > 0.05) {
-                        context.takeOwnership(Robot.elevator);
-                        if (elevatorNudgeAxis > 0) {
-                            Robot.elevator.nudgeUp();
-                        } else {
-                            Robot.elevator.nudgeDown();
-                        }
-                        context.releaseOwnership(Robot.elevator);
-                    }
-
-                    // look for wrist nudges
-                    if (Math.abs(wristNudgeAxis) > 0.05) {
-                        context.takeOwnership(Robot.wrist);
-                        if (wristNudgeAxis > 0) {
-                            Robot.wrist.nudgeUp();
-                        } else {
-                            Robot.wrist.nudgeDown();
-                        }
-                        context.releaseOwnership(Robot.wrist);
-                    }
+                } else if (false && wristManual) {
+                    Robot.wrist.stopWrist();
+                    wristManual = true;
                 }
             }
 
             if (lightsRateLimit.next()) {
-                if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 10) {
+                if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
                     Robot.lights.rainbow();
                 } else {
-                    setLightsForPlacement();
+                    setLightsForGamePiece();
                 }
             }
         }
@@ -282,18 +254,18 @@ public class OI extends Procedure {
 
     private void setLightsForPlacement() {
         switch (placementPosition) {
-            case NONE:
-                Robot.lights.white();
-                break;
-            case LOW_NODE:
-                Robot.lights.green();
-                break;
-            case MID_NODE:
-                Robot.lights.red();
-                break;
-            case HIGH_NODE:
-                Robot.lights.orange();
-                break;
+                // case NONE:
+                // 	Robot.lights.white();
+                // 	break;
+                // case LOW_NODE:
+                // 	Robot.lights.green();
+                // 	break;
+                // case MID_NODE:
+                // 	Robot.lights.red();
+                // 	break;
+                // case HIGH_NODE:
+                // 	Robot.lights.orange();
+                // 	break;
             case HUMAN_PLAYER:
                 setLightsForGamePiece();
                 break;

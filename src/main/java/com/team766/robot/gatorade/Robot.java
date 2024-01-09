@@ -7,6 +7,7 @@ public class Robot {
     public static Intake intake;
     public static Wrist wrist;
     public static Elevator elevator;
+    public static Shoulder shoulder;
     public static Drive drive;
     public static Gyro gyro;
     public static Lights lights;
@@ -16,6 +17,7 @@ public class Robot {
         intake = new Intake();
         wrist = new Wrist();
         elevator = new Elevator();
+        shoulder = new Shoulder();
         drive = new Drive();
         gyro = new Gyro();
         lights = new Lights();

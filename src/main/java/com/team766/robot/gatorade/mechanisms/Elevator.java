@@ -2,6 +2,7 @@ package com.team766.robot.gatorade.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.SparkMaxPIDController;
@@ -15,21 +16,25 @@ import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * Basic elevator mechanism.  Used in conjunction with the {@link Intake} and {@link Wrist}.
+ * Can be moved up and down as part of teleop or autonomous control to move the {@link Wrist}
+ * and {@link Intake} closer to a game piece or game element (eg node in the
+ * field, human player station).
+ */
 public class Elevator extends Mechanism {
     public enum Position {
 
-        // TODO: do we need separate heights for cones vs cubes?
-
-        /** Elevator is fully retracted. */
+        /** Elevator is fully retracted.  Starting position. */
         RETRACTED(0),
         /** Elevator is the appropriate height to place game pieces at the low node. */
-        LOW(5),
+        LOW(0),
         /** Elevator is the appropriate height to place game pieces at the mid node. */
         MID(18),
         /** Elevator is at appropriate height to place game pieces at the high node. */
         HIGH(40),
         /** Elevator is at appropriate height to grab cubes from the human player. */
-        HUMAN_CUBES(40),
+        HUMAN_CUBES(39),
         /** Elevator is at appropriate height to grab cones from the human player. */
         HUMAN_CONES(40),
         /** Elevator is fully extended. */
@@ -46,7 +51,7 @@ public class Elevator extends Mechanism {
         }
     }
 
-    private static final double NUDGE_INCREMENT = 5.0;
+    private static final double NUDGE_INCREMENT = 2.0;
     private static final double NUDGE_DAMPENER = 0.25;
 
     private static final double NEAR_THRESHOLD = 2.0;
@@ -76,12 +81,18 @@ public class Elevator extends Mechanism {
             throw new IllegalStateException("Motor are not CANSparkMaxes!");
         }
 
+        halLeftMotor.setNeutralMode(NeutralMode.Brake);
+        halRightMotor.setNeutralMode(NeutralMode.Brake);
+
         leftMotor = (CANSparkMax) halLeftMotor;
         rightMotor = (CANSparkMax) halRightMotor;
 
-        rightMotor.follow(leftMotor, true);
+        rightMotor.follow(leftMotor, true /* invert */);
 
-        resetEncoder();
+        leftMotor
+                .getEncoder()
+                .setPosition(
+                        EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
 
         pidController = leftMotor.getPIDController();
         pidController.setFeedbackDevice(leftMotor.getEncoder());
@@ -93,13 +104,6 @@ public class Elevator extends Mechanism {
         maxVelocity = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_VELOCITY);
         minOutputVelocity = ConfigFileReader.getInstance().getDouble(ELEVATOR_MIN_OUTPUT_VELOCITY);
         maxAccel = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_ACCEL);
-    }
-
-    public void resetEncoder() {
-        leftMotor
-                .getEncoder()
-                .setPosition(
-                        EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
     }
 
     public double getRotations() {
@@ -139,7 +143,6 @@ public class Elevator extends Mechanism {
         double height = getHeight();
         // NOTE: this could artificially limit nudge range
         double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
-        System.err.println("Target: " + targetHeight);
 
         moveTo(targetHeight);
     }

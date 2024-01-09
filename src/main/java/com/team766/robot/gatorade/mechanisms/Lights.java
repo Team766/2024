@@ -4,16 +4,17 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.team766.framework.Mechanism;
+import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 
 public class Lights extends Mechanism {
 
     private CANdle candle;
     private static final int CANID = 5;
     private static final int LED_COUNT = 90;
-    private Animation rainbowAnimation = new RainbowAnimation(1, 0.1, LED_COUNT);
+    private Animation rainbowAnimation = new RainbowAnimation(1, 1.5, LED_COUNT);
 
     public Lights() {
-        candle = new CANdle(CANID);
+        candle = new CANdle(CANID, SwerveDriveConstants.SWERVE_CANBUS);
     }
 
     public void purple() {
@@ -29,7 +30,7 @@ public class Lights extends Mechanism {
 
     public void yellow() {
         checkContextOwnership();
-        candle.setLEDs(255, 255, 0);
+        candle.setLEDs(255, 150, 0);
     }
 
     public void red() {
