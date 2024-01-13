@@ -1,5 +1,6 @@
 package com.team766.hal.wpilib;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.team766.hal.GyroReader;
 
@@ -12,12 +13,11 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public void calibrate() {
-        // no-op.  the Pigeon2 is factory-calibrated.
+        pigeon.zeroGyroBiasNow();
     }
 
     @Override
     public void reset() {
-        pigeon.zeroGyroBiasNow(); // is this worth calling?
         pigeon.setYaw(0);
     }
 
@@ -38,6 +38,8 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public double getRate() {
-        return 0; // not defined for Pigeon2.
+        double[] xyz = new double[3];
+        ErrorCode eCode = pigeon.getRawGyro(xyz);
+        return eCode == ErrorCode.OK ? xyz[2] : 0;
     }
 }
