@@ -13,7 +13,6 @@ import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
-import com.team766.robot.gatorade.mechanisms.SwerveModule;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
