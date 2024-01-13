@@ -185,7 +185,20 @@ public class WPIRobotProvider extends RobotProvider {
     // Gyro index values:
     // -1 = Spartan Gyro
     // 0+ = Analog Gyro on port index
-    public GyroReader getGyro(final int index) {
+    public GyroReader getGyro(final int index, String configPrefix) {
+
+        final ValueProvider<GyroReader.Type> type =
+                ConfigFileReader.getInstance()
+                        .getEnum(GyroReader.Type.class, configPrefix + ".type");
+
+        if (type.hasValue()) {
+            if (type.get() == GyroReader.Type.PIGEON) {
+                ValueProvider<String> canBus =
+                        ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
+                return new PigeonGyro(index, canBus.get());
+            }
+        }
+
         if (gyros[index + 2] == null) {
             if (index < -2) {
                 Logger.get(Category.CONFIGURATION)

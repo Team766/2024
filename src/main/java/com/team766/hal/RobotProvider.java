@@ -56,7 +56,7 @@ public abstract class RobotProvider {
 
     public abstract SolenoidController getSolenoid(int index);
 
-    public abstract GyroReader getGyro(int index);
+    public abstract GyroReader getGyro(int index, String configPrefix);
 
     public abstract CameraReader getCamera(String id, String value);
 
@@ -286,7 +286,7 @@ public abstract class RobotProvider {
                     ConfigFileReader.getInstance().getInt(configName + ".port");
             checkDeviceName("gyro", gyroNames, port.get(), configName);
 
-            return getGyro(port.get());
+            return getGyro(port.get(), configName);
         } catch (IllegalArgumentException ex) {
             Logger.get(Category.CONFIGURATION)
                     .logData(
