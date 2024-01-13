@@ -44,7 +44,6 @@ public class OI extends Procedure {
 
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.gyro);
         context.takeOwnership(Robot.lights);
 
         boolean elevatorManual = false;
@@ -71,7 +70,7 @@ public class OI extends Procedure {
             }
 
             if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
-                Robot.gyro.resetGyro();
+                Robot.drive.resetGyro();
             }
 
             if (leftJoystick.getButtonPressed(InputConstants.RESET_POS)) {
@@ -111,14 +110,14 @@ public class OI extends Procedure {
                 // If a button is pressed, drive is just fine adjustment
                 if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
                     Robot.drive.controlFieldOriented(
-                            Math.toRadians(Robot.gyro.getGyroYaw()),
+                            Math.toRadians(Robot.drive.getHeading()),
                             (leftJoystickX * FINE_DRIVING_COEFFICIENT),
                             (leftJoystickY * FINE_DRIVING_COEFFICIENT),
                             (rightJoystickX * FINE_DRIVING_COEFFICIENT));
                 } else {
                     // On deafault, controls the robot field oriented
                     Robot.drive.controlFieldOriented(
-                            Math.toRadians(Robot.gyro.getGyroYaw()),
+                            Math.toRadians(Robot.drive.getHeading()),
                             (leftJoystickX),
                             (leftJoystickY),
                             (rightJoystickX));
