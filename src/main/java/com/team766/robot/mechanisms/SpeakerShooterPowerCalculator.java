@@ -40,8 +40,9 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 		xDeadZoneAmount = null;
 		yDeadZoneAmount = null;
 
+		//When do we know the alliance? Is that during the constructor or after?
 		Optional<Alliance> currentAlliance = DriverStation.getAlliance();
-
+			
 		if (currentAlliance.isPresent()) {
 			if (currentAlliance.get() == Alliance.Red) {
 				tagId = 4;
