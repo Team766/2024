@@ -1,9 +1,10 @@
-package com.team766.robot.gatorade.mechanisms;
+package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.framework.Mechanism;
+import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
@@ -25,6 +26,7 @@ public class Drive extends Mechanism {
 
     // TODO: rework odometry so it doesn't have to go through drive
 
+    private final GyroReader gyro;
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
@@ -58,6 +60,8 @@ public class Drive extends Mechanism {
         swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL);
 
         // Sets up odometry
+        gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
+
         currentPosition = new PointDir(0, 0, 0);
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
         CANCoder[] encoderList = new CANCoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
@@ -80,6 +84,7 @@ public class Drive extends Mechanism {
         log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
                 new Odometry(
+                        gyro,
                         motorList,
                         encoderList,
                         wheelPositions,
@@ -168,6 +173,22 @@ public class Drive extends Mechanism {
         swerveBR.steer(new Vector2D(SwerveDriveConstants.BR_Y, -SwerveDriveConstants.BR_X));
     }
 
+    public void resetGyro() {
+        gyro.reset();
+    }
+
+    public double getHeading() {
+        return gyro.getAngle();
+    }
+
+    public double getPitch() {
+        return gyro.getPitch();
+    }
+
+    public double getRoll() {
+        return gyro.getRoll();
+    }
+
     // TODO: rework odometry so it doesn't have to go through drive
     // TODO: figure out why odometry x and y are swapped
     public PointDir getCurrentPosition() {
@@ -188,5 +209,9 @@ public class Drive extends Mechanism {
         currentPosition = swerveOdometry.run();
         log(currentPosition.toString());
         SmartDashboard.putString("position", currentPosition.toString());
+
+        SmartDashboard.putNumber("Yaw", getHeading());
+        SmartDashboard.putNumber("Pitch", getPitch());
+        SmartDashboard.putNumber("Roll", getRoll());
     }
 }

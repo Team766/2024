@@ -29,7 +29,7 @@ public class GyroBalance extends Procedure {
     }
 
     // tilt is the overall combination of pitch and roll
-    private double tilt = Robot.gyro.getAbsoluteTilt();
+    private double tilt = getAbsoluteTilt(Robot.drive.getPitch(), Robot.drive.getRoll());
 
     // absSpeed is unsigned speed value
     private double absSpeed;
@@ -58,8 +58,12 @@ public class GyroBalance extends Procedure {
         this.alliance = alliance;
     }
 
+    private double getAbsoluteTilt(double pitch, double roll) {
+        return Math.toDegrees(
+                Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch)))));
+    }
+
     public void run(Context context) {
-        context.takeOwnership(Robot.gyro);
         context.takeOwnership(Robot.drive);
 
         // curY is current robot y position
@@ -87,7 +91,7 @@ public class GyroBalance extends Procedure {
             // Sets prevState to the current state and calculates curState
             prevState = curState;
             curY = Robot.drive.getCurrentPosition().getY();
-            tilt = Robot.gyro.getAbsoluteTilt();
+            tilt = getAbsoluteTilt(Robot.drive.getPitch(), Robot.drive.getRoll());
             // log("curX:" + curX);
             // log("direction: " + direction);
             setState(context);
@@ -102,7 +106,7 @@ public class GyroBalance extends Procedure {
 
             // Drives the robot with the calculated speed and direction
             Robot.drive.controlFieldOriented(
-                    Math.toRadians(Robot.gyro.getGyroYaw()), 0, driveSpeed, 0);
+                    Math.toRadians(Robot.drive.getHeading()), 0, driveSpeed, 0);
             context.yield();
         }
         // Loops until robot is level or until a call to the abort() method
@@ -130,7 +134,7 @@ public class GyroBalance extends Procedure {
             context.startAsync(new SetCross());
             log("Level, prevState: " + prevState + ", curState: " + curState);
             context.waitForSeconds(1);
-            tilt = Robot.gyro.getAbsoluteTilt();
+            tilt = getAbsoluteTilt(Robot.drive.getPitch(), Robot.drive.getRoll());
             if (tilt < LEVEL) {
                 curState = State.RAMP_LEVEL;
             } else {

@@ -1,4 +1,4 @@
-package com.team766.robot.gatorade.mechanisms;
+package com.team766.robot.common.mechanisms;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.hal.MotorController;
