@@ -2,6 +2,7 @@ package com.team766.odometry;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.framework.LoggingBase;
+import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
@@ -18,6 +19,7 @@ public class Odometry extends LoggingBase {
 
     private RateLimiter odometryLimiter;
 
+    private GyroReader gyro;
     private MotorController[] motorList;
     // The order of CANCoders should be the same as in motorList
     private CANCoder[] CANCoderList;
@@ -41,6 +43,7 @@ public class Odometry extends LoggingBase {
 
     /**
      * Constructor for Odometry, taking in several defines for the robot.
+     * @param gyro The gyro sensor used to determine heading, etc.
      * @param motors A list of every wheel-controlling motor on the robot.
      * @param CANCoders A list of the CANCoders corresponding to each wheel, in the same order as motors.
      * @param wheelLocations A list of the locations of each wheel, in the same order as motors.
@@ -50,6 +53,7 @@ public class Odometry extends LoggingBase {
      * @param rateLimiterTime How often odometry should run.
      */
     public Odometry(
+            GyroReader gyro,
             MotorController[] motors,
             CANCoder[] CANCoders,
             Point[] wheelLocations,
@@ -128,7 +132,7 @@ public class Odometry extends LoggingBase {
         double radius;
         double deltaX;
         double deltaY;
-        gyroPosition = -Robot.gyro.getGyroYaw();
+        gyroPosition = -gyro.getAngle();
 
         /*
         Point slopeFactor = new Point(Math.sqrt(Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))),
@@ -148,9 +152,9 @@ public class Odometry extends LoggingBase {
             currPositions[i].setHeading(-CANCoderList[i].getAbsolutePosition() + gyroPosition);
             angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 
-            double yaw = -Math.toRadians(Robot.gyro.getGyroYaw());
-            double roll = Math.toRadians(Robot.gyro.getGyroRoll());
-            double pitch = Math.toRadians(Robot.gyro.getGyroPitch());
+            double yaw = -Math.toRadians(gyro.getAngle());
+            double roll = Math.toRadians(gyro.getRoll());
+            double pitch = Math.toRadians(gyro.getPitch());
 
             double w = Math.toRadians(CANCoderList[i].getAbsolutePosition());
             Vector2D u =

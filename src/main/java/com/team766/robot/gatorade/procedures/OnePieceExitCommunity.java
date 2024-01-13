@@ -19,8 +19,7 @@ public class OnePieceExitCommunity extends Procedure {
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
         // context.takeOwnership(Robot.intake);
-        context.takeOwnership(Robot.gyro);
-        Robot.gyro.resetGyro180();
+        Robot.drive.resetGyro();
 
         Optional<Alliance> alliance = DriverStation.getAlliance();
 

@@ -18,8 +18,9 @@ public class OnePieceBalance extends Procedure {
 
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.gyro);
-        Robot.gyro.resetGyro180();
+        // TODO: how do we reset the gyro at 180 degrees?
+        // Robot.drive.resetGyro180();
+        Robot.drive.resetGyro();
 
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
