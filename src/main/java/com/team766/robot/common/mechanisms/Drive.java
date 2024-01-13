@@ -13,6 +13,7 @@ import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -125,9 +126,10 @@ public class Drive extends Mechanism {
      * @param y the y value for the position joystick
      * @param turn the turn value from the rotation joystick
      */
-    public void controlFieldOriented(double yawRad, double x, double y, double turn) {
+    public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
 
+        double yawRad = Math.toRadians(getHeading());
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -135,6 +137,19 @@ public class Drive extends Mechanism {
                 Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
                 Math.sin(-yawRad) * x + Math.cos(-yawRad) * y,
                 turn);
+    }
+
+    /**
+     * Overloads controlFieldOriented to work with a chassisSpeeds input
+     * @param yawRad
+     * @param chassisSpeeds
+     */
+    public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
+        double vx = chassisSpeeds.vxMetersPerSecond;
+        double vy = chassisSpeeds.vyMetersPerSecond;
+        double vang = chassisSpeeds.omegaRadiansPerSecond;
+
+        controlFieldOriented(vx, vy, vang);
     }
 
     /*
