@@ -2,9 +2,10 @@ package com.team766.robot.gatorade.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.Robot;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
@@ -26,10 +27,10 @@ public class OnePieceExitCommunity extends Procedure {
         if (alliance.isPresent()) {
             switch (alliance.get()) {
                 case Blue:
-                    Robot.drive.setCurrentPosition(new PointDir(0.75, 2));
+                    Robot.drive.setCurrentPosition(new Pose2d(0.75, 2, new Rotation2d()));
                     break;
                 case Red:
-                    Robot.drive.setCurrentPosition(new PointDir(0.75, 14.5));
+                    Robot.drive.setCurrentPosition(new Pose2d(0.75, 14.5, new Rotation2d()));
                     break;
                 default:
                     log("invalid alliance");

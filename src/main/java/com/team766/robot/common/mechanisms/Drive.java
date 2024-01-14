@@ -9,11 +9,12 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.odometry.Odometry;
-import com.team766.odometry.Point;
-import com.team766.odometry.PointDir;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import com.team766.robot.gatorade.constants.SwerveDriveConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -33,7 +34,7 @@ public class Drive extends Mechanism {
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
-    private static PointDir currentPosition;
+    private static Pose2d currentPosition;
 
     /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
     NetworkTableInstance.getDefault()
@@ -72,24 +73,14 @@ public class Drive extends Mechanism {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        currentPosition = new PointDir(0, 0, 0);
+        currentPosition = new Pose2d();
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
-        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
-        Point[] wheelPositions =
-                new Point[] {
-                    new Point(
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Point(
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Point(
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Point(
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)
-                };
+        CANCoder[] encoderList = new CANCoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
+        Translation2d[] wheelPositions =
+        new Translation2d[] {new Translation2d(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                new Translation2d(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                new Translation2d(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                new Translation2d(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)};
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
@@ -211,17 +202,17 @@ public class Drive extends Mechanism {
 
     // TODO: rework odometry so it doesn't have to go through drive
     // TODO: figure out why odometry x and y are swapped
-    public PointDir getCurrentPosition() {
-        return currentPosition;
-    }
+    public Pose2d getCurrentPosition() {
+		return currentPosition;
+	}
 
-    public void setCurrentPosition(Point P) {
-        swerveOdometry.setCurrentPosition(P);
-    }
+	public void setCurrentPosition(Pose2d P) {
+		swerveOdometry.setCurrentPosition(P);
+	}
 
-    public void resetCurrentPosition() {
-        swerveOdometry.setCurrentPosition(new Point(0, 0));
-    }
+	public void resetCurrentPosition() {
+		swerveOdometry.setCurrentPosition(new Pose2d());
+	}
 
     // Odometry
     @Override
