@@ -73,7 +73,7 @@ public class Drive extends Mechanism {
 
         currentPosition = new Pose2d();
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
-        CANCoder[] encoderList = new CANCoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
+        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
         Translation2d[] wheelPositions =
                 new Translation2d[] {
                     new Translation2d(
