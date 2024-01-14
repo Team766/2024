@@ -8,48 +8,49 @@ import com.team766.hal.GyroReader;
 import edu.wpi.first.wpilibj.I2C;
 
 public class NavXGyro implements GyroReader {
-	private AHRS m_gyro;
+    private AHRS m_gyro;
 
-	public NavXGyro(final I2C.Port port) {
-		m_gyro = new AHRS(port);
-		// NOTE: It takes a bit of time until the gyro reader thread updates
-		// the connected status, so we can't check it immediately.
-		// TODO: Replace this with a status indicator
-		/*if (!m_gyro.isConnected()) {
-			Logger.get(Category.HAL).logData(Severity.ERROR, "NavX Gyro is not connected!");
-		} else {
-			Logger.get(Category.HAL).logData(Severity.INFO, "NavX Gyro is connected");
-		}*/
-	}
+    public NavXGyro(final I2C.Port port) {
+        m_gyro = new AHRS(port);
+        // NOTE: It takes a bit of time until the gyro reader thread updates
+        // the connected status, so we can't check it immediately.
+        // TODO: Replace this with a status indicator
+        /*if (!m_gyro.isConnected()) {
+        	Logger.get(Category.HAL).logData(Severity.ERROR, "NavX Gyro is not connected!");
+        } else {
+        	Logger.get(Category.HAL).logData(Severity.INFO, "NavX Gyro is connected");
+        }*/
+    }
 
-	@Override
-	public void calibrate() {
-		m_gyro.calibrate();
-	}
+    @Override
+    public void calibrate() {
+        // m_gyro.calibrate(); calibrate() seems to have been removed.
+        // it may have been a no-op anyway?
+        // https://github.com/kauailabs/navxmxp/blob/master/roborio/java/navx_frc/src/com/kauailabs/navx/frc/AHRS.java
+    }
 
-	@Override
-	public void reset() {
-		m_gyro.reset();
-	}
+    @Override
+    public void reset() {
+        m_gyro.reset();
+    }
 
-	@Override
-	public double getAngle() {
-		return m_gyro.getAngle();
-	}
+    @Override
+    public double getAngle() {
+        return m_gyro.getAngle();
+    }
 
-	@Override
-	public double getRate() {
-		return m_gyro.getRate();
-	}
+    @Override
+    public double getRate() {
+        return m_gyro.getRate();
+    }
 
-	@Override
-	public double getPitch() {
-		return m_gyro.getPitch();
-	}
+    @Override
+    public double getPitch() {
+        return m_gyro.getPitch();
+    }
 
-	@Override
-	public double getRoll() {
-		return m_gyro.getRoll();
-	}
-
+    @Override
+    public double getRoll() {
+        return m_gyro.getRoll();
+    }
 }
