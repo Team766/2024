@@ -2,6 +2,7 @@ package com.team766.logging;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
+import edu.wpi.first.wpilibj.DataLogManager;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -10,6 +11,9 @@ import java.util.Date;
 import java.util.EnumMap;
 
 public final class Logger {
+
+    private static boolean alsoLogToDataLog = false;
+
     private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
         public void uncaughtException(final Thread t, final Throwable e) {
             e.printStackTrace();
@@ -68,6 +72,10 @@ public final class Logger {
         Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
     }
 
+    public static void enableLoggingToDataLog(boolean enabled) {
+        alsoLogToDataLog = enabled;
+    }
+
     public static Logger get(final Category category) {
         return m_loggers.get(category);
     }
@@ -100,9 +108,11 @@ public final class Logger {
                         .setTime(getTime())
                         .setSeverity(severity)
                         .setCategory(m_category);
-        entry.setMessageStr(String.format(format, args));
+        String message = String.format(format, args);
+        entry.setMessageStr(message);
         m_recentEntries.add(entry.build());
         entry.setMessageStr(format);
+
         for (Object arg : args) {
             var logValue = LogValue.newBuilder();
             SerializationUtils.valueToProto(arg, logValue);
@@ -110,6 +120,9 @@ public final class Logger {
         }
         if (m_logWriter != null) {
             m_logWriter.logStoredFormat(entry);
+        }
+        if (alsoLogToDataLog) {
+            DataLogManager.log(message);
         }
     }
 
@@ -124,6 +137,9 @@ public final class Logger {
         m_recentEntries.add(entry);
         if (m_logWriter != null) {
             m_logWriter.log(entry);
+        }
+        if (alsoLogToDataLog) {
+            DataLogManager.log(message);
         }
     }
 
