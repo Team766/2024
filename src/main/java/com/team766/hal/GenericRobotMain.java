@@ -40,6 +40,7 @@ public final class GenericRobotMain {
     public GenericRobotMain() {
         Scheduler.getInstance().reset();
 
+        configurator = RobotSelector.createConfigurator();
         m_autonSelector = new AutonomousSelector(configurator.getAutonomousModes());
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
