@@ -2,9 +2,9 @@ package com.team766.robot.gatorade.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -59,7 +59,7 @@ public class Wrist extends Mechanism {
     private static final double NEAR_THRESHOLD = 5.0;
 
     private final CANSparkMax motor;
-    private final SparkMaxPIDController pidController;
+    private final SparkPIDController pidController;
     private final ValueProvider<Double> pGain;
     private final ValueProvider<Double> iGain;
     private final ValueProvider<Double> dGain;
