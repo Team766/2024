@@ -3,8 +3,8 @@ package com.team766.hal;
 public final class RobotSelector {
 	private RobotSelector() {}
 
-	public static RobotStuff createStuff(String robotStuff) throws Exception {
-		Class<RobotStuff> clazz = (Class<RobotStuff>) Class.forName(robotStuff);
+	public static RobotConfigurator createConfigurator(String configurator) throws Exception {
+		Class<RobotConfigurator> clazz = (Class<RobotConfigurator>) Class.forName(configurator);
 		return clazz.getDeclaredConstructor().newInstance();
 	}
 }
