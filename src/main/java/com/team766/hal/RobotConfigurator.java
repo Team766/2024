@@ -5,7 +5,9 @@ import com.team766.framework.Procedure;
 
 // TODO: better name?
 public interface RobotConfigurator {
-	void initializeMechanisms();
-	Procedure createOI();
-	AutonomousMode[] getAutonomousModes();
+    void initializeMechanisms();
+
+    Procedure createOI();
+
+    AutonomousMode[] getAutonomousModes();
 }
