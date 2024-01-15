@@ -68,14 +68,17 @@ public class RobotMain extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            boolean configFromUSB = true;
             String filename = null;
             filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
 
             if (filename == null) {
                 filename = INTERNAL_CONFIG_FILE;
+                configFromUSB = false;
             }
 
-            ConfigFileReader.instance = new ConfigFileReader(filename);
+            ConfigFileReader.instance =
+                    new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
             RobotProvider.instance = new WPIRobotProvider();
             robot = new GenericRobotMain();
 
