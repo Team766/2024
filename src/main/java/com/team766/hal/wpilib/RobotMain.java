@@ -110,16 +110,15 @@ public class RobotMain extends LoggedRobot {
 
                 // set up AdvantageKit logging
                 DataLogManager.log("Initializing logging.");
-                Logger.getInstance().addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
-                Logger.getInstance()
-                        .addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
+                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
                 new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             } else {
                 // TODO: add support for simulation logging/replay
             }
 
-            Logger.getInstance().start();
+            Logger.start();
 
             robot.robotInit();
         } catch (Exception e) {
