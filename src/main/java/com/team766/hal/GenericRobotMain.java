@@ -22,7 +22,7 @@ import com.team766.web.WebServer;
 // Team 766 - Robot Interface Base class
 
 public final class GenericRobotMain {
-    private RobotStuff stuff;
+    private RobotConfigurator configurator;
     private Procedure m_oi;
 
     private WebServer m_webServer;
@@ -43,7 +43,7 @@ public final class GenericRobotMain {
     public GenericRobotMain() {
         Scheduler.getInstance().reset();
 
-        m_autonSelector = new AutonomousSelector(stuff.getAutonomousModes());
+        m_autonSelector = new AutonomousSelector(configurator.getAutonomousModes());
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
         m_webServer.addHandler(new DriverInterface(m_autonSelector));
@@ -56,9 +56,9 @@ public final class GenericRobotMain {
 
     public void robotInit() {
         try {
-            stuff.initializeMechanisms();
+            configurator.initializeMechanisms();
 
-            m_oi = stuff.createOI();
+            m_oi = configurator.createOI();
         } catch (Throwable ex) {
             faultInRobotInit = true;
             throw ex;
