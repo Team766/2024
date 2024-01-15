@@ -174,6 +174,7 @@ public class Drive extends Mechanism {
     }
 
     public void resetGyro() {
+        checkContextOwnership();
         gyro.reset();
     }
 
