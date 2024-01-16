@@ -8,14 +8,8 @@ import com.team766.robot.example.mechanisms.*;
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
 
-    public static void robotInit() {
-        // Initialize mechanisms here
-    }
-
     @Override
-    public void initializeMechanisms() {
-        robotInit();
-    }
+    public void initializeMechanisms() {}
 
     @Override
     public Procedure createOI() {
