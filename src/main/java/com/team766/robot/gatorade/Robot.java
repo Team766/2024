@@ -15,8 +15,6 @@ public class Robot implements RobotConfigurator {
     public static Drive drive;
     public static Lights lights;
 
-    public Robot() {}
-
     public static void robotInit() {
         // Initialize mechanisms here
         intake = new Intake();

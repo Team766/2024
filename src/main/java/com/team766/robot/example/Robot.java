@@ -8,8 +8,6 @@ import com.team766.robot.example.mechanisms.*;
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
 
-    public Robot() {}
-
     public static void robotInit() {
         // Initialize mechanisms here
     }
