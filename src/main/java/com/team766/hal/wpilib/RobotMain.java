@@ -5,15 +5,22 @@ import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.TimedRobot;
 import java.io.File;
 // import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class RobotMain extends TimedRobot {
+public class RobotMain extends LoggedRobot {
     // this file, if present, will be a symlink to one of several config files in the deploy
     // directory.
     // this allows for the same code to be deployed to multiple physical robots, each with their own
@@ -94,6 +101,25 @@ public class RobotMain extends TimedRobot {
             ConfigFileReader.instance = new ConfigFileReader(filename);
             RobotProvider.instance = new WPIRobotProvider();
             robot = new GenericRobotMain();
+
+            DriverStation.startDataLog(DataLogManager.getLog());
+
+            if (isReal()) {
+                // enable dual-logging
+                com.team766.logging.Logger.enableLoggingToDataLog(true);
+
+                // set up AdvantageKit logging
+                DataLogManager.log("Initializing logging.");
+                Logger.getInstance().addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
+                Logger.getInstance()
+                        .addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+
+            } else {
+                // TODO: add support for simulation logging/replay
+            }
+
+            Logger.getInstance().start();
 
             robot.robotInit();
         } catch (Exception e) {
