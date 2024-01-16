@@ -27,14 +27,17 @@ public class Robot implements RobotConfigurator {
         lights = new Lights();
     }
 
+    @Override
     public void initializeMechanisms() {
         robotInit();
     }
 
+    @Override
     public Procedure createOI() {
         return new OI();
     }
 
+    @Override
     public AutonomousMode[] getAutonomousModes() {
         return AutonomousModes.AUTONOMOUS_MODES;
     }
