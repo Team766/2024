@@ -6,16 +6,24 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
-import com.team766.robot.example.ExampleConfigurator;
+import com.team766.robot.example.Robot;
 
-public final class RobotSelector {
+/**
+ * Utility class that reads the name of a {@link RobotConfigurator} from the config file, under the key
+ * 'robotConfigurator', and creates an instance of that configurator.
+ */
+/* packaage */ final class RobotSelector {
 
     private static final String ROBOT_CONFIGURATOR_KEY = "robotConfigurator";
-    private static final String DEFAULT_CONFIGURATOR = ExampleConfigurator.class.getName();
+    private static final String DEFAULT_CONFIGURATOR = Robot.class.getName();
 
-    private RobotSelector() {}
+    private RobotSelector() {} // utility class
 
-    public static RobotConfigurator createConfigurator() {
+    /**
+     * Creates a configurator specified by the 'robotConfigurator' key in the config file.
+     * If unable to create this configurator, backs off to the example one.
+     */
+    /* package */ static RobotConfigurator createConfigurator() {
         ValueProvider<String> configuratorProvider =
                 ConfigFileReader.instance.getString(ROBOT_CONFIGURATOR_KEY);
         String robotConfigurator =
@@ -32,7 +40,7 @@ public final class RobotSelector {
                             "Unable to create RobotConfigurator {0}.  Using default.",
                             robotConfigurator);
             LoggerExceptionUtils.logException(e);
-            return new ExampleConfigurator();
+            return new Robot();
         }
     }
 }
