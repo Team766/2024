@@ -14,20 +14,8 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 
 public class RobotMain extends TimedRobot {
-    // this file, if present, will be a symlink to one of several config files in the deploy
-    // directory.
-    // this allows for the same code to be deployed to multiple physical robots, each with their own
-    // config file with CAN bus port mappings, etc, with the actual file used for a specific robot
-    // to be "selected" via this symlink to the actual file.
-    private static final String SELECTED_CONFIG_FILE = "/home/lvuser/selectedConfig.txt";
-
-    // if the symlink (above) is not present, back off to this file in the deploy directory.
-    private static final String DEFAULT_CONFIG_FILE = "configs/defaultRobotConfig.txt";
-
-    // for backwards compatibility, back off to the previous config file location if the above are
-    // not
-    // found in the deploy directory.
-    private static final String LEGACY_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
+    private static final String USB_CONFIG_FILE = "/U/config/robotConfig.txt";
+    private static final String INTERNAL_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
     private GenericRobotMain robot;
 
@@ -80,18 +68,17 @@ public class RobotMain extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            boolean configFromUSB = true;
             String filename = null;
-            filename = checkForAndReturnPathToConfigFile(SELECTED_CONFIG_FILE);
+            filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
 
             if (filename == null) {
-                filename = checkForAndReturnPathToConfigFile(DEFAULT_CONFIG_FILE);
+                filename = INTERNAL_CONFIG_FILE;
+                configFromUSB = false;
             }
 
-            if (filename == null) {
-                filename = LEGACY_CONFIG_FILE;
-            }
-
-            ConfigFileReader.instance = new ConfigFileReader(filename);
+            ConfigFileReader.instance =
+                    new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
             RobotProvider.instance = new WPIRobotProvider();
             robot = new GenericRobotMain();
 
