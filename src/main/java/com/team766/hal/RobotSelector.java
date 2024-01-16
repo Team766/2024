@@ -12,7 +12,7 @@ import com.team766.robot.example.Robot;
  * Utility class that reads the name of a {@link RobotConfigurator} from the config file, under the key
  * 'robotConfigurator', and creates an instance of that configurator.
  */
-/* packaage */ final class RobotSelector {
+/* package */ final class RobotSelector {
 
     private static final String ROBOT_CONFIGURATOR_KEY = "robotConfigurator";
     private static final String DEFAULT_CONFIGURATOR = Robot.class.getName();
