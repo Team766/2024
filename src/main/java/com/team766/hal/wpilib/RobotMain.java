@@ -5,15 +5,22 @@ import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.TimedRobot;
 import java.io.File;
 // import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class RobotMain extends TimedRobot {
+public class RobotMain extends LoggedRobot {
     private static final String USB_CONFIG_FILE = "/U/config/robotConfig.txt";
     private static final String INTERNAL_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
@@ -81,6 +88,24 @@ public class RobotMain extends TimedRobot {
                     new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
             RobotProvider.instance = new WPIRobotProvider();
             robot = new GenericRobotMain();
+
+            DriverStation.startDataLog(DataLogManager.getLog());
+
+            if (isReal()) {
+                // enable dual-logging
+                com.team766.logging.Logger.enableLoggingToDataLog(true);
+
+                // set up AdvantageKit logging
+                DataLogManager.log("Initializing logging.");
+                Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
+                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+
+            } else {
+                // TODO: add support for simulation logging/replay
+            }
+
+            Logger.start();
 
             robot.robotInit();
         } catch (Exception e) {
