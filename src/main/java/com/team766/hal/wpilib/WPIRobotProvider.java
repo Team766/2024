@@ -192,7 +192,7 @@ public class WPIRobotProvider extends RobotProvider {
                         .getEnum(GyroReader.Type.class, configPrefix + ".type");
 
         if (type.hasValue()) {
-            if (type.get() == GyroReader.Type.PIGEON) {
+            if (type.get() == GyroReader.Type.Pigeon2) {
                 ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
                 return new PigeonGyro(index, canBus.get());

@@ -1,8 +1,12 @@
 package com.team766.robot.common.mechanisms;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -15,7 +19,7 @@ public class SwerveModule {
     private final String modulePlacement;
     private final MotorController drive;
     private final MotorController steer;
-    private final CANCoder encoder;
+    private final CANcoder encoder;
     private final double offset;
 
     /*
@@ -38,7 +42,7 @@ public class SwerveModule {
             String modulePlacement,
             MotorController drive,
             MotorController steer,
-            CANCoder encoder) {
+            CANcoder encoder) {
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
@@ -51,8 +55,18 @@ public class SwerveModule {
     }
 
     private double computeEncoderOffset() {
+        StatusSignal<Double> value = encoder.getAbsolutePosition();
+        if (!value.getStatus().isOK()) {
+            Logger.get(Category.DRIVE)
+                    .logData(
+                            Severity.ERROR,
+                            "{0} unable to read encoder: {1}",
+                            modulePlacement,
+                            value.getStatus().toString());
+            return 0; // ??
+        }
         return (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360
-                - encoder.getAbsolutePosition();
+                - value.getValueAsDouble();
     }
 
     /**

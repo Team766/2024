@@ -2,7 +2,7 @@ package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
@@ -48,10 +48,10 @@ public class Drive extends Mechanism {
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
         // create the encoders
-        CANCoder encoderFR = new CANCoder(2, SwerveDriveConstants.SWERVE_CANBUS);
-        CANCoder encoderFL = new CANCoder(4, SwerveDriveConstants.SWERVE_CANBUS);
-        CANCoder encoderBR = new CANCoder(3, SwerveDriveConstants.SWERVE_CANBUS);
-        CANCoder encoderBL = new CANCoder(1, SwerveDriveConstants.SWERVE_CANBUS);
+        CANcoder encoderFR = new CANcoder(2, SwerveDriveConstants.SWERVE_CANBUS);
+        CANcoder encoderFL = new CANcoder(4, SwerveDriveConstants.SWERVE_CANBUS);
+        CANcoder encoderBR = new CANcoder(3, SwerveDriveConstants.SWERVE_CANBUS);
+        CANcoder encoderBL = new CANcoder(1, SwerveDriveConstants.SWERVE_CANBUS);
 
         // initialize the swerve modules
         swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR);
@@ -64,7 +64,7 @@ public class Drive extends Mechanism {
 
         currentPosition = new PointDir(0, 0, 0);
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
-        CANCoder[] encoderList = new CANCoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
+        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
         Point[] wheelPositions =
                 new Point[] {
                     new Point(

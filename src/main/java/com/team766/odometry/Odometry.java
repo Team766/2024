@@ -1,11 +1,14 @@
 package com.team766.odometry;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.framework.LoggingBase;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import com.team766.robot.gatorade.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -22,7 +25,7 @@ public class Odometry extends LoggingBase {
     private GyroReader gyro;
     private MotorController[] motorList;
     // The order of CANCoders should be the same as in motorList
-    private CANCoder[] CANCoderList;
+    private CANcoder[] CANCoderList;
     private int motorCount;
 
     private PointDir[] prevPositions;
@@ -55,7 +58,7 @@ public class Odometry extends LoggingBase {
     public Odometry(
             GyroReader gyro,
             MotorController[] motors,
-            CANCoder[] CANCoders,
+            CANcoder[] CANCoders,
             Point[] wheelLocations,
             double wheelCircumference,
             double gearRatio,
@@ -140,6 +143,18 @@ public class Odometry extends LoggingBase {
         */
 
         for (int i = 0; i < motorCount; i++) {
+
+            StatusSignal<Double> positionStatus = CANCoderList[i].getAbsolutePosition();
+            if (!positionStatus.getStatus().isOK()) {
+                Logger.get(Category.ODOMETRY)
+                        .logData(
+                                Severity.WARNING,
+                                "Unable to read CANCoder: {0}",
+                                positionStatus.getStatus().toString());
+                continue;
+            }
+            double absolutePosition = positionStatus.getValueAsDouble();
+
             // prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 *
             // DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) *
             // Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)),
@@ -149,14 +164,14 @@ public class Odometry extends LoggingBase {
             // This following line only works if the average of wheel positions is (0,0)
             prevPositions[i].set(
                     currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
-            currPositions[i].setHeading(-CANCoderList[i].getAbsolutePosition() + gyroPosition);
+            currPositions[i].setHeading(-absolutePosition + gyroPosition);
             angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 
             double yaw = -Math.toRadians(gyro.getAngle());
             double roll = Math.toRadians(gyro.getRoll());
             double pitch = Math.toRadians(gyro.getPitch());
 
-            double w = Math.toRadians(CANCoderList[i].getAbsolutePosition());
+            double w = Math.toRadians(absolutePosition);
             Vector2D u =
                     new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
             Vector2D v =
