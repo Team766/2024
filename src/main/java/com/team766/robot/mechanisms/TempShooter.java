@@ -12,7 +12,7 @@ public class TempShooter extends Mechanism {
 
 	}
 
-	public void shoot(double power){
+	public void shoot( ){
 
 	}
 
@@ -22,6 +22,10 @@ public class TempShooter extends Mechanism {
 
 	public void setAngle(double angle){
 		
+	}
+
+	public void runMotors(double power){
+
 	}
 
 	

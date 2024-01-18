@@ -9,6 +9,7 @@ import com.team766.framework.AprilTagGeneralCheckedException;
 import com.team766.framework.Mechanism;
 import edu.wpi.first.math.geometry.Transform3d;
 import com.team766.robot.Robot;
+import com.team766.controllers.PIDController;
 
 /*
 * This is the class where we will calculate power for the shooter when it is scoring into the speaker.
@@ -19,12 +20,14 @@ import com.team766.robot.Robot;
 
 public class SpeakerShooterPowerCalculator extends Mechanism {
 
-	private ScoringPosition leftPosition;
-	private ScoringPosition centerPosition;
-	private ScoringPosition rightPosition;
-	private double yDeadZoneAmount;
-	private double xDeadZoneAmount;
+	public static ScoringPosition leftPosition;
+	public static ScoringPosition centerPosition;
+	public static ScoringPosition rightPosition;
+
 	private boolean yDone = false;
+
+	private PIDController xPID;
+	private PIDController yPID;
 
 	private int tagId;
 	public SpeakerShooterPowerCalculator() throws AprilTagGeneralCheckedException{
@@ -32,13 +35,16 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 		//Y [<--------->] should be first
 		//X [vertical] should be second
 		//need to find viable deadzone amounts, i say maybe 0.02meters?
+		// deadzones should be included in the PID controllers so if they report 0.000 power then switch
 
+		// P I D FF OL OM TH
+		xPID = new PIDController(null, null, null, null, null, null, null);
+		yPID = new PIDController(null, null, null, null, null, null, null);
 		leftPosition = new ScoringPosition(null, null, null, null, null);
 		centerPosition =  new ScoringPosition(null, null, null, null, null);
 		rightPosition = new ScoringPosition(null, null, null, null, null);
 
-		xDeadZoneAmount = null;
-		yDeadZoneAmount = null;
+		
 
 		//When do we know the alliance? Is that during the constructor or after?
 		Optional<Alliance> currentAlliance = DriverStation.getAlliance();
@@ -68,24 +74,39 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 	 */
 	public void shoot() throws AprilTagGeneralCheckedException {
 		ScoringPosition score = closestTo();
+		yPID.setSetpoint(score.y_position);
+		yPID.calculate(this.getTransform3dOfRobotToTag().getY());
+		
 
-		if (Math.abs(this.getTransform3dOfRobotToTag().getY()) <= yDeadZoneAmount) {
+		xPID.setSetpoint(score.x_position);
+		xPID.calculate(this.getTransform3dOfRobotToTag().getX());
+		if (yPID.getOutput() == 0) {
 			yDone = true;
 		}
 
 		if (!yDone) {
 			//Move robot horizontally (need swerve code in here)
 			//Pid or if statment?
+			
+
 		} else {
 			//Move robot horizontally (need swerve code in here)
 			//Pid or if statment?
 
-			if (Math.abs(this.getTransform3dOfRobotToTag().getX()) <= xDeadZoneAmount) {
+			//start firing up motors here and moving the score things earlier so it can be ready
+			Robot.tempShooter.setAngle(score.angle);
+			Robot.tempShooter.runMotors(score.power);
+			if (xPID.getOutput() == 0) {
 				// Robot is in position
 				
-				Robot.tempShooter.setAngle(score.angle);
+				
 				// set swerve angle to score.swerve_angle
-				Robot.tempShooter.shoot(score.power);
+
+				//check for swerve angle
+				if(swerve angle == score.swerve_angle){
+					Robot.tempShooter.shoot();
+				}
+				
 
 			}
 		}
