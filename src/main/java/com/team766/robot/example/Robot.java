@@ -9,7 +9,9 @@ public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
 
     @Override
-    public void initializeMechanisms() {}
+    public void initializeMechanisms() {
+        // Initialize mechanisms here
+    }
 
     @Override
     public Procedure createOI() {
