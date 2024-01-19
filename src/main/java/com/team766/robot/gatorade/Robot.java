@@ -15,22 +15,14 @@ public class Robot implements RobotConfigurator {
     public static Drive drive;
     public static Lights lights;
 
-    private static boolean initialized = false;
-
     @Override
     public void initializeMechanisms() {
-        if (!initialized) {
-            // get rid of the synchronized if there are no thread-safety considerations
-            synchronized (Robot.class) {
-                intake = new Intake();
-                wrist = new Wrist();
-                elevator = new Elevator();
-                shoulder = new Shoulder();
-                drive = new Drive();
-                lights = new Lights();
-                initialized = true;
-            }
-        }
+        intake = new Intake();
+        wrist = new Wrist();
+        elevator = new Elevator();
+        shoulder = new Shoulder();
+        drive = new Drive();
+        lights = new Lights();
     }
 
     @Override

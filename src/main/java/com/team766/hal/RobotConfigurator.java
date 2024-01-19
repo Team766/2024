@@ -13,6 +13,8 @@ public interface RobotConfigurator {
 
     /**
      * Initializes the {@link Mechanism}s for this robot.
+     *
+     * Will only be called once by the framework.
      */
     void initializeMechanisms();
 
