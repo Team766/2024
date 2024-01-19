@@ -60,7 +60,7 @@ public class SwerveModule {
             Logger.get(Category.DRIVE)
                     .logData(
                             Severity.ERROR,
-                            "{0} unable to read encoder: {1}",
+                            "%s unable to read encoder: %s",
                             modulePlacement,
                             value.getStatus().toString());
             return 0; // ??

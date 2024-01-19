@@ -38,7 +38,7 @@ public class PigeonGyro implements GyroReader {
             return value.getValueAsDouble();
         }
         Logger.get(Category.GYRO)
-                .logData(Severity.ERROR, "Unable to get pitch: {0}", value.toString());
+                .logData(Severity.ERROR, "Unable to get pitch: %s", value.toString());
         return 0;
     }
 
@@ -49,7 +49,7 @@ public class PigeonGyro implements GyroReader {
             return value.getValueAsDouble();
         }
         Logger.get(Category.GYRO)
-                .logData(Severity.ERROR, "Unable to get roll: {0}", value.toString());
+                .logData(Severity.ERROR, "Unable to get roll: %s", value.toString());
         return 0;
     }
 

@@ -149,7 +149,7 @@ public class Odometry extends LoggingBase {
                 Logger.get(Category.ODOMETRY)
                         .logData(
                                 Severity.WARNING,
-                                "Unable to read CANCoder: {0}",
+                                "Unable to read CANCoder: %s",
                                 positionStatus.getStatus().toString());
                 continue;
             }
