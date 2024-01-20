@@ -38,11 +38,10 @@ public class Odometry {
 	private double[] currEncoderValues;
 
 	private Rotation2d gyroPosition;
-	private Rotation2d rotation2d;
 
 	private Pose2d currentPosition;
 
-	// In Meters
+	// In meters
 	private static double WHEEL_CIRCUMFERENCE;
 	public static double GEAR_RATIO;
 	public static int ENCODER_TO_REVOLUTION_CONSTANT;
@@ -73,19 +72,12 @@ public class Odometry {
 		currPositions = new Pose2d[motorCount];
 		prevEncoderValues = new double[motorCount];
 		currEncoderValues = new double[motorCount];
+		currentPosition = new Pose2d();
 
 		wheelPositions = wheelLocations;
 		WHEEL_CIRCUMFERENCE = wheelCircumference;
 		GEAR_RATIO = gearRatio;
 		ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
-
-		currentPosition = new Pose2d(0, 0, rotation2d);
-		for (int i = 0; i < motorCount; i++) {
-			prevPositions[i] = new Pose2d(0, 0, rotation2d);
-			currPositions[i] = new Pose2d(0, 0, rotation2d);
-			prevEncoderValues[i] = 0;
-			currEncoderValues[i] = 0;
-		}
 	}
 
 
@@ -93,8 +85,8 @@ public class Odometry {
 	 * Sets the current position of the robot to Point P
 	 * @param P The point to set the current robot position to
 	 */
-	public void setCurrentPosition(Pose2d P) {
-		currentPosition = P;
+	public void setCurrentPosition(final Pose2d point) {
+		currentPosition = point;
 		// log("Set Current Position to: " + P.toString());
 		for (int i = 0; i < motorCount; i++) {
 			prevPositions[i] = currentPosition.plus(new Transform2d(wheelPositions[i], new Rotation2d()));
@@ -154,12 +146,11 @@ public class Odometry {
 			// prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currentPosition.getY() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currPositions[i].getHeading());
 			// This following line only works if the average of wheel positions is (0,0)
 
-			// need 2 set it to a pose instead 4 angle
-			prevPositions[i] = currentPosition.plus(new Transform2d(wheelPositions[i], new Rotation2d()));
-			prevPositions[i] = new Pose2d(prevPositions[i].getTranslation(), Rotation2d.fromDegrees(currPositions[i].getRotation().getDegrees()));
-
-			// transformBy a transform that only has a diff angle?
-			currPositions[i] = new Pose2d(currPositions[i].getTranslation(), gyroPosition.plus(Rotation2d.fromDegrees(-absolutePosition)));
+			prevPositions[i] = new Pose2d(
+				currentPosition.plus(new Transform2d(wheelPositions[i], new Rotation2d())).getTranslation(),
+				Rotation2d.fromDegrees(currPositions[i].getRotation().getDegrees())
+			);
+			currPositions[i] = new Pose2d(currPositions[i].getTranslation(), gyroPosition.plus(Rotation2d.fromDegrees(-CANCoderList[i].getAbsolutePosition())));
 			
 			rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
 
@@ -208,7 +199,6 @@ public class Odometry {
 			// log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY - wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current Method: " + wheelMotion.getX() + ", " + wheelMotion.getY());
 			// log("Current: " + currPositions[i] + " Motion: " + wheelMotion + " New: " + currPositions[i].add(wheelMotion));
 
-			// need to make wheelMotion a pose
 			currPositions[i] = new Pose2d(currPositions[i].getX() - wheelMotion.getX(), currPositions[i].getY() - wheelMotion.getY(), new Rotation2d());
 		}
 	}
@@ -224,12 +214,10 @@ public class Odometry {
 			sumY += currPositions[i].getY();
 			// log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " + currPositions[i]);
 		}
-		// need to get gyroPosition figured out w/rotation2d
 		currentPosition = new Pose2d(sumX / motorCount, sumY / motorCount, gyroPosition);
 	}
 
 	// Intended to be placed inside Robot.drive.run()
-	// so localization can prob use 
 	public Pose2d run() {
 		if (odometryLimiter.next()) {
 			setCurrentEncoderValues();
