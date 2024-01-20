@@ -5,7 +5,5 @@ import com.team766.framework.Procedure;
 
 public class DoNothing extends Procedure {
 
-	public void run(final Context context) {
-	}
-
+    public void run(final Context context) {}
 }
