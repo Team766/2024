@@ -11,9 +11,9 @@ public class VisionUtil{
 	 * @throws AprilTagGeneralCheckedException if no cameras have the tag with the given tagId
 	 * @author Max Spier, 1/7/2024
 	 */
-	public static CameraPlus findCameraThatHas(int tagId) throws AprilTagGeneralCheckedException{
+	public static CameraPlus findApriltagCameraThatHas(int tagId) throws AprilTagGeneralCheckedException{
 
-		for(CameraPlus camera : StaticCameras.cameras){
+		for(CameraPlus camera : StaticCameras.apriltagCameras){
 			if(camera.getTagIdOfBestTarget() == tagId){
 				return camera;
 			}
