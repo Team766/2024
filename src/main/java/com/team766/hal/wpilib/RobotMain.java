@@ -42,7 +42,7 @@ public class RobotMain extends LoggedRobot {
 
         // periodically poll "caniv" in the background, if present
         CanivPoller canivPoller = null;
-        if (new File(CanivPoller.CANIV_BIN).exists()) {
+        if (false && new File(CanivPoller.CANIV_BIN).exists()) {
             canivPoller = new CanivPoller(10 * 1000 /* millis */);
             new Thread(canivPoller, "caniv poller").start();
         }
