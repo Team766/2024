@@ -2,7 +2,6 @@ package com.team766.odometry;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.team766.framework.LoggingBase;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
@@ -157,10 +156,19 @@ public class Odometry {
             // motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) /
             // motorCount)), currPositions[i].getHeading());
             // This following line only works if the average of wheel positions is (0,0)
-            prevPositions[i].set(
-                    currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
-            currPositions[i].setHeading(-absolutePosition + gyroPosition);
-            angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
+
+            prevPositions[i] =
+                    new Pose2d(
+                            currentPosition
+                                    .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
+                                    .getTranslation(),
+                            Rotation2d.fromDegrees(currPositions[i].getRotation().getDegrees()));
+            currPositions[i] =
+                    new Pose2d(
+                            currPositions[i].getTranslation(),
+                            gyroPosition.plus(Rotation2d.fromDegrees(-absolutePosition)));
+
+            rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
 
             double yaw = -Math.toRadians(gyro.getAngle());
             double roll = Math.toRadians(gyro.getRoll());
