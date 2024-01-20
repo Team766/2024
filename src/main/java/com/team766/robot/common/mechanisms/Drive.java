@@ -75,10 +75,20 @@ public class Drive extends Mechanism {
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
         CANCoder[] encoderList = new CANCoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
         Translation2d[] wheelPositions =
-        new Translation2d[] {new Translation2d(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                new Translation2d(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                new Translation2d(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                new Translation2d(-OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)};
+                new Translation2d[] {
+                    new Translation2d(
+                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
+                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                    new Translation2d(
+                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
+                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                    new Translation2d(
+                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
+                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                    new Translation2d(
+                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
+                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)
+                };
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
@@ -200,16 +210,16 @@ public class Drive extends Mechanism {
 
     // TODO: figure out why odometry x and y are swapped
     public Pose2d getCurrentPosition() {
-		return currentPosition;
-	}
+        return currentPosition;
+    }
 
-	public void setCurrentPosition(Pose2d P) {
-		swerveOdometry.setCurrentPosition(P);
-	}
+    public void setCurrentPosition(Pose2d P) {
+        swerveOdometry.setCurrentPosition(P);
+    }
 
-	public void resetCurrentPosition() {
-		swerveOdometry.setCurrentPosition(new Pose2d());
-	}
+    public void resetCurrentPosition() {
+        swerveOdometry.setCurrentPosition(new Pose2d());
+    }
 
     // Odometry
     @Override
