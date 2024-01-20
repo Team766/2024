@@ -1,6 +1,5 @@
 package com.team766.odometry;
 
-import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
@@ -8,6 +7,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.team766.framework.LoggingBase;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
+import com.team766.robot.gatorade.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
@@ -24,7 +30,7 @@ public class Odometry {
     private GyroReader gyro;
     private MotorController[] motorList;
     // The order of CANCoders should be the same as in motorList
-    private CANCoder[] CANCoderList;
+    private CANcoder[] CANCoderList;
     private int motorCount;
 
     private Pose2d[] prevPositions;
@@ -58,7 +64,7 @@ public class Odometry {
     public Odometry(
             GyroReader gyro,
             MotorController[] motors,
-            CANCoder[] CANCoders,
+            CANcoder[] CANCoders,
             Translation2d[] wheelLocations,
             double wheelCircumference,
             double gearRatio,
@@ -132,6 +138,18 @@ public class Odometry {
         */
 
         for (int i = 0; i < motorCount; i++) {
+
+            StatusSignal<Double> positionStatus = CANCoderList[i].getAbsolutePosition();
+            if (!positionStatus.getStatus().isOK()) {
+                Logger.get(Category.ODOMETRY)
+                        .logData(
+                                Severity.WARNING,
+                                "Unable to read CANCoder: %s",
+                                positionStatus.getStatus().toString());
+                continue;
+            }
+            double absolutePosition = positionStatus.getValueAsDouble();
+
             // prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 *
             // DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) *
             // Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)),
@@ -151,7 +169,7 @@ public class Odometry {
                             currPositions[i].getTranslation(),
                             gyroPosition.plus(
                                     Rotation2d.fromDegrees(
-                                            -CANCoderList[i].getAbsolutePosition())));
+                                            -absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
 
@@ -159,8 +177,7 @@ public class Odometry {
             double roll = Math.toRadians(gyro.getRoll());
             double pitch = Math.toRadians(gyro.getPitch());
 
-            // converts from robot oriented to field oriented
-            double w = Math.toRadians(CANCoderList[i].getAbsolutePosition());
+            double w = Math.toRadians(absolutePosition);
             Vector2D u =
                     new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
             Vector2D v =
