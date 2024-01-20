@@ -61,6 +61,7 @@ public class Drive extends Mechanism {
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
+        log("Gyro: " + gyro.getClass().toString());
 
         currentPosition = new PointDir(0, 0, 0);
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};

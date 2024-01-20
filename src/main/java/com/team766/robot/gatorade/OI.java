@@ -41,7 +41,7 @@ public class OI extends Procedure {
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
-        macropad = RobotProvider.instance.getJoystick(3);
+        macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
     }
 
     public void run(Context context) {
@@ -126,6 +126,34 @@ public class OI extends Procedure {
                 }
             } else {
                 Robot.drive.stopDrive();
+            }
+
+            // macropad buttons for nudging mechanisms            
+            if (macropad.getButton(InputConstants.WRIST_NUDGE_UP)) {
+                context.takeOwnership(Robot.wrist);
+                Robot.wrist.nudgeNoPID(0.5);
+                log("wrist_nudge_up");
+            }
+            if (macropad.getButton(InputConstants.WRIST_NUDGE_DOWN)) {
+                context.takeOwnership(Robot.wrist);
+                Robot.wrist.nudgeNoPID(-0.5);
+                log("wrist_nudge_down");
+            }
+            if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_UP)) {
+                context.takeOwnership(Robot.elevator);
+                Robot.elevator.nudgeNoPID(0.5);
+            }
+            if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_DOWN)) {
+                context.takeOwnership(Robot.elevator);
+                Robot.elevator.nudgeNoPID(-0.5);
+            }
+            if (macropad.getButton(InputConstants.SHOULDER_NUDGE_UP)) {
+                context.takeOwnership(Robot.shoulder);
+                Robot.shoulder.nudgeNoPID(0.5);
+            }
+            if (macropad.getButton(InputConstants.SHOULDER_NUDGE_DOWN)) {
+                context.takeOwnership(Robot.shoulder);
+                Robot.shoulder.nudgeNoPID(-0.5);
             }
 
             // Respond to boxop commands
@@ -250,6 +278,7 @@ public class OI extends Procedure {
                 }
             }
         }
+
     }
 
     private void setLightsForPlacement() {
@@ -290,17 +319,5 @@ public class OI extends Procedure {
 
         lightsRateLimit.reset();
         lightsRateLimit.next();
-
-        // macropad buttons for nudging mechanisms
-        if (macropad.getButton(InputConstants.WRIST_NUDGE_UP)) Robot.wrist.nudgeNoPID(0.25);
-        if (macropad.getButton(InputConstants.WRIST_NUDGE_DOWN)) Robot.wrist.nudgeNoPID(-0.25);
-
-        if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_UP)) Robot.elevator.nudgeNoPID(0.25);
-        if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_DOWN))
-            Robot.elevator.nudgeNoPID(-0.25);
-
-        if (macropad.getButton(InputConstants.SHOULDER_NUDGE_UP)) Robot.shoulder.nudgeNoPID(0.25);
-        if (macropad.getButton(InputConstants.SHOULDER_NUDGE_DOWN))
-            Robot.shoulder.nudgeNoPID(-0.25);
     }
 }
