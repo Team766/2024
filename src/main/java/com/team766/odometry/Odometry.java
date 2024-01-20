@@ -66,6 +66,7 @@ public class Odometry extends LoggingBase {
             double rateLimiterTime) {
         loggerCategory = Category.ODOMETRY;
 
+        this.gyro = gyro;
         odometryLimiter = new RateLimiter(rateLimiterTime);
         motorList = motors;
         CANCoderList = CANCoders;
