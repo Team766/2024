@@ -225,8 +225,7 @@ public class OI extends Procedure {
                 }
 
                 // look for wrist nudges
-                double wristNudgeAxis =
-                        -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
+                double wristNudgeAxis = -boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
                 if (Math.abs(wristNudgeAxis) > 0.05) {
                     // wristManual = true;
                     context.takeOwnership(Robot.wrist);
@@ -297,11 +296,9 @@ public class OI extends Procedure {
         if (macropad.getButton(InputConstants.WRIST_NUDGE_DOWN)) Robot.wrist.nudgeNoPID(-0.25);
 
         if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_UP)) Robot.elevator.nudgeNoPID(0.25);
-        if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_DOWN))
-            Robot.elevator.nudgeNoPID(-0.25);
+        if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_DOWN)) Robot.elevator.nudgeNoPID(-0.25);
 
         if (macropad.getButton(InputConstants.SHOULDER_NUDGE_UP)) Robot.shoulder.nudgeNoPID(0.25);
-        if (macropad.getButton(InputConstants.SHOULDER_NUDGE_DOWN))
-            Robot.shoulder.nudgeNoPID(-0.25);
+        if (macropad.getButton(InputConstants.SHOULDER_NUDGE_DOWN)) Robot.shoulder.nudgeNoPID(-0.25);
     }
 }
