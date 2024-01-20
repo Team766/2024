@@ -109,24 +109,24 @@ public class Odometry {
         // log("Current Position: " + currentPosition.toString());
     }
 
-	/**
-	 * Updates the odometry encoder values to the robot encoder values.
-	 */
-	private void setCurrentEncoderValues() {
-		for (int i = 0; i < motorCount; i++) {
-			prevEncoderValues[i] = currEncoderValues[i];
-			currEncoderValues[i] = motorList[i].getSensorPosition();
-			Optional<Alliance> alliance = DriverStation.getAlliance();
+    /**
+     * Updates the odometry encoder values to the robot encoder values.
+     */
+    private void setCurrentEncoderValues() {
+        for (int i = 0; i < motorCount; i++) {
+            prevEncoderValues[i] = currEncoderValues[i];
+            currEncoderValues[i] = motorList[i].getSensorPosition();
+            Optional<Alliance> alliance = DriverStation.getAlliance();
             currEncoderValues[i] *=
                     ((alliance.isPresent() && (alliance.get() == Alliance.Blue)) ? 1 : -1);
-		}
-	}
+        }
+    }
 
-	private static Vector2D rotate(Vector2D v, double angle) {
-		return new Vector2D(
-			v.getX() * Math.cos(angle) - Math.sin(angle) * v.getY(),
-			v.getY() * Math.cos(angle) + v.getX() * Math.sin(angle));
-	}
+    private static Vector2D rotate(Vector2D v, double angle) {
+        return new Vector2D(
+                v.getX() * Math.cos(angle) - Math.sin(angle) * v.getY(),
+                v.getY() * Math.cos(angle) + v.getX() * Math.sin(angle));
+    }
 
     /**
      * Updates the position of each wheel of the robot by assuming each wheel moved in an arc.
@@ -143,7 +143,7 @@ public class Odometry {
         							  Math.sqrt(Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))));
         */
 
-		for (int i = 0; i < motorCount; i++) {
+        for (int i = 0; i < motorCount; i++) {
 
             StatusSignal<Double> positionStatus = CANCoderList[i].getAbsolutePosition();
             if (!positionStatus.getStatus().isOK()) {
@@ -177,9 +177,9 @@ public class Odometry {
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
 
-			double yaw = -Math.toRadians(gyro.getAngle());
-			double roll = Math.toRadians(gyro.getRoll());
-			double pitch = Math.toRadians(gyro.getPitch());
+            double yaw = -Math.toRadians(gyro.getAngle());
+            double roll = Math.toRadians(gyro.getRoll());
+            double pitch = Math.toRadians(gyro.getPitch());
 
             double w = Math.toRadians(absolutePosition);
             Vector2D u =
@@ -194,10 +194,10 @@ public class Odometry {
             Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
             Vector2D wheelMotion;
 
-			// log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
+            // log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
 
-			// double oldWheelX;
-			// double oldWheelY;
+            // double oldWheelX;
+            // double oldWheelY;
 
             // estimates the bot moved in a circle to calculate new position
             if (rotationChange.getDegrees() != 0) {
@@ -209,13 +209,19 @@ public class Odometry {
                 deltaX = radius * Math.sin(Math.toRadians(rotationChange.getDegrees()));
                 deltaY = radius * (1 - Math.cos(Math.toRadians(rotationChange.getDegrees())));
 
-				wheelMotion = a.scalarMultiply(deltaX).add(b.scalarMultiply(-deltaY));
+                wheelMotion = a.scalarMultiply(deltaX).add(b.scalarMultiply(-deltaY));
 
-				// oldWheelX = ((Math.cos(Math.toRadians(prevPositions[i].getHeading())) * deltaX - Math.sin(Math.toRadians(prevPositions[i].getHeading())) * deltaY) * slopeFactor.getX() * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
-				// oldWheelY = ((Math.sin(Math.toRadians(prevPositions[i].getHeading())) * deltaX + Math.cos(Math.toRadians(prevPositions[i].getHeading())) * deltaY) * slopeFactor.getY() * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
-			
-			} else {
-				wheelMotion = a.scalarMultiply((currEncoderValues[i] - prevEncoderValues[i]));
+                // oldWheelX = ((Math.cos(Math.toRadians(prevPositions[i].getHeading())) * deltaX -
+                // Math.sin(Math.toRadians(prevPositions[i].getHeading())) * deltaY) *
+                // slopeFactor.getX() * WHEEL_CIRCUMFERENCE / (GEAR_RATIO *
+                // ENCODER_TO_REVOLUTION_CONSTANT));
+                // oldWheelY = ((Math.sin(Math.toRadians(prevPositions[i].getHeading())) * deltaX +
+                // Math.cos(Math.toRadians(prevPositions[i].getHeading())) * deltaY) *
+                // slopeFactor.getY() * WHEEL_CIRCUMFERENCE / (GEAR_RATIO *
+                // ENCODER_TO_REVOLUTION_CONSTANT));
+
+            } else {
+                wheelMotion = a.scalarMultiply((currEncoderValues[i] - prevEncoderValues[i]));
 
                 // oldWheelX = ((currEncoderValues[i] - prevEncoderValues[i]) *
                 // Math.cos(Math.toRadians(prevPositions[i].getHeading())) * slopeFactor.getX() *
