@@ -12,5 +12,5 @@ public class StaticCameras {
                 }
             };
 
-    public static final CameraPlus noteDetectorCamera = new CameraPlus("Note Detection Camera");
+    public static final NoteCamera noteDetectorCamera = new NoteCamera("Note Detection Camera");
 }

@@ -7,10 +7,12 @@ public class Robot {
     public static TempPickerUpper tempPickerUpper;
     public static TempShooter tempShooter;
     public static NoteUtil noteUtil;
+	public static Lights lights;
 
     public static void robotInit() {
         tempPickerUpper = new TempPickerUpper();
         tempShooter = new TempShooter();
         noteUtil = new NoteUtil();
+		lights = new Lights();
     }
 }

@@ -10,12 +10,26 @@ public class NoteUtil extends Mechanism {
 
     public void test() {
         try {
-            StaticCameras.noteDetectorCamera.getTagIdOfBestTarget();
+            
 
-            log("yayyayay");
+            
+            
+            log("Yaw: " + StaticCameras.noteDetectorCamera.getYawOfRing());
+            log("Pitch: " + StaticCameras.noteDetectorCamera.getPitchOfRing());
 
         } catch (AprilTagGeneralCheckedException e) {
             log(e.toString());
         }
+    }
+
+    public int getStatus(){
+
+        try{
+            StaticCameras.noteDetectorCamera.getRing();
+        } catch (AprilTagGeneralCheckedException e){
+            return 2;
+        }
+
+        return 1;
     }
 }

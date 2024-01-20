@@ -32,6 +32,20 @@ public class OI extends Procedure {
             Robot.noteUtil.test();
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
+
+			int lightStatusNum = Robot.noteUtil.getStatus();
+
+			switch (lightStatusNum){
+				case 1:
+					Robot.lights.signalRing();
+					break;
+				case 2:
+					Robot.lights.signalNoRing();
+					break;
+				default:
+					Robot.lights.turnLEDsOff();
+				
+			}
         }
     }
 }
