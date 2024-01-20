@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAnalogSensor;
+import com.revrobotics.SparkAnalogSensor;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.logging.LoggerExceptionUtils;
@@ -149,7 +149,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
         switch (feedbackDevice) {
             case Analog:
                 {
-                    SparkMaxAnalogSensor analog = getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
+                    SparkAnalogSensor analog = getAnalog(SparkAnalogSensor.Mode.kAbsolute);
                     revErrorToException(ExceptionTarget.LOG, analog.setInverted(sensorInverted));
                     sensorPositionSupplier = analog::getPosition;
                     sensorVelocitySupplier = analog::getVelocity;
