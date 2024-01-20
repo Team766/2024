@@ -2,7 +2,7 @@ package com.team766.hal;
 
 public interface GyroReader {
     enum Type {
-        PIGEON,
+        Pigeon2,
     }
 
     /**
