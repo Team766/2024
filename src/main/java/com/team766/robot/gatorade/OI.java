@@ -22,6 +22,7 @@ public class OI extends Procedure {
     private JoystickReader leftJoystick;
     private JoystickReader rightJoystick;
     private JoystickReader boxopGamepad;
+    private JoystickReader macropad;
     private double rightJoystickX = 0;
     private double leftJoystickX = 0;
     private double leftJoystickY = 0;
@@ -40,6 +41,7 @@ public class OI extends Procedure {
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
+        macropad = RobotProvider.instance.getJoystick(3);
     }
 
     public void run(Context context) {
@@ -289,5 +291,17 @@ public class OI extends Procedure {
 
         lightsRateLimit.reset();
         lightsRateLimit.next();
+
+        // macropad buttons for nudging mechanisms
+        if (macropad.getButton(InputConstants.WRIST_NUDGE_UP)) Robot.wrist.nudgeNoPID(0.25);
+        if (macropad.getButton(InputConstants.WRIST_NUDGE_DOWN)) Robot.wrist.nudgeNoPID(-0.25);
+
+        if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_UP)) Robot.elevator.nudgeNoPID(0.25);
+        if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_DOWN))
+            Robot.elevator.nudgeNoPID(-0.25);
+
+        if (macropad.getButton(InputConstants.SHOULDER_NUDGE_UP)) Robot.shoulder.nudgeNoPID(0.25);
+        if (macropad.getButton(InputConstants.SHOULDER_NUDGE_DOWN))
+            Robot.shoulder.nudgeNoPID(-0.25);
     }
 }

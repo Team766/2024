@@ -47,4 +47,13 @@ public final class InputConstants {
     public static final int BUTTON_PLACEMENT_HIGH = 4; // Y
     public static final int BUTTON_PLACEMENT_MID = 3; // B
     public static final int BUTTON_PLACEMENT_LOW = 2; // A
+    // macropad nudging
+    public static final int SHOULDER_NUDGE_UP = 1;
+    public static final int SHOULDER_NUDGE_DOWN = 5;
+
+    public static final int ELEVATOR_NUDGE_UP = 2;
+    public static final int ELEVATOR_NUDGE_DOWN = 6;
+
+    public static final int WRIST_NUDGE_UP = 3;
+    public static final int WRIST_NUDGE_DOWN = 7;
 }
