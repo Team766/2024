@@ -24,8 +24,6 @@ public class Drive extends Mechanism {
     private final SwerveModule swerveBR;
     private final SwerveModule swerveBL;
 
-    // TODO: rework odometry so it doesn't have to go through drive
-
     private final GyroReader gyro;
     // declaration of odometry object
     private Odometry swerveOdometry;
@@ -179,7 +177,6 @@ public class Drive extends Mechanism {
         return gyro.getRoll();
     }
 
-    // TODO: rework odometry so it doesn't have to go through drive
     // TODO: figure out why odometry x and y are swapped
     public Pose2d getCurrentPosition() {
 		return currentPosition;
