@@ -8,17 +8,12 @@ public class NoteUtil extends Mechanism {
 
     public NoteUtil() {}
 
-    public void test() {
+    public String toString() {
         try {
-            
-
-            
-            
-            log("Yaw: " + StaticCameras.noteDetectorCamera.getYawOfRing());
-            log("Pitch: " + StaticCameras.noteDetectorCamera.getPitchOfRing());
-
+            return "Yaw: " + StaticCameras.noteDetectorCamera.getYawOfRing() + " Pitch: " + StaticCameras.noteDetectorCamera.getPitchOfRing();
         } catch (AprilTagGeneralCheckedException e) {
-            log(e.toString());
+            return "ERROR: " + 
+            e.toString();
         }
     }
 
@@ -30,6 +25,6 @@ public class NoteUtil extends Mechanism {
             return 2;
         }
 
-        return 1;
+        return 1; 
     }
 }
