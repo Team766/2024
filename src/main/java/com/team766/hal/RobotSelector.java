@@ -43,8 +43,8 @@ import com.team766.robot.example.Robot;
             Logger.get(Category.CONFIGURATION)
                     .logData(
                             Severity.ERROR,
-                            "Unable to create RobotConfigurator %s.  Using default.",
-                            robotConfigurator);
+                            "Unable to create RobotConfigurator %s.  Using default (%s).",
+                            robotConfigurator, DEFAULT_CONFIGURATOR);
             LoggerExceptionUtils.logException(e);
             return new Robot();
         }
