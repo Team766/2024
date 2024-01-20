@@ -2,10 +2,13 @@ package com.team766.odometry;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.team766.framework.LoggingBase;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
+import com.team766.robot.gatorade.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -157,9 +160,7 @@ public class Odometry {
             currPositions[i] =
                     new Pose2d(
                             currPositions[i].getTranslation(),
-                            gyroPosition.plus(
-                                    Rotation2d.fromDegrees(
-                                            -CANCoderList[i].getAbsolutePosition())));
+                            gyroPosition.plus(Rotation2d.fromDegrees(-absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
 
