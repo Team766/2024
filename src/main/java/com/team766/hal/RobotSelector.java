@@ -29,12 +29,18 @@ import com.team766.robot.example.Robot;
         String robotConfigurator =
                 configuratorProvider.hasValue() ? configuratorProvider.get() : DEFAULT_CONFIGURATOR;
 
+        Logger.get(Category.CONFIGURATION)
+                .logData(
+                        Severity.INFO,
+                        "Using robot configuration from %s",
+                        robotConfigurator.toString());
+
         try {
             Class<RobotConfigurator> clazz =
                     (Class<RobotConfigurator>) Class.forName(robotConfigurator);
             return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            Logger.get(Category.FRAMEWORK)
+            Logger.get(Category.CONFIGURATION)
                     .logData(
                             Severity.ERROR,
                             "Unable to create RobotConfigurator {0}.  Using default.",
