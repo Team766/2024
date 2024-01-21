@@ -42,7 +42,17 @@ public class RobotMain extends LoggedRobot {
 
         // periodically poll "caniv" in the background, if present
         CanivPoller canivPoller = null;
-        if (new File(CanivPoller.CANIV_BIN).exists()) {
+
+        // UPDATE 1/21/2024: temporarily disable this poller
+        // Prior to 2024, Phoenix Tuner only installed the "caniv" binary on the RoboRio when
+        // a CANivore was configured.  Now, "caniv" is part of the 2024 RoboRio system image
+        // even if a CANivore is never configured or used.
+        // Thus, we will need to find a different way to condition when we poll.
+        // eg, instead of conditioning on whether or not the caniv binary is present,
+        // via the presence of a value in the config file, via an invocation of caniv to
+        // see if any CAN buses are present, etc.  Until we update this logic, we'll
+        // temporarily disable this altogether with a short-circuit AND.
+        if (false && new File(CanivPoller.CANIV_BIN).exists()) {
             canivPoller = new CanivPoller(10 * 1000 /* millis */);
             new Thread(canivPoller, "caniv poller").start();
         }
