@@ -9,7 +9,7 @@ import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 public class Lights extends Mechanism {
 
     private CANdle candle;
-    private static final int CANID = null; //config soon
+    private static final int CANID = 58; //config soon
     private static final int LED_COUNT = 53; // seems right
     private Animation rainbowAnimation = new RainbowAnimation(1, 1.5, LED_COUNT);
 

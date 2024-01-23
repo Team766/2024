@@ -28,6 +28,8 @@ public class OI extends Procedure {
         while (true) {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+            context.takeOwnership(Robot.lights);
+            
             RobotProvider.instance.refreshDriverStationData();
             log(Robot.noteUtil.toString());
             // Add driver controls here - make sure to take/release ownership
