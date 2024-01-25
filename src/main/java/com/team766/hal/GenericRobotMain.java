@@ -8,7 +8,6 @@ import com.team766.framework.Scheduler;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-
 import com.team766.web.AutonomousSelector;
 import com.team766.web.ConfigUI;
 import com.team766.web.Dashboard;

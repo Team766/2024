@@ -11,7 +11,7 @@ public class Robot implements RobotConfigurator {
     public static TempPickerUpper tempPickerUpper;
     public static TempShooter tempShooter;
     public static NoteUtil noteUtil;
-	public static Lights lights;
+    public static Lights lights;
     public static Drive drive;
 
     @Override
@@ -19,7 +19,7 @@ public class Robot implements RobotConfigurator {
         tempPickerUpper = new TempPickerUpper();
         tempShooter = new TempShooter();
         noteUtil = new NoteUtil();
-		lights = new Lights();
+        lights = new Lights();
         drive = new Drive();
     }
 

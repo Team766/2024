@@ -29,25 +29,24 @@ public class OI extends Procedure {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             context.takeOwnership(Robot.lights);
-            
+
             RobotProvider.instance.refreshDriverStationData();
             log(Robot.noteUtil.toString());
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
 
-			int lightStatusNum = Robot.noteUtil.getStatus();
+            int lightStatusNum = Robot.noteUtil.getStatus();
 
-			switch (lightStatusNum){
-				case 1:
-					Robot.lights.signalRing();
-					break;
-				case 2:
-					Robot.lights.signalNoRing();
-					break;
-				default:
-					Robot.lights.turnLEDsOff();
-				
-			}
+            switch (lightStatusNum) {
+                case 1:
+                    Robot.lights.signalRing();
+                    break;
+                case 2:
+                    Robot.lights.signalNoRing();
+                    break;
+                default:
+                    Robot.lights.turnLEDsOff();
+            }
         }
     }
 }

@@ -4,12 +4,11 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.team766.framework.Mechanism;
-import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 
 public class Lights extends Mechanism {
 
     private CANdle candle;
-    private static final int CANID = 58; //config soon
+    private static final int CANID = 58; // config soon
     private static final int LED_COUNT = 53; // seems right
     private Animation rainbowAnimation = new RainbowAnimation(1, 1.5, LED_COUNT);
 
@@ -38,10 +37,10 @@ public class Lights extends Mechanism {
         candle.setLEDs(255, 0, 0);
     }
 
-	public void turnLEDsOff(){
-		checkContextOwnership();
-		candle.setLEDs(0, 0, 0);
-	}
+    public void turnLEDsOff() {
+        checkContextOwnership();
+        candle.setLEDs(0, 0, 0);
+    }
 
     public void signalRing() {
         checkContextOwnership();
