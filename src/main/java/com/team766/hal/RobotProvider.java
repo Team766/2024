@@ -2,6 +2,7 @@ package com.team766.hal;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.TimeProviderI;
+import com.team766.hal.EncoderReader.Type;
 import com.team766.hal.mock.MockAnalogInput;
 import com.team766.hal.mock.MockDigitalInput;
 import com.team766.hal.mock.MockEncoder;
@@ -46,7 +47,7 @@ public abstract class RobotProvider {
             MotorController.Type type,
             ControlInputReader localSensor);
 
-    public abstract EncoderReader getEncoder(int index1, int index2);
+    public abstract EncoderReader getEncoder(int index1, int index2, String prefix);
 
     public abstract DigitalInputReader getDigitalInput(int index);
 
@@ -158,6 +159,25 @@ public abstract class RobotProvider {
 
     public EncoderReader getEncoder(final String configName) {
         try {
+            final ValueProvider<EncoderReader.Type> type =
+                    ConfigFileReader.getInstance().getEnum(EncoderReader.Type.class);
+            if (type.hasValue() && type.get() == Type.CANcoder) {
+                final ValueProvider<Integer> port =
+                        ConfigFileReader.getInstance().getInt(configName + ".port");
+                final ValueProvider<String> canBus =
+                        ConfigFileReader.getInstance().getString(configName + ".canBus");
+                if (!port.hasValue()) {
+                    Logger.get(Category.CONFIGURATION)
+                            .logData(
+                                    Severity.ERROR,
+                                    "Encoder %s is of type %s but has no port.",
+                                    configName,
+                                    type.get().toString());
+                    return new MockEncoder(0, 0);                    
+`                }
+                 return getEncoder(0, 0);
+            }
+
             final ValueProvider<Integer[]> ports =
                     ConfigFileReader.getInstance().getInts(configName + ".ports");
             final ValueProvider<Double> distancePerPulseConfig =

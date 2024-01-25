@@ -2,6 +2,10 @@ package com.team766.hal;
 
 public interface EncoderReader extends ControlInputReader {
 
+    enum Type {
+		CANcoder
+    };
+
 	/**
 	 * Gets the current count. Returns the current count on the Encoder. This
 	 * method compensates for the decoding type.

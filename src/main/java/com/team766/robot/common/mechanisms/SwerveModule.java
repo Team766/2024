@@ -94,7 +94,10 @@ public class SwerveModule {
         // understands
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Angle", angleDegrees);
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "CurrentAngle", steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR
+                                                        - offset);
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", angleDegrees);
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "CANcoder", encoder.getAbsolutePosition().getValueAsDouble());
     }
 
     /**
