@@ -20,7 +20,7 @@ public class Robot implements RobotConfigurator {
         tempShooter = new TempShooter();
         noteUtil = new NoteUtil();
         lights = new Lights();
-        drive = new Drive();
+        drive = new Drive(null);
     }
 
     @Override
