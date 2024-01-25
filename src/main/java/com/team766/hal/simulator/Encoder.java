@@ -17,6 +17,16 @@ public class Encoder implements EncoderReader {
         set(0);
     }
 
+	@Override
+	public boolean getStopped() {
+		return getRate() == 0;
+	}
+
+	@Override
+	public boolean getDirection() {
+		return getRate() > 0;
+	}
+
     @Override
     public double getDistance() {
         int distance = (int) ProgramInterface.encoderChannels[channel].distance;
