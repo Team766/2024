@@ -50,6 +50,7 @@ public class NoteUtil extends Mechanism {
                 // check inverted power, check interchanged x and y
                 Robot.drive.controlRobotOriented(power, 0, 0);
             }else{
+                //Run intake the whole time
                 Robot.drive.controlRobotOriented(0, 0.2,0);
             }
 
