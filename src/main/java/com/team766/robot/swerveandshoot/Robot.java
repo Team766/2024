@@ -5,7 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.gatorade.constants.SwerveDriveConstants;
+import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
 import com.team766.robot.swerveandshoot.mechanisms.*;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
