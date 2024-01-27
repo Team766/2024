@@ -110,17 +110,13 @@ public class OI extends Procedure {
                 // If a button is pressed, drive is just fine adjustment
                 if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
                     Robot.drive.controlFieldOriented(
-                            Math.toRadians(Robot.drive.getHeading()),
                             (leftJoystickX * FINE_DRIVING_COEFFICIENT),
-                            (leftJoystickY * FINE_DRIVING_COEFFICIENT),
+                            -(leftJoystickY * FINE_DRIVING_COEFFICIENT),
                             (rightJoystickX * FINE_DRIVING_COEFFICIENT));
                 } else {
                     // On deafault, controls the robot field oriented
                     Robot.drive.controlFieldOriented(
-                            Math.toRadians(Robot.drive.getHeading()),
-                            (leftJoystickX),
-                            (leftJoystickY),
-                            (rightJoystickX));
+                            (leftJoystickX), -(leftJoystickY), (rightJoystickX));
                 }
             } else {
                 Robot.drive.stopDrive();
