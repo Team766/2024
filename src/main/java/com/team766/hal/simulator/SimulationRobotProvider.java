@@ -50,6 +50,14 @@ public class SimulationRobotProvider extends RobotProvider {
     }
 
     @Override
+    public EncoderReader getEncoder(final int index1, String configPrefix) {
+        if (encoders[index1] == null) {
+            encoders[index1] = new Encoder(index1, index1 + 1);
+        }
+        return encoders[index1];
+    }
+
+    @Override
     public SolenoidController getSolenoid(final int index) {
         if (solenoids[index] == null) {
             solenoids[index] = new Solenoid(index);

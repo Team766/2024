@@ -49,6 +49,11 @@ public class TestRobotProvider extends RobotProvider {
     }
 
     @Override
+    public EncoderReader getEncoder(final int index1, String configPrefix) {
+        return new MockEncoder(0, 0);
+    }
+
+    @Override
     public SolenoidController getSolenoid(final int index) {
         if (solenoids[index] == null) {
             solenoids[index] = new MockSolenoid(index);

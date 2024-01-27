@@ -48,6 +48,8 @@ public abstract class RobotProvider {
 
     public abstract EncoderReader getEncoder(int index1, int index2);
 
+    public abstract EncoderReader getEncoder(int index, String configPrefix);
+
     public abstract DigitalInputReader getDigitalInput(int index);
 
     public abstract AnalogInputReader getAnalogInput(int index);
@@ -158,6 +160,13 @@ public abstract class RobotProvider {
 
     public EncoderReader getEncoder(final String configName) {
         try {
+            // check for a single port encoder
+            final ValueProvider<Integer> port =
+                    ConfigFileReader.getInstance().getInt(configName + ".port");
+            if (port.hasValue()) {
+                return getEncoder(port.get(), configName);
+            }
+            // or a dual-port encoder
             final ValueProvider<Integer[]> ports =
                     ConfigFileReader.getInstance().getInts(configName + ".ports");
             final ValueProvider<Double> distancePerPulseConfig =

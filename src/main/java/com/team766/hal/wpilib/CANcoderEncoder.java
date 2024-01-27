@@ -10,6 +10,7 @@ import com.team766.logging.Severity;
 public class CANcoderEncoder implements EncoderReader {
 
     private final CANcoder cancoder;
+    private double distancePerPulse = 1;
 
     public CANcoderEncoder(int deviceId) {
         cancoder = new CANcoder(deviceId);
@@ -21,15 +22,23 @@ public class CANcoderEncoder implements EncoderReader {
 
     @Override
     public double getDistance() {
-        // TODO Auto-generated method stub
-        return 0;
+        StatusSignal<Double> position = cancoder.getPosition();
+        if (!position.getStatus().isOK()) {
+            Logger.get(Category.HAL)
+                    .logData(
+                            Severity.ERROR,
+                            "Unable to get position: %s",
+                            position.getStatus().toString());
+            return 0;
+        }
+        return distancePerPulse * position.getValueAsDouble();
     }
 
     @Override
     public double getRate() {
         StatusSignal<Double> velocity = cancoder.getVelocity();
         if (!velocity.getStatus().isOK()) {
-            Logger.get(Category.FRAMEWORK)
+            Logger.get(Category.HAL)
                     .logData(
                             Severity.ERROR,
                             "Unable to get rate: %s",
@@ -46,7 +55,7 @@ public class CANcoderEncoder implements EncoderReader {
 
     @Override
     public void setDistancePerPulse(double distancePerPulse) {
-        // TODO Auto-generated method stub
-
+        // each "pulse" is a rotation
+        this.distancePerPulse = distancePerPulse;
     }
 }

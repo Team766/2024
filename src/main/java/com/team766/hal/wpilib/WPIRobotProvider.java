@@ -18,6 +18,7 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.mock.MockBeaconSensor;
+import com.team766.hal.mock.MockEncoder;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.hal.mock.MockPositionSensor;
@@ -175,6 +176,28 @@ public class WPIRobotProvider extends RobotProvider {
             encoders[index1] = new Encoder(index1, index2);
         }
         return encoders[index1];
+    }
+
+    @Override
+    public EncoderReader getEncoder(int index1, String configPrefix) {
+        final ValueProvider<EncoderReader.Type> type =
+                ConfigFileReader.getInstance()
+                        .getEnum(EncoderReader.Type.class, configPrefix + ".type");
+
+        if (type.hasValue()) {
+            if (type.get() == EncoderReader.Type.CANcoder) {
+                ValueProvider<String> canBus =
+                        ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
+                return new CANcoderEncoder(index1, canBus.get());
+            } else {
+                Logger.get(Category.CONFIGURATION)
+                        .logData(
+                                Severity.WARNING,
+                                "Unknown encoder type: %s",
+                                type.get().toString());
+            }
+        }
+        return new MockEncoder(0, 0);
     }
 
     @Override
