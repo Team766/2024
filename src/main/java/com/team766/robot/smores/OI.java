@@ -7,8 +7,6 @@ import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.smores.procedures.*;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the code that allow control of the robot.
@@ -41,13 +39,13 @@ public class OI extends Procedure {
 
             double nudge = (macropad.getButton(12) ? 1 : 0) - (macropad.getButton(11) ? 1 : 0);
             // driving
-            if(macropad.getButton(1)) {
+            if (macropad.getButton(1)) {
                 if (nudge != 0.0) {
                     log("Driving " + nudge);
                 }
             }
             // kicker
-            else if(macropad.getButton(2)) {
+            else if (macropad.getButton(2)) {
                 if (nudge != 0.0) {
                     log("Kicker " + nudge);
                 }
