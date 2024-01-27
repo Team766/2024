@@ -3,14 +3,16 @@ package com.team766.robot.mityBites;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
-import com.team766.robot.example.mechanisms.*;
+import com.team766.robot.mityBites.mechanisms.Drive;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
+    public static Drive drive;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
+        drive = new Drive();
     }
 
     @Override

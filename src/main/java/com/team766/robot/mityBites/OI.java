@@ -5,7 +5,6 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.example.procedures.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -25,13 +24,15 @@ public class OI extends Procedure {
     }
 
     public void run(final Context context) {
+        context.takeOwnership(Robot.drive);
+
         while (true) {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
             // Add driver controls here - make sure to take/release ownership
-            // of mechanisms when appropriate.
+            Robot.drive.OneJoystickDrive(-joystick0.getAxis(1), joystick0.getAxis(0));
         }
     }
 }
