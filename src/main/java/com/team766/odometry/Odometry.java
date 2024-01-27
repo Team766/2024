@@ -65,7 +65,6 @@ public class Odometry extends LoggingBase {
             int encoderToRevolutionConstant,
             double rateLimiterTime) {
         loggerCategory = Category.ODOMETRY;
-        this.gyro = gyro;
 
         this.gyro = gyro;
         odometryLimiter = new RateLimiter(rateLimiterTime);
