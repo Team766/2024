@@ -20,21 +20,6 @@ public class CANcoderEncoder implements EncoderReader {
     }
 
     @Override
-    public int get() {
-        StatusSignal<Double> position = cancoder.getPosition();
-        if (!position.getStatus().isOK()) {
-            Logger.get(Category.FRAMEWORK)
-                    .logData(
-                            Severity.ERROR,
-                            "Unable to get position since boot: %s",
-                            position.getStatus().toString());
-            return 0;
-        }
-		// expected range falls into what an int can store.  cast should be safe.
-        return (int) Math.round(position.getValue());
-    }
-
-    @Override
     public double getDistance() {
         // TODO Auto-generated method stub
         return 0;
