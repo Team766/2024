@@ -13,18 +13,14 @@ public class Encoder implements EncoderReader {
     }
 
     @Override
-    public int get() {
-        return (int) ProgramInterface.encoderChannels[channel].distance;
-    }
-
-    @Override
     public void reset() {
         set(0);
     }
 
     @Override
     public double getDistance() {
-        return get() * distancePerPulse;
+        int distance = (int) ProgramInterface.encoderChannels[channel].distance;
+        return distance * distancePerPulse;
     }
 
     @Override

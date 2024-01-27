@@ -11,11 +11,6 @@ public class MockEncoder implements EncoderReader {
     public MockEncoder(final int a, final int b) {}
 
     @Override
-    public int get() {
-        return (int) Math.round(distance / distancePerPulse);
-    }
-
-    @Override
     public void reset() {
         distance = 0;
     }

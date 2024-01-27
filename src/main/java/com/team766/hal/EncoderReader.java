@@ -3,15 +3,6 @@ package com.team766.hal;
 public interface EncoderReader extends ControlInputReader {
 
     /**
-     * Gets the current count. Returns the current count on the Encoder. This
-     * method compensates for the decoding type.
-     *
-     * @return Current count from the Encoder adjusted for the 1x, 2x, or 4x
-     *         scale factor.
-     */
-    int get();
-
-    /**
      * Reset the Encoder distance to zero. Resets the current count to zero on the encoder.
      */
     void reset();
