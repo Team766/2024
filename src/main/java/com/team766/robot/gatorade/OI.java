@@ -128,33 +128,33 @@ public class OI extends Procedure {
                 Robot.drive.stopDrive();
             }
 
-            // macropad buttons for nudging mechanisms            
-            if (macropad.getButton(InputConstants.WRIST_NUDGE_UP)) {
+            // BEGINNING OF MACRO PAD STUFF //
+            // macropad buttons for nudging mechanisms
+            // boolean[] button_pressed = new boolean[16];
+            // for (int i = 0; i < 16; i++) {
+            //     if (macropad.getButtonPressed(i + 1)) {
+            //         button_pressed[i] = !button_pressed[i];
+            //     }
+            //     SmartDashboard.putBoolean("Button " + (i + 1), button_pressed[i]);
+            // }
+
+            double nudge = (macropad.getButton(12) ? 1 : 0) - (macropad.getButton(11) ? 1 : 0);
+            nudge *= InputConstants.MACROPAD_SENSITIVITY;
+
+            if (macropad.getButton(InputConstants.WRIST_NUDGE)) {
                 context.takeOwnership(Robot.wrist);
-                Robot.wrist.nudgeNoPID(0.5);
-                log("wrist_nudge_up");
-            }
-            if (macropad.getButton(InputConstants.WRIST_NUDGE_DOWN)) {
-                context.takeOwnership(Robot.wrist);
-                Robot.wrist.nudgeNoPID(-0.5);
-                log("wrist_nudge_down");
-            }
-            if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_UP)) {
+                Robot.wrist.nudgeNoPID(nudge);
+                log("wrist nudge");
+            } else if (macropad.getButton(InputConstants.ELEVATOR_NUDGE)) {
                 context.takeOwnership(Robot.elevator);
-                Robot.elevator.nudgeNoPID(0.5);
-            }
-            if (macropad.getButton(InputConstants.ELEVATOR_NUDGE_DOWN)) {
-                context.takeOwnership(Robot.elevator);
-                Robot.elevator.nudgeNoPID(-0.5);
-            }
-            if (macropad.getButton(InputConstants.SHOULDER_NUDGE_UP)) {
+                Robot.elevator.nudgeNoPID(nudge);
+                log("elevator nudge");
+            } else if (macropad.getButton(InputConstants.SHOULDER_NUDGE)) {
                 context.takeOwnership(Robot.shoulder);
-                Robot.shoulder.nudgeNoPID(0.5);
+                Robot.shoulder.nudgeNoPID(nudge);
+                log("shoulder nudge");
             }
-            if (macropad.getButton(InputConstants.SHOULDER_NUDGE_DOWN)) {
-                context.takeOwnership(Robot.shoulder);
-                Robot.shoulder.nudgeNoPID(-0.5);
-            }
+            // END OF MACRO PAD STUFF //
 
             // Respond to boxop commands
 
@@ -278,7 +278,6 @@ public class OI extends Procedure {
                 }
             }
         }
-
     }
 
     private void setLightsForPlacement() {
