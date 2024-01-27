@@ -29,6 +29,7 @@ public class OI extends Procedure {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             context.takeOwnership(Robot.lights);
+            context.takeOwnership(Robot.drive);
 
             RobotProvider.instance.refreshDriverStationData();
             log(Robot.noteUtil.toString());
@@ -36,6 +37,8 @@ public class OI extends Procedure {
             // of mechanisms when appropriate.
 
             int lightStatusNum = Robot.noteUtil.getStatus();
+
+            Robot.drive.controlRobotOriented(0.3, 0, 0);
 
             switch (lightStatusNum) {
                 case 1:

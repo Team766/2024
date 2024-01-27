@@ -9,9 +9,9 @@ import com.team766.robot.swerveandshoot.Robot;
 public class NoteUtil extends Mechanism {
 
     private PIDController yawPID;
-    
+
     public NoteUtil() {
-        //set reasonable deadzone!
+        // set reasonable deadzone!
         yawPID = new PIDController(null, null, null, null, null, null, null);
         yawPID.setSetpoint(0.00);
     }
@@ -39,27 +39,27 @@ public class NoteUtil extends Mechanism {
     }
 
     public void goToNote() throws AprilTagGeneralCheckedException {
-        
+
         if (!hasNoteInIntake()) {
 
             double yawInDegrees = StaticCameras.noteDetectorCamera.getYawOfRing();
             yawPID.calculate(yawInDegrees);
             double power = yawPID.getOutput();
 
-            if(Math.abs(power) > 0){
+            if (Math.abs(power) > 0) {
                 // check inverted power, check interchanged x and y
                 Robot.drive.controlRobotOriented(power, 0, 0);
-            }else{
-                //Run intake the whole time
-                Robot.drive.controlRobotOriented(0, 0.2,0);
+            } else {
+                // Run intake the whole time
+                Robot.drive.controlRobotOriented(0, 0.2, 0);
             }
 
-            //double pitchInDegrees = StaticCameras.noteDetectorCamera.getPitchOfRing();
+            // double pitchInDegrees = StaticCameras.noteDetectorCamera.getPitchOfRing();
 
         }
     }
 
-    public boolean hasNoteInIntake(){
+    public boolean hasNoteInIntake() {
         return false;
     }
 }
