@@ -111,13 +111,13 @@ public class OI extends Procedure {
                 if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
                     Robot.drive.controlFieldOriented(
                             (leftJoystickX * FINE_DRIVING_COEFFICIENT),
-                            (leftJoystickY * FINE_DRIVING_COEFFICIENT),
+                            -(leftJoystickY * FINE_DRIVING_COEFFICIENT),
                             (rightJoystickX * FINE_DRIVING_COEFFICIENT));
                 } else {
                     // On deafault, controls the robot field oriented
                     Robot.drive.controlFieldOriented(
                             (leftJoystickX),
-                            (leftJoystickY),
+                            -(leftJoystickY),
                             (rightJoystickX));
                 }
             } else {
