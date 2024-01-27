@@ -111,19 +111,25 @@ public class Drive extends Mechanism {
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
-        SmartDashboard.putString("[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
-
+        SmartDashboard.putString(
+                "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFL.driveAndSteer(
-                new Vector2D(x, y).add(turn, createOrthogonalVector(config.frontLeftLocation()).normalize()));
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveFR.driveAndSteer(
-                new Vector2D(x, y).add(turn, createOrthogonalVector(config.frontRightLocation()).normalize()));
+                new Vector2D(x, y)
+                        .add(
+                                turn,
+                                createOrthogonalVector(config.frontRightLocation()).normalize()));
         swerveBR.driveAndSteer(
-                new Vector2D(x, y).add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
         swerveBL.driveAndSteer(
-                new Vector2D(x, y).add(turn, createOrthogonalVector(config.backLeftLocation()).normalize()));
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.backLeftLocation()).normalize()));
     }
 
     /**

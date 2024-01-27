@@ -116,9 +116,7 @@ public class OI extends Procedure {
                 } else {
                     // On deafault, controls the robot field oriented
                     Robot.drive.controlFieldOriented(
-                            (leftJoystickX),
-                            -(leftJoystickY),
-                            (rightJoystickX));
+                            (leftJoystickX), -(leftJoystickY), (rightJoystickX));
                 }
             } else {
                 Robot.drive.stopDrive();
