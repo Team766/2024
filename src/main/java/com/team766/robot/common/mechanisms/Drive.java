@@ -9,14 +9,16 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.odometry.Odometry;
+import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
-import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Drive extends Mechanism {
+
+    private final SwerveConfig config;
 
     // SwerveModules
     private final SwerveModule swerveFR;
@@ -30,8 +32,10 @@ public class Drive extends Mechanism {
     // variable representing current position
     private static Pose2d currentPosition;
 
-    public Drive() {
+    public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
+
+        this.config = config;
 
         // create the drive motors
         MotorController driveFR = RobotProvider.instance.getMotor(DRIVE_DRIVE_FRONT_RIGHT);
@@ -46,10 +50,10 @@ public class Drive extends Mechanism {
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
         // create the encoders
-        CANcoder encoderFR = new CANcoder(2, SwerveDriveConstants.SWERVE_CANBUS);
-        CANcoder encoderFL = new CANcoder(4, SwerveDriveConstants.SWERVE_CANBUS);
-        CANcoder encoderBR = new CANcoder(3, SwerveDriveConstants.SWERVE_CANBUS);
-        CANcoder encoderBL = new CANcoder(1, SwerveDriveConstants.SWERVE_CANBUS);
+        CANcoder encoderFR = new CANcoder(2, config.canBus());
+        CANcoder encoderFL = new CANcoder(4, config.canBus());
+        CANcoder encoderBR = new CANcoder(3, config.canBus());
+        CANcoder encoderBL = new CANcoder(1, config.canBus());
 
         // initialize the swerve modules
         swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR);
@@ -104,29 +108,12 @@ public class Drive extends Mechanism {
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turn,
-                                new Vector2D(SwerveDriveConstants.FL_Y, SwerveDriveConstants.FL_X)
-                                        .normalize()));
+                new Vector2D(x, y).add(turn, config.frontLeftLocation().normalize()));
         swerveFR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turn,
-                                new Vector2D(SwerveDriveConstants.FR_Y, SwerveDriveConstants.FR_X)
-                                        .normalize()));
+                new Vector2D(x, y).add(turn, config.frontRightLocation().normalize()));
         swerveBR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turn,
-                                new Vector2D(SwerveDriveConstants.BR_Y, SwerveDriveConstants.BR_X)
-                                        .normalize()));
-        swerveBL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turn,
-                                new Vector2D(SwerveDriveConstants.BL_Y, SwerveDriveConstants.BL_X)
-                                        .normalize()));
+                new Vector2D(x, y).add(turn, config.backRightLocation().normalize()));
+        swerveBL.driveAndSteer(new Vector2D(x, y).add(turn, config.backLeftLocation().normalize()));
     }
 
     /**
@@ -165,10 +152,17 @@ public class Drive extends Mechanism {
     public void setCross() {
         checkContextOwnership();
 
-        swerveFL.steer(new Vector2D(SwerveDriveConstants.FL_Y, -SwerveDriveConstants.FL_X));
-        swerveFR.steer(new Vector2D(SwerveDriveConstants.FR_Y, -SwerveDriveConstants.FR_X));
-        swerveBL.steer(new Vector2D(SwerveDriveConstants.BL_Y, -SwerveDriveConstants.BL_X));
-        swerveBR.steer(new Vector2D(SwerveDriveConstants.BR_Y, -SwerveDriveConstants.BR_X));
+        swerveFL.steer(
+                new Vector2D(
+                        config.frontLeftLocation().getY(), -config.frontLeftLocation().getX()));
+        swerveFL.steer(
+                new Vector2D(
+                        config.frontRightLocation().getY(), -config.frontRightLocation().getX()));
+        swerveFL.steer(
+                new Vector2D(config.backLeftLocation().getY(), -config.backLeftLocation().getX()));
+        swerveFL.steer(
+                new Vector2D(
+                        config.backRightLocation().getY(), -config.backRightLocation().getX()));
     }
 
     public void resetGyro() {
