@@ -185,12 +185,12 @@ public class Drive extends Mechanism {
         swerveFL.steer(
                 new Vector2D(
                         config.frontLeftLocation().getY(), -config.frontLeftLocation().getX()));
-        swerveFL.steer(
+        swerveFR.steer(
                 new Vector2D(
                         config.frontRightLocation().getY(), -config.frontRightLocation().getX()));
-        swerveFL.steer(
+        swerveBL.steer(
                 new Vector2D(config.backLeftLocation().getY(), -config.backLeftLocation().getX()));
-        swerveFL.steer(
+        swerveBR.steer(
                 new Vector2D(
                         config.backRightLocation().getY(), -config.backRightLocation().getX()));
     }
