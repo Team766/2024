@@ -139,9 +139,9 @@ public class WPIRobotProvider extends RobotProvider {
                 motor = new CANVictorMotorController(index);
                 break;
             case TalonFX:
-                final ValueProvider<String> CANBus =
+                final ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                motor = new CANTalonFxMotorController(index, CANBus.get());
+                motor = new CANTalonFxMotorController(index, canBus.hasValue() ? canBus.get() : "");
                 break;
             case VictorSP:
                 motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
@@ -195,7 +195,7 @@ public class WPIRobotProvider extends RobotProvider {
             if (type.get() == GyroReader.Type.Pigeon2) {
                 ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                return new PigeonGyro(index, canBus.get());
+                return new PigeonGyro(index, canBus.hasValue() ? canBus.get() : "");
             }
         }
 
