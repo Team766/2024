@@ -81,12 +81,19 @@ public class Odometry {
         currPositions = new Pose2d[motorCount];
         prevEncoderValues = new double[motorCount];
         currEncoderValues = new double[motorCount];
-        currentPosition = new Pose2d();
+        //currentPosition = new Pose2d();
 
         wheelPositions = wheelLocations;
         WHEEL_CIRCUMFERENCE = wheelCircumference;
         GEAR_RATIO = gearRatio;
         ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
+        currentPosition = new Pose2d(0, 0, new Rotation2d());
+		for (int i = 0; i < motorCount; i++) {
+			prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
+			currPositions[i] = new Pose2d(0, 0, new Rotation2d());
+			prevEncoderValues[i] = 0;
+			currEncoderValues[i] = 0;
+		}
     }
 
     /**
