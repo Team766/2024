@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.configs.VoltageConfigs;
@@ -13,7 +14,9 @@ import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
@@ -23,6 +26,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
 
+    // TODO: add support for taking a CANcoder as a ctor parameter
     public CANTalonFxMotorController(final int deviceNumber, final String canBus) {
         super(deviceNumber, canBus);
         TalonFXConfigurator configurator = getConfigurator();
@@ -179,11 +183,20 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
 
+    private void setRemoteFeedbackSensor(CANcoder canCoder) {
+        FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
+        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        statusCodeToException(ExceptionTarget.THROW, getConfigurator().apply(feedback));
+    }
+
     @Override
     public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
         // TODO: add support for this.
         // doing so will require extending MotorController.setSelectedFeedbackSensor() to take an
         // optional deviceID.
+        // alternatively, we may only allow specifying the CANcoder in the constructor,
+        // eg if configured as a "child" node of this motor in the MaroonFramework config.
         // NOTE: the only remote sensor that's supported is a CANcoder.
         LoggerExceptionUtils.logException(
                 new UnsupportedOperationException(
