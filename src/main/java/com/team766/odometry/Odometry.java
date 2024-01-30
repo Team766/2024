@@ -52,39 +52,47 @@ public class Odometry {
     /**
      * Constructor for Odometry, taking in several defines for the robot.
      * @param gyro The gyro sensor used to determine heading, etc.
-	 * @param motors A list of every wheel-controlling motor on the robot.
-	 * @param CANCoders A list of the CANCoders corresponding to each wheel, in the same order as motors.
-	 * @param wheelLocations A list of the locations of each wheel, in the same order as motors.
-	 * @param wheelCircumference The circumfrence of the wheels, including treads.
-	 * @param gearRatio The gear ratio of the wheels.
-	 * @param encoderToRevolutionConstant The encoder to revolution constant of the wheels.
-	 * @param rateLimiterTime How often odometry should run.
-	 */
-	public Odometry(GyroReader gyro, MotorController[] motors, CANcoder[] CANCoders, Translation2d[] wheelLocations, double wheelCircumference, double gearRatio, int encoderToRevolutionConstant, double rateLimiterTime) {
+     * @param motors A list of every wheel-controlling motor on the robot.
+     * @param CANCoders A list of the CANCoders corresponding to each wheel, in the same order as motors.
+     * @param wheelLocations A list of the locations of each wheel, in the same order as motors.
+     * @param wheelCircumference The circumfrence of the wheels, including treads.
+     * @param gearRatio The gear ratio of the wheels.
+     * @param encoderToRevolutionConstant The encoder to revolution constant of the wheels.
+     * @param rateLimiterTime How often odometry should run.
+     */
+    public Odometry(
+            GyroReader gyro,
+            MotorController[] motors,
+            CANcoder[] CANCoders,
+            Translation2d[] wheelLocations,
+            double wheelCircumference,
+            double gearRatio,
+            int encoderToRevolutionConstant,
+            double rateLimiterTime) {
 
         this.gyro = gyro;
-		odometryLimiter = new RateLimiter(rateLimiterTime);
-		motorList = motors;
-		CANCoderList = CANCoders;
-		motorCount = motorList.length;
-		// log("Motor count " + motorCount);
-		prevPositions = new Pose2d[motorCount];
-		currPositions = new Pose2d[motorCount];
-		prevEncoderValues = new double[motorCount];
-		currEncoderValues = new double[motorCount];
-		currentPosition = new Pose2d();
+        odometryLimiter = new RateLimiter(rateLimiterTime);
+        motorList = motors;
+        CANCoderList = CANCoders;
+        motorCount = motorList.length;
+        // log("Motor count " + motorCount);
+        prevPositions = new Pose2d[motorCount];
+        currPositions = new Pose2d[motorCount];
+        prevEncoderValues = new double[motorCount];
+        currEncoderValues = new double[motorCount];
+        currentPosition = new Pose2d();
 
         wheelPositions = wheelLocations;
         WHEEL_CIRCUMFERENCE = wheelCircumference;
         GEAR_RATIO = gearRatio;
         ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
         currentPosition = new Pose2d(0, 0, new Rotation2d());
-		for (int i = 0; i < motorCount; i++) {
-			prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
-			currPositions[i] = new Pose2d(0, 0, new Rotation2d());
-			prevEncoderValues[i] = 0;
-			currEncoderValues[i] = 0;
-		}
+        for (int i = 0; i < motorCount; i++) {
+            prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
+            currPositions[i] = new Pose2d(0, 0, new Rotation2d());
+            prevEncoderValues[i] = 0;
+            currEncoderValues[i] = 0;
+        }
     }
 
     /**
