@@ -84,9 +84,6 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
         xPID.setSetpoint(score.x_position);
         xPID.calculate(this.getTransform3dOfRobotToTag().getX());
-        if (yPID.getOutput() == 0) {
-            yDone = true;
-        }
 
         Robot.tempShooter.setAngle(score.angle);
         Robot.tempShooter.runMotors(score.power);
@@ -96,6 +93,32 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();
         }
+    }
+    
+    /*
+     * Much similar to the shoot() method, this method does the exact same thing except changes all values to 1/2.
+     * See javadoc for shoot() method for more information.
+     * 
+     * @throws AprilTagGeneralCheckedException any pervious exceptions from abstracted method calls.
+     * @author Max Spier, 1/30/2024
+     */
+
+    public void shootDefault() throws AprilTagGeneralCheckedException{
+        yPID.setSetpoint(0.5);
+        yPID.calculate(this.getTransform3dOfRobotToTag().getY());
+        
+        xPID.setSetpoint(0.5);
+        xPID.calculate(this.getTransform3dOfRobotToTag().getX());
+
+        Robot.tempShooter.setAngle(0.5);
+        Robot.tempShooter.runMotors(0.5);
+
+        Robot.drive.controlRobotOriented(xPID.getOutput(), yPID.getOutput(), 0);
+
+        if (xPID.getOutput() + yPID.getOutput() == 0) {
+            Robot.tempShooter.shoot();
+        }
+
     }
 
     /**

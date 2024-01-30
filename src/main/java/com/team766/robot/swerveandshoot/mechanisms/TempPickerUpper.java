@@ -11,5 +11,5 @@ import com.team766.framework.Mechanism;
 public class TempPickerUpper extends Mechanism {
     public TempPickerUpper() {}
 
-    public void pickup() {}
+    public void runIntake() {}
 }

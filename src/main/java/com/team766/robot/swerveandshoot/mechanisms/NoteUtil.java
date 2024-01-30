@@ -38,7 +38,7 @@ public class NoteUtil extends Mechanism {
         return 1;
     }
 
-    public void goToNote() throws AprilTagGeneralCheckedException {
+    public void goToAndPickupNote() throws AprilTagGeneralCheckedException {
 
         if (!hasNoteInIntake()) {
 
@@ -51,6 +51,7 @@ public class NoteUtil extends Mechanism {
                 Robot.drive.controlRobotOriented(power, 0, 0);
             } else {
                 // Run intake the whole time
+                Robot.tempPickerUpper.runIntake();
                 Robot.drive.controlRobotOriented(0, 0.2, 0);
             }
 
@@ -59,6 +60,7 @@ public class NoteUtil extends Mechanism {
         }
     }
 
+    // to be implemented once we have sensors
     public boolean hasNoteInIntake() {
         return false;
     }

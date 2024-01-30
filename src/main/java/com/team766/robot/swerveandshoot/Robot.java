@@ -1,12 +1,15 @@
 package com.team766.robot.swerveandshoot;
 
+import com.team766.framework.AprilTagGeneralCheckedException;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
+import com.team766.logging.Logger;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
 import com.team766.robot.swerveandshoot.mechanisms.*;
+import javax.print.attribute.standard.Severity;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
@@ -16,6 +19,7 @@ public class Robot implements RobotConfigurator {
     public static NoteUtil noteUtil;
     public static Lights lights;
     public static Drive drive;
+    public static SpeakerShooterPowerCalculator speakerShooter;
 
     @Override
     public void initializeMechanisms() {
@@ -33,6 +37,13 @@ public class Robot implements RobotConfigurator {
         noteUtil = new NoteUtil();
         lights = new Lights();
         drive = new Drive(config);
+
+        try{
+            speakerShooter = new SpeakerShooterPowerCalculator();
+        } catch (AprilTagGeneralCheckedException e){
+            Logger.logRaw(Severity.ERROR, "Couldn't find drive team alliance color to initialize the speaker shooter.");
+        }
+        
     }
 
     @Override

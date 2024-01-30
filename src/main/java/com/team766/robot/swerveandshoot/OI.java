@@ -1,5 +1,6 @@
 package com.team766.robot.swerveandshoot;
 
+import com.team766.framework.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
@@ -24,7 +25,7 @@ public class OI extends Procedure {
         joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
-    public void run(final Context context) {
+    public void run(final Context context){
         while (true) {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -44,7 +45,25 @@ public class OI extends Procedure {
                 Robot.drive.stopDrive();
             }
 
-            //Robot.drive.controlRobotOriented(0, 0, 0.3);
+            // need to hold
+            if(joystick0.getButton(1)){
+                try{
+                    //Robot.speakerShooter.shoot();
+                    Robot.speakerShooter.shootDefault();
+                } catch (AprilTagGeneralCheckedException e){
+
+                }
+                
+            }
+
+            if(joystick1.getButton(1)){
+                try{
+                    
+                    Robot.noteUtil.goToAndPickupNote();
+                } catch (AprilTagGeneralCheckedException e){
+
+                }
+            }
 
             switch (lightStatusNum) {
                 case 1:
