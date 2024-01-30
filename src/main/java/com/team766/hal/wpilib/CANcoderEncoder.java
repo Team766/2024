@@ -45,7 +45,7 @@ public class CANcoderEncoder implements EncoderReader {
                             velocity.getStatus().toString());
             return 0;
         }
-        return velocity.getValueAsDouble();
+        return distancePerPulse * velocity.getValueAsDouble();
     }
 
     @Override

@@ -8,7 +8,7 @@ public class MockEncoder implements EncoderReader {
     private double rate = 0;
     private double distancePerPulse = 1;
 
-    public MockEncoder(final int a, final int b) {}
+    public MockEncoder() {}
 
     @Override
     public void reset() {

@@ -197,7 +197,7 @@ public class WPIRobotProvider extends RobotProvider {
                                 type.get().toString());
             }
         }
-        return new MockEncoder(0, 0);
+        return new MockEncoder();
     }
 
     @Override
