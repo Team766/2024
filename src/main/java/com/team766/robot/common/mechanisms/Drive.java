@@ -182,17 +182,10 @@ public class Drive extends Mechanism {
     public void setCross() {
         checkContextOwnership();
 
-        swerveFL.steer(
-                new Vector2D(
-                        config.frontLeftLocation().getY(), -config.frontLeftLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(
-                        config.frontRightLocation().getY(), -config.frontRightLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(config.backLeftLocation().getY(), -config.backLeftLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(
-                        config.backRightLocation().getY(), -config.backRightLocation().getX()));
+        swerveFL.steer(config.frontLeftLocation());
+        swerveFR.steer(config.frontRightLocation());
+        swerveBL.steer(config.backLeftLocation());
+        swerveBR.steer(config.backRightLocation());
     }
 
     public void resetGyro() {
