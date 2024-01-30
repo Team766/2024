@@ -42,6 +42,7 @@ public class LocalMotorController implements MotorController {
 
                                 if (leader != null) {
                                     setPower(leader.get());
+                                    return;
                                 }
 
                                 switch (LocalMotorController.this.controlMode) {
@@ -181,8 +182,9 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void set(final ControlMode mode, final double value) {
-        if (this.controlMode != mode) {
+        if (this.controlMode != mode || this.leader != null) {
             pidController.reset();
+            this.leader = null;
         }
         this.controlMode = mode;
         this.setpoint = value;
