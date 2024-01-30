@@ -85,12 +85,12 @@ public class Odometry {
         GEAR_RATIO = gearRatio;
         ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
         currentPosition = new Pose2d(0, 0, new Rotation2d());
-		for (int i = 0; i < motorCount; i++) {
-			prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
-			currPositions[i] = new Pose2d(0, 0, new Rotation2d());
-			prevEncoderValues[i] = 0;
-			currEncoderValues[i] = 0;
-		}
+        for (int i = 0; i < motorCount; i++) {
+            prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
+            currPositions[i] = new Pose2d(0, 0, new Rotation2d());
+            prevEncoderValues[i] = 0;
+            currEncoderValues[i] = 0;
+        }
     }
 
     /**
