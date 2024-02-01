@@ -6,13 +6,14 @@ import com.team766.framework.AprilTagGeneralCheckedException;
 import com.team766.framework.Mechanism;
 import com.team766.robot.swerveandshoot.Robot;
 
+
 public class NoteUtil extends Mechanism {
 
     private PIDController yawPID;
 
     public NoteUtil() {
         // set reasonable deadzone!
-        yawPID = new PIDController(null, null, null, null, null, null, null);
+        yawPID = new PIDController(0.01, 0, 0, 0, -0.15, 0.15, 0.2);
         yawPID.setSetpoint(0.00);
     }
 
@@ -46,9 +47,10 @@ public class NoteUtil extends Mechanism {
             yawPID.calculate(yawInDegrees);
             double power = yawPID.getOutput();
 
-            if (Math.abs(power) > 0) {
-                // check inverted power, check interchanged x and y
-                Robot.drive.controlRobotOriented(power, 0, 0);
+            log("power: " + power);
+            if (Math.abs(power) > 0.035) {
+                // x needs inverted (found out through tests)
+                Robot.drive.controlRobotOriented(-power, 0, 0);
             } else {
                 // Run intake the whole time
                 Robot.tempPickerUpper.runIntake();

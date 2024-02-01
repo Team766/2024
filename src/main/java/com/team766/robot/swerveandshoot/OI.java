@@ -39,8 +39,11 @@ public class OI extends Procedure {
 
             int lightStatusNum = Robot.noteUtil.getStatus();
 
+            if(joystick0.getButtonPressed(2)){
+                Robot.drive.resetGyro();
+            }
             if (Math.abs(joystick0.getAxis(0)) + Math.abs(joystick0.getAxis(1)) + Math.abs(joystick1.getAxis(0)) > 0.05) {
-                Robot.drive.controlRobotOriented(joystick0.getAxis(0), -joystick0.getAxis(1), joystick1.getAxis(0));
+                Robot.drive.controlRobotOriented(joystick0.getAxis(0) *.2, -joystick0.getAxis(1) *.2, joystick1.getAxis(0) *.2);
             } else {
                 Robot.drive.stopDrive();
             }

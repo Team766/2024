@@ -41,7 +41,7 @@ public class Robot implements RobotConfigurator {
         try{
             speakerShooter = new SpeakerShooterPowerCalculator();
         } catch (AprilTagGeneralCheckedException e){
-            Logger.logRaw(Severity.ERROR, "Couldn't find drive team alliance color to initialize the speaker shooter.");
+            //Logger.logRaw(Severity.ERROR, "Couldn't find drive team alliance color to initialize the speaker shooter.");
         }
         
     }
