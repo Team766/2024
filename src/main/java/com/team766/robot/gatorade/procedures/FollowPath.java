@@ -76,9 +76,14 @@ public class FollowPath extends Procedure {
                 }
             }
 
+            ChassisSpeeds targetSpeeds = controller.calculateRobotRelativeSpeeds(curPose, targetState);
             
+            Robot.drive.controlFieldOriented(targetSpeeds);
         }
         
+        if (path.getGoalEndState().getVelocity() < 0.1) {
+            Robot.drive.stopDrive();
+        }
     }
 
     private void replanPath(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
