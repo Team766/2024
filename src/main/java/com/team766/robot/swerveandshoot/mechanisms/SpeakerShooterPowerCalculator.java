@@ -44,8 +44,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // switch
 
         // P I D FF OL OM TH
-        xPID = new PIDController(0.2, 0, 0, 0, -0.5, 0.5, 0.02);
-        yPID = new PIDController(0.2, 0, 0, 0, -0.5, 0.5, 0.02);
+        xPID = new PIDController(0.1, 0, 0, 0, -0.15, 0.15, 0.04);
+        yPID = new PIDController(0.1, 0, 0, 0, -0.15, 0.15, 0.04);
         leftPosition = new ScoringPosition(0, 0, 0, 0, 0);
         centerPosition = new ScoringPosition(0, 0, 0, 0, 0);
         rightPosition = new ScoringPosition(0, 0, 0, 0, 0);
@@ -53,19 +53,22 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // When do we know the alliance? Is that during the constructor or after?
         Optional<Alliance> currentAlliance = DriverStation.getAlliance();
 
-        if (currentAlliance.isPresent()) {
-            if (currentAlliance.get() == Alliance.Red) {
-                tagId = 4;
-            } else if (currentAlliance.get() == Alliance.Blue) {
-                tagId = 7;
-            } else {
-                throw new AprilTagGeneralCheckedException(
-                        "Alliance not found correctly, neiter red nor blue somehow");
-            }
-        } else {
-            throw new AprilTagGeneralCheckedException(
-                    "Alliance not found correctly, optional is empty.");
-        }
+        // if (currentAlliance.isPresent()) {
+        //     if (currentAlliance.get() == Alliance.Red) {
+        //         tagId = 4;
+        //     } else if (currentAlliance.get() == Alliance.Blue) {
+        //         tagId = 7;
+        //     } else {
+        //         throw new AprilTagGeneralCheckedException(
+        //                 "Alliance not found correctly, neiter red nor blue somehow");
+        //     }
+        // } else {
+        //     tagId = 5; // the tag we have set up on the mini-cnc
+        //     //throw new AprilTagGeneralCheckedException(
+        //     //        "Alliance not found correctly, optional is empty.");
+        // }
+
+        tagId = 5;
     }
 
     /**
@@ -104,16 +107,16 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      */
 
     public void shootDefault() throws AprilTagGeneralCheckedException{
-        yPID.setSetpoint(0.5);
+        yPID.setSetpoint(0.1);
         yPID.calculate(this.getTransform3dOfRobotToTag().getY());
         
-        xPID.setSetpoint(0.5);
+        xPID.setSetpoint(-0.5);
         xPID.calculate(this.getTransform3dOfRobotToTag().getX());
 
         Robot.tempShooter.setAngle(0.5);
         Robot.tempShooter.runMotors(0.5);
 
-        Robot.drive.controlRobotOriented(xPID.getOutput(), yPID.getOutput(), 0);
+        Robot.drive.controlRobotOriented(yPID.getOutput(), xPID.getOutput(), 0);
 
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();

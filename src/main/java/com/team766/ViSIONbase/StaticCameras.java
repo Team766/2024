@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class StaticCameras {
 
-    public static final CameraPlus camera2 = new CameraPlus("Vision Camera 2 1690");
+    public static final CameraPlus camera2 = new CameraPlus("MainTestCamera2024");
     public static ArrayList<CameraPlus> apriltagCameras =
             new ArrayList<CameraPlus>() {
                 {
