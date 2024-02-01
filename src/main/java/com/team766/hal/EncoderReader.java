@@ -2,6 +2,10 @@ package com.team766.hal;
 
 public interface EncoderReader extends ControlInputReader {
 
+    enum Type {
+        CANcoder
+    };
+
     /**
      * Reset the Encoder distance to zero. Resets the current count to zero on the encoder.
      */

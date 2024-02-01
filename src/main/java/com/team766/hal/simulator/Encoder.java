@@ -8,8 +8,8 @@ public class Encoder implements EncoderReader {
     private final int channel;
     private double distancePerPulse = 1.0;
 
-    public Encoder(final int a, final int b) {
-        this.channel = a;
+    public Encoder(final int channel) {
+        this.channel = channel;
     }
 
     @Override
