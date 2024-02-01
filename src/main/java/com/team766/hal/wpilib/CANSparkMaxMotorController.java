@@ -62,20 +62,9 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void set(final ControlMode mode, final double value) {
         switch (mode) {
-            case Current:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kCurrent);
-                break;
             case Disabled:
                 disable();
                 break;
-            case Follower:
-                throw new IllegalArgumentException("Use follow() method instead");
-            case MotionMagic:
-                throw new IllegalArgumentException("SparkMax does not support MotionMagic");
-            case MotionProfile:
-                throw new IllegalArgumentException("SparkMax does not support MotionProfile");
-            case MotionProfileArc:
-                throw new IllegalArgumentException("SparkMax does not support MotionProfileArc");
             case PercentOutput:
                 getPIDController().setReference(value, CANSparkMax.ControlType.kDutyCycle);
                 break;
