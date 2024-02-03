@@ -11,7 +11,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public void initializeMechanisms() {
-        // Initialize mechanisms here
+        drive = new Drive();
     }
 
     @Override
