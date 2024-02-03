@@ -33,7 +33,7 @@ public class OI extends Procedure {
             context.takeOwnership(Robot.drive);
 
             RobotProvider.instance.refreshDriverStationData();
-            log(Robot.noteUtil.toString());
+            // log(Robot.noteUtil.toString());
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
 

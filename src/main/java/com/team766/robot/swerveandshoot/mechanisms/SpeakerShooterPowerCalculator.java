@@ -8,6 +8,8 @@ import com.team766.robot.swerveandshoot.*;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.*;
 
 /*
@@ -31,6 +33,9 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
     private PIDController xPID;
     private PIDController yPID;
 
+    private double lastX = 0;
+    private double lastY = 0;
+
     private int tagId;
 
     public SpeakerShooterPowerCalculator() throws AprilTagGeneralCheckedException {
@@ -44,8 +49,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // switch
 
         // P I D FF OL OM TH
-        xPID = new PIDController(0.1, 0, 0, 0, -0.15, 0.15, 0.04);
-        yPID = new PIDController(0.1, 0, 0, 0, -0.15, 0.15, 0.04);
+        xPID = new PIDController(0.22, 0.0, 0, 0, -0.5, 0.5, 0.01);
+        yPID = new PIDController(0.165, 0.0, 0, 0, -0.5, 0.5, 0.01);
         leftPosition = new ScoringPosition(0, 0, 0, 0, 0);
         centerPosition = new ScoringPosition(0, 0, 0, 0, 0);
         rightPosition = new ScoringPosition(0, 0, 0, 0, 0);
@@ -107,16 +112,43 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      */
 
     public void shootDefault() throws AprilTagGeneralCheckedException{
-        yPID.setSetpoint(0.1);
-        yPID.calculate(this.getTransform3dOfRobotToTag().getY());
+
+        //x and y are inverted relative to the controlrobotoriented method
+
         
-        xPID.setSetpoint(-0.5);
-        xPID.calculate(this.getTransform3dOfRobotToTag().getX());
+        // log("x power and then y power: " + xPID.getOutput() + "  " + yPID.getOutput() );
+        // log("locations, x and then y: " + this.getTransform3dOfRobotToTag().getX() + "   " + this.getTransform3dOfRobotToTag().getY());
+        
+        // SmartDashboard.putNumber("X PID Output" , xPID.getOutput());
+        // SmartDashboard.putNumber("Y PID Output" , yPID.getOutput());
+        // SmartDashboard.putNumber("X LOCATION", this.getTransform3dOfRobotToTag().getX());
+        // SmartDashboard.putNumber("Y LOCATION", this.getTransform3dOfRobotToTag().getY());
+
+        yPID.setSetpoint(0.08);
+        xPID.setSetpoint(2.34);
+        Transform3d robotToTag;
+        try{
+            robotToTag = this.getTransform3dOfRobotToTag();
+
+            
+            yPID.calculate(robotToTag.getY());
+            xPID.calculate(robotToTag.getX());
+
+            lastX = robotToTag.getX();
+            lastY = robotToTag.getY();
+        } catch (AprilTagGeneralCheckedException e){
+
+            yPID.calculate(lastY);
+            xPID.calculate(lastX);
+
+        }
+
+ 
 
         Robot.tempShooter.setAngle(0.5);
         Robot.tempShooter.runMotors(0.5);
 
-        Robot.drive.controlRobotOriented(yPID.getOutput(), xPID.getOutput(), 0);
+        Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), 0);
 
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();
@@ -138,10 +170,18 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         try {
             toUse = VisionUtil.findApriltagCameraThatHas(tagId);
         } catch (AprilTagGeneralCheckedException e) {
+
+            log("Ee: " + StaticCameras.camera2.getTagIdOfBestTarget());
             throw new AprilTagGeneralCheckedException("Cameras could not find tag, try again.");
+
+            
         }
 
         Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
+
+        log("here");
+        log(robotToTag.toString());
+
         return robotToTag;
     }
 

@@ -15,6 +15,7 @@ public class VisionUtil {
             throws AprilTagGeneralCheckedException {
 
         for (CameraPlus camera : StaticCameras.apriltagCameras) {
+            
             if (camera.getTagIdOfBestTarget() == tagId) {
                 return camera;
             }
