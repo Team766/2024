@@ -38,8 +38,7 @@ public class FollowPath extends Procedure {
 
         // TODO: flip path as necessary
         Pose2d curPose = getPose();
-        // TODO: get actual speed
-        ChassisSpeeds currentSpeeds = new ChassisSpeeds();
+        ChassisSpeeds currentSpeeds = Robot.drive.getChassisSpeeds();
 
         controller.reset(curPose, currentSpeeds);
 
@@ -59,8 +58,8 @@ public class FollowPath extends Procedure {
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
             curPose = getPose();
             // TODO: get actual speed
-            currentSpeeds = new ChassisSpeeds();
-
+            currentSpeeds = Robot.drive.getChassisSpeeds();
+            
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
                 double previousError = Math.abs(controller.getPositionalError());
