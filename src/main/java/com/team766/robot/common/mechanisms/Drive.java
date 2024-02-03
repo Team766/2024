@@ -134,7 +134,6 @@ public class Drive extends Mechanism {
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
-     * @param yawRad the robot gyro's current yaw value in radians
      * @param x the x value for the position joystick
      * @param y the y value for the position joystick
      * @param turn the turn value from the rotation joystick
