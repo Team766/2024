@@ -1,4 +1,4 @@
-package com.team766.robot.akbear.constants;
+package com.team766.robot.reva.constants;
 
 /** Constants used for reading values from the config file. */
 public final class ConfigConstants {

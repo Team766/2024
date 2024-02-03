@@ -1,9 +1,9 @@
-package com.team766.robot.akbear;
+package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
-import com.team766.robot.akbear.mechanisms.Drive;
+import com.team766.robot.reva.mechanisms.Drive;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
