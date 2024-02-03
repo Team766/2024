@@ -11,6 +11,8 @@ import com.team766.logging.Category;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -180,17 +182,10 @@ public class Drive extends Mechanism {
     public void setCross() {
         checkContextOwnership();
 
-        swerveFL.steer(
-                new Vector2D(
-                        config.frontLeftLocation().getY(), -config.frontLeftLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(
-                        config.frontRightLocation().getY(), -config.frontRightLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(config.backLeftLocation().getY(), -config.backLeftLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(
-                        config.backRightLocation().getY(), -config.backRightLocation().getX()));
+        swerveFL.steer(config.frontLeftLocation());
+        swerveFR.steer(config.frontRightLocation());
+        swerveBL.steer(config.backLeftLocation());
+        swerveBR.steer(config.backRightLocation());
     }
 
     public void resetGyro() {
