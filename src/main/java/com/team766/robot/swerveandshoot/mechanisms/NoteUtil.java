@@ -13,7 +13,7 @@ public class NoteUtil extends Mechanism {
 
     public NoteUtil() {
         // set reasonable deadzone!
-        yawPID = new PIDController(0.01, 0, 0, 0, -0.15, 0.15, 0.2);
+        yawPID = new PIDController(0.05, 0, 0, 0, -0.25, 0.25, 2);
         yawPID.setSetpoint(0.00);
     }
 
@@ -49,16 +49,25 @@ public class NoteUtil extends Mechanism {
 
             log("power: " + power);
             if (Math.abs(power) > 0.035) {
-                // x needs inverted (found out through tests)
-                Robot.drive.controlRobotOriented(-power, 0, 0);
+                // x needs inverted if camera is on front (found out through tests)
+                Robot.drive.controlRobotOriented(power, 0, 0);
             } else {
                 // Run intake the whole time
                 Robot.tempPickerUpper.runIntake();
-                Robot.drive.controlRobotOriented(0, 0.2, 0);
+                Robot.drive.controlRobotOriented(0, -0.3, 0);
             }
 
             // double pitchInDegrees = StaticCameras.noteDetectorCamera.getPitchOfRing();
 
+        }
+    }
+
+    public void test(){
+        try {
+            log(StaticCameras.noteDetectorCamera.getTransform3dOfRing().toString());
+        } catch (AprilTagGeneralCheckedException e) {
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
         }
     }
 

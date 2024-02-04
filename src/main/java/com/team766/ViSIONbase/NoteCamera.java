@@ -1,6 +1,9 @@
 package com.team766.ViSIONbase;
 
 import com.team766.framework.AprilTagGeneralCheckedException;
+
+import edu.wpi.first.math.geometry.Transform3d;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -36,6 +39,12 @@ public class NoteCamera extends PhotonCamera {
             throw new AprilTagGeneralCheckedException(
                     "There were no targets that could be picked up by the camera, so I'm gonna have to throw this error here.");
         }
+    }
+
+    public Transform3d getTransform3dOfRing() throws AprilTagGeneralCheckedException{
+        PhotonTrackedTarget e = getRing();
+
+        return e.getBestCameraToTarget();
     }
 
     // To be renamed once we know if yaw is X or Y
