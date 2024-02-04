@@ -11,16 +11,14 @@ import com.team766.logging.Category;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
+    private static final double POWER_DAMPEN_FACTOR = 0.15;
+
     private JoystickReader joystick0;
-    private JoystickReader joystick1;
-    private JoystickReader joystick2;
 
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
         joystick0 = RobotProvider.instance.getJoystick(0);
-        joystick1 = RobotProvider.instance.getJoystick(1);
-        joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
     public void run(final Context context) {
@@ -31,7 +29,9 @@ public class OI extends Procedure {
             RobotProvider.instance.refreshDriverStationData();
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
-            Robot.drive.drive(joystick0.getAxis(0), joystick0.getAxis(0));
+            Robot.drive.drive(
+                    POWER_DAMPEN_FACTOR * joystick0.getAxis(0),
+                    POWER_DAMPEN_FACTOR * joystick0.getAxis(0));
         }
     }
 }
