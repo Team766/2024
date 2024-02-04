@@ -33,8 +33,7 @@ public class FollowPath extends Procedure {
     }
 
     public FollowPath(String autoName) {
-        path = PathPlannerPath.fromPathFile(autoName);
-        this(path, PathPlannerConstants.REPLANNING_CONFIG, PathPlannerConstants.DRIVE_CONTROLLER);
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, PathPlannerConstants.DRIVE_CONTROLLER);
     }
 
     @Override
