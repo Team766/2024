@@ -4,12 +4,17 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.library.ValueProvider;
 import com.team766.odometry.Odometry;
 import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.Robot;
+import com.team766.robot.gatorade.constants.ConfigConstants;
+import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import com.team766.robot.gatorade.constants.PathPlannerConstants;
 import com.team766.simulator.ui.Trajectory;
 
@@ -32,8 +37,28 @@ public class FollowPath extends Procedure {
         this.controller = controller;
     }
 
+    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig) {
+        this.path = path;
+        this.replanningConfig = replanningConfig;
+        double maxSpeed = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS).valueOr(PathPlannerConstants.MAX_SPEED_MPS);
+
+        double translationP = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P).valueOr(PathPlannerConstants.TRANSLATION_P);
+        double translationI = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I).valueOr(PathPlannerConstants.TRANSLATION_I);
+        double translationD = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D).valueOr(PathPlannerConstants.TRANSLATION_D);
+        double rotationP = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P).valueOr(PathPlannerConstants.ROTATION_P);
+        double rotationI = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I).valueOr(PathPlannerConstants.ROTATION_I);
+        double rotationD = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D).valueOr(PathPlannerConstants.ROTATION_D);
+        
+        controller = new PPHolonomicDriveController(
+            new PIDConstants(translationP, translationI, translationD),
+		    new PIDConstants(rotationP, rotationI, rotationD), 
+            maxSpeed, 
+            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS * Math.sqrt(2) / 2 // calculating distance between center of robot and wheels
+        );
+    }
+
     public FollowPath(String autoName) {
-        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, PathPlannerConstants.DRIVE_CONTROLLER);
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG);
     }
 
     @Override
