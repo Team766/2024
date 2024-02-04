@@ -1,5 +1,6 @@
 package com.team766.robot.gatorade.procedures;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -9,6 +10,7 @@ import com.team766.framework.Procedure;
 import com.team766.odometry.Odometry;
 import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.Robot;
+import com.team766.robot.gatorade.constants.PathPlannerConstants;
 import com.team766.simulator.ui.Trajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,6 +30,11 @@ public class FollowPath extends Procedure {
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
+    }
+
+    public FollowPath(String autoName) {
+        path = PathPlannerPath.fromPathFile(autoName);
+        this(path, PathPlannerConstants.REPLANNING_CONFIG, PathPlannerConstants.DRIVE_CONTROLLER);
     }
 
     @Override
@@ -59,7 +66,7 @@ public class FollowPath extends Procedure {
             curPose = getPose();
             // TODO: get actual speed
             currentSpeeds = Robot.drive.getChassisSpeeds();
-            
+
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
                 double previousError = Math.abs(controller.getPositionalError());
