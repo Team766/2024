@@ -4,16 +4,16 @@ import com.team766.config.ConfigFileReader;
 import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
+import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
 import java.io.File;
 // import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -21,6 +21,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class RobotMain extends LoggedRobot {
+    private static final String USB_DRIVE_FILE = "/U";
+    private static final String USB_CONFIG_DIR = "/U/config";
+    private static final String USB_LOGS_DIR = "/U/logs";
+    private static final String INTERNAL_LOGS_DIR = "/home/lvuser";
+
     private static final String USB_CONFIG_FILE = "/U/config/robotConfig.txt";
     private static final String INTERNAL_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
@@ -73,29 +78,60 @@ public class RobotMain extends LoggedRobot {
         super(0.005);
     }
 
-    private static String checkForAndReturnPathToConfigFile(final String file) {
-        Path configPath = Filesystem.getDeployDirectory().toPath().resolve(file);
-        File configFile = configPath.toFile();
-        if (configFile.exists()) {
-            return configFile.getPath();
+    /**
+     * Checks if the provided directory exists.  If not attempts to create it.
+     * @param dir The directory.
+     * @return True if the directory already existed or was successfully created.  False otherwise.
+     */
+    private static boolean checkOrCreateDirectory(String dir) {
+        File dirFile = new File(dir);
+        if (!dirFile.exists()) {
+            if (!dirFile.mkdirs()) {
+                com.team766.logging.Logger.get(Category.CONFIGURATION)
+                        .logData(Severity.ERROR, "Unable to create directory %s", dir);
+                return false;
+            }
         }
-        return null;
+        return true;
+    }
+
+    private boolean checkForAndBootstrapUsbDrive() {
+        boolean useUsbDrive = true;
+
+        File usbDrive = new File(USB_DRIVE_FILE);
+        if (usbDrive.exists()) {
+            if (!checkOrCreateDirectory(USB_CONFIG_DIR)) {
+                useUsbDrive = false;
+            }
+            if (!checkOrCreateDirectory(USB_LOGS_DIR)) {
+                // we could still use the USB drive for config files, but something is wonky
+                useUsbDrive = false;
+            }
+        } else {
+            useUsbDrive = false;
+        }
+        return useUsbDrive;
     }
 
     @Override
     public void robotInit() {
         try {
-            boolean configFromUSB = true;
-            String filename = null;
-            filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
+            boolean useUsbDrive = checkForAndBootstrapUsbDrive();
+            String configFilename;
+            String backupConfigFilename;
+            String logsDir;
 
-            if (filename == null) {
-                filename = INTERNAL_CONFIG_FILE;
-                configFromUSB = false;
+            if (useUsbDrive) {
+                configFilename = USB_CONFIG_FILE;
+                backupConfigFilename = INTERNAL_CONFIG_FILE;
+                logsDir = USB_LOGS_DIR;
+            } else {
+                configFilename = INTERNAL_CONFIG_FILE;
+                backupConfigFilename = null;
+                logsDir = INTERNAL_LOGS_DIR;
             }
 
-            ConfigFileReader.instance =
-                    new ConfigFileReader(filename, configFromUSB ? INTERNAL_CONFIG_FILE : null);
+            ConfigFileReader.instance = new ConfigFileReader(configFilename, backupConfigFilename);
             RobotProvider.instance = new WPIRobotProvider();
             robot = new GenericRobotMain();
 
@@ -107,7 +143,7 @@ public class RobotMain extends LoggedRobot {
 
                 // set up AdvantageKit logging
                 DataLogManager.log("Initializing logging.");
-                Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
+                Logger.addDataReceiver(new WPILOGWriter(logsDir)); // Log to sdcard
                 Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
                 new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
