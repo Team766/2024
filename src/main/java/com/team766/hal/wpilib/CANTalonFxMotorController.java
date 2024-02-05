@@ -6,9 +6,9 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.StrictFollower;
@@ -30,8 +30,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     public CANTalonFxMotorController(final int deviceNumber, final String canBus) {
         super(deviceNumber, canBus);
         TalonFXConfigurator configurator = getConfigurator();
-        // TODO: log instead?
-        statusCodeToException(ExceptionTarget.THROW, configurator.refresh(talonFXConfig));
+        statusCodeToException(ExceptionTarget.LOG, configurator.refresh(talonFXConfig));
     }
 
     public CANTalonFxMotorController(final int deviceNumber) {
@@ -68,7 +67,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         switch (mode) {
             case Disabled:
                 super.disable();
-                return;
+                break;
             case PercentOutput:
                 DutyCycleOut percent = new DutyCycleOut(value);
                 super.setControl(percent);
@@ -84,6 +83,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
             case Voltage:
                 VoltageOut voltage = new VoltageOut(value);
                 super.setControl(voltage);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported control mode " + mode);
         }
@@ -91,7 +91,6 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public double getSensorPosition() {
-        // TODO: get the StatusSignal once and refresh, instead?
         StatusSignal<Double> status = super.getPosition();
         StatusCode code = status.getStatus();
         if (code.isOK()) {
@@ -104,7 +103,6 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public double getSensorVelocity() {
-        // TODO: get the StatusSignal once and refresh, instead?
         StatusSignal<Double> status = super.getVelocity();
         StatusCode code = status.getStatus();
         if (code.isOK()) {
@@ -135,34 +133,30 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
-        // code.
+        refreshConfig();
         talonFXConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = secondsFromNeutralToFull;
-        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+        statusCodeToException(
+                ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.OpenLoopRamps));
     }
 
     @Override
     public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
-        // code.
-        talonFXConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = secondsFromNeutralToFull;
-        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+        refreshConfig();
+        talonFXConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = secondsFromNeutralToFull;
+        statusCodeToException(
+                ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.ClosedLoopRamps));
     }
 
     @Override
     public void setFF(final double value) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
-        // code.
-        // TODO: should this be kV or kS?
-        // https://pro.docs.ctr-electronics.com/en/latest/docs/migration/migration-guide/closed-loop-guide.html says kV
-        talonFXConfig.Slot0.kS = value;
+        refreshConfig();
+        talonFXConfig.Slot0.kV = value;
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
 
     @Override
     public void setP(final double value) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
-        // code.
+        refreshConfig();
         talonFXConfig.Slot0.kP = value;
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
@@ -206,8 +200,11 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     @Override
     public void setSensorInverted(final boolean inverted) {
         // does not appear to be supported on the TalonFX.  developers need to invert the remote
-        // sensor (CANcoder)
-        // directly via the CANcoder.
+        // sensor (CANcoder) directly via the CANcoder.
+        // we *may* be able to use RotorToSensorRatio, but we'll need to see if that's only
+        // supported
+        // on FusedCANcoder.
+        // TODO: This will require further investiation.
         LoggerExceptionUtils.logException(
                 new UnsupportedOperationException(
                         "setSelectedFeedbackSensor() is not currently supported."));
@@ -215,11 +212,11 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setOutputRange(final double minOutput, final double maxOutput) {
-        VoltageConfigs voltage =
-                new VoltageConfigs()
-                        .withPeakReverseVoltage(minOutput)
-                        .withPeakForwardVoltage(maxOutput);
-        statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(voltage));
+        MotorOutputConfigs motorOutput =
+                new MotorOutputConfigs()
+                        .withPeakReverseDutyCycle(minOutput)
+                        .withPeakForwardDutyCycle(maxOutput);
+        statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
     }
 
     @Override
