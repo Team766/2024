@@ -27,7 +27,7 @@ public class Lights extends Mechanism {
         candle.setLEDs(128, 128, 128);
     }
 
-    public void yellow() {
+    public void signalNotInUse() {
         checkContextOwnership();
         candle.setLEDs(255, 150, 0);
     }

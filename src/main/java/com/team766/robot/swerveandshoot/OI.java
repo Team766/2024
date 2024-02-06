@@ -37,7 +37,7 @@ public class OI extends Procedure {
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
 
-            int lightStatusNum = Robot.noteUtil.getStatus();
+            int lightStatusNum = 4;
 
             if(joystick0.getButtonPressed(2)){
                 Robot.drive.resetGyro();
@@ -65,8 +65,9 @@ public class OI extends Procedure {
                 try{
                     
                     Robot.noteUtil.goToAndPickupNote();
+                    lightStatusNum = Robot.noteUtil.getStatus();
                 } catch (AprilTagGeneralCheckedException e){
-
+                    lightStatusNum = 2;
                 }
             }
 
@@ -77,6 +78,8 @@ public class OI extends Procedure {
                 case 2:
                     Robot.lights.signalNoRing();
                     break;
+                case 4:
+                    Robot.lights.signalNotInUse();
                 default:
                     Robot.lights.turnLEDsOff();
             }

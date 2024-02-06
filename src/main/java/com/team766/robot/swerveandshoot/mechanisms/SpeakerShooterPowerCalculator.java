@@ -49,8 +49,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // switch
 
         // P I D FF OL OM TH
-        xPID = new PIDController(0.22, 0.0, 0, 0, -0.5, 0.5, 0.01);
-        yPID = new PIDController(0.165, 0.0, 0, 0, -0.5, 0.5, 0.01);
+        xPID = new PIDController(0.24, 0.0, 0, 0, -0.5, 0.5, 0.01);
+        yPID = new PIDController(0.1725, 0.0, 0, 0, -0.5, 0.5, 0.01);
         leftPosition = new ScoringPosition(0, 0, 0, 0, 0);
         centerPosition = new ScoringPosition(0, 0, 0, 0, 0);
         rightPosition = new ScoringPosition(0, 0, 0, 0, 0);
@@ -124,8 +124,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // SmartDashboard.putNumber("X LOCATION", this.getTransform3dOfRobotToTag().getX());
         // SmartDashboard.putNumber("Y LOCATION", this.getTransform3dOfRobotToTag().getY());
 
-        yPID.setSetpoint(0.08);
-        xPID.setSetpoint(2.34);
+        yPID.setSetpoint(0.28);
+        xPID.setSetpoint(3.4);
         Transform3d robotToTag;
         try{
             robotToTag = this.getTransform3dOfRobotToTag();
@@ -149,6 +149,14 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         Robot.tempShooter.runMotors(0.5);
 
         Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), 0);
+
+        // if(Math.abs(xPID.getOutput()) < 0.03 && Math.abs(3.4 - lastX) > 0.02 ){
+        //     Robot.drive.controlRobotOriented(3 * xPID.getOutput(), 0 , 0);
+        // }
+
+        // if(Math.abs(yPID.getOutput()) < 0.03 && Math.abs(0.28 - lastY) > 0.02){
+        //     Robot.drive.controlRobotOriented(0, 3 * yPID.getOutput(), 0);
+        // }
 
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();
