@@ -28,7 +28,7 @@ public class SwerveModule {
      * Divide to convert from motor units to degrees
      */
     private static final double ENCODER_CONVERSION_FACTOR =
-            (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
+            (150.0 / 7.0) /*steering gear ratio*/ * (1 / 360.0) /*rotations to degrees*/;
 
     /**
      * Creates a new SwerveModule.
