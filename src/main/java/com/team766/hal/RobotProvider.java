@@ -48,6 +48,8 @@ public abstract class RobotProvider {
 
     public abstract EncoderReader getEncoder(int index1, int index2);
 
+    public abstract EncoderReader getEncoder(int index, String configPrefix);
+
     public abstract DigitalInputReader getDigitalInput(int index);
 
     public abstract AnalogInputReader getAnalogInput(int index);
@@ -158,6 +160,13 @@ public abstract class RobotProvider {
 
     public EncoderReader getEncoder(final String configName) {
         try {
+            // check for a single port encoder
+            final ValueProvider<Integer> deviceId =
+                    ConfigFileReader.getInstance().getInt(configName + ".deviceId");
+            if (deviceId.hasValue()) {
+                return getEncoder(deviceId.get(), configName);
+            }
+            // or a dual-port encoder
             final ValueProvider<Integer[]> ports =
                     ConfigFileReader.getInstance().getInts(configName + ".ports");
             final ValueProvider<Double> distancePerPulseConfig =
@@ -171,7 +180,7 @@ public abstract class RobotProvider {
                                 "Encoder %s has %d config values, but expected 2",
                                 configName,
                                 portsValue.length);
-                return new MockEncoder(0, 0);
+                return new MockEncoder();
             }
             checkDeviceName("encoder/digital input", digitalIoNames, portsValue[0], configName);
             checkDeviceName("encoder/digital input", digitalIoNames, portsValue[1], configName);
@@ -186,7 +195,7 @@ public abstract class RobotProvider {
                             Severity.ERROR,
                             "Encoder %s not found in config file, using mock encoder instead",
                             configName);
-            return new MockEncoder(0, 0);
+            return new MockEncoder();
         }
     }
 

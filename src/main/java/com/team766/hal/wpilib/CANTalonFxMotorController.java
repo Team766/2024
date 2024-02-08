@@ -1,207 +1,260 @@
 package com.team766.hal.wpilib;
 
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.StrictFollower;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
+import com.team766.hal.MotorControllerCommandFailedException;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.Severity;
 
-public class CANTalonFxMotorController extends BaseCTREMotorController implements MotorController {
+public class CANTalonFxMotorController extends TalonFX implements MotorController {
 
-    private WPI_TalonFX m_device;
-    private double m_feedForward = 0.0;
+    private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
 
-    public CANTalonFxMotorController(int deviceNumber, String CANBus) {
-        m_device = new WPI_TalonFX(deviceNumber, CANBus);
+    // TODO: add support for taking a CANcoder as a ctor parameter
+    public CANTalonFxMotorController(final int deviceNumber, final String canBus) {
+        super(deviceNumber, canBus);
+        TalonFXConfigurator configurator = getConfigurator();
+        statusCodeToException(ExceptionTarget.LOG, configurator.refresh(talonFXConfig));
     }
 
     public CANTalonFxMotorController(final int deviceNumber) {
-        m_device = new WPI_TalonFX(deviceNumber);
+        this(deviceNumber, "");
+    }
+
+    private enum ExceptionTarget {
+        THROW,
+        LOG,
+    }
+
+    private static void statusCodeToException(
+            final ExceptionTarget throwEx, final StatusCode code) {
+        if (code.isOK()) {
+            return;
+        }
+        var ex = new MotorControllerCommandFailedException(code.toString());
+        switch (throwEx) {
+            case THROW:
+                throw ex;
+            default:
+            case LOG:
+                LoggerExceptionUtils.logException(ex);
+                break;
+        }
+    }
+
+    private void refreshConfig() {
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(talonFXConfig));
     }
 
     @Override
     public void set(final ControlMode mode, double value) {
-        com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
-        boolean useFourTermSet = true;
         switch (mode) {
+            case Disabled:
+                super.disable();
+                break;
             case PercentOutput:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput;
-                useFourTermSet = false;
+                DutyCycleOut percent = new DutyCycleOut(value);
+                super.setControl(percent);
                 break;
             case Position:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Position;
+                PositionDutyCycle position = new PositionDutyCycle(value);
+                super.setControl(position);
                 break;
             case Velocity:
-                // Sensor velocity is measured in units per 100ms.
-                value /= 10.0;
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Velocity;
-                break;
-            case Current:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Current;
-                break;
-            case Follower:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Follower;
-                useFourTermSet = false;
-                break;
-            case MotionProfile:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfile;
-                break;
-            case MotionMagic:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic;
-                break;
-            case MotionProfileArc:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
+                VelocityDutyCycle velocity = new VelocityDutyCycle(value);
+                super.setControl(velocity);
                 break;
             case Voltage:
-                m_device.setVoltage(value);
-                return;
-            case Disabled:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
-                useFourTermSet = false;
+                VoltageOut voltage = new VoltageOut(value);
+                super.setControl(voltage);
                 break;
             default:
-                LoggerExceptionUtils.logException(
-                        new UnsupportedOperationException(
-                                "invalid mode provided. provided value: " + mode));
-                break;
+                throw new IllegalArgumentException("Unsupported control mode " + mode);
         }
-        if (ctre_mode == null) {
-            Logger.get(Category.HAL)
-                    .logRaw(Severity.ERROR, "CAN ControlMode is not translatable: " + mode);
-            ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
-        }
-        if (useFourTermSet) {
-            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, m_feedForward);
-        } else {
-            m_device.set(ctre_mode, value);
-        }
-    }
-
-    @Override
-    public void stopMotor() {
-        m_device.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, 0);
     }
 
     @Override
     public double getSensorPosition() {
-        return m_device.getSelectedSensorPosition(0);
+        StatusSignal<Double> status = super.getPosition();
+        StatusCode code = status.getStatus();
+        if (code.isOK()) {
+            return status.getValueAsDouble();
+        } else {
+            statusCodeToException(ExceptionTarget.LOG, code);
+            return 0.0;
+        }
     }
 
     @Override
     public double getSensorVelocity() {
-        // Sensor velocity is returned in units per 100ms.
-        return m_device.getSelectedSensorVelocity(0) * 10.0;
+        StatusSignal<Double> status = super.getVelocity();
+        StatusCode code = status.getStatus();
+        if (code.isOK()) {
+            return status.getValueAsDouble();
+        } else {
+            statusCodeToException(ExceptionTarget.LOG, code);
+            return 0.0;
+        }
     }
 
     @Override
     public void setSensorPosition(final double position) {
-        errorCodeToException(
-                ExceptionTarget.THROW, m_device.setSelectedSensorPosition(position, 0, 0));
+        statusCodeToException(ExceptionTarget.THROW, super.setPosition(position));
     }
 
     @Override
     public void follow(final MotorController leader) {
-        try {
-            m_device.follow((IMotorController) leader);
-        } catch (ClassCastException ex) {
+        if (leader instanceof CANTalonFxMotorController) {
+            CANTalonFxMotorController talonFxLeader = (CANTalonFxMotorController) leader;
+            StrictFollower follower = new StrictFollower(talonFxLeader.getDeviceID());
+            statusCodeToException(ExceptionTarget.LOG, super.setControl(follower));
+        } else {
             LoggerExceptionUtils.logException(
                     new IllegalArgumentException(
-                            "Talon can only follow another CTRE motor controller", ex));
+                            "TalonFX can only follow another TalonFX motor controller."));
         }
     }
 
     @Override
     public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
-        errorCodeToException(
-                ExceptionTarget.LOG,
-                m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
+        refreshConfig();
+        talonFXConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = secondsFromNeutralToFull;
+        statusCodeToException(
+                ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.OpenLoopRamps));
     }
 
     @Override
     public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
-        errorCodeToException(
-                ExceptionTarget.LOG,
-                m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
+        refreshConfig();
+        talonFXConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = secondsFromNeutralToFull;
+        statusCodeToException(
+                ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.ClosedLoopRamps));
     }
 
     @Override
     public void setFF(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(0, value, TIMEOUT_MS));
+        refreshConfig();
+        talonFXConfig.Slot0.kV = value;
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
 
     @Override
     public void setP(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(0, value));
+        refreshConfig();
+        talonFXConfig.Slot0.kP = value;
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
 
     @Override
     public void setI(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(0, value));
+        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
+        // code.
+        talonFXConfig.Slot0.kI = value;
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
 
     @Override
     public void setD(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kD(0, value));
+        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
+        // code.
+        talonFXConfig.Slot0.kD = value;
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+    }
+
+    private void setRemoteFeedbackSensor(CANcoder canCoder) {
+        FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
+        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        statusCodeToException(ExceptionTarget.THROW, getConfigurator().apply(feedback));
     }
 
     @Override
     public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
-        errorCodeToException(
-                ExceptionTarget.LOG, m_device.configSelectedFeedbackSensor(feedbackDevice));
+        // TODO: add support for this.
+        // doing so will require extending MotorController.setSelectedFeedbackSensor() to take an
+        // optional deviceID.
+        // alternatively, we may only allow specifying the CANcoder in the constructor,
+        // eg if configured as a "child" node of this motor in the MaroonFramework config.
+        // NOTE: the only remote sensor that's supported is a CANcoder.
+        LoggerExceptionUtils.logException(
+                new UnsupportedOperationException(
+                        "setSelectedFeedbackSensor() is not currently supported."));
     }
 
     @Override
     public void setSensorInverted(final boolean inverted) {
-        m_device.setSensorPhase(inverted);
+        // does not appear to be supported on the TalonFX.  developers need to invert the remote
+        // sensor (CANcoder) directly via the CANcoder.
+        // we *may* be able to use RotorToSensorRatio, but we'll need to see if that's only
+        // supported
+        // on FusedCANcoder.
+        // TODO: This will require further investiation.
+        LoggerExceptionUtils.logException(
+                new UnsupportedOperationException(
+                        "setSelectedFeedbackSensor() is not currently supported."));
     }
 
     @Override
     public void setOutputRange(final double minOutput, final double maxOutput) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
-        errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
+        MotorOutputConfigs motorOutput =
+                new MotorOutputConfigs()
+                        .withPeakReverseDutyCycle(minOutput)
+                        .withPeakForwardDutyCycle(maxOutput);
+        statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
     }
 
     @Override
     public void setCurrentLimit(final double ampsLimit) {
-        errorCodeToException(
-                ExceptionTarget.LOG,
-                m_device.configSupplyCurrentLimit(
-                        new SupplyCurrentLimitConfiguration(true, ampsLimit, 0, 0.01)));
+        CurrentLimitsConfigs config =
+                new CurrentLimitsConfigs()
+                        .withSupplyCurrentLimit(ampsLimit)
+                        .withSupplyCurrentLimitEnable(true);
+        statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(config));
     }
 
     @Override
     public void restoreFactoryDefault() {
-        errorCodeToException(ExceptionTarget.LOG, m_device.configFactoryDefault());
-    }
-
-    @Override
-    public double get() {
-        return m_device.get();
-    }
-
-    @Override
-    public void set(final double power) {
-        m_device.set(power);
-    }
-
-    @Override
-    public void setInverted(final boolean isInverted) {
-        m_device.setInverted(isInverted);
-    }
-
-    @Override
-    public boolean getInverted() {
-        return m_device.getInverted();
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        StatusCode code = super.getConfigurator().apply(talonFXConfig);
+        if (code.isOK()) {
+            talonFXConfig = config;
+        } else {
+            statusCodeToException(ExceptionTarget.LOG, code);
+        }
     }
 
     @Override
     public void setNeutralMode(final NeutralMode neutralMode) {
-        m_device.setNeutralMode(neutralMode);
+        NeutralModeValue neutralModeValue;
+
+        switch (neutralMode) {
+            case Coast:
+                neutralModeValue = NeutralModeValue.Coast;
+                break;
+            case Brake:
+                neutralModeValue = NeutralModeValue.Brake;
+                break;
+            default:
+                LoggerExceptionUtils.logException(
+                        new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
+                return;
+        }
+        super.setNeutralMode(neutralModeValue);
     }
 }
