@@ -6,7 +6,6 @@ import com.team766.framework.AprilTagGeneralCheckedException;
 import com.team766.framework.Mechanism;
 import com.team766.robot.swerveandshoot.Robot;
 
-
 public class NoteUtil extends Mechanism {
 
     private PIDController yawPID;
@@ -64,7 +63,7 @@ public class NoteUtil extends Mechanism {
         }
     }
 
-    public void test(){
+    public void test() {
         try {
             log(StaticCameras.noteDetectorCamera.getTransform3dOfRing().toString());
         } catch (AprilTagGeneralCheckedException e) {

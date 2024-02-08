@@ -25,7 +25,7 @@ public class OI extends Procedure {
         joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
-    public void run(final Context context){
+    public void run(final Context context) {
         while (true) {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -39,11 +39,17 @@ public class OI extends Procedure {
 
             int lightStatusNum = 4;
 
-            if(joystick0.getButtonPressed(2)){
+            if (joystick0.getButtonPressed(2)) {
                 Robot.drive.resetGyro();
             }
-            if (Math.abs(joystick0.getAxis(0)) + Math.abs(joystick0.getAxis(1)) + Math.abs(joystick1.getAxis(0)) > 0.05) {
-                Robot.drive.controlRobotOriented(joystick0.getAxis(0) *.2, -joystick0.getAxis(1) *.2, joystick1.getAxis(0) *.2);
+            if (Math.abs(joystick0.getAxis(0))
+                            + Math.abs(joystick0.getAxis(1))
+                            + Math.abs(joystick1.getAxis(0))
+                    > 0.05) {
+                Robot.drive.controlRobotOriented(
+                        joystick0.getAxis(0) * .2,
+                        -joystick0.getAxis(1) * .2,
+                        joystick1.getAxis(0) * .2);
             } else {
                 Robot.drive.stopDrive();
             }
@@ -51,22 +57,21 @@ public class OI extends Procedure {
             Robot.noteUtil.test();
 
             // need to hold
-            if(joystick0.getButton(1)){
-                try{
-                    //Robot.speakerShooter.shoot();
+            if (joystick0.getButton(1)) {
+                try {
+                    // Robot.speakerShooter.shoot();
                     Robot.speakerShooter.shootDefault();
-                } catch (AprilTagGeneralCheckedException e){
+                } catch (AprilTagGeneralCheckedException e) {
 
                 }
-                
             }
 
-            if(joystick1.getButton(1)){
-                try{
-                    
+            if (joystick1.getButton(1)) {
+                try {
+
                     Robot.noteUtil.goToAndPickupNote();
                     lightStatusNum = Robot.noteUtil.getStatus();
-                } catch (AprilTagGeneralCheckedException e){
+                } catch (AprilTagGeneralCheckedException e) {
                     lightStatusNum = 2;
                 }
             }

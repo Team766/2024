@@ -8,8 +8,6 @@ import com.team766.robot.swerveandshoot.*;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.*;
 
 /*
@@ -102,23 +100,23 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             Robot.tempShooter.shoot();
         }
     }
-    
+
     /*
      * Much similar to the shoot() method, this method does the exact same thing except changes all values to 1/2.
      * See javadoc for shoot() method for more information.
-     * 
+     *
      * @throws AprilTagGeneralCheckedException any pervious exceptions from abstracted method calls.
      * @author Max Spier, 1/30/2024
      */
 
-    public void shootDefault() throws AprilTagGeneralCheckedException{
+    public void shootDefault() throws AprilTagGeneralCheckedException {
 
-        //x and y are inverted relative to the controlrobotoriented method
+        // x and y are inverted relative to the controlrobotoriented method
 
-        
         // log("x power and then y power: " + xPID.getOutput() + "  " + yPID.getOutput() );
-        // log("locations, x and then y: " + this.getTransform3dOfRobotToTag().getX() + "   " + this.getTransform3dOfRobotToTag().getY());
-        
+        // log("locations, x and then y: " + this.getTransform3dOfRobotToTag().getX() + "   " +
+        // this.getTransform3dOfRobotToTag().getY());
+
         // SmartDashboard.putNumber("X PID Output" , xPID.getOutput());
         // SmartDashboard.putNumber("Y PID Output" , yPID.getOutput());
         // SmartDashboard.putNumber("X LOCATION", this.getTransform3dOfRobotToTag().getX());
@@ -127,23 +125,19 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         yPID.setSetpoint(0.28);
         xPID.setSetpoint(3.4);
         Transform3d robotToTag;
-        try{
+        try {
             robotToTag = this.getTransform3dOfRobotToTag();
 
-            
             yPID.calculate(robotToTag.getY());
             xPID.calculate(robotToTag.getX());
 
             lastX = robotToTag.getX();
             lastY = robotToTag.getY();
-        } catch (AprilTagGeneralCheckedException e){
+        } catch (AprilTagGeneralCheckedException e) {
 
             yPID.calculate(lastY);
             xPID.calculate(lastX);
-
         }
-
- 
 
         Robot.tempShooter.setAngle(0.5);
         Robot.tempShooter.runMotors(0.5);
@@ -161,7 +155,6 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();
         }
-
     }
 
     /**
@@ -181,8 +174,6 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
             log("Ee: " + StaticCameras.camera2.getTagIdOfBestTarget());
             throw new AprilTagGeneralCheckedException("Cameras could not find tag, try again.");
-
-            
         }
 
         Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());

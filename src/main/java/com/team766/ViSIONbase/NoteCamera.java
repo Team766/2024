@@ -1,9 +1,7 @@
 package com.team766.ViSIONbase;
 
 import com.team766.framework.AprilTagGeneralCheckedException;
-
 import edu.wpi.first.math.geometry.Transform3d;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -41,7 +39,7 @@ public class NoteCamera extends PhotonCamera {
         }
     }
 
-    public Transform3d getTransform3dOfRing() throws AprilTagGeneralCheckedException{
+    public Transform3d getTransform3dOfRing() throws AprilTagGeneralCheckedException {
         PhotonTrackedTarget e = getRing();
 
         return e.getBestCameraToTarget();
