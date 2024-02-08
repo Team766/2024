@@ -30,6 +30,6 @@ public class AutonomousModes {
                 // PointDir(0, 0), new PointDir(2, 0), new PointDir(1, 0), new PointDir(1, 1), new
                 // PointDir(2, 1), new PointDir(0, 1)})),
                 // new AutonomousMode("DoNothing", () -> new DoNothing()),
-                //new AutonomousMode("FollowExamplePath", () -> new FollowPath()),
+                // new AutonomousMode("FollowExamplePath", () -> new FollowPath()),
             };
 }

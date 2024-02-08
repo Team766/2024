@@ -1,6 +1,5 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -9,15 +8,11 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.library.ValueProvider;
-import com.team766.odometry.Odometry;
 import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.Robot;
 import com.team766.robot.gatorade.constants.ConfigConstants;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import com.team766.robot.gatorade.constants.PathPlannerConstants;
-import com.team766.simulator.ui.Trajectory;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -26,12 +21,15 @@ import edu.wpi.first.wpilibj.Timer;
 public class FollowPath extends Procedure {
     private PathPlannerPath path;
     private PathPlannerTrajectory generatedTrajectory;
-    private final ReplanningConfig replanningConfig; 
+    private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
 
-    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, PPHolonomicDriveController controller
-     /* TODO: add flip path support */) {
+    public FollowPath(
+            PathPlannerPath path,
+            ReplanningConfig replanningConfig,
+            PPHolonomicDriveController controller
+            /* TODO: add flip path support */ ) {
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
@@ -40,21 +38,45 @@ public class FollowPath extends Procedure {
     public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig) {
         this.path = path;
         this.replanningConfig = replanningConfig;
-        double maxSpeed = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS).valueOr(PathPlannerConstants.MAX_SPEED_MPS);
+        double maxSpeed =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
+                        .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
 
-        double translationP = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P).valueOr(PathPlannerConstants.TRANSLATION_P);
-        double translationI = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I).valueOr(PathPlannerConstants.TRANSLATION_I);
-        double translationD = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D).valueOr(PathPlannerConstants.TRANSLATION_D);
-        double rotationP = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P).valueOr(PathPlannerConstants.ROTATION_P);
-        double rotationI = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I).valueOr(PathPlannerConstants.ROTATION_I);
-        double rotationD = ConfigFileReader.getInstance().getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D).valueOr(PathPlannerConstants.ROTATION_D);
-        
-        controller = new PPHolonomicDriveController(
-            new PIDConstants(translationP, translationI, translationD),
-		    new PIDConstants(rotationP, rotationI, rotationD), 
-            maxSpeed, 
-            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS * Math.sqrt(2) / 2 // calculating distance between center of robot and wheels
-        );
+        double translationP =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
+                        .valueOr(PathPlannerConstants.TRANSLATION_P);
+        double translationI =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
+                        .valueOr(PathPlannerConstants.TRANSLATION_I);
+        double translationD =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
+                        .valueOr(PathPlannerConstants.TRANSLATION_D);
+        double rotationP =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
+                        .valueOr(PathPlannerConstants.ROTATION_P);
+        double rotationI =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
+                        .valueOr(PathPlannerConstants.ROTATION_I);
+        double rotationD =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
+                        .valueOr(PathPlannerConstants.ROTATION_D);
+
+        controller =
+                new PPHolonomicDriveController(
+                        new PIDConstants(translationP, translationI, translationD),
+                        new PIDConstants(rotationP, rotationI, rotationD),
+                        maxSpeed,
+                        OdometryInputConstants.DISTANCE_BETWEEN_WHEELS
+                                * Math.sqrt(2)
+                                / 2 // calculating distance between center of robot and wheels
+                        );
     }
 
     public FollowPath(String autoName) {
@@ -94,23 +116,25 @@ public class FollowPath extends Procedure {
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
                 double previousError = Math.abs(controller.getPositionalError());
-                double currentError = curPose.getTranslation().getDistance(targetState.positionMeters);
+                double currentError =
+                        curPose.getTranslation().getDistance(targetState.positionMeters);
 
                 if (currentError >= replanningConfig.dynamicReplanningTotalErrorThreshold
-                    || currentError - previousError
-                    // TODO: is this always negative?
-                        >= replanningConfig.dynamicReplanningErrorSpikeThreshold) {
+                        || currentError - previousError
+                                // TODO: is this always negative?
+                                >= replanningConfig.dynamicReplanningErrorSpikeThreshold) {
                     replanPath(curPose, currentSpeeds);
                     timer.reset();
                     targetState = generatedTrajectory.sample(0);
                 }
             }
 
-            ChassisSpeeds targetSpeeds = controller.calculateRobotRelativeSpeeds(curPose, targetState);
-            
+            ChassisSpeeds targetSpeeds =
+                    controller.calculateRobotRelativeSpeeds(curPose, targetState);
+
             Robot.drive.controlFieldOriented(targetSpeeds);
         }
-        
+
         if (path.getGoalEndState().getVelocity() < 0.1) {
             Robot.drive.stopDrive();
         }
@@ -119,12 +143,12 @@ public class FollowPath extends Procedure {
     private void replanPath(Pose2d currentPose, ChassisSpeeds currentSpeeds) {
         PathPlannerPath replanned = path.replan(currentPose, currentSpeeds);
         generatedTrajectory =
-            new PathPlannerTrajectory(replanned, currentSpeeds, currentPose.getRotation());
+                new PathPlannerTrajectory(replanned, currentSpeeds, currentPose.getRotation());
     }
 
     private Pose2d getPose() {
         PointDir curPos_pd = Robot.drive.getCurrentPosition();
-        return new Pose2d(curPos_pd.getX(), curPos_pd.getY(),
-        new Rotation2d(curPos_pd.getHeading()));
+        return new Pose2d(
+                curPos_pd.getX(), curPos_pd.getY(), new Rotation2d(curPos_pd.getHeading()));
     }
 }

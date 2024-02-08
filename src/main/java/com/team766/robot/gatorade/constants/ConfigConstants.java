@@ -38,7 +38,8 @@ public final class ConfigConstants {
     public static final String SHOULDER_MAX_ACCEL = "shoulder.sparkPID.maxAccel";
 
     // pathplanner config values
-    public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS = "followpath.maxSpeedMetersPerSecond";
+    public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS =
+            "followpath.maxSpeedMetersPerSecond";
 
     public static final String PATH_FOLLOWING_TRANSLATION_P = "followpath.translationP";
     public static final String PATH_FOLLOWING_TRANSLATION_I = "followpath.translationI";
@@ -46,5 +47,4 @@ public final class ConfigConstants {
     public static final String PATH_FOLLOWING_ROTATION_P = "followpath.rotationP";
     public static final String PATH_FOLLOWING_ROTATION_I = "followpath.rotationI";
     public static final String PATH_FOLLOWING_ROTATION_D = "followpath.rotationD";
-    
 }
