@@ -18,7 +18,6 @@ import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
 import com.team766.hal.mock.MockBeaconSensor;
-import com.team766.hal.mock.MockEncoder;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.hal.mock.MockPositionSensor;
@@ -111,10 +110,6 @@ public class WPIRobotProvider extends RobotProvider {
 
     private PneumaticHub ph = new PneumaticHub();
 
-    private static String getStringOrEmpty(ValueProvider<String> string) {
-        return string.hasValue() ? string.get() : "";
-    }
-
     @Override
     public MotorController getMotor(
             final int index,
@@ -144,9 +139,9 @@ public class WPIRobotProvider extends RobotProvider {
                 motor = new CANVictorMotorController(index);
                 break;
             case TalonFX:
-                final ValueProvider<String> canBus =
+                final ValueProvider<String> CANBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                motor = new CANTalonFxMotorController(index, getStringOrEmpty(canBus));
+                motor = new CANTalonFxMotorController(index, CANBus.get());
                 break;
             case VictorSP:
                 motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
@@ -179,28 +174,6 @@ public class WPIRobotProvider extends RobotProvider {
     }
 
     @Override
-    public EncoderReader getEncoder(int index1, String configPrefix) {
-        final ValueProvider<EncoderReader.Type> type =
-                ConfigFileReader.getInstance()
-                        .getEnum(EncoderReader.Type.class, configPrefix + ".type");
-
-        if (type.hasValue()) {
-            if (type.get() == EncoderReader.Type.CANcoder) {
-                ValueProvider<String> canBus =
-                        ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                return new CANcoderEncoder(index1, canBus.get());
-            } else {
-                Logger.get(Category.CONFIGURATION)
-                        .logData(
-                                Severity.WARNING,
-                                "Unknown encoder type: %s",
-                                type.get().toString());
-            }
-        }
-        return new MockEncoder();
-    }
-
-    @Override
     public SolenoidController getSolenoid(int index) {
         if (solenoids[index] == null) {
             solenoids[index] = new Solenoid(index);
@@ -222,7 +195,7 @@ public class WPIRobotProvider extends RobotProvider {
             if (type.get() == GyroReader.Type.Pigeon2) {
                 ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
-                return new PigeonGyro(index, getStringOrEmpty(canBus));
+                return new PigeonGyro(index, canBus.get());
             }
         }
 

@@ -134,6 +134,7 @@ public class Drive extends Mechanism {
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
+     * @param yawRad the robot gyro's current yaw value in radians
      * @param x the x value for the position joystick
      * @param y the y value for the position joystick
      * @param turn the turn value from the rotation joystick
@@ -181,10 +182,17 @@ public class Drive extends Mechanism {
     public void setCross() {
         checkContextOwnership();
 
-        swerveFL.steer(config.frontLeftLocation());
-        swerveFR.steer(config.frontRightLocation());
-        swerveBL.steer(config.backLeftLocation());
-        swerveBR.steer(config.backRightLocation());
+        swerveFL.steer(
+                new Vector2D(
+                        config.frontLeftLocation().getY(), -config.frontLeftLocation().getX()));
+        swerveFR.steer(
+                new Vector2D(
+                        config.frontRightLocation().getY(), -config.frontRightLocation().getX()));
+        swerveBL.steer(
+                new Vector2D(config.backLeftLocation().getY(), -config.backLeftLocation().getX()));
+        swerveBR.steer(
+                new Vector2D(
+                        config.backRightLocation().getY(), -config.backRightLocation().getX()));
     }
 
     public void resetGyro() {

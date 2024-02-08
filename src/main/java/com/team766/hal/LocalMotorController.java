@@ -21,6 +21,7 @@ public class LocalMotorController implements MotorController {
     private ControlMode controlMode = ControlMode.PercentOutput;
     private double setpoint = 0.0;
     private MotorController leader = null;
+    private boolean sensorMissingReported = false;
 
     public LocalMotorController(
             String configPrefix,
@@ -39,13 +40,14 @@ public class LocalMotorController implements MotorController {
                         new Runnable() {
                             @Override
                             public void run() {
-
-                                if (leader != null) {
-                                    setPower(leader.get());
-                                    return;
-                                }
-
                                 switch (LocalMotorController.this.controlMode) {
+                                    case Current:
+                                        LoggerExceptionUtils.logException(
+                                                new UnsupportedOperationException(
+                                                        toString()
+                                                                + " does not support Current control mode"));
+                                        stopMotor();
+                                        break;
                                     case Disabled:
                                         // support proper output disabling if this.motor is a
                                         // MotorController
@@ -56,6 +58,30 @@ public class LocalMotorController implements MotorController {
                                         } else {
                                             setPower(0);
                                         }
+                                        break;
+                                    case Follower:
+                                        setPower(leader.get());
+                                        break;
+                                    case MotionMagic:
+                                        LoggerExceptionUtils.logException(
+                                                new UnsupportedOperationException(
+                                                        toString()
+                                                                + " does not support MotionMagic control mode"));
+                                        stopMotor();
+                                        break;
+                                    case MotionProfile:
+                                        LoggerExceptionUtils.logException(
+                                                new UnsupportedOperationException(
+                                                        toString()
+                                                                + " does not support MotionProfile control mode"));
+                                        stopMotor();
+                                        break;
+                                    case MotionProfileArc:
+                                        LoggerExceptionUtils.logException(
+                                                new UnsupportedOperationException(
+                                                        toString()
+                                                                + " does not support MotionProfileArc control mode"));
+                                        stopMotor();
                                         break;
                                     case PercentOutput:
                                         setPower(setpoint);
@@ -135,11 +161,13 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void setSensorPosition(double position) {
-        if (this.sensor == null) {
+        if (this.sensor == null && !sensorMissingReported) {
             Logger.get(Category.CONFIGURATION)
                     .logRaw(
                             Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+                            toString()
+                                    + " method sSP() does not have an attached sensor configured");
+            sensorMissingReported = true;
             return;
         }
         if (this.sensorInverted != this.inverted) {
@@ -150,11 +178,12 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public double getSensorPosition() {
-        if (this.sensor == null) {
+        if (this.sensor == null && !sensorMissingReported) {
             Logger.get(Category.CONFIGURATION)
                     .logRaw(
                             Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+                            toString()
+                                    + " method gSP() does not have an attached sensor configured");
             return 0.0;
         }
         double position = sensor.getPosition() + sensorOffset;
@@ -166,11 +195,12 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public double getSensorVelocity() {
-        if (this.sensor == null) {
+        if (this.sensor == null && !sensorMissingReported) {
             Logger.get(Category.CONFIGURATION)
                     .logRaw(
                             Severity.ERROR,
-                            toString() + " does not have an attached sensor configured");
+                            toString()
+                                    + " method gSV() does not have an attached sensor configured");
             return 0.0;
         }
         double velocity = sensor.getRate();
@@ -182,9 +212,12 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void set(final ControlMode mode, final double value) {
-        if (this.controlMode != mode || this.leader != null) {
+        if (mode == ControlMode.Follower) {
+            throw new IllegalArgumentException(
+                    "Use follow() method instead of passing Follower to set()");
+        }
+        if (this.controlMode != mode) {
             pidController.reset();
-            this.leader = null;
         }
         this.controlMode = mode;
         this.setpoint = value;
@@ -202,6 +235,7 @@ public class LocalMotorController implements MotorController {
         }
         // TODO: detect if this.motor is a MotorController, and delegate to its follow() method if
         // so.
+        this.controlMode = ControlMode.Follower;
         this.leader = leader_;
     }
 

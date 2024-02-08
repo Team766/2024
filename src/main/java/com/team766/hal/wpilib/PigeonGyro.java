@@ -28,8 +28,7 @@ public class PigeonGyro implements GyroReader {
 
     @Override
     public double getAngle() {
-        // Negative since getAngle returns CW+ and our standard is CCW
-        return -pigeon.getAngle();
+        return pigeon.getAngle();
     }
 
     @Override
