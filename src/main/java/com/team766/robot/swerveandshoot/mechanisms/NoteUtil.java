@@ -12,7 +12,7 @@ public class NoteUtil extends Mechanism {
 
     public NoteUtil() {
         // set reasonable deadzone!
-        yawPID = new PIDController(0.04, 0, 0, 0, -0.25, 0.25, 2);
+        yawPID = new PIDController(0.02, 0.001, 0, 0, -0.35, 0.35, 2.5);
         yawPID.setSetpoint(0.00);
     }
 
