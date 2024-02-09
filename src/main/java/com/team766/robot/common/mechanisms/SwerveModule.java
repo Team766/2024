@@ -23,12 +23,12 @@ public class SwerveModule {
     private final double offset;
 
     /*
-     * Factor that converts between motor units and degrees
-     * Multiply to convert from degrees to motor units
-     * Divide to convert from motor units to degrees
+     * Factor that converts between rotations and degrees
+     * Multiply to convert from degrees to rotations
+     * Divide to convert from rotations to degrees
      */
     private static final double ENCODER_CONVERSION_FACTOR =
-            (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
+            (150.0 / 7.0) /*steering gear ratio*/ * (1. / 360.0) /*rotations to degrees*/;
 
     /**
      * Creates a new SwerveModule.
@@ -96,6 +96,8 @@ public class SwerveModule {
         // Sets the degree of the steer wheel
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
         // understands
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
@@ -117,6 +119,7 @@ public class SwerveModule {
 
         // sets the power to the magnitude of the vector
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Drive", vector.getNorm());
         drive.set(vector.getNorm());
     }
 
