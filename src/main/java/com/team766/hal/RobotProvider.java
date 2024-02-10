@@ -1,6 +1,7 @@
 package com.team766.hal;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.controllers.PIDController;
 import com.team766.controllers.TimeProviderI;
 import com.team766.hal.mock.MockAnalogInput;
 import com.team766.hal.mock.MockDigitalInput;
@@ -146,6 +147,10 @@ public abstract class RobotProvider {
             if (sensorInvertedConfig.valueOr(false)) {
                 motor.setSensorInverted(true);
             }
+            if (ConfigFileReader.getInstance().containsKey(configName + ".pid")) {
+                configurePID(configName, motor);
+            }
+
             return motor;
         } catch (IllegalArgumentException ex) {
             Logger.get(Category.CONFIGURATION)
@@ -155,6 +160,48 @@ public abstract class RobotProvider {
                             configName,
                             LoggerExceptionUtils.exceptionToString(ex));
             return new LocalMotorController(configName, new MockMotorController(0), sensor);
+        }
+    }
+
+    private void configurePID(final String configName, MotorController motor) {
+        ValueProvider<Double> pValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.P_GAIN_KEY);
+        ValueProvider<Double> iValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.I_GAIN_KEY);
+        ValueProvider<Double> dValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.D_GAIN_KEY);
+        ValueProvider<Double> ffValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.FF_GAIN_KEY);
+        ValueProvider<Double> outputMaxLowValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.OUTPUT_MAX_LOW_KEY);
+        ValueProvider<Double> outputMaxHighValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.OUTPUT_MAX_HIGH_KEY);
+        // TODO: also handle .threshold?
+
+        if (pValue.hasValue()) {
+            motor.setP(pValue.get());
+        }
+
+        if (iValue.hasValue()) {
+            motor.setI(iValue.get());
+        }
+
+        if (dValue.hasValue()) {
+            motor.setI(dValue.get());
+        }
+
+        if (ffValue.hasValue()) {
+            motor.setFF(ffValue.get());
+        }
+
+        if (outputMaxLowValue.hasValue() || outputMaxHighValue.hasValue()) {
+            motor.setOutputRange(outputMaxLowValue.valueOr(-1.0), outputMaxHighValue.valueOr(1.0));
         }
     }
 
