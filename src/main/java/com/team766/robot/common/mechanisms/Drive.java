@@ -14,9 +14,6 @@ import com.team766.odometry.PointDir;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -39,9 +36,9 @@ public class Drive extends Mechanism {
     private static PointDir currentPosition;
 
     /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
-            NetworkTableInstance.getDefault()
-                    .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
-                    .publish(); */
+    NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+            .publish(); */
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -230,7 +227,7 @@ public class Drive extends Mechanism {
     @Override
     public void run() {
         currentPosition = swerveOdometry.run();
-        //log(currentPosition.toString());
+        // log(currentPosition.toString());
         SmartDashboard.putString("position", currentPosition.toString());
 
         SmartDashboard.putNumber("Yaw", getHeading());
