@@ -146,6 +146,10 @@ public abstract class RobotProvider {
             if (sensorInvertedConfig.valueOr(false)) {
                 motor.setSensorInverted(true);
             }
+            if (ConfigFileReader.getInstance().containsKey(configName + ".pid")) {
+                configurePID(configName, motor);
+            }
+
             return motor;
         } catch (IllegalArgumentException ex) {
             Logger.get(Category.CONFIGURATION)
@@ -155,6 +159,42 @@ public abstract class RobotProvider {
                             configName,
                             LoggerExceptionUtils.exceptionToString(ex));
             return new LocalMotorController(configName, new MockMotorController(0), sensor);
+        }
+    }
+
+    private void configurePID(final String configName, MotorController motor) {
+        ValueProvider<Double> pValue =
+                ConfigFileReader.getInstance().getDouble(configName + ".pid.pGain");
+        ValueProvider<Double> iValue =
+                ConfigFileReader.getInstance().getDouble(configName + ".pid.iGain");
+        ValueProvider<Double> dValue =
+                ConfigFileReader.getInstance().getDouble(configName + ".pid.dGain");
+        ValueProvider<Double> ffValue =
+                ConfigFileReader.getInstance().getDouble(configName + ".pid.ffGain");
+        ValueProvider<Double> outputMaxLowValue =
+                ConfigFileReader.getInstance().getDouble(configName + ".pid.outputMaxLow");
+        ValueProvider<Double> outputMaxHighValue =
+                ConfigFileReader.getInstance().getDouble(configName + ".pid.outputMaxHigh");
+        // TODO: also handle .threshold?
+
+        if (pValue.hasValue()) {
+            motor.setP(pValue.get());
+        }
+
+        if (iValue.hasValue()) {
+            motor.setI(iValue.get());
+        }
+
+        if (dValue.hasValue()) {
+            motor.setI(dValue.get());
+        }
+
+        if (ffValue.hasValue()) {
+            motor.setFF(ffValue.get());
+        }
+
+        if (outputMaxLowValue.hasValue() || outputMaxHighValue.hasValue()) {
+            motor.setOutputRange(outputMaxLowValue.valueOr(0.0), outputMaxHighValue.valueOr(0.0));
         }
     }
 
