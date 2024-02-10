@@ -146,7 +146,6 @@ public abstract class RobotProvider {
             }
             if (sensorInvertedConfig.valueOr(false)) {
                 motor.setSensorInverted(true);
-            }
             // check for, apply any PID settings that are in a sub-config
             configurePID(configName + ".pid.", motor);
 
