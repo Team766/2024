@@ -119,6 +119,8 @@ public class OI extends Procedure {
                             (leftJoystickX), -(leftJoystickY), (rightJoystickX));
                 }
             } else {
+                // if (rightJoystick.getButton(9)) {Robot.drive.controlFieldOriented(0, -0.2, 0);}
+                // else if (rightJoystick.getButton(10)) {Robot.drive.controlFieldOriented(0, 0.2, 0);}
                 Robot.drive.stopDrive();
             }
 

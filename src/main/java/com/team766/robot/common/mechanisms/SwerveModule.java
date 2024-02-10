@@ -98,6 +98,7 @@ public class SwerveModule {
         // understands
         SmartDashboard.putNumber(
                 "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
+
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);

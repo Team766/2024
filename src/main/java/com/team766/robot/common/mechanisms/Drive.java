@@ -230,7 +230,7 @@ public class Drive extends Mechanism {
     @Override
     public void run() {
         currentPosition = swerveOdometry.run();
-        log(currentPosition.toString());
+        //log(currentPosition.toString());
         SmartDashboard.putString("position", currentPosition.toString());
 
         SmartDashboard.putNumber("Yaw", getHeading());

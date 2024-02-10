@@ -253,7 +253,7 @@ public class Odometry extends LoggingBase {
             setCurrentEncoderValues();
             updateCurrentPositions();
             findRobotPosition();
-            log(currentPosition.toString());
+            //log(currentPosition.toString());
         }
         return currentPosition;
     }
