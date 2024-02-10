@@ -22,12 +22,19 @@ public class OI extends Procedure {
         joystick0 = RobotProvider.instance.getJoystick(0);
         joystick1 = RobotProvider.instance.getJoystick(1);
         macropad = RobotProvider.instance.getJoystick(2);
+
     }
 
     public void run(final Context context) {
-        // context.takeOwnership(Robot.drive);
+        context.takeOwnership(Robot.lights);
         // com.team766.Robot.smores
+        
+        
+        
         while (true) {
+            context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+            RobotProvider.instance.refreshDriverStationData();
+            
             // boolean[] button_pressed = new boolean[16];
             // for (int i = 0; i < 16; i++) {
             //     if (macropad.getButtonPressed(i + 1)) {
@@ -37,18 +44,21 @@ public class OI extends Procedure {
             //     SmartDashboard.putBoolean("Button " + (i + 1), button_pressed[i]);
             // }
 
-            double nudge = (macropad.getButton(12) ? 1 : 0) - (macropad.getButton(11) ? 1 : 0);
             // driving
-            if (macropad.getButton(1)) {
-                if (nudge != 0.0) {
-                    log("Driving " + nudge);
-                }
+            if (macropad.getButtonPressed(1)) {
+                Robot.lights.rainbow();
+            } else if (macropad.getButtonPressed(2)) {
+                Robot.lights.randColor();
+            } else if (macropad.getButton(3)) {
+                Robot.lights.randColor();
+            } else if (macropad.getButtonPressed(16)) {
+                Robot.lights.clear();
             }
-            // kicker
-            else if (macropad.getButton(2)) {
-                if (nudge != 0.0) {
-                    log("Kicker " + nudge);
-                }
+            if (macropad.getButton(13)) {
+                Robot.lights.changeBrightness(-0.01);
+            }
+            if (macropad.getButton(14)) {
+                Robot.lights.changeBrightness(0.01);
             }
 
             // forward is 2, backward is 6.
@@ -61,8 +71,6 @@ public class OI extends Procedure {
             // Robot.drive.setDrivePower(leftMotorPower, rightMotorPower);
 
             // wait for driver station data (and refresh it using the WPILib APIs)
-            context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-            RobotProvider.instance.refreshDriverStationData();
         }
     }
 }

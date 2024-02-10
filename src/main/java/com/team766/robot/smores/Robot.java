@@ -7,10 +7,12 @@ import com.team766.robot.smores.mechanisms.*;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
+    public static Lights lights;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
+        lights = new Lights();
     }
 
     @Override
