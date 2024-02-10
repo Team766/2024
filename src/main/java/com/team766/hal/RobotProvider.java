@@ -1,6 +1,7 @@
 package com.team766.hal;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.controllers.PIDController;
 import com.team766.controllers.TimeProviderI;
 import com.team766.hal.mock.MockAnalogInput;
 import com.team766.hal.mock.MockDigitalInput;
@@ -164,17 +165,23 @@ public abstract class RobotProvider {
 
     private void configurePID(final String configName, MotorController motor) {
         ValueProvider<Double> pValue =
-                ConfigFileReader.getInstance().getDouble(configName + ".pid.pGain");
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.P_GAIN_KEY);
         ValueProvider<Double> iValue =
-                ConfigFileReader.getInstance().getDouble(configName + ".pid.iGain");
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.I_GAIN_KEY);
         ValueProvider<Double> dValue =
-                ConfigFileReader.getInstance().getDouble(configName + ".pid.dGain");
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.D_GAIN_KEY);
         ValueProvider<Double> ffValue =
-                ConfigFileReader.getInstance().getDouble(configName + ".pid.ffGain");
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.FF_GAIN_KEY);
         ValueProvider<Double> outputMaxLowValue =
-                ConfigFileReader.getInstance().getDouble(configName + ".pid.outputMaxLow");
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.OUTPUT_MAX_LOW_KEY);
         ValueProvider<Double> outputMaxHighValue =
-                ConfigFileReader.getInstance().getDouble(configName + ".pid.outputMaxHigh");
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + ".pid." + PIDController.OUTPUT_MAX_HIGH_KEY);
         // TODO: also handle .threshold?
 
         if (pValue.hasValue()) {
@@ -194,7 +201,7 @@ public abstract class RobotProvider {
         }
 
         if (outputMaxLowValue.hasValue() || outputMaxHighValue.hasValue()) {
-            motor.setOutputRange(outputMaxLowValue.valueOr(0.0), outputMaxHighValue.valueOr(0.0));
+            motor.setOutputRange(outputMaxLowValue.valueOr(-1.0), outputMaxHighValue.valueOr(1.0));
         }
     }
 
