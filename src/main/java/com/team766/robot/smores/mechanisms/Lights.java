@@ -2,8 +2,8 @@ package com.team766.robot.smores.mechanisms;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.team766.framework.Mechanism;
 
 public class Lights extends Mechanism {
@@ -15,21 +15,24 @@ public class Lights extends Mechanism {
     private double brightness;
     private Animation rainbowAnimation;
     private Animation fireAnimation;
+    private Runnable lastRun;
 
-    public Lights(){
+    public Lights() {
         this(0.1);
     }
 
     public Lights(double brightness) {
         candle = new CANdle(CANID);
+        this.clear();
         setBrightness(brightness);
     }
 
-    public void setBrightness(double brightness){
+    public void setBrightness(double brightness) {
         brightness = Math.max(Math.min(brightness, 1), 0);
         this.brightness = brightness;
         rainbowAnimation = new RainbowAnimation(brightness, 0.75, LED_COUNT);
         fireAnimation = new FireAnimation(brightness, .1, LED_COUNT, 0.1, 0.1);
+        lastRun.run();
     }
 
     public double getBrightness() {
@@ -41,11 +44,11 @@ public class Lights extends Mechanism {
     }
 
     private int applyBrightness(int color) {
-        return (int)(brightness * color);
+        return (int) (brightness * color);
     }
 
     private int randInt(int max) {
-        return (int)(Math.random() * max);
+        return (int) (Math.random() * max);
     }
 
     private int randInt() {
@@ -64,15 +67,21 @@ public class Lights extends Mechanism {
         checkContextOwnership();
         candle.clearAnimation(0);
         candle.setLEDs(applyBrightness(r), applyBrightness(g), applyBrightness(b));
+        lastRun = () -> setColor(r, g, b);
+    }
+
+    public void animate(Animation animation) {
+        checkContextOwnership();
+        candle.animate(animation);
     }
 
     public void rainbow() {
-        checkContextOwnership();
-        candle.animate(rainbowAnimation);
+        lastRun = () -> animate(rainbowAnimation);
+        lastRun.run();
     }
 
     public void fire() {
-        checkContextOwnership();
-        candle.animate(fireAnimation);
+        lastRun = () -> animate(fireAnimation);
+        lastRun.run();
     }
 }

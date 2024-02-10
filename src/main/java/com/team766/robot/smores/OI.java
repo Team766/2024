@@ -22,19 +22,16 @@ public class OI extends Procedure {
         joystick0 = RobotProvider.instance.getJoystick(0);
         joystick1 = RobotProvider.instance.getJoystick(1);
         macropad = RobotProvider.instance.getJoystick(2);
-
     }
 
     public void run(final Context context) {
         context.takeOwnership(Robot.lights);
         // com.team766.Robot.smores
-        
-        
-        
+
         while (true) {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
-            
+
             // boolean[] button_pressed = new boolean[16];
             // for (int i = 0; i < 16; i++) {
             //     if (macropad.getButtonPressed(i + 1)) {
