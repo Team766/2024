@@ -38,10 +38,10 @@ public class Drive extends Mechanism {
     // variable representing current position
     private static PointDir currentPosition;
 
-    private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+    /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
-                    .publish();
+                    .publish(); */
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
