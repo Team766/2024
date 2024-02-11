@@ -187,7 +187,7 @@ public abstract class RobotProvider {
         }
 
         if (dValue.hasValue()) {
-            motor.setI(dValue.get());
+            motor.setD(dValue.get());
         }
 
         if (ffValue.hasValue()) {
