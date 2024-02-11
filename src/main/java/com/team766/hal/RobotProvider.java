@@ -147,9 +147,8 @@ public abstract class RobotProvider {
             if (sensorInvertedConfig.valueOr(false)) {
                 motor.setSensorInverted(true);
             }
-            if (ConfigFileReader.getInstance().containsKey(configName + ".pid")) {
-                configurePID(configName, motor);
-            }
+            // check for, apply any PID settings that are in a sub-config
+            configurePID(configName + ".pid.", motor);
 
             return motor;
         } catch (IllegalArgumentException ex) {
@@ -165,24 +164,19 @@ public abstract class RobotProvider {
 
     private void configurePID(final String configName, MotorController motor) {
         ValueProvider<Double> pValue =
-                ConfigFileReader.getInstance()
-                        .getDouble(configName + ".pid." + PIDController.P_GAIN_KEY);
+                ConfigFileReader.getInstance().getDouble(configName + PIDController.P_GAIN_KEY);
         ValueProvider<Double> iValue =
-                ConfigFileReader.getInstance()
-                        .getDouble(configName + ".pid." + PIDController.I_GAIN_KEY);
+                ConfigFileReader.getInstance().getDouble(configName + PIDController.I_GAIN_KEY);
         ValueProvider<Double> dValue =
-                ConfigFileReader.getInstance()
-                        .getDouble(configName + ".pid." + PIDController.D_GAIN_KEY);
+                ConfigFileReader.getInstance().getDouble(configName + PIDController.D_GAIN_KEY);
         ValueProvider<Double> ffValue =
-                ConfigFileReader.getInstance()
-                        .getDouble(configName + ".pid." + PIDController.FF_GAIN_KEY);
+                ConfigFileReader.getInstance().getDouble(configName + PIDController.FF_GAIN_KEY);
         ValueProvider<Double> outputMaxLowValue =
                 ConfigFileReader.getInstance()
-                        .getDouble(configName + ".pid." + PIDController.OUTPUT_MAX_LOW_KEY);
+                        .getDouble(configName + PIDController.OUTPUT_MAX_LOW_KEY);
         ValueProvider<Double> outputMaxHighValue =
                 ConfigFileReader.getInstance()
-                        .getDouble(configName + ".pid." + PIDController.OUTPUT_MAX_HIGH_KEY);
-        // TODO: also handle .threshold?
+                        .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY);
 
         if (pValue.hasValue()) {
             motor.setP(pValue.get());
