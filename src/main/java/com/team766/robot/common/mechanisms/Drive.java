@@ -35,6 +35,11 @@ public class Drive extends Mechanism {
     // variable representing current position
     private static PointDir currentPosition;
 
+    /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+    NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+            .publish(); */
+
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
 
@@ -230,11 +235,15 @@ public class Drive extends Mechanism {
     @Override
     public void run() {
         currentPosition = swerveOdometry.run();
-        log(currentPosition.toString());
+        // log(currentPosition.toString());
         SmartDashboard.putString("position", currentPosition.toString());
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
+
+        // TODO: get the SwerveModuleStates
+        /* SwerveModuleState[] states = null; // TODO
+        swerveModuleStatePublisher.set(states); */
     }
 }
