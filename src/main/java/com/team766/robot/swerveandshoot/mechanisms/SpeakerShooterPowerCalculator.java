@@ -170,7 +170,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         return robotToTag;
     }
 
-    public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException{
+    public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException {
         yPID.setSetpoint(score.y_position);
         yPID.calculate(this.getTransform3dOfRobotToTag().getY());
 
@@ -186,6 +186,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             Robot.tempShooter.shoot();
         }
     }
+
     /**
      * This method will return the closest scoring position to the robot.
      * It will use the robotToTag transform3d to find the closest position.
