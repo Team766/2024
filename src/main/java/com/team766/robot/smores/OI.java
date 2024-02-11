@@ -29,28 +29,30 @@ public class OI extends Procedure {
         // com.team766.Robot.smores
 
         while (true) {
+            // Wait for new driver station data.
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            // boolean[] button_pressed = new boolean[16];
-            // for (int i = 0; i < 16; i++) {
-            //     if (macropad.getButtonPressed(i + 1)) {
-            //         button_pressed[i] = !button_pressed[i];
-            //         // log("button " + i + " pressed");
-            //     }
-            //     SmartDashboard.putBoolean("Button " + (i + 1), button_pressed[i]);
-            // }
-
-            // driving
+            // Pick animation/colors.
             if (macropad.getButtonPressed(1)) {
                 Robot.lights.rainbow();
             } else if (macropad.getButtonPressed(2)) {
                 Robot.lights.randColor();
             } else if (macropad.getButton(3)) {
                 Robot.lights.randColor();
+            } else if (macropad.getButton(3)) {
+                Robot.lights.randColor();
             } else if (macropad.getButtonPressed(16)) {
                 Robot.lights.clear();
             }
+
+            if (macropad.getButtonPressed(4)) {
+                Robot.lights.setColor(255, 255, 255);
+            } else if (macropad.getButtonReleased(4)) {
+                Robot.lights.clear();
+            }
+
+            // Brightness adjusting
             if (macropad.getButton(13)) {
                 Robot.lights.changeBrightness(-0.01);
             }

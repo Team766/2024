@@ -27,9 +27,8 @@ public class Lights extends Mechanism {
         setBrightness(brightness);
     }
 
-    public void setBrightness(double brightness) {
-        brightness = Math.max(Math.min(brightness, 1), 0);
-        this.brightness = brightness;
+    public void setBrightness(double value) {
+        brightness = Math.max(Math.min(value, 1), 0);
         rainbowAnimation = new RainbowAnimation(brightness, 0.75, LED_COUNT);
         fireAnimation = new FireAnimation(brightness, .1, LED_COUNT, 0.1, 0.1);
         lastRun.run();
