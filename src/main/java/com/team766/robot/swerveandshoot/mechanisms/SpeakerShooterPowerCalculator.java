@@ -83,22 +83,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      * @throws AprilTagGeneralCheckedException previous exceptions that could have arisen from any abstracted method calls.
      * @author Max Spier, 1/7/2024
      */
-    public void shoot() throws AprilTagGeneralCheckedException {
-        ScoringPosition score = closestTo();
-        yPID.setSetpoint(score.y_position);
-        yPID.calculate(this.getTransform3dOfRobotToTag().getY());
-
-        xPID.setSetpoint(score.x_position);
-        xPID.calculate(this.getTransform3dOfRobotToTag().getX());
-
-        Robot.tempShooter.setAngle(score.angle);
-        Robot.tempShooter.runMotors(score.power);
-
-        Robot.drive.controlRobotOriented(xPID.getOutput(), yPID.getOutput(), 0);
-
-        if (xPID.getOutput() + yPID.getOutput() == 0) {
-            Robot.tempShooter.shoot();
-        }
+    public void shootClosest() throws AprilTagGeneralCheckedException {
+        goToAndScore(closestTo());
     }
 
     /*
@@ -184,6 +170,22 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         return robotToTag;
     }
 
+    public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException{
+        yPID.setSetpoint(score.y_position);
+        yPID.calculate(this.getTransform3dOfRobotToTag().getY());
+
+        xPID.setSetpoint(score.x_position);
+        xPID.calculate(this.getTransform3dOfRobotToTag().getX());
+
+        Robot.tempShooter.setAngle(score.angle);
+        Robot.tempShooter.runMotors(score.power);
+
+        Robot.drive.controlRobotOriented(xPID.getOutput(), yPID.getOutput(), 0);
+
+        if (xPID.getOutput() + yPID.getOutput() == 0) {
+            Robot.tempShooter.shoot();
+        }
+    }
     /**
      * This method will return the closest scoring position to the robot.
      * It will use the robotToTag transform3d to find the closest position.
