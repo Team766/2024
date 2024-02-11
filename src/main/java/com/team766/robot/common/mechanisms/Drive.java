@@ -110,9 +110,9 @@ public class Drive extends Mechanism {
 
     /**
      * Maps parameters to robot oriented swerve movement
-     * @param x the x value for the position joystick
-     * @param y the y value for the position joystick
-     * @param turn the turn value from the rotation joystick
+     * @param x the x value for the position joystick, positive being forward
+     * @param y the y value for the position joystick, positive being left
+     * @param turn the turn value from the rotation joystick, positive being CCW
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
@@ -129,19 +129,19 @@ public class Drive extends Mechanism {
                         .add(
                                 turn,
                                 createOrthogonalVector(config.frontRightLocation()).normalize()));
-        swerveBR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
         swerveBL.driveAndSteer(
                 new Vector2D(x, y)
                         .add(turn, createOrthogonalVector(config.backLeftLocation()).normalize()));
+        swerveBR.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
     }
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
-     * @param x the x value for the position joystick
-     * @param y the y value for the position joystick
-     * @param turn the turn value from the rotation joystick
+     * @param x the x value for the position joystick, positive being forward
+     * @param y the y value for the position joystick, positive being left
+     * @param turn the turn value from the rotation joystick, positive being CCW
      */
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
@@ -158,7 +158,6 @@ public class Drive extends Mechanism {
 
     /**
      * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param yawRad
      * @param chassisSpeeds
      */
     public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {

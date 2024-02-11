@@ -76,10 +76,11 @@ public class SwerveModule {
      * @param vector the vector specifying the module's motion
      */
     public void steer(Vector2D vector) {
-        // Calculates the angle of the vector from -180° to 180°
         SmartDashboard.putString(
                 "[" + modulePlacement + "]" + "x, y",
                 String.format("%.2f, %.2f", vector.getX(), vector.getY()));
+
+        // Calculates the angle of the vector from -180° to 180°
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
 
         // Add 360 * number of full rotations to vectorTheta, then add offset
