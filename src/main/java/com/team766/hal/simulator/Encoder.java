@@ -8,13 +8,8 @@ public class Encoder implements EncoderReader {
     private final int channel;
     private double distancePerPulse = 1.0;
 
-    public Encoder(final int a, final int b) {
-        this.channel = a;
-    }
-
-    @Override
-    public int get() {
-        return (int) ProgramInterface.encoderChannels[channel].distance;
+    public Encoder(final int channel) {
+        this.channel = channel;
     }
 
     @Override
@@ -23,18 +18,9 @@ public class Encoder implements EncoderReader {
     }
 
     @Override
-    public boolean getStopped() {
-        return getRate() == 0;
-    }
-
-    @Override
-    public boolean getDirection() {
-        return getRate() > 0;
-    }
-
-    @Override
     public double getDistance() {
-        return get() * distancePerPulse;
+        int distance = (int) ProgramInterface.encoderChannels[channel].distance;
+        return distance * distancePerPulse;
     }
 
     @Override

@@ -37,22 +37,6 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
                 value /= 10.0;
                 ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Velocity;
                 break;
-            case Current:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Current;
-                break;
-            case Follower:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Follower;
-                useFourTermSet = false;
-                break;
-            case MotionProfile:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfile;
-                break;
-            case MotionMagic:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic;
-                break;
-            case MotionProfileArc:
-                ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
-                break;
             case Voltage:
                 m_device.setVoltage(value);
                 return;

@@ -20,21 +20,9 @@ public interface MotorController extends BasicMotorController {
         PercentOutput,
         Position,
         Velocity,
-        Current,
         Voltage,
-        Follower,
-        MotionProfile,
-        MotionMagic,
-        MotionProfileArc,
         Disabled,
     }
-
-    /**
-     * Common interface for getting the current power output by a motor controller.
-     *
-     * @return The current set power. Value is between -1.0 and 1.0.
-     */
-    double get();
 
     /**
      * Common interface for setting the power outputu by a motor controller.

@@ -34,26 +34,8 @@ public class MotorControllerWithSensorScale implements MotorController {
             case Velocity:
                 delegate.set(mode, value / scale);
                 return;
-            case Current:
-                delegate.set(mode, value);
-                return;
             case Voltage:
                 delegate.set(mode, value);
-                return;
-            case Follower:
-                delegate.set(mode, value);
-                return;
-            case MotionProfile:
-                // TODO: What is value here? This assumes its a target position.
-                delegate.set(mode, value / scale);
-                return;
-            case MotionMagic:
-                // TODO: What is value here? This assumes its a target position.
-                delegate.set(mode, value / scale);
-                return;
-            case MotionProfileArc:
-                // TODO: What is value here? This assumes its a target position.
-                delegate.set(mode, value / scale);
                 return;
             case Disabled:
                 delegate.set(mode, value);

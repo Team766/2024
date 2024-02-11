@@ -8,26 +8,11 @@ public class MockEncoder implements EncoderReader {
     private double rate = 0;
     private double distancePerPulse = 1;
 
-    public MockEncoder(final int a, final int b) {}
-
-    @Override
-    public int get() {
-        return (int) Math.round(distance / distancePerPulse);
-    }
+    public MockEncoder() {}
 
     @Override
     public void reset() {
         distance = 0;
-    }
-
-    @Override
-    public boolean getStopped() {
-        return this.rate == 0;
-    }
-
-    @Override
-    public boolean getDirection() {
-        return this.rate > 0;
     }
 
     @Override

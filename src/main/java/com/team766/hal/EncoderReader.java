@@ -2,35 +2,14 @@ package com.team766.hal;
 
 public interface EncoderReader extends ControlInputReader {
 
-    /**
-     * Gets the current count. Returns the current count on the Encoder. This
-     * method compensates for the decoding type.
-     *
-     * @return Current count from the Encoder adjusted for the 1x, 2x, or 4x
-     *         scale factor.
-     */
-    int get();
+    enum Type {
+        CANcoder
+    };
 
     /**
      * Reset the Encoder distance to zero. Resets the current count to zero on the encoder.
      */
     void reset();
-
-    /**
-     * Determine if the encoder is stopped. Using the MaxPeriod value, a boolean is returned that is
-     * true if the encoder is considered stopped and false if it is still moving. A stopped encoder
-     * is one where the most recent pulse width exceeds the MaxPeriod.
-     *
-     * @return True if the encoder is considered stopped.
-     */
-    boolean getStopped();
-
-    /**
-     * The last direction the encoder value changed.
-     *
-     * @return The last direction the encoder value changed.
-     */
-    boolean getDirection();
 
     /**
      * Get the distance the robot has driven since the last reset.
