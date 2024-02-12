@@ -104,6 +104,11 @@ public class Drive extends Mechanism {
                         OdometryInputConstants.RATE_LIMITER_TIME);
     }
 
+    /**
+     * Helper method to create a new vector clockwise orthogonal to the given one
+     * @param vector input vector
+     * @return clockwise orthoginal output vector
+     */
     private static Vector2D createOrthogonalVector(Vector2D vector) {
         return new Vector2D(vector.getY(), -vector.getX());
     }
