@@ -105,8 +105,7 @@ public class GyroBalance extends Procedure {
             }
 
             // Drives the robot with the calculated speed and direction
-            Robot.drive.controlFieldOriented(
-                    Math.toRadians(Robot.drive.getHeading()), 0, driveSpeed, 0);
+            Robot.drive.controlFieldOriented(0, driveSpeed, 0);
             context.yield();
         }
         // Loops until robot is level or until a call to the abort() method

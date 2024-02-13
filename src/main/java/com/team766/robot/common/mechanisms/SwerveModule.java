@@ -48,6 +48,7 @@ public class SwerveModule {
         this.steer = steer;
         this.encoder = encoder;
         this.offset = computeEncoderOffset();
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
         // Current limit for motors to avoid breaker problems
         drive.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
@@ -66,7 +67,7 @@ public class SwerveModule {
             return 0; // ??
         }
         return (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) % 360
-                - value.getValueAsDouble();
+                - (value.getValueAsDouble() * 360);
     }
 
     /**
@@ -76,6 +77,9 @@ public class SwerveModule {
      */
     public void steer(Vector2D vector) {
         // Calculates the angle of the vector from -180° to 180°
+        SmartDashboard.putString(
+                "[" + modulePlacement + "]" + "x, y",
+                String.format("%.2f, %.2f", vector.getX(), vector.getY()));
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
 
         // Add 360 * number of full rotations to vectorTheta, then add offset
@@ -94,7 +98,13 @@ public class SwerveModule {
         // understands
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Angle", angleDegrees);
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + "RelativeAngle",
+                steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + "CANCoder",
+                encoder.getAbsolutePosition().getValueAsDouble() * 360);
     }
 
     /**

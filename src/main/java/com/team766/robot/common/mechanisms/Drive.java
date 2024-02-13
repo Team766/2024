@@ -13,6 +13,11 @@ import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -96,6 +101,10 @@ public class Drive extends Mechanism {
                         OdometryInputConstants.RATE_LIMITER_TIME);
     }
 
+    private static Vector2D createOrthogonalVector(Vector2D vector) {
+        return new Vector2D(vector.getY(), -vector.getX());
+    }
+
     /**
      * Maps parameters to robot oriented swerve movement
      * @param x the x value for the position joystick
@@ -104,16 +113,25 @@ public class Drive extends Mechanism {
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
+        SmartDashboard.putString(
+                "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFL.driveAndSteer(
-                new Vector2D(x, y).add(turn, config.frontLeftLocation().normalize()));
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveFR.driveAndSteer(
-                new Vector2D(x, y).add(turn, config.frontRightLocation().normalize()));
+                new Vector2D(x, y)
+                        .add(
+                                turn,
+                                createOrthogonalVector(config.frontRightLocation()).normalize()));
         swerveBR.driveAndSteer(
-                new Vector2D(x, y).add(turn, config.backRightLocation().normalize()));
-        swerveBL.driveAndSteer(new Vector2D(x, y).add(turn, config.backLeftLocation().normalize()));
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
+        swerveBL.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(turn, createOrthogonalVector(config.backLeftLocation()).normalize()));
     }
 
     /**
@@ -123,9 +141,10 @@ public class Drive extends Mechanism {
      * @param y the y value for the position joystick
      * @param turn the turn value from the rotation joystick
      */
-    public void controlFieldOriented(double yawRad, double x, double y, double turn) {
+    public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
 
+        double yawRad = Math.toRadians(getHeading());
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -133,6 +152,19 @@ public class Drive extends Mechanism {
                 Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
                 Math.sin(-yawRad) * x + Math.cos(-yawRad) * y,
                 turn);
+    }
+
+    /**
+     * Overloads controlFieldOriented to work with a chassisSpeeds input
+     * @param yawRad
+     * @param chassisSpeeds
+     */
+    public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
+        double vx = chassisSpeeds.vxMetersPerSecond;
+        double vy = chassisSpeeds.vyMetersPerSecond;
+        double vang = chassisSpeeds.omegaRadiansPerSecond;
+
+        controlFieldOriented(vx, vy, vang);
     }
 
     /*
@@ -152,17 +184,10 @@ public class Drive extends Mechanism {
     public void setCross() {
         checkContextOwnership();
 
-        swerveFL.steer(
-                new Vector2D(
-                        config.frontLeftLocation().getY(), -config.frontLeftLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(
-                        config.frontRightLocation().getY(), -config.frontRightLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(config.backLeftLocation().getY(), -config.backLeftLocation().getX()));
-        swerveFL.steer(
-                new Vector2D(
-                        config.backRightLocation().getY(), -config.backRightLocation().getX()));
+        swerveFL.steer(config.frontLeftLocation());
+        swerveFR.steer(config.frontRightLocation());
+        swerveBL.steer(config.backLeftLocation());
+        swerveBR.steer(config.backRightLocation());
     }
 
     public void resetGyro() {

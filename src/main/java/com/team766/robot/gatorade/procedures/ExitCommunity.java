@@ -12,8 +12,7 @@ public class ExitCommunity extends Procedure {
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
         double startY = Robot.drive.getCurrentPosition().getY();
-        Robot.drive.controlFieldOriented(
-                Math.toRadians(Robot.drive.getHeading()), 0, -FollowPointsInputConstants.SPEED, 0);
+        Robot.drive.controlFieldOriented(0, -FollowPointsInputConstants.SPEED, 0);
         context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getY() - startY) > DIST);
         Robot.drive.stopDrive();
     }

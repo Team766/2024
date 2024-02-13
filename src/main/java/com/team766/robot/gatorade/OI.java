@@ -107,21 +107,19 @@ public class OI extends Procedure {
                     && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX)
                             > 0) {
                 context.takeOwnership(Robot.drive);
-                log("current pos: "+Robot.drive.getCurrentPosition());
+
+                log("current pos: " + Robot.drive.getCurrentPosition());
+
                 // If a button is pressed, drive is just fine adjustment
                 if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
                     Robot.drive.controlFieldOriented(
-                            Math.toRadians(Robot.drive.getHeading()),
                             (leftJoystickX * FINE_DRIVING_COEFFICIENT),
-                            (leftJoystickY * FINE_DRIVING_COEFFICIENT),
+                            -(leftJoystickY * FINE_DRIVING_COEFFICIENT),
                             (rightJoystickX * FINE_DRIVING_COEFFICIENT));
                 } else {
                     // On deafault, controls the robot field oriented
                     Robot.drive.controlFieldOriented(
-                            Math.toRadians(Robot.drive.getHeading()),
-                            (leftJoystickX),
-                            (leftJoystickY),
-                            (rightJoystickX));
+                            (leftJoystickX), -(leftJoystickY), (rightJoystickX));
                 }
             } else {
                 Robot.drive.stopDrive();

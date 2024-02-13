@@ -16,8 +16,7 @@ public class OPECHelper extends Procedure {
         // robot gyro is offset 90º from how we want, so we reset it to 90º to account for this
         Robot.drive.resetGyro();
         // new IntakeRelease().run(context);
-        Robot.drive.controlFieldOriented(
-                Math.toRadians(Robot.drive.getHeading()), 0, -FollowPointsInputConstants.SPEED, 0);
+        Robot.drive.controlFieldOriented(0, -FollowPointsInputConstants.SPEED, 0);
         context.waitFor(() -> Math.abs(Robot.drive.getCurrentPosition().getY() - startY) > DIST);
         Robot.drive.stopDrive();
     }
