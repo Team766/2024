@@ -70,7 +70,6 @@ public class Odometry {
             int encoderToRevolutionConstant,
             double rateLimiterTime) {
 
-
         this.gyro = gyro;
         odometryLimiter = new RateLimiter(rateLimiterTime);
         motorList = motors;
@@ -84,7 +83,6 @@ public class Odometry {
 
         currentPosition = new Pose2d();
 
-
         wheelPositions = wheelLocations;
         WHEEL_CIRCUMFERENCE = wheelCircumference;
         GEAR_RATIO = gearRatio;
@@ -97,7 +95,6 @@ public class Odometry {
             prevEncoderValues[i] = 0;
             currEncoderValues[i] = 0;
         }
-
     }
 
     /**
