@@ -33,6 +33,11 @@ public class Drive extends Mechanism {
     // variable representing current position
     private static Pose2d currentPosition;
 
+    /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+    NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+            .publish(); */
+
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
 
@@ -132,7 +137,6 @@ public class Drive extends Mechanism {
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
-     * @param yawRad the robot gyro's current yaw value in radians
      * @param x the x value for the position joystick
      * @param y the y value for the position joystick
      * @param turn the turn value from the rotation joystick
@@ -220,7 +224,15 @@ public class Drive extends Mechanism {
     @Override
     public void run() {
         currentPosition = swerveOdometry.run();
-        log("current pos: " + currentPosition.toString());
+        // log("current pos: " + currentPosition.toString());
         SmartDashboard.putString("position", currentPosition.toString());
+
+        SmartDashboard.putNumber("Yaw", getHeading());
+        SmartDashboard.putNumber("Pitch", getPitch());
+        SmartDashboard.putNumber("Roll", getRoll());
+
+        // TODO: get the SwerveModuleStates
+        /* SwerveModuleState[] states = null; // TODO
+        swerveModuleStatePublisher.set(states); */
     }
 }

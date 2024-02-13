@@ -35,7 +35,7 @@ public class TestRobotProvider extends RobotProvider {
                     new LocalMotorController(
                             configPrefix,
                             new MockMotorController(index),
-                            localSensor != null ? localSensor : new MockEncoder(-1, -1));
+                            localSensor != null ? localSensor : new MockEncoder());
         }
         return motors[index];
     }
@@ -43,9 +43,14 @@ public class TestRobotProvider extends RobotProvider {
     @Override
     public EncoderReader getEncoder(final int index1, final int index2) {
         if (encoders[index1] == null) {
-            encoders[index1] = new MockEncoder(index1, index2);
+            encoders[index1] = new MockEncoder();
         }
         return encoders[index1];
+    }
+
+    @Override
+    public EncoderReader getEncoder(final int index1, String configPrefix) {
+        return new MockEncoder();
     }
 
     @Override
