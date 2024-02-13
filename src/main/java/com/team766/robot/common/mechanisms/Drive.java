@@ -11,8 +11,6 @@ import com.team766.logging.Category;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;

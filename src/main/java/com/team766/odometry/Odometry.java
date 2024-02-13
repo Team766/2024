@@ -5,10 +5,9 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
-import java.util.Optional;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -63,7 +62,7 @@ public class Odometry {
     public Odometry(
             GyroReader gyro,
             MotorController[] motors,
-            CANCoder[] CANCoders,
+            CANcoder[] CANCoders,
             Translation2d[] wheelLocations,
             double wheelCircumference,
             double gearRatio,
