@@ -46,10 +46,14 @@ public class NoteUtil extends Mechanism {
             yawPID.calculate(yawInDegrees);
             double power = yawPID.getOutput();
 
+            if(power > 0 && yawInDegrees > 0){
+                power *= -1;
+            }
+
             log("power: " + power);
 
             log("power: " + power);
-            if (Math.abs(power) > 0.035) {
+            if (Math.abs(power) > 0.045) {
                 // x needs inverted if camera is on front (found out through tests)
                 Robot.drive.controlRobotOriented(power, 0, 0);
             } else {

@@ -108,8 +108,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // SmartDashboard.putNumber("X LOCATION", this.getTransform3dOfRobotToTag().getX());
         // SmartDashboard.putNumber("Y LOCATION", this.getTransform3dOfRobotToTag().getY());
 
-        yPID.setSetpoint(0.28);
-        xPID.setSetpoint(3.4);
+        yPID.setSetpoint(-0.08);
+        xPID.setSetpoint(2.72);
         Transform3d robotToTag;
         try {
             robotToTag = this.getTransform3dOfRobotToTag();
