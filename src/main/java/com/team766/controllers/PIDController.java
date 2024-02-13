@@ -28,6 +28,15 @@ import com.team766.logging.Severity;
  *
  */
 public class PIDController {
+
+    public static final String P_GAIN_KEY = "pGain";
+    public static final String I_GAIN_KEY = "iGain";
+    public static final String D_GAIN_KEY = "dGain";
+    public static final String FF_GAIN_KEY = "ffGain";
+    public static final String OUTPUT_MAX_LOW_KEY = "outputMaxLow";
+    public static final String OUTPUT_MAX_HIGH_KEY = "outputMaxHigh";
+    public static final String THRESHOLD_KEY = "threshold";
+
     private int printCounter = 0;
     private boolean print = false;
 
@@ -58,13 +67,13 @@ public class PIDController {
             configPrefix += ".";
         }
         return new PIDController(
-                ConfigFileReader.getInstance().getDouble(configPrefix + "pGain"),
-                ConfigFileReader.getInstance().getDouble(configPrefix + "iGain"),
-                ConfigFileReader.getInstance().getDouble(configPrefix + "dGain"),
-                ConfigFileReader.getInstance().getDouble(configPrefix + "ffGain"),
-                ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxLow"),
-                ConfigFileReader.getInstance().getDouble(configPrefix + "outputMaxHigh"),
-                ConfigFileReader.getInstance().getDouble(configPrefix + "threshold"));
+                ConfigFileReader.getInstance().getDouble(configPrefix + P_GAIN_KEY),
+                ConfigFileReader.getInstance().getDouble(configPrefix + I_GAIN_KEY),
+                ConfigFileReader.getInstance().getDouble(configPrefix + D_GAIN_KEY),
+                ConfigFileReader.getInstance().getDouble(configPrefix + FF_GAIN_KEY),
+                ConfigFileReader.getInstance().getDouble(configPrefix + OUTPUT_MAX_LOW_KEY),
+                ConfigFileReader.getInstance().getDouble(configPrefix + OUTPUT_MAX_HIGH_KEY),
+                ConfigFileReader.getInstance().getDouble(configPrefix + THRESHOLD_KEY));
     }
 
     /**
