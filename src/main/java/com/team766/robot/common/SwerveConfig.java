@@ -71,7 +71,27 @@ public class SwerveConfig {
         return this;
     }
 
-public SwerveConfig withWheelCircumference(double wheelCircumference) {
+    public SwerveConfig withFrontLeftLocation(double x, double y) {
+        this.frontLeftLocation = new Vector2D(x, y);
+        return this;
+    }
+
+    public SwerveConfig withFrontRightLocation(double x, double y) {
+        this.frontRightLocation = new Vector2D(x, y);
+        return this;
+    }
+
+    public SwerveConfig withBackLeftLocation(double x, double y) {
+        this.backLeftLocation = new Vector2D(x, y);
+        return this;
+    }
+
+    public SwerveConfig withBackRightLocation(double x, double y) {
+        this.backRightLocation = new Vector2D(x, y);
+        return this;
+    }
+
+    public SwerveConfig withWheelCircumference(double wheelCircumference) {
         this.wheelCircumference = wheelCircumference;
         return this;
     }
