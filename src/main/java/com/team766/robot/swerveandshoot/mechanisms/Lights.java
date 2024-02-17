@@ -21,16 +21,16 @@ public class Lights extends Mechanism {
         candle.setLEDs(128, 0, 128);
     }
 
-    public void white() {
+    public void signalNoteInIntake() {
         checkContextOwnership();
         // NOTE: 255, 255, 255 trips the breaker. lol
         candle.setLEDs(128, 128, 128);
     }
 
-    public void signalNotInUse() {
-        checkContextOwnership();
-        candle.setLEDs(255, 150, 0);
-    }
+    // public void signalNotInUse() {
+    //     checkContextOwnership();
+    //     candle.setLEDs(255, 150, 0);
+    // }
 
     public void signalNoRing() {
         checkContextOwnership();

@@ -8,14 +8,27 @@ import com.team766.robot.swerveandshoot.Robot;
 
 public class NoteUtil extends Mechanism {
 
+    // PID Controller that moves the robot horizontally [<------->] in order to line up with the
+    // note
     private PIDController yawPID;
 
     public NoteUtil() {
-        // set reasonable deadzone!
+        // Instantiating the PID controller with previous values that we have found work well.
         yawPID = new PIDController(0.02, 0.001, 0, 0, -0.25, 0.25, 3);
+        // Setting the setpoint at zero because the middle of the note should be the middle of the
+        // camera.
         yawPID.setSetpoint(0.00);
     }
 
+    public enum status {
+        RING_IN_VIEW,
+        NO_RING_IN_VIEW,
+        RING_IN_INTAKE
+    }
+
+    /*
+     * toString method that returns important information about the ring, or else returns the error
+     */
     public String toString() {
         try {
             return "Yaw: "
@@ -27,43 +40,51 @@ public class NoteUtil extends Mechanism {
         }
     }
 
-    public int getStatus() {
+    public NoteUtil.status getStatus() {
 
         try {
             StaticCameras.noteDetectorCamera.getRing();
         } catch (AprilTagGeneralCheckedException e) {
-            return 2;
+            return status.NO_RING_IN_VIEW;
         }
 
-        return 1;
+        return status.RING_IN_VIEW;
     }
 
-    public void goToAndPickupNote() throws AprilTagGeneralCheckedException {
+    public NoteUtil.status goToAndPickupNote() throws AprilTagGeneralCheckedException {
 
-        if (!hasNoteInIntake()) {
+        try {
+            if (!hasNoteInIntake()) {
 
-            double yawInDegrees = StaticCameras.noteDetectorCamera.getYawOfRing();
-            yawPID.calculate(yawInDegrees);
-            double power = yawPID.getOutput();
+                double yawInDegrees = StaticCameras.noteDetectorCamera.getYawOfRing();
+                yawPID.calculate(yawInDegrees);
+                double power = yawPID.getOutput();
 
-            if (power > 0 && yawInDegrees > 0) {
-                power *= -1;
-            }
+                if (power > 0 && yawInDegrees > 0) {
+                    power *= -1;
+                }
 
-            log("power: " + power);
+                log("power: " + power);
 
-            log("power: " + power);
-            if (Math.abs(power) > 0.045) {
-                // x needs inverted if camera is on front (found out through tests)
-                Robot.drive.controlRobotOriented(power, 0, 0);
+                log("power: " + power);
+                if (Math.abs(power) > 0.045) {
+                    // x needs inverted if camera is on front (found out through tests)
+                    Robot.drive.controlRobotOriented(power, 0, 0);
+                } else {
+                    // Run intake the whole time
+                    Robot.tempPickerUpper.runIntake();
+                    Robot.drive.controlRobotOriented(0, -0.3, 0);
+                }
+
+                // double pitchInDegrees = StaticCameras.noteDetectorCamera.getPitchOfRing();
+                return status.RING_IN_VIEW;
+
             } else {
-                // Run intake the whole time
-                Robot.tempPickerUpper.runIntake();
-                Robot.drive.controlRobotOriented(0, -0.3, 0);
+                return status.RING_IN_INTAKE;
             }
 
-            // double pitchInDegrees = StaticCameras.noteDetectorCamera.getPitchOfRing();
-
+        } catch (AprilTagGeneralCheckedException e) {
+            return status.NO_RING_IN_VIEW;
         }
     }
 

@@ -34,11 +34,8 @@ public class OI extends Procedure {
             context.takeOwnership(Robot.drive);
 
             RobotProvider.instance.refreshDriverStationData();
-            // log(Robot.noteUtil.toString());
-            // Add driver controls here - make sure to take/release ownership
-            // of mechanisms when appropriate.
 
-            int lightStatusNum = 4;
+            // General drive util
 
             if (joystick0.getButtonPressed(2)) {
                 Robot.drive.resetGyro();
@@ -55,49 +52,79 @@ public class OI extends Procedure {
                 Robot.drive.stopDrive();
             }
 
-            Robot.noteUtil.test();
+            /*
+             * The joystick operator will need to hold all of these buttons when using vision to score or pickup a note
+             * The areas that this needs to happen are labled {SCORE1R, SCORE1L, PICKUP}
+             */
 
-            // need to hold
+            /*
+             * SCORE1R
+             * This is used to drive into the area labled 1R in the maker space.
+             */
             if (joystick0.getButton(1)) {
                 try {
-                    // Robot.speakerShooter.shoot();
-                    // Robot.speakerShooter.shootDefault();
                     Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 } catch (AprilTagGeneralCheckedException e) {
-
+                    // Can do whatever here
                 }
             }
 
+            /*
+             * SCORE1L
+             * This is used to drive into the area labled 1L in the maker space.
+             */
             if (joystick0.getButton(2)) {
                 try {
                     Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1L);
                 } catch (AprilTagGeneralCheckedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    // Can do whatever here
                 }
             }
 
+            /*
+             * PICKUP
+             * This is used to go to the ring and "pick" it up, or in reality right now just nudge it and pretend like it was picked up
+             */
             if (joystick1.getButton(1)) {
                 try {
+                    switch (Robot.noteUtil.goToAndPickupNote()) {
+                        case NO_RING_IN_VIEW:
+                            Robot.lights.signalNoRing();
+                            break;
+                        case RING_IN_INTAKE:
+                            Robot.lights.signalNoteInIntake();
+                            break;
+                        case RING_IN_VIEW:
+                            Robot.lights.signalRing();
+                            break;
+                        default:
+                            Robot.lights.turnLEDsOff();
+                            break;
+                    }
 
-                    Robot.noteUtil.goToAndPickupNote();
-                    lightStatusNum = Robot.noteUtil.getStatus();
                 } catch (AprilTagGeneralCheckedException e) {
-                    lightStatusNum = 2;
+                    Robot.lights.signalNoRing();
                 }
             }
 
-            switch (lightStatusNum) {
-                case 1:
-                    Robot.lights.signalRing();
-                    break;
-                case 2:
-                    // Robot.lights.signalNoRing();
-                    break;
-                case 4:
-                    Robot.lights.signalNotInUse();
-                default:
-                    Robot.lights.turnLEDsOff();
+            /*
+             * This is used to display the status of the ring viewer if the operator does not want to go to the ring
+             */
+            if (joystick1.getButton(2)) {
+                switch (Robot.noteUtil.getStatus()) {
+                    case NO_RING_IN_VIEW:
+                        Robot.lights.signalNoRing();
+                        break;
+                    case RING_IN_INTAKE:
+                        Robot.lights.signalNoteInIntake();
+                        break;
+                    case RING_IN_VIEW:
+                        Robot.lights.signalRing();
+                        break;
+                    default:
+                        Robot.lights.turnLEDsOff();
+                        break;
+                }
             }
         }
     }
