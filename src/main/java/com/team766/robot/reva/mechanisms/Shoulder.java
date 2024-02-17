@@ -25,10 +25,10 @@ public class Shoulder extends Mechanism {
         public double getAngle() {
             return angle;
         }
-
-        private MotorController leftMotor;
-        private MotorController rightMotor;
     }
+
+    private MotorController leftMotor;
+    private MotorController rightMotor;
 
     public Shoulder() {
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
