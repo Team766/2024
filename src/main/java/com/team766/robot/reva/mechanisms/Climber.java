@@ -1,5 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
+import static com.team766.robot.reva.constants.ConfigConstants.*;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -14,8 +15,8 @@ public class Climber extends Mechanism {
     private static final double GEAR_RATIO = 1;
 
     public Climber() {
-        leftMotor = RobotProvider.instance.getMotor("");
-        rightMotor = RobotProvider.instance.getMotor("");
+        leftMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
+        rightMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
         rightMotor.follow(leftMotor);
     }
 
