@@ -6,6 +6,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.swerveandshoot.mechanisms.SpeakerShooterPowerCalculator;
 import com.team766.robot.swerveandshoot.procedures.*;
 
 /**
@@ -60,9 +61,19 @@ public class OI extends Procedure {
             if (joystick0.getButton(1)) {
                 try {
                     // Robot.speakerShooter.shoot();
-                    Robot.speakerShooter.shootDefault();
+                    //Robot.speakerShooter.shootDefault();
+                    Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 } catch (AprilTagGeneralCheckedException e) {
 
+                }
+            }
+
+            if(joystick0.getButton(2)){
+                try {
+                    Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1L);
+                } catch (AprilTagGeneralCheckedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
 
@@ -81,7 +92,7 @@ public class OI extends Procedure {
                     Robot.lights.signalRing();
                     break;
                 case 2:
-                    Robot.lights.signalNoRing();
+                    // Robot.lights.signalNoRing();
                     break;
                 case 4:
                     Robot.lights.signalNotInUse();

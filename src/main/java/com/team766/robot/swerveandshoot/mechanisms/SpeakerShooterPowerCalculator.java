@@ -26,6 +26,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
     public static ScoringPosition centerPosition;
     public static ScoringPosition rightPosition;
 
+    public static ScoringPosition makerSpace1L, makerSpace1R;
+
     private boolean yDone = false;
 
     private PIDController xPID;
@@ -47,11 +49,14 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // switch
 
         // P I D FF OL OM TH
-        xPID = new PIDController(0.24, 0.0, 0, 0, -0.5, 0.5, 0.01);
-        yPID = new PIDController(0.1725, 0.0, 0, 0, -0.5, 0.5, 0.01);
+        xPID = new PIDController(0.40, 0.0, 0, 0, -0.75, 0.75, 0.02);
+        yPID = new PIDController(0.18, 0.0, 0, 0, -0.75, 0.75, 0.02);
         leftPosition = new ScoringPosition(0, 0, 0, 0, 0);
         centerPosition = new ScoringPosition(0, 0, 0, 0, 0);
         rightPosition = new ScoringPosition(0, 0, 0, 0, 0);
+
+        makerSpace1L = new ScoringPosition(0, 0, 2.88, -0.92, 180);
+        makerSpace1R = new ScoringPosition(0, 0, 2.9, 0.80, 180);
 
         // When do we know the alliance? Is that during the constructor or after?
         Optional<Alliance> currentAlliance = DriverStation.getAlliance();
@@ -87,6 +92,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         goToAndScore(closestTo());
     }
 
+    
+
     /*
      * Much similar to the shoot() method, this method does the exact same thing except changes all values to 1/2.
      * See javadoc for shoot() method for more information.
@@ -94,7 +101,6 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      * @throws AprilTagGeneralCheckedException any pervious exceptions from abstracted method calls.
      * @author Max Spier, 1/30/2024
      */
-
     public void shootDefault() throws AprilTagGeneralCheckedException {
 
         // x and y are inverted relative to the controlrobotoriented method
@@ -108,8 +114,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // SmartDashboard.putNumber("X LOCATION", this.getTransform3dOfRobotToTag().getX());
         // SmartDashboard.putNumber("Y LOCATION", this.getTransform3dOfRobotToTag().getY());
 
-        yPID.setSetpoint(-0.08);
-        xPID.setSetpoint(2.72);
+        yPID.setSetpoint(-.93);
+        xPID.setSetpoint(3.51);
         Transform3d robotToTag;
         try {
             robotToTag = this.getTransform3dOfRobotToTag();
@@ -172,15 +178,44 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
     public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException {
         yPID.setSetpoint(score.y_position);
-        yPID.calculate(this.getTransform3dOfRobotToTag().getY());
-
         xPID.setSetpoint(score.x_position);
-        xPID.calculate(this.getTransform3dOfRobotToTag().getX());
+        Transform3d robotToTag;
+        double turnConstant = 0;
+
+        try {
+            robotToTag = this.getTransform3dOfRobotToTag();
+
+            yPID.calculate(robotToTag.getY());
+            xPID.calculate(robotToTag.getX());
+
+            lastX = robotToTag.getX();
+            lastY = robotToTag.getY();
+
+            log("Z: " + robotToTag.getRotation().getZ());
+            // this 184 is just for good measure yk
+            if(Math.abs(robotToTag.getRotation().getZ()) > 4){
+                
+            }else{
+                if(robotToTag.getRotation().getZ() < 0){
+                    turnConstant = -0.02;
+                }else{
+                    turnConstant = 0.02;
+                }
+            }
+        } catch (AprilTagGeneralCheckedException e) {
+
+            yPID.calculate(lastY);
+            xPID.calculate(lastX);
+
+            turnConstant = 0; //needed?
+        }
 
         Robot.tempShooter.setAngle(score.angle);
         Robot.tempShooter.runMotors(score.power);
 
-        Robot.drive.controlRobotOriented(xPID.getOutput(), yPID.getOutput(), 0);
+        Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+
+        
 
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();
