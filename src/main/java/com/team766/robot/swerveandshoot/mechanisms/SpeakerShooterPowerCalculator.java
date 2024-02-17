@@ -114,6 +114,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      * This is the main method where the robot actually moves to the scoring position.
      * It sets the PID Controllers setpoints as those of the scoring location, and gets a transform 3d of the robots distance to the tag.
      * It then calculates the speed with the PID controllers using the robots current location.
+     * It also checks to see if the robot is flush with the target enough, and if it isn't, it moves it so it is.
      * 
      */
     public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException {
