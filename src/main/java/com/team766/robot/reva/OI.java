@@ -29,8 +29,6 @@ public class OI extends Procedure {
     }
 
     public void run(Context context) {
-        context.takeOwnership(Robot.drive);
-
         while (true) {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
@@ -39,6 +37,8 @@ public class OI extends Procedure {
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
+
+            // Swerve OI: take input from left, right joysticks.  Control Drive.
             swerveOI.handleOI(context);
         }
     }
