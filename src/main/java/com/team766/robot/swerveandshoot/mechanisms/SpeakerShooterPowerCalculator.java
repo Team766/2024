@@ -28,62 +28,56 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
     public static ScoringPosition makerSpace1L, makerSpace1R;
 
-    private boolean yDone = false;
-
     private PIDController xPID;
     private PIDController yPID;
 
+    //Last X/Y values just in case the tag is ever lost when moving.
     private double lastX = 0;
     private double lastY = 0;
 
     private int tagId;
 
     public SpeakerShooterPowerCalculator() throws AprilTagGeneralCheckedException {
-        // These positions need to be of robot relative to tag
-        // Y [<--------->] should be first
-        // X [vertical] should be second
+        //Instantiating PID Controllers for drive
+        //These PID controllers do a good job but overshoot on longer distances (on the swerve and shoot bot) but then recover nicley. I think I like them.
 
-        // new swerve code should handle this for us
-        // need to find viable deadzone amounts, i say maybe 0.02meters?
-        // deadzones should be included in the PID controllers so if they report 0.000 power then
-        // switch
-
-        // P I D FF OL OM TH
         xPID = new PIDController(0.40, 0.0, 0, 0, -0.75, 0.75, 0.02);
         yPID = new PIDController(0.18, 0.0, 0, 0, -0.75, 0.75, 0.02);
+
+        //Sample positions for later
         leftPosition = new ScoringPosition(0, 0, 0, 0, 0);
         centerPosition = new ScoringPosition(0, 0, 0, 0, 0);
         rightPosition = new ScoringPosition(0, 0, 0, 0, 0);
 
+        //Real positions that we are using rigt now
         makerSpace1L = new ScoringPosition(0, 0, 2.88, -0.92, 180);
         makerSpace1R = new ScoringPosition(0, 0, 2.9, 0.80, 180);
 
         // When do we know the alliance? Is that during the constructor or after?
         Optional<Alliance> currentAlliance = DriverStation.getAlliance();
 
-        // if (currentAlliance.isPresent()) {
-        //     if (currentAlliance.get() == Alliance.Red) {
-        //         tagId = 4;
-        //     } else if (currentAlliance.get() == Alliance.Blue) {
-        //         tagId = 7;
-        //     } else {
-        //         throw new AprilTagGeneralCheckedException(
-        //                 "Alliance not found correctly, neiter red nor blue somehow");
-        //     }
-        // } else {
-        //     tagId = 5; // the tag we have set up on the mini-cnc
-        //     //throw new AprilTagGeneralCheckedException(
-        //     //        "Alliance not found correctly, optional is empty.");
-        // }
+        if (currentAlliance.isPresent()) {
+            if (currentAlliance.get() == Alliance.Red) {
+                tagId = 4;
+            } else if (currentAlliance.get() == Alliance.Blue) {
+                tagId = 7;
+            } else {
+                throw new AprilTagGeneralCheckedException(
+                        "Alliance not found correctly, neiter red nor blue somehow");
+            }
+        } else {
+            tagId = 5;
+            throw new AprilTagGeneralCheckedException("Alliance not found correctly, optional is empty.");
+        }
 
+        // Setting the tag ID to 5 permanatly because this is what we are using in the Maker Space
         tagId = 5;
     }
 
     /**
      * This method will shoot the ball into the speaker.
      * It will move the robot to the closest scoring position, where it will then shoot.
-     * This method is not complete, it is basically just psuedocode right now.
-     * Once we have actual mechanism code (or at least a design), this can be finished.
+     * This method only uses the three default scoring positions, not the two that we have actually set up.
      *
      * @throws AprilTagGeneralCheckedException previous exceptions that could have arisen from any abstracted method calls.
      * @author Max Spier, 1/7/2024
@@ -92,65 +86,12 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         goToAndScore(closestTo());
     }
 
-    /*
-     * Much similar to the shoot() method, this method does the exact same thing except changes all values to 1/2.
-     * See javadoc for shoot() method for more information.
-     *
-     * @throws AprilTagGeneralCheckedException any pervious exceptions from abstracted method calls.
-     * @author Max Spier, 1/30/2024
-     */
-    public void shootDefault() throws AprilTagGeneralCheckedException {
-
-        // x and y are inverted relative to the controlrobotoriented method
-
-        // log("x power and then y power: " + xPID.getOutput() + "  " + yPID.getOutput() );
-        // log("locations, x and then y: " + this.getTransform3dOfRobotToTag().getX() + "   " +
-        // this.getTransform3dOfRobotToTag().getY());
-
-        // SmartDashboard.putNumber("X PID Output" , xPID.getOutput());
-        // SmartDashboard.putNumber("Y PID Output" , yPID.getOutput());
-        // SmartDashboard.putNumber("X LOCATION", this.getTransform3dOfRobotToTag().getX());
-        // SmartDashboard.putNumber("Y LOCATION", this.getTransform3dOfRobotToTag().getY());
-
-        yPID.setSetpoint(-.93);
-        xPID.setSetpoint(3.51);
-        Transform3d robotToTag;
-        try {
-            robotToTag = this.getTransform3dOfRobotToTag();
-
-            yPID.calculate(robotToTag.getY());
-            xPID.calculate(robotToTag.getX());
-
-            lastX = robotToTag.getX();
-            lastY = robotToTag.getY();
-        } catch (AprilTagGeneralCheckedException e) {
-
-            yPID.calculate(lastY);
-            xPID.calculate(lastX);
-        }
-
-        Robot.tempShooter.setAngle(0.5);
-        Robot.tempShooter.runMotors(0.5);
-
-        Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), 0);
-
-        // if(Math.abs(xPID.getOutput()) < 0.03 && Math.abs(3.4 - lastX) > 0.02 ){
-        //     Robot.drive.controlRobotOriented(3 * xPID.getOutput(), 0 , 0);
-        // }
-
-        // if(Math.abs(yPID.getOutput()) < 0.03 && Math.abs(0.28 - lastY) > 0.02){
-        //     Robot.drive.controlRobotOriented(0, 3 * yPID.getOutput(), 0);
-        // }
-
-        if (xPID.getOutput() + yPID.getOutput() == 0) {
-            Robot.tempShooter.shoot();
-        }
-    }
 
     /**
      * This method will return the transform3d of the robot to the tag.
      * It checks to make sure the tag is of the correct tag ID (according to the current alliance),
      * where it will then give that transform3d.
+     * This is more backend-ey, so could it go into a deeper class that we could use for abstraction?
      *
      * @return Transform3d of the robot to the tag
      * @throws AprilTagGeneralCheckedException if the tag is not found by any camera
@@ -161,19 +102,20 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         try {
             toUse = VisionUtil.findApriltagCameraThatHas(tagId);
         } catch (AprilTagGeneralCheckedException e) {
-
-            log("Ee: " + StaticCameras.camera2.getTagIdOfBestTarget());
             throw new AprilTagGeneralCheckedException("Cameras could not find tag, try again.");
         }
 
         Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
 
-        log("here");
-        log(robotToTag.toString());
-
         return robotToTag;
     }
 
+    /*
+     * This is the main method where the robot actually moves to the scoring position.
+     * It sets the PID Controllers setpoints as those of the scoring location, and gets a transform 3d of the robots distance to the tag.
+     * It then calculates the speed with the PID controllers using the robots current location.
+     * 
+     */
     public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException {
         yPID.setSetpoint(score.y_position);
         xPID.setSetpoint(score.x_position);
@@ -189,8 +131,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             lastX = robotToTag.getX();
             lastY = robotToTag.getY();
 
-            log("Z: " + robotToTag.getRotation().getZ());
-            // this 184 is just for good measure yk
+            
+            //If it is more that four degrees off...
             if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
 
             } else {
