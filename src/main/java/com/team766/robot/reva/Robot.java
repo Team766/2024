@@ -5,8 +5,8 @@ import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.constants.SwerveDriveConstants;
+import com.team766.robot.reva.mechanisms.Shoulder;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
