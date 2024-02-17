@@ -5,7 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.common.SwerveOI;
+import com.team766.robot.common.DriverOI;
 import com.team766.robot.reva.constants.InputConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class OI extends Procedure {
 
-    private final SwerveOI swerveOI;
+    private final DriverOI swerveOI;
     private final JoystickReader leftJoystick;
     private final JoystickReader rightJoystick;
 
@@ -25,7 +25,7 @@ public class OI extends Procedure {
 
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
-        swerveOI = new SwerveOI(Robot.drive, leftJoystick, rightJoystick);
+        swerveOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
     }
 
     public void run(Context context) {

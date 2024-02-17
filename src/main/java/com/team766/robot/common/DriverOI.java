@@ -5,27 +5,25 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.Drive;
 
-public class SwerveOI {
+public class DriverOI {
 
-    private static final double FINE_DRIVING_COEFFICIENT = 0.25;
+    protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
-    private final Drive drive;
-    private final JoystickReader leftJoystick;
-    private final JoystickReader rightJoystick;
-    private double rightJoystickX = 0;
-    private double leftJoystickX = 0;
-    private double leftJoystickY = 0;
-    private boolean isCross = false;
+    protected final Drive drive;
+    protected final JoystickReader leftJoystick;
+    protected final JoystickReader rightJoystick;
+    protected double rightJoystickX = 0;
+    protected double leftJoystickX = 0;
+    protected double leftJoystickY = 0;
+    protected boolean isCross = false;
 
-    public SwerveOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
+    public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
     }
 
     public void handleOI(Context context) {
-        // TODO: take and release ownership for entire handleOI?  (could make easier via base class)
-        // or only take and release ownership when manipulating mechanism?
         context.takeOwnership(drive);
 
         try {
