@@ -125,15 +125,13 @@ public class SwerveModule {
 
         // sets the power to the magnitude of the vector
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Drive", vector.getNorm());
-        drive.set(
-                ControlMode.Velocity,
-                vector.getNorm() // Desired speed m/sec
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
+        double power = vector.getNorm() // Desired speed m/sec
                         / wheelRadius // Wheel radians/sec
                         * DRIVE_GEAR_RATIO // Motor radians/sec
-                        / (2 * Math.PI) // Motor rotations/sec
-                        * 0.1 // Motor rotations/100ms (what velocity mode takes)
-                );
+                        / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes)
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
+        drive.set(ControlMode.Velocity, power);
     }
 
     /**
