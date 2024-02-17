@@ -16,8 +16,7 @@ public final class OdometryInputConstants {
     // will increase by 1.
     public static final int ENCODER_TO_REVOLUTION_CONSTANT = 1;
     // The distance between the center of a wheel to the center of an adjacent wheel, assuming the
-    // robot. This was measured
-    // as 20.5 inches, then converted to meters.
+    // robot is square. This was measured as 20.5 inches, then converted to meters.
     public static final double DISTANCE_BETWEEN_WHEELS = 20.5 * 2.54 / 100;
     // The distance between the center of the robot to a given wheel, assuming the robot is square
     public static final double WHEEL_DIST_FROM_CENTER = Math.sqrt(2) * DISTANCE_BETWEEN_WHEELS / 2;

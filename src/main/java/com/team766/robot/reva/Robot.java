@@ -24,7 +24,8 @@ public class Robot implements RobotConfigurator {
                         new Vector2D(SwerveDriveConstants.BL_X, SwerveDriveConstants.BL_Y),
                         new Vector2D(SwerveDriveConstants.BR_X, SwerveDriveConstants.BR_Y),
                         SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT,
-                        SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
+                        SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT,
+                        SwerveDriveConstants.WHEEL_CIRCUMFERENCE);
         drive = new Drive(config);
         shoulder = new Shoulder();
     }

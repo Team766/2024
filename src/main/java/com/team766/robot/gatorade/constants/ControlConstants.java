@@ -11,6 +11,6 @@ public class ControlConstants {
     // Positional velocity of robot that max joystick power controls in m/s
     public static final double MAX_VEL_POS = 5.0;
 
-    // Rotational velocity of robot that max joystick power controls in m/s
-    public static final double MAX_VEL_ROT = 1.0;
+    // Rotational velocity of robot that max joystick power controls in rad/s
+    public static final double MAX_VEL_ROT = 3.0;
 }
