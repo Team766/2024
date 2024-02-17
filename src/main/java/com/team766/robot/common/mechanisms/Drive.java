@@ -1,6 +1,6 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.robot.gatorade.constants.ConfigConstants.*;
+import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.framework.Mechanism;
@@ -69,10 +69,38 @@ public class Drive extends Mechanism {
         CANcoder encoderBL = new CANcoder(1, config.canBus());
 
         // initialize the swerve modules
-        swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR);
-        swerveFL = new SwerveModule("FL", driveFL, steerFL, encoderFL);
-        swerveBR = new SwerveModule("BR", driveBR, steerBR, encoderBR);
-        swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL);
+        swerveFR =
+                new SwerveModule(
+                        "FR",
+                        driveFR,
+                        steerFR,
+                        encoderFR,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveFL =
+                new SwerveModule(
+                        "FL",
+                        driveFL,
+                        steerFL,
+                        encoderFL,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveBR =
+                new SwerveModule(
+                        "BR",
+                        driveBR,
+                        steerBR,
+                        encoderBR,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveBL =
+                new SwerveModule(
+                        "BL",
+                        driveBL,
+                        steerBL,
+                        encoderBL,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
