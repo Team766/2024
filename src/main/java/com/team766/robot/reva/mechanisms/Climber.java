@@ -1,49 +1,55 @@
 package com.team766.robot.reva.mechanisms;
+
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
+import com.team766.hal.RobotProvider;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends Mechanism {
-	
-	private MotorController climberMotor;
-	private MotorController rightMotor;
 
-	public Climber() {
-		climberMotor = ...;
-		rightMotor = ...;
-		rightMotor.follow(climberMotor);
-	}
+    private MotorController leftMotor;
+    private MotorController rightMotor;
 
-	private double heightToRotations(double height) {
-		return height * GEAR_RATIO * CONVERSION;
-	}
+    // TODO: find real value
+    private static final double GEAR_RATIO = 1;
 
-	private double rotationsToHeight(double rotations) {
-		// ...
-	}
+    public Climber() {
+        leftMotor = RobotProvider.instance.getMotor("");
+        rightMotor = RobotProvider.instance.getMotor("");
+        rightMotor.follow(leftMotor);
+    }
 
-	public void setClimbPosition(double TargetHeight){
-		double r = heightToRotations(TargetHeight);
-		climberMotor.set(MotorController.ControlMode.Position, r);
-	}
+    private double heightToRotations(double height) {
+        return height * GEAR_RATIO;
+    }
 
-	public double getClimberPosition(){
-		return rotationsToHeight(climberMotor.getSensorPosition());
-	}
-	public void nudgeUp()
-	{
+    private double rotationsToHeight(double rotations) {
+        return rotations / GEAR_RATIO;
+    }
 
-		// one nudge is ##### cm
-	}
+    public void setClimbPosition(double TargetHeight) {
+        double r = heightToRotations(TargetHeight);
+        leftMotor.set(MotorController.ControlMode.Position, r);
+    }
 
-	public void nudgeDown()
-	{
-		// one nudge is ##### cm
-	}
+    public double getClimberPosition() {
+        return rotationsToHeight(leftMotor.getSensorPosition());
+    }
 
-	@Override
-	public void run() {
-		SmartDashboard.putNumber("[CLIMBER] Rotations", climberMotor.getSensorPosition());
-		
-		SmartDashboard.putNumber("[CLIMBER] Position", getClimberPosition);
-	}
+    public void nudgeUp() {
+        setClimbPosition(getClimberPosition() + 1);
+        // one nudge is ##### cm
+    }
+
+    public void nudgeDown() {
+        setClimbPosition(getClimberPosition() + 1);
+        // one nudge is ##### cm
+    }
+
+    @Override
+    public void run() {
+        SmartDashboard.putNumber("[CLIMBER] Rotations", leftMotor.getSensorPosition());
+
+        SmartDashboard.putNumber("[CLIMBER] Position", getClimberPosition());
+    }
 }
