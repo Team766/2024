@@ -64,10 +64,12 @@ public class Drive extends Mechanism {
         CANcoder encoderBL = new CANcoder(1, config.canBus());
 
         // initialize the swerve modules
-        swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR);
-        swerveFL = new SwerveModule("FL", driveFL, steerFL, encoderFL);
-        swerveBR = new SwerveModule("BR", driveBR, steerBR, encoderBR);
-        swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL);
+        double wheelRadius = config.wheelCircumference() / (2 * Math.PI);
+
+        swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR, wheelRadius);
+        swerveFL = new SwerveModule("FL", driveFL, steerFL, encoderFL, wheelRadius);
+        swerveBR = new SwerveModule("BR", driveBR, steerBR, encoderBR, wheelRadius);
+        swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL, wheelRadius);
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
@@ -78,17 +80,17 @@ public class Drive extends Mechanism {
         Point[] wheelPositions =
                 new Point[] {
                     new Point(
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
+                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER),
                     new Point(
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
+                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER),
                     new Point(
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
+                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
+                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER),
                     new Point(
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)
+                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
+                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER)
                 };
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
@@ -124,29 +126,36 @@ public class Drive extends Mechanism {
         SmartDashboard.putString(
                 "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
+        // Calculate the necessary turn velocity (m/s) for each motor:
+        double vTurn = OdometryInputConstants.WHEEL_DIST_FROM_CENTER * turn;
+
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFL.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.frontLeftLocation()).normalize()));
+                        .add(
+                                vTurn,
+                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveFR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
-                                turn,
+                                vTurn,
                                 createOrthogonalVector(config.frontRightLocation()).normalize()));
         swerveBL.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.backLeftLocation()).normalize()));
+                        .add(vTurn, createOrthogonalVector(config.backLeftLocation()).normalize()));
         swerveBR.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
+                        .add(
+                                vTurn,
+                                createOrthogonalVector(config.backRightLocation()).normalize()));
     }
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
-     * @param x the x value for the position joystick, positive being forward
-     * @param y the y value for the position joystick, positive being left
-     * @param turn the turn value from the rotation joystick, positive being CCW
+     * @param x the x value for the position joystick, positive being forward, in meters/sec
+     * @param y the y value for the position joystick, positive being left, in meters/sec
+     * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();

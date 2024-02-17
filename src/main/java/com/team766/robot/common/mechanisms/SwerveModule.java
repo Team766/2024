@@ -20,15 +20,17 @@ public class SwerveModule {
     private final MotorController drive;
     private final MotorController steer;
     private final CANcoder encoder;
+    private final double wheelRadius;
     private final double offset;
 
     /*
-     * Factor that converts between rotations and degrees
-     * Multiply to convert from degrees to rotations
-     * Divide to convert from rotations to degrees
+     * Factor that converts between motor rotations and wheel degrees
+     * Multiply to convert from wheel degrees to motor rotations
+     * Divide to convert from motor rotations to wheel degrees
      */
+    private static final double DRIVE_GEAR_RATIO = 6.75; // L2 gear ratio configuration
     private static final double ENCODER_CONVERSION_FACTOR =
-            (150.0 / 7.0) /*steering gear ratio*/ * (1. / 360.0) /*rotations to degrees*/;
+            (150.0 / 7.0) /*steering gear ratio*/ * (1. / 360.0) /*degrees to motor rotations*/;
 
     /**
      * Creates a new SwerveModule.
@@ -42,11 +44,13 @@ public class SwerveModule {
             String modulePlacement,
             MotorController drive,
             MotorController steer,
-            CANcoder encoder) {
+            CANcoder encoder,
+            double radius) {
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
         this.encoder = encoder;
+        this.wheelRadius = radius;
         this.offset = computeEncoderOffset();
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
@@ -113,7 +117,7 @@ public class SwerveModule {
 
     /**
      * Controls both steer and power (based on the target vector) for this module.
-     * @param vector the vector specifying the module's motion
+     * @param vector the vector specifying the module's velocity in m/s and direction
      */
     public void driveAndSteer(Vector2D vector) {
         // apply the steer
@@ -122,7 +126,14 @@ public class SwerveModule {
         // sets the power to the magnitude of the vector
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Drive", vector.getNorm());
-        drive.set(vector.getNorm());
+        drive.set(
+                ControlMode.Velocity,
+                vector.getNorm() // Desired speed m/sec
+                        / wheelRadius // Wheel radians/sec
+                        * DRIVE_GEAR_RATIO // Motor radians/sec
+                        / (2 * Math.PI) // Motor rotations/sec
+                        * 0.1 // Motor rotations/100ms (what velocity mode takes)
+                );
     }
 
     /**

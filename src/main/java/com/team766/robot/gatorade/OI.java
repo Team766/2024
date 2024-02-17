@@ -61,16 +61,16 @@ public class OI extends Procedure {
             // Negative because forward is negative in driver station
             leftJoystickX =
                     -createJoystickDeadzone(
-                            leftJoystick.getAxis(
-                                    InputConstants.AXIS_FORWARD_BACKWARD)); // For fwd/rv
+                                    leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
+                            * ControlConstants.MAX_VEL_POS; // For fwd/rv
             // Negative because left is negative in driver station
             leftJoystickY =
-                    -createJoystickDeadzone(
-                            leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)); // For left/right
+                    -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
+                            * ControlConstants.MAX_VEL_POS; // For left/right
             // Negative because left is negative in driver station
             rightJoystickY =
                     -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                            * ControlConstants.STEER_COEFFICIENT; // For steer
+                            * ControlConstants.MAX_VEL_ROT; // For steer
 
             if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
                 new IntakeOut().run(context);
