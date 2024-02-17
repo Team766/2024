@@ -32,7 +32,7 @@ To create this tangent vector, we can assign each module a position relative to 
 
 TODO: ADD IMAGE
 
-Now that we have the concepts for both translation and turning, we can combine them to get a single vector for each module representing the wheel's spin and power. This is achieved by the expression: 
+Now that we have the concepts for both translation and turning, we can combine them to get a single vector for each module representing the wheel's spin and power. This is achieved by the expression:
 **[module]**`.driveAndSteer(new Vector2D(x, y).add(turn, createOrthogonalVector(`**[module location]**`).normalize()));`
 
 First, we create a new vector using the inputted x and y speeds, representing the translational movement. We then add a second vector for the rotational movement, consisting of the vector perpendicular to the module location scaled down to a magnitude of one and subsequently scaled by the turn power. The combined vector is inputted to a method that converts it to a drive power and steer angle, and applied to the specified swerve module. This is repeated for each module, successfully controlling the robot!
