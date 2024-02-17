@@ -61,14 +61,14 @@ public class OI extends Procedure {
             if (joystick0.getButton(1)) {
                 try {
                     // Robot.speakerShooter.shoot();
-                    //Robot.speakerShooter.shootDefault();
+                    // Robot.speakerShooter.shootDefault();
                     Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 } catch (AprilTagGeneralCheckedException e) {
 
                 }
             }
 
-            if(joystick0.getButton(2)){
+            if (joystick0.getButton(2)) {
                 try {
                     Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1L);
                 } catch (AprilTagGeneralCheckedException e) {

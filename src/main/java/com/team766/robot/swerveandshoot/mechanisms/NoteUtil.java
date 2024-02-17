@@ -12,7 +12,7 @@ public class NoteUtil extends Mechanism {
 
     public NoteUtil() {
         // set reasonable deadzone!
-        yawPID = new PIDController(0.02, 0.001, 0, 0, -0.35, 0.35, 2.5);
+        yawPID = new PIDController(0.02, 0.001, 0, 0, -0.25, 0.25, 3);
         yawPID.setSetpoint(0.00);
     }
 
@@ -46,7 +46,7 @@ public class NoteUtil extends Mechanism {
             yawPID.calculate(yawInDegrees);
             double power = yawPID.getOutput();
 
-            if(power > 0 && yawInDegrees > 0){
+            if (power > 0 && yawInDegrees > 0) {
                 power *= -1;
             }
 

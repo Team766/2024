@@ -92,8 +92,6 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         goToAndScore(closestTo());
     }
 
-    
-
     /*
      * Much similar to the shoot() method, this method does the exact same thing except changes all values to 1/2.
      * See javadoc for shoot() method for more information.
@@ -193,12 +191,12 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
 
             log("Z: " + robotToTag.getRotation().getZ());
             // this 184 is just for good measure yk
-            if(Math.abs(robotToTag.getRotation().getZ()) > 4){
-                
-            }else{
-                if(robotToTag.getRotation().getZ() < 0){
+            if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
+
+            } else {
+                if (robotToTag.getRotation().getZ() < 0) {
                     turnConstant = -0.02;
-                }else{
+                } else {
                     turnConstant = 0.02;
                 }
             }
@@ -207,15 +205,13 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             yPID.calculate(lastY);
             xPID.calculate(lastX);
 
-            turnConstant = 0; //needed?
+            turnConstant = 0; // needed?
         }
 
         Robot.tempShooter.setAngle(score.angle);
         Robot.tempShooter.runMotors(score.power);
 
         Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
-
-        
 
         if (xPID.getOutput() + yPID.getOutput() == 0) {
             Robot.tempShooter.shoot();
