@@ -9,16 +9,12 @@ import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends Mechanism {
-
-    private MotorController leftMotor;
-    private MotorController rightMotor;
-
     enum Position {
         // TODO: Find actual values.
-        Intake(0),
-        ShootLow(35),
-        ShootMedium(45),
-        ShootHigh(80);
+        INTAKE(0),
+        SHOOT_LOW(35),
+        SHOOT_MEDIUM(45),
+        SHOOT_HIGH(80);
 
         private final double angle;
 
@@ -29,6 +25,9 @@ public class Shoulder extends Mechanism {
         public double getAngle() {
             return angle;
         }
+
+        private MotorController leftMotor;
+        private MotorController rightMotor;
     }
 
     public Shoulder() {
@@ -65,6 +64,7 @@ public class Shoulder extends Mechanism {
 
     private double rotationsToDegrees(double rotations) {
         // angle * sprocket ratio * net gear ratio * (degrees / rotations)
+        // TODO: Make sure these are accurate.
         return rotations * (13 / 54) * (1 / 4) * (1 / 3) * (1 / 3) * (1 / 360);
     }
 
