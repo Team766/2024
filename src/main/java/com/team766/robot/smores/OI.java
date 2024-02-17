@@ -27,7 +27,6 @@ public class OI extends Procedure {
     public void run(final Context context) {
         context.takeOwnership(Robot.lights);
         // com.team766.Robot.smores
-
         while (true) {
             // Wait for new driver station data.
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -40,8 +39,8 @@ public class OI extends Procedure {
                 Robot.lights.randColor();
             } else if (macropad.getButton(3)) {
                 Robot.lights.randColor();
-            } else if (macropad.getButton(3)) {
-                Robot.lights.randColor();
+            } else if (macropad.getButtonPressed(5)) {
+                Robot.lights.fade(255, 0, 0);
             } else if (macropad.getButtonPressed(16)) {
                 Robot.lights.clear();
             }
@@ -53,10 +52,10 @@ public class OI extends Procedure {
             }
 
             // Brightness adjusting
-            if (macropad.getButton(13)) {
+            if (macropad.getButton(11)) {
                 Robot.lights.changeBrightness(-0.01);
             }
-            if (macropad.getButton(14)) {
+            if (macropad.getButton(12)) {
                 Robot.lights.changeBrightness(0.01);
             }
 

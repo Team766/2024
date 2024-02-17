@@ -4,6 +4,8 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
 import com.team766.framework.Mechanism;
 
 public class Lights extends Mechanism {
@@ -82,5 +84,31 @@ public class Lights extends Mechanism {
     public void fire() {
         lastRun = () -> animate(fireAnimation);
         lastRun.run();
+    }
+
+    public void strobe(int r, int g, int b) {
+        animate(
+                new StrobeAnimation(
+                        applyBrightness(r),
+                        applyBrightness(g),
+                        applyBrightness(b),
+                        // white does nothing for our lights
+                        0,
+                        // 0 slow -> 1 fast
+                        0.00001,
+                        LED_COUNT));
+        lastRun = () -> strobe(r, g, b);
+    }
+
+    public void fade(int r, int g, int b) {
+        animate(
+                new SingleFadeAnimation(
+                        applyBrightness(r),
+                        applyBrightness(g),
+                        applyBrightness(b),
+                        0,
+                        0.75,
+                        LED_COUNT));
+        lastRun = () -> fade(r, g, b);
     }
 }
