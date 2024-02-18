@@ -1,4 +1,4 @@
-package com.team766.robot.constants;
+package com.team766.robot.common.constants;
 
 /**
  * Constants used for the Operator Interface, eg for joyticks, buttons, dials, etc.
@@ -6,12 +6,6 @@ package com.team766.robot.constants;
  * Starter set of constants.  Customize and update based on joystick and boxop controls.
  */
 public final class InputConstants {
-
-    // joysticks
-    public static final int LEFT_JOYSTICK = 0;
-    public static final int RIGHT_JOYSTICK = 1;
-    public static final int BOXOP_GAMEPAD = 2; // should be in Logitech Mode
-
     // navigation
     public static final int AXIS_LEFT_RIGHT = 0;
     public static final int AXIS_FORWARD_BACKWARD = 1;
