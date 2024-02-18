@@ -56,6 +56,8 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
         // When do we know the alliance? Is that during the constructor or after?
         Optional<Alliance> currentAlliance = DriverStation.getAlliance();
 
+        // This next code gets the alliance and sets the tag that we should be looking for to that of the correct alliance according to the field layout.
+        // See the AprilTag field layout on the Game Manual for the 2024 Crescendo season for more information
         if (currentAlliance.isPresent()) {
             if (currentAlliance.get() == Alliance.Red) {
                 tagId = 4;
@@ -70,14 +72,14 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             throw new AprilTagGeneralCheckedException("Alliance not found correctly, optional is empty.");
         }
 
-        // Setting the tag ID to 5 permanatly because this is what we are using in the Maker Space
+        // Setting the tag ID to 5 permanatly because this is what we are using in the Maker Space. This should be changed later.
         tagId = 5;
     }
 
     /**
      * This method will shoot the ball into the speaker.
      * It will move the robot to the closest scoring position, where it will then shoot.
-     * This method only uses the three default scoring positions, not the two that we have actually set up.
+     * This method only uses the three default scoring positions, not the two that we have actually set up in the maker space.
      *
      * @throws AprilTagGeneralCheckedException previous exceptions that could have arisen from any abstracted method calls.
      * @author Max Spier, 1/7/2024
