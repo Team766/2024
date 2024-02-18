@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Shoulder extends Mechanism {
     enum Position {
         // TODO: Find actual values.
-        INTAKE(0),
+        INTAKE_FLOOR(0),
         SHOOT_LOW(35),
         SHOOT_MEDIUM(45),
         SHOOT_HIGH(80);
@@ -31,6 +31,7 @@ public class Shoulder extends Mechanism {
     private MotorController rightMotor;
 
     public Shoulder() {
+	// TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
 
@@ -56,10 +57,6 @@ public class Shoulder extends Mechanism {
     private double degreesToRotations(double angle) {
         // angle * sprocket ratio * net gear ratio * (rotations / degrees)
         return angle * (54 / 13) * (4 / 1) * (3 / 1) * (3 / 1) * (360 / 1);
-    }
-
-    private double degreesToRotations(Position position) {
-        return degreesToRotations(position.getAngle());
     }
 
     private double rotationsToDegrees(double rotations) {
