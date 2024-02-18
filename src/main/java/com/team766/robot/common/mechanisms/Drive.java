@@ -184,10 +184,6 @@ public class Drive extends Mechanism {
                 Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
                 Math.sin(-yawRad) * x + Math.cos(-yawRad) * y,
                 turn);
-        org.littletonrobotics.junction.Logger.recordOutput("Input Speed", Math.sqrt(
-                                                Math.pow(x, 2)
-                                                + Math.pow(y, 2)
-                                                ));
     }
 
     /**
@@ -283,11 +279,6 @@ public class Drive extends Mechanism {
         };
         if (Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
-            org.littletonrobotics.junction.Logger.recordOutput("Current Speed", 
-                                            Math.sqrt(
-                                                Math.pow(getChassisSpeeds().vxMetersPerSecond, 2)
-                                                + Math.pow(getChassisSpeeds().vyMetersPerSecond, 2)
-                                                ));
         }
         swerveModuleStatePublisher.set(states);
     }
