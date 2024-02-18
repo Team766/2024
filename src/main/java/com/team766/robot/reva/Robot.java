@@ -6,11 +6,13 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.constants.SwerveDriveConstants;
+import com.team766.robot.reva.mechanisms.Shoulder;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
     public static Drive drive;
+    public static Shoulder shoulder;
 
     @Override
     public void initializeMechanisms() {
@@ -24,6 +26,7 @@ public class Robot implements RobotConfigurator {
                         SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT,
                         SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
         drive = new Drive(config);
+        shoulder = new Shoulder();
     }
 
     @Override
