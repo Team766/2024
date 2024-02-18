@@ -7,11 +7,12 @@ public final class PathPlannerConstants {
     public static final ReplanningConfig REPLANNING_CONFIG = new ReplanningConfig();
 
     // PID constants for drive controller
-    public static final double TRANSLATION_P = 0;
+    // TODO: change pathplanner constants
+    public static final double TRANSLATION_P = 0.3;
     public static final double TRANSLATION_I = 0;
     public static final double TRANSLATION_D = 0;
 
-    public static final double ROTATION_P = 0;
+    public static final double ROTATION_P = 0.3;
     public static final double ROTATION_I = 0;
     public static final double ROTATION_D = 0;
 
