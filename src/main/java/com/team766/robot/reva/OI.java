@@ -16,20 +16,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class OI extends Procedure {
 
-    private final DriverOI swerveOI;
     private final JoystickReader leftJoystick;
     private final JoystickReader rightJoystick;
-    private JoystickReader macropad;
-    private DebugOI debugOI;
+    private final JoystickReader macropad;
+    private final DriverOI driverOI;
+    private final DebugOI debugOI;
 
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
-        swerveOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
-
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
+
+        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder);
     }
 
@@ -43,8 +43,9 @@ public class OI extends Procedure {
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
 
-            // Swerve OI: take input from left, right joysticks.  Control Drive.
-            swerveOI.handleOI(context);
+            // Driver OI: take input from left, right joysticks.  control drive.
+            driverOI.handleOI(context);
+            // Debug OI: allow for finer-grain testing of each mechanism.
             debugOI.handleOI(context);
         }
     }
