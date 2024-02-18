@@ -70,6 +70,7 @@ public class Shoulder extends Mechanism {
     }
 
     public void rotate(double angle) {
+        checkContextOwnership();
         double rotations = degreesToRotations(angle);
         leftMotor.set(ControlMode.Position, rotations);
     }

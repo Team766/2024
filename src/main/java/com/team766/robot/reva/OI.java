@@ -19,6 +19,8 @@ public class OI extends Procedure {
     private final DriverOI swerveOI;
     private final JoystickReader leftJoystick;
     private final JoystickReader rightJoystick;
+    private JoystickReader macropad;
+    private DebugOI debugOI;
 
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
@@ -26,6 +28,9 @@ public class OI extends Procedure {
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         swerveOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+
+        macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
+        debugOI = new DebugOI(macropad, Robot.shoulder);
     }
 
     public void run(Context context) {
@@ -40,6 +45,7 @@ public class OI extends Procedure {
 
             // Swerve OI: take input from left, right joysticks.  Control Drive.
             swerveOI.handleOI(context);
+            debugOI.handleOI(context);
         }
     }
 }
