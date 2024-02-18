@@ -5,12 +5,14 @@ import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.constants.SwerveDriveConstants;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
+    public static Intake intake;
     public static Drive drive;
     public static Shoulder shoulder;
 
@@ -28,6 +30,7 @@ public class Robot implements RobotConfigurator {
                         SwerveDriveConstants.WHEEL_CIRCUMFERENCE);
         drive = new Drive(config);
         shoulder = new Shoulder();
+        intake = new Intake();
     }
 
     @Override
