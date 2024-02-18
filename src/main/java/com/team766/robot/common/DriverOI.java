@@ -76,11 +76,9 @@ public class DriverOI {
                     (drivingCoefficient * leftJoystickX),
                     -(drivingCoefficient * leftJoystickY),
                     (drivingCoefficient * rightJoystickX));
-            context.releaseOwnership(drive);
         } else {
             context.takeOwnership(drive);
             drive.stopDrive();
-            context.releaseOwnership(drive);
         }
     }
 }

@@ -155,7 +155,7 @@ public final class Context implements Runnable, LaunchedContext {
 	private Context(final RunnableWithContext func, final Context parentContext) {
 		m_func = func;
 		m_parentContext = parentContext;
-		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG,
 				"Starting context " + getContextName() + " for " + func.toString());
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
@@ -284,7 +284,7 @@ public final class Context implements Runnable, LaunchedContext {
 		try {
 			// Call into the user's code.
 			m_func.run(this);
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG,
 					"Context " + getContextName() + " finished");
 		} catch (ContextStoppedException ex) {
 			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING,
@@ -386,7 +386,7 @@ public final class Context implements Runnable, LaunchedContext {
 	 */
 	@Override
 	public void stop() {
-		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG,
 				"Stopping requested of " + getContextName());
 		synchronized (m_threadSync) {
 			if (m_state != State.DONE) {

@@ -53,12 +53,14 @@ public abstract class Mechanism extends LoggingBase {
 
 	void takeOwnership(final Context context, final Context parentContext) {
 		if (m_owningContext != null && m_owningContext == parentContext) {
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG,
 					context.getContextName() + " is inheriting ownership of " + getName() + " from "
 							+ parentContext.getContextName());
 		} else {
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
-					context.getContextName() + " is taking ownership of " + getName());
+			if (m_owningContext != context) {
+				Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG,
+						context.getContextName() + " is taking ownership of " + getName());
+			}
 			while (m_owningContext != null && m_owningContext != context) {
 				Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING,
 						"Stopping previous owner of " + getName() + ": "
@@ -83,7 +85,7 @@ public abstract class Mechanism extends LoggingBase {
 			LoggerExceptionUtils.logException(new Exception(context.getContextName() + " tried to release ownership of " + getName() + " but it doesn't own it"));
 			return;
 		}
-		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, context.getContextName() + " is releasing ownership of " + getName());
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG, context.getContextName() + " is releasing ownership of " + getName());
 		m_owningContext = null;
 	}
 
