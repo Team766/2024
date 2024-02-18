@@ -163,7 +163,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setI(final double value) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
+        refreshConfig();
         // code.
         talonFXConfig.Slot0.kI = value;
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
@@ -171,7 +171,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setD(final double value) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
+        refreshConfig();
         // code.
         talonFXConfig.Slot0.kD = value;
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
@@ -221,10 +221,9 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setCurrentLimit(final double ampsLimit) {
-        CurrentLimitsConfigs config =
-                new CurrentLimitsConfigs()
-                        .withSupplyCurrentLimit(ampsLimit)
-                        .withSupplyCurrentLimitEnable(true);
+        CurrentLimitsConfigs config = new CurrentLimitsConfigs();
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(config));
+        config.withSupplyCurrentLimit(ampsLimit).withSupplyCurrentLimitEnable(true);
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(config));
     }
 
