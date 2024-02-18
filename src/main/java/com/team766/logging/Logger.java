@@ -121,7 +121,7 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.logStoredFormat(entry);
         }
-        if (alsoLogToDataLog) {
+        if (alsoLogToDataLog && (severity.compareTo(Severity.INFO) >= 0)) {
             DataLogManager.log(message);
         }
     }
@@ -138,7 +138,7 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.log(entry);
         }
-        if (alsoLogToDataLog) {
+        if (alsoLogToDataLog && (severity.compareTo(Severity.INFO) >= 0)) {
             DataLogManager.log(message);
         }
     }
