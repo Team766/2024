@@ -16,21 +16,11 @@ public class Lights extends Mechanism {
         candle = new CANdle(CANID);
     }
 
-    public void purple() {
-        checkContextOwnership();
-        candle.setLEDs(128, 0, 128);
-    }
-
     public void signalNoteInIntake() {
         checkContextOwnership();
         // NOTE: 255, 255, 255 trips the breaker. lol
         candle.setLEDs(128, 128, 128);
     }
-
-    // public void signalNotInUse() {
-    //     checkContextOwnership();
-    //     candle.setLEDs(255, 150, 0);
-    // }
 
     public void signalNoRing() {
         checkContextOwnership();
@@ -45,15 +35,5 @@ public class Lights extends Mechanism {
     public void signalRing() {
         checkContextOwnership();
         candle.setLEDs(0, 255, 0);
-    }
-
-    public void orange() {
-        checkContextOwnership();
-        candle.setLEDs(255, 64, 0);
-    }
-
-    public void rainbow() {
-        checkContextOwnership();
-        candle.animate(rainbowAnimation);
     }
 }
