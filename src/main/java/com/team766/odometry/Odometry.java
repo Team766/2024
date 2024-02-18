@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -178,7 +177,8 @@ public class Odometry {
                                     .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
                                     .getTranslation(),
                             currPositions[i].getRotation());
-            SmartDashboard.putNumber("early curr rotation", currPositions[i].getRotation().getDegrees());
+            SmartDashboard.putNumber(
+                    "early curr rotation", currPositions[i].getRotation().getDegrees());
             SmartDashboard.putString("prev rotation direct", prevPositions[i].toString());
             currPositions[i] =
                     new Pose2d(
@@ -189,7 +189,6 @@ public class Odometry {
             SmartDashboard.putNumber("curr rotation", currPositions[i].getRotation().getDegrees());
             SmartDashboard.putNumber("prev rotation", prevPositions[i].getRotation().getDegrees());
             SmartDashboard.putNumber("rotation change", rotationChange.getDegrees());
-
 
             double yaw = Math.toRadians(gyro.getAngle());
             SmartDashboard.putNumber("odom yaw", yaw);
@@ -289,7 +288,7 @@ public class Odometry {
         return currentPosition;
     }
 
-    public Pose2d getCurrPosition(){
+    public Pose2d getCurrPosition() {
         return currentPosition;
     }
 }
