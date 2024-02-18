@@ -275,4 +275,8 @@ public class Odometry {
         }
         return currentPosition;
     }
+
+    public Pose2d getCurrPosition(){
+        return currentPosition;
+    }
 }
