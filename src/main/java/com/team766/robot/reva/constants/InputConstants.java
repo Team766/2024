@@ -14,6 +14,8 @@ public final class InputConstants {
     // Macropad buttons
     public static final int CONTROL_SHOULDER = 1;
     public static final int CONTROL_CLIMBER = 2;
-    public static final int NUDGE_DOWN = 15;
-    public static final int NUDGE_UP = 16;
+    public static final int CONTROL_INTAKE = 3;
+    public static final int CONTROL_SHOOTER = 4;
+    public static final int NUDGE_DOWN = 7;
+    public static final int NUDGE_UP = 11;
 }
