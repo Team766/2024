@@ -25,19 +25,7 @@ public class NoteUtil extends Mechanism {
         RING_IN_INTAKE
     }
 
-    /*
-     * toString method that returns important information about the ring, or else returns the error
-     */
-    public String toString() {
-        try {
-            return "Yaw: "
-                    + StaticCameras.noteDetectorCamera.getYawOfRing()
-                    + " Pitch: "
-                    + StaticCameras.noteDetectorCamera.getPitchOfRing();
-        } catch (AprilTagGeneralCheckedException e) {
-            return "ERROR: " + e.toString();
-        }
-    }
+
 
     public NoteUtil.status getStatus() {
 
