@@ -13,4 +13,5 @@ public record SwerveConfig(
         Vector2D backLeftLocation,
         Vector2D backRightLocation,
         double driveMotorCurentLimit,
-        double steerMotorCurrentLimit) {}
+        double steerMotorCurrentLimit,
+        double wheelCircumference) {}
