@@ -4,6 +4,7 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.constants.ControlConstants;
 
 public class DriverOI {
 
@@ -12,7 +13,7 @@ public class DriverOI {
     protected final Drive drive;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
-    protected double rightJoystickX = 0;
+    protected double rightJoystickY = 0;
     protected double leftJoystickX = 0;
     protected double leftJoystickY = 0;
     protected boolean isCross = false;
@@ -24,9 +25,19 @@ public class DriverOI {
     }
 
     public void handleOI(Context context) {
-        leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
-        leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-        rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
+
+        // Negative because forward is negative in driver station
+        leftJoystickX =
+                -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
+                        * ControlConstants.MAX_VEL_POS; // For fwd/rv
+        // Negative because left is negative in driver station
+        leftJoystickY =
+                -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
+                        * ControlConstants.MAX_VEL_POS; // For left/right
+        // Negative because left is negative in driver station
+        rightJoystickY =
+                -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
+                        * ControlConstants.MAX_VEL_ROT; // For steer
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
@@ -34,23 +45,6 @@ public class DriverOI {
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_POS)) {
             drive.resetCurrentPosition();
-        }
-
-        if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
-            rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT) / 2;
-        } else {
-            rightJoystickX = 0;
-        }
-
-        if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
-            leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-        } else {
-            leftJoystickY = 0;
-        }
-        if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
-            leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
-        } else {
-            leftJoystickX = 0;
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
@@ -64,7 +58,7 @@ public class DriverOI {
 
         // Moves the robot if there are joystick inputs
         if (!isCross
-                && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX)
+                && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
                         > 0) {
             double drivingCoefficient = 1;
             // If a button is pressed, drive is just fine adjustment
@@ -74,11 +68,21 @@ public class DriverOI {
             context.takeOwnership(drive);
             drive.controlFieldOriented(
                     (drivingCoefficient * leftJoystickX),
-                    -(drivingCoefficient * leftJoystickY),
-                    (drivingCoefficient * rightJoystickX));
+                    (drivingCoefficient * leftJoystickY),
+                    (drivingCoefficient * rightJoystickY));
         } else {
             context.takeOwnership(drive);
             drive.stopDrive();
         }
     }
+    
+    /**
+     * Helper method to ignore joystick values below JOYSTICK_DEADZONE
+     * @param joystickValue the value to trim
+     * @return the trimmed joystick value
+     */
+    private double createJoystickDeadzone(double joystickValue) {
+        return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
+    }
+
 }
