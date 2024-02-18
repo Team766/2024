@@ -1,7 +1,9 @@
 package com.team766.robot.reva.mechanisms;
 
-import static com.team766.robot.reva.constants.ConfigConstants.*;
+import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
+import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
@@ -11,10 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Shoulder extends Mechanism {
     enum Position {
         // TODO: Find actual values.
+        BOTTOM(0),
         INTAKE_FLOOR(0),
         SHOOT_LOW(35),
         SHOOT_MEDIUM(45),
-        SHOOT_HIGH(80);
+        SHOOT_HIGH(80),
+        TOP(90);
 
         private final double angle;
 
@@ -27,6 +31,8 @@ public class Shoulder extends Mechanism {
         }
     }
 
+    private static final double SHOULDER_NUDGE_AMOUNT = 10; // degrees
+
     private MotorController leftMotor;
     private MotorController rightMotor;
 
@@ -34,16 +40,20 @@ public class Shoulder extends Mechanism {
         // TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
-
         rightMotor.follow(leftMotor);
+        leftMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public void nudgeUp() {
-        rotate(getAngle() + SHOULDER_NUDGE_AMOUNT);
+        double angle = getAngle();
+        double targetAngle = Math.min(angle + SHOULDER_NUDGE_AMOUNT, Position.TOP.getAngle());
+        rotate(targetAngle);
     }
 
     public void nudgeDown() {
-        rotate(getAngle() - SHOULDER_NUDGE_AMOUNT);
+        double angle = getAngle();
+        double targetAngle = Math.max(angle - SHOULDER_NUDGE_AMOUNT, Position.BOTTOM.getAngle());
+        rotate(targetAngle);
     }
 
     public double getRotations() {
@@ -56,13 +66,12 @@ public class Shoulder extends Mechanism {
 
     private double degreesToRotations(double angle) {
         // angle * sprocket ratio * net gear ratio * (rotations / degrees)
-        return angle * (54 / 13) * (4 / 1) * (3 / 1) * (3 / 1) * (360 / 1);
+        return angle * (54. / 15.) * (4. / 1.) * (3. / 1.) * (3. / 1.) * (1. / 360.);
     }
 
     private double rotationsToDegrees(double rotations) {
         // angle * sprocket ratio * net gear ratio * (degrees / rotations)
-        // TODO: Make sure these are accurate.
-        return rotations * (13 / 54) * (1 / 4) * (1 / 3) * (1 / 3) * (1 / 360);
+        return rotations * (15. / 54.) * (1. / 4.) * (1. / 3.) * (1. / 3.) * (360. / 1.);
     }
 
     public void rotate(Position position) {
@@ -77,7 +86,7 @@ public class Shoulder extends Mechanism {
 
     @Override
     public void run() {
-        SmartDashboard.putNumber("Angle: ", getAngle());
-        SmartDashboard.putNumber("Rotations: ", getRotations());
+        SmartDashboard.putNumber("[SHOULDER] Angle: ", getAngle());
+        SmartDashboard.putNumber("[SHOULDER] Rotations: ", getRotations());
     }
 }

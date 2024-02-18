@@ -19,6 +19,4 @@ public final class ConfigConstants {
 
     public static final String SHOULDER_RIGHT = "shoulder.rightMotor";
     public static final String SHOULDER_LEFT = "shoulder.leftMotor";
-
-    public static final double SHOULDER_NUDGE_AMOUNT = 1;
 }

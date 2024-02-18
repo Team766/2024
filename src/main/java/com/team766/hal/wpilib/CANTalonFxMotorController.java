@@ -212,10 +212,10 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setOutputRange(final double minOutput, final double maxOutput) {
-        MotorOutputConfigs motorOutput =
-                new MotorOutputConfigs()
-                        .withPeakReverseDutyCycle(minOutput)
-                        .withPeakForwardDutyCycle(maxOutput);
+        MotorOutputConfigs motorOutput = new MotorOutputConfigs();
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(motorOutput));
+
+        motorOutput.withPeakReverseDutyCycle(minOutput).withPeakForwardDutyCycle(maxOutput);
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
     }
 
