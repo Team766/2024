@@ -2,9 +2,9 @@ package com.team766.robot.common;
 
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
+import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.common.constants.ControlConstants;
 
 public class DriverOI {
 
@@ -76,7 +76,7 @@ public class DriverOI {
             drive.stopDrive();
         }
     }
-    
+
     /**
      * Helper method to ignore joystick values below JOYSTICK_DEADZONE
      * @param joystickValue the value to trim
@@ -85,5 +85,4 @@ public class DriverOI {
     private double createJoystickDeadzone(double joystickValue) {
         return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
     }
-
 }

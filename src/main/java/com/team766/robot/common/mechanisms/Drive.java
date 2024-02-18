@@ -159,7 +159,9 @@ public class Drive extends Mechanism {
                                 createOrthogonalVector(config.frontRightLocation()).normalize()));
         swerveBL.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(turnVelocity, createOrthogonalVector(config.backLeftLocation()).normalize()));
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.backLeftLocation()).normalize()));
         swerveBR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
