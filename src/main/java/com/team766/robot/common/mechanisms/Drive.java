@@ -8,12 +8,18 @@ import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.odometry.Point;
 import com.team766.odometry.PointDir;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -35,10 +41,12 @@ public class Drive extends Mechanism {
     // variable representing current position
     private static PointDir currentPosition;
 
-    /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+    private SwerveDriveKinematics swerveDriveKinematics;
+
+    private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
     NetworkTableInstance.getDefault()
             .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
-            .publish(); */
+            .publish(); 
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -64,12 +72,10 @@ public class Drive extends Mechanism {
         CANcoder encoderBL = new CANcoder(1, config.canBus());
 
         // initialize the swerve modules
-        double wheelRadius = config.wheelCircumference() / (2 * Math.PI);
-
-        swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR, wheelRadius);
-        swerveFL = new SwerveModule("FL", driveFL, steerFL, encoderFL, wheelRadius);
-        swerveBR = new SwerveModule("BR", driveBR, steerBR, encoderBR, wheelRadius);
-        swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL, wheelRadius);
+        swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR);
+        swerveFL = new SwerveModule("FL", driveFL, steerFL, encoderFL);
+        swerveBR = new SwerveModule("BR", driveBR, steerBR, encoderBR);
+        swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL);
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
@@ -92,6 +98,16 @@ public class Drive extends Mechanism {
                             -OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
                             OdometryInputConstants.WHEEL_DIST_FROM_CENTER)
                 };
+
+        swerveDriveKinematics =
+                new SwerveDriveKinematics(
+                        new Translation2d[] {
+                            new Translation2d(wheelPositions[0].getX(), wheelPositions[0].getY()),
+                            new Translation2d(wheelPositions[1].getX(), wheelPositions[1].getY()),
+                            new Translation2d(wheelPositions[2].getX(), wheelPositions[2].getY()),
+                            new Translation2d(wheelPositions[3].getX(), wheelPositions[3].getY())
+                        });
+        
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
@@ -168,6 +184,10 @@ public class Drive extends Mechanism {
                 Math.cos(-yawRad) * x - Math.sin(-yawRad) * y,
                 Math.sin(-yawRad) * x + Math.cos(-yawRad) * y,
                 turn);
+        org.littletonrobotics.junction.Logger.recordOutput("Input Speed", Math.sqrt(
+                                                Math.pow(x, 2)
+                                                + Math.pow(y, 2)
+                                                ));
     }
 
     /**
@@ -236,6 +256,14 @@ public class Drive extends Mechanism {
         swerveOdometry.setCurrentPosition(new Point(0, 0));
     }
 
+    public ChassisSpeeds getChassisSpeeds() {
+        return swerveDriveKinematics.toChassisSpeeds(
+                swerveFR.getModuleState(),
+                swerveFL.getModuleState(),
+                swerveBL.getModuleState(),
+                swerveBR.getModuleState());
+    }
+
     // Odometry
     @Override
     public void run() {
@@ -247,8 +275,20 @@ public class Drive extends Mechanism {
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
 
-        // TODO: get the SwerveModuleStates
-        /* SwerveModuleState[] states = null; // TODO
-        swerveModuleStatePublisher.set(states); */
+        SwerveModuleState[] states = new SwerveModuleState[] {
+            swerveFL.getModuleState(),
+            swerveFR.getModuleState(),
+            swerveBL.getModuleState(),
+            swerveFR.getModuleState(),
+        };
+        if (Logger.isLoggingToDataLog()) {
+            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
+            org.littletonrobotics.junction.Logger.recordOutput("Current Speed", 
+                                            Math.sqrt(
+                                                Math.pow(getChassisSpeeds().vxMetersPerSecond, 2)
+                                                + Math.pow(getChassisSpeeds().vyMetersPerSecond, 2)
+                                                ));
+        }
+        swerveModuleStatePublisher.set(states);
     }
 }
