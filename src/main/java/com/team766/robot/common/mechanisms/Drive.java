@@ -14,8 +14,6 @@ import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -34,6 +32,11 @@ public class Drive extends Mechanism {
     private Odometry swerveOdometry;
     // variable representing current position
     private static Pose2d currentPosition;
+
+    /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+    NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+            .publish(); */
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -221,7 +224,15 @@ public class Drive extends Mechanism {
     @Override
     public void run() {
         currentPosition = swerveOdometry.run();
-        log("current pos: " + currentPosition.toString());
+        // log("current pos: " + currentPosition.toString());
         SmartDashboard.putString("position", currentPosition.toString());
+
+        SmartDashboard.putNumber("Yaw", getHeading());
+        SmartDashboard.putNumber("Pitch", getPitch());
+        SmartDashboard.putNumber("Roll", getRoll());
+
+        // TODO: get the SwerveModuleStates
+        /* SwerveModuleState[] states = null; // TODO
+        swerveModuleStatePublisher.set(states); */
     }
 }

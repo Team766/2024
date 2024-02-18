@@ -8,7 +8,6 @@ import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-import com.team766.robot.gatorade.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -20,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
+/*
 /*
  * Method which calculates the position of the robot based on wheel positions.
  */
@@ -44,9 +44,9 @@ public class Odometry {
     private Pose2d currentPosition;
 
     // In meters
-    private static double WHEEL_CIRCUMFERENCE;
-    public static double GEAR_RATIO;
-    public static int ENCODER_TO_REVOLUTION_CONSTANT;
+    private double WHEEL_CIRCUMFERENCE;
+    public double GEAR_RATIO;
+    public int ENCODER_TO_REVOLUTION_CONSTANT;
 
     // In the same order as motorList, relative to the center of the robot
     private Translation2d[] wheelPositions;
@@ -82,6 +82,7 @@ public class Odometry {
         currPositions = new Pose2d[motorCount];
         prevEncoderValues = new double[motorCount];
         currEncoderValues = new double[motorCount];
+
         currentPosition = new Pose2d();
 
         wheelPositions = wheelLocations;
@@ -89,6 +90,7 @@ public class Odometry {
         GEAR_RATIO = gearRatio;
         ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
         currentPosition = new Pose2d(0, 0, new Rotation2d());
+
         for (int i = 0; i < motorCount; i++) {
             prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
             currPositions[i] = new Pose2d(0, 0, new Rotation2d());
