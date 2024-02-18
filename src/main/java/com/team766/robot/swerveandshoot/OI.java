@@ -1,6 +1,6 @@
 package com.team766.robot.swerveandshoot;
 
-import com.team766.framework.AprilTagGeneralCheckedException;
+import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;

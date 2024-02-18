@@ -1,7 +1,5 @@
 package com.team766.ViSIONbase;
 
-import com.team766.framework.AprilTagGeneralCheckedException;
-
 public class VisionUtil {
     /*
      * This method will find the camera that has a tag in it with the given tagId.

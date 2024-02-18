@@ -2,7 +2,6 @@ package com.team766.robot.swerveandshoot.mechanisms;
 
 import com.team766.ViSIONbase.*;
 import com.team766.controllers.PIDController;
-import com.team766.framework.AprilTagGeneralCheckedException;
 import com.team766.framework.Mechanism;
 import com.team766.robot.swerveandshoot.Robot;
 

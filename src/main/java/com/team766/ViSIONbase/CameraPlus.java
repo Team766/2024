@@ -1,6 +1,5 @@
 package com.team766.ViSIONbase;
 
-import com.team766.framework.AprilTagGeneralCheckedException;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.*;
 import org.photonvision.PhotonCamera;
