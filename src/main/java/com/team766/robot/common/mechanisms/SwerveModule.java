@@ -8,8 +8,11 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.opencv.core.Mat;
 
 /**
  * Encapsulates the motors and encoders used for each physical swerve module and
@@ -20,7 +23,6 @@ public class SwerveModule {
     private final MotorController drive;
     private final MotorController steer;
     private final CANcoder encoder;
-    private final double wheelRadius;
     private final double offset;
 
     /*
@@ -28,10 +30,24 @@ public class SwerveModule {
      * Multiply to convert from wheel degrees to motor rotations
      * Divide to convert from motor rotations to wheel degrees
      */
-    private static final double DRIVE_GEAR_RATIO = 6.75; // L2 gear ratio configuration
     private static final double ENCODER_CONVERSION_FACTOR =
-            (150.0 / 7.0) /*steering gear ratio*/ * (1. / 360.0) /*degrees to motor rotations*/;
+        (150.0 / 7.0) /*steering gear ratio*/ * (1. / 360.0) /*degrees to motor rotations*/;
 
+    private static final double DRIVE_GEAR_RATIO = 6.75; // L2 gear ratio configuration
+
+    // Radius of the wheels. THe circumference was measured to be 30.5cm, then experimentally this value had
+    // an error of 2.888%. This was then converted to meters, and then the radius.
+    private static final double WHEEL_RADIUS = 30.5 * 1.02888 / 100 / (2 * Math.PI);
+
+    /*
+     * Factor that converts between drive motor angular speed (rad/s) to drive wheel tip speed (m/s)
+     * Multiply to convert from wheel tip speed to motor angular speed
+     * Divide to convert from angular speed to wheel tip speed
+     */
+    private static final double MOTOR_WHEEL_FACTOR_MPS = 1.
+        / WHEEL_RADIUS // Wheel radians/sec
+        * DRIVE_GEAR_RATIO // Motor radians/sec
+        / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
     /**
      * Creates a new SwerveModule.
      *
@@ -44,13 +60,11 @@ public class SwerveModule {
             String modulePlacement,
             MotorController drive,
             MotorController steer,
-            CANcoder encoder,
-            double radius) {
+            CANcoder encoder) {
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
         this.encoder = encoder;
-        this.wheelRadius = radius;
         this.offset = computeEncoderOffset();
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
@@ -126,12 +140,11 @@ public class SwerveModule {
         // sets the power to the magnitude of the vector
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
-        double power = vector.getNorm() // Desired speed m/sec
-                        / wheelRadius // Wheel radians/sec
-                        * DRIVE_GEAR_RATIO // Motor radians/sec
-                        / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes)
+        double power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
+
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
     }
 
     /**
@@ -139,5 +152,12 @@ public class SwerveModule {
      */
     public void stopDrive() {
         drive.stopMotor();
+    }
+
+    public SwerveModuleState getModuleState() {
+        return new SwerveModuleState(
+                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS,
+                Rotation2d.fromDegrees(
+                        steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset));
     }
 }

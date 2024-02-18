@@ -98,6 +98,10 @@ public final class Logger {
         m_category = category;
     }
 
+    public static boolean isLoggingToDataLog() {
+        return alsoLogToDataLog;
+    }
+
     public Collection<LogEntry> recentEntries() {
         return Collections.unmodifiableCollection(m_recentEntries);
     }
