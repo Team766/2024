@@ -14,14 +14,13 @@ public class VisionUtil {
 
         for (CameraPlus camera : StaticCameras.apriltagCameras) {
 
-            try{
+            try {
                 if (camera.getTagIdOfBestTarget() == tagId) {
                     return camera;
                 }
-            } catch (AprilTagGeneralCheckedException e){
-                
+            } catch (AprilTagGeneralCheckedException e) {
+
             }
-            
         }
 
         throw new AprilTagGeneralCheckedException("No cameras had the camera with tagId: " + tagId);
