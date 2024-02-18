@@ -14,9 +14,12 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
+/*
 /*
  * Method which calculates the position of the robot based on wheel positions.
  */
@@ -41,9 +44,9 @@ public class Odometry {
     private Pose2d currentPosition;
 
     // In meters
-    private static double WHEEL_CIRCUMFERENCE;
-    public static double GEAR_RATIO;
-    public static int ENCODER_TO_REVOLUTION_CONSTANT;
+    private double WHEEL_CIRCUMFERENCE;
+    public double GEAR_RATIO;
+    public int ENCODER_TO_REVOLUTION_CONSTANT;
 
     // In the same order as motorList, relative to the center of the robot
     private Translation2d[] wheelPositions;
@@ -87,6 +90,7 @@ public class Odometry {
         GEAR_RATIO = gearRatio;
         ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
         currentPosition = new Pose2d(0, 0, new Rotation2d());
+
         for (int i = 0; i < motorCount; i++) {
             prevPositions[i] = new Pose2d(0, 0, new Rotation2d());
             currPositions[i] = new Pose2d(0, 0, new Rotation2d());
@@ -138,7 +142,7 @@ public class Odometry {
         double radius;
         double deltaX;
         double deltaY;
-        gyroPosition = Rotation2d.fromDegrees(-gyro.getAngle());
+        gyroPosition = Rotation2d.fromDegrees(gyro.getAngle());
 
         /*
         Point slopeFactor = new Point(Math.sqrt(Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) * Math.cos(Math.toRadians(Robot.gyro.getGyroPitch())) + Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.sin(Math.toRadians(Robot.gyro.getGyroYaw())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll())) * Math.cos(Math.toRadians(Robot.gyro.getGyroRoll()))),
@@ -156,7 +160,9 @@ public class Odometry {
                                 positionStatus.getStatus().toString());
                 continue;
             }
-            double absolutePosition = positionStatus.getValueAsDouble();
+            // -90 there because coordinate system changed from +x forward to +x right
+            // FIXME: when we standardize the wheel system, revert back
+            double absolutePosition = 360 * positionStatus.getValueAsDouble() - 90;
 
             // prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 *
             // DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) *
@@ -171,15 +177,22 @@ public class Odometry {
                             currentPosition
                                     .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
                                     .getTranslation(),
-                            Rotation2d.fromDegrees(currPositions[i].getRotation().getDegrees()));
+                            currPositions[i].getRotation());
+            SmartDashboard.putNumber("early curr rotation", currPositions[i].getRotation().getDegrees());
+            SmartDashboard.putString("prev rotation direct", prevPositions[i].toString());
             currPositions[i] =
                     new Pose2d(
                             currPositions[i].getTranslation(),
-                            gyroPosition.plus(Rotation2d.fromDegrees(-absolutePosition)));
+                            gyroPosition.plus(Rotation2d.fromDegrees(absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
+            SmartDashboard.putNumber("curr rotation", currPositions[i].getRotation().getDegrees());
+            SmartDashboard.putNumber("prev rotation", prevPositions[i].getRotation().getDegrees());
+            SmartDashboard.putNumber("rotation change", rotationChange.getDegrees());
 
-            double yaw = -Math.toRadians(gyro.getAngle());
+
+            double yaw = Math.toRadians(gyro.getAngle());
+            SmartDashboard.putNumber("odom yaw", yaw);
             double roll = Math.toRadians(gyro.getRoll());
             double pitch = Math.toRadians(gyro.getPitch());
 
@@ -195,14 +208,13 @@ public class Odometry {
             Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
             Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
             Vector2D wheelMotion;
-
             // log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
 
             // double oldWheelX;
             // double oldWheelY;
 
             // estimates the bot moved in a circle to calculate new position
-            if (rotationChange.getDegrees() != 0) {
+            if (Math.abs(rotationChange.getDegrees()) != 0) {
                 radius =
                         180
                                 * (currEncoderValues[i] - prevEncoderValues[i])
@@ -246,7 +258,7 @@ public class Odometry {
                     new Pose2d(
                             currPositions[i].getX() - wheelMotion.getX(),
                             currPositions[i].getY() - wheelMotion.getY(),
-                            new Rotation2d());
+                            currPositions[i].getRotation());
         }
     }
 
@@ -262,7 +274,8 @@ public class Odometry {
             // log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " +
             // currPositions[i]);
         }
-        currentPosition = new Pose2d(sumX / motorCount, sumY / motorCount, gyroPosition);
+        // y is inverted to match the standard of positive y = to the right
+        currentPosition = new Pose2d(sumX / motorCount, -sumY / motorCount, gyroPosition);
     }
 
     // Intended to be placed inside Robot.drive.run()
