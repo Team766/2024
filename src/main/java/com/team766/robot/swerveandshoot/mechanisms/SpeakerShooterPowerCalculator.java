@@ -30,33 +30,36 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
     private PIDController xPID;
     private PIDController yPID;
 
-    //Last X/Y values just in case the tag is ever lost when moving.
+    // Last X/Y values just in case the tag is ever lost when moving.
     private double lastX = 0;
     private double lastY = 0;
 
     private int tagId;
 
     public SpeakerShooterPowerCalculator() throws AprilTagGeneralCheckedException {
-        //Instantiating PID Controllers for drive
-        //These PID controllers do a good job but overshoot on longer distances (on the swerve and shoot bot) but then recover nicley. I think I like them.
+        // Instantiating PID Controllers for drive
+        // These PID controllers do a good job but overshoot on longer distances (on the swerve and
+        // shoot bot) but then recover nicley. I think I like them.
 
         xPID = new PIDController(0.40, 0.0, 0, 0, -0.75, 0.75, 0.02);
         yPID = new PIDController(0.18, 0.0, 0, 0, -0.75, 0.75, 0.02);
 
-        //Sample positions for later
+        // Sample positions for later
         leftPosition = new ScoringPosition(0, 0, 0, 0, 0);
         centerPosition = new ScoringPosition(0, 0, 0, 0, 0);
         rightPosition = new ScoringPosition(0, 0, 0, 0, 0);
 
-        //Real positions that we are using rigt now
+        // Real positions that we are using rigt now
         makerSpace1L = new ScoringPosition(0, 0, 2.88, -0.92, 180);
         makerSpace1R = new ScoringPosition(0, 0, 2.9, 0.80, 180);
 
         // When do we know the alliance? Is that during the constructor or after?
         Optional<Alliance> currentAlliance = DriverStation.getAlliance();
 
-        // This next code gets the alliance and sets the tag that we should be looking for to that of the correct alliance according to the field layout.
-        // See the AprilTag field layout on the Game Manual for the 2024 Crescendo season for more information
+        // This next code gets the alliance and sets the tag that we should be looking for to that
+        // of the correct alliance according to the field layout.
+        // See the AprilTag field layout on the Game Manual for the 2024 Crescendo season for more
+        // information
         if (currentAlliance.isPresent()) {
             if (currentAlliance.get() == Alliance.Red) {
                 tagId = 4;
@@ -68,10 +71,12 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             }
         } else {
             tagId = 5;
-            throw new AprilTagGeneralCheckedException("Alliance not found correctly, optional is empty.");
+            throw new AprilTagGeneralCheckedException(
+                    "Alliance not found correctly, optional is empty.");
         }
 
-        // Setting the tag ID to 5 permanatly because this is what we are using in the Maker Space. This should be changed later.
+        // Setting the tag ID to 5 permanatly because this is what we are using in the Maker Space.
+        // This should be changed later.
         tagId = 5;
     }
 
@@ -86,7 +91,6 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
     public void shootClosest() throws AprilTagGeneralCheckedException {
         goToAndScore(closestTo());
     }
-
 
     /**
      * This method will return the transform3d of the robot to the tag.
@@ -116,7 +120,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      * It sets the PID Controllers setpoints as those of the scoring location, and gets a transform 3d of the robots distance to the tag.
      * It then calculates the speed with the PID controllers using the robots current location.
      * It also checks to see if the robot is flush with the target enough, and if it isn't, it moves it so it is.
-     * 
+     *
      */
     public void goToAndScore(ScoringPosition score) throws AprilTagGeneralCheckedException {
         yPID.setSetpoint(score.y_position);
@@ -133,8 +137,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
             lastX = robotToTag.getX();
             lastY = robotToTag.getY();
 
-            
-            //If it is more that four degrees off...
+            // If it is more that four degrees off...
             if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
 
             } else {

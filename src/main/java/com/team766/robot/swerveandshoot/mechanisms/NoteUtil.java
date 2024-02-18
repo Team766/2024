@@ -25,8 +25,6 @@ public class NoteUtil extends Mechanism {
         RING_IN_INTAKE
     }
 
-
-
     public NoteUtil.status getStatus() {
 
         try {
