@@ -34,7 +34,7 @@ public class SwerveModule {
 
     private static final double DRIVE_GEAR_RATIO = 6.75; // L2 gear ratio configuration
 
-    // Radius of the wheels. THe circumference was measured to be 30.5cm, then experimentally this
+    // Radius of the wheels. The circumference was measured to be 30.5cm, then experimentally this
     // value had
     // an error of 2.888%. This was then converted to meters, and then the radius.
     private static final double WHEEL_RADIUS = 30.5 * 1.02888 / 100 / (2 * Math.PI);

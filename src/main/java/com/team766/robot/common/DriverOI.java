@@ -29,15 +29,15 @@ public class DriverOI {
         // Negative because forward is negative in driver station
         leftJoystickX =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
-                        * ControlConstants.MAX_VEL_POS; // For fwd/rv
+                        * ControlConstants.MAX_POSITIONAL_VELOCITY; // For fwd/rv
         // Negative because left is negative in driver station
         leftJoystickY =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                        * ControlConstants.MAX_VEL_POS; // For left/right
+                        * ControlConstants.MAX_POSITIONAL_VELOCITY; // For left/right
         // Negative because left is negative in driver station
         rightJoystickY =
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                        * ControlConstants.MAX_VEL_ROT; // For steer
+                        * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
@@ -50,6 +50,7 @@ public class DriverOI {
         // Sets the wheels to the cross position if the cross button is pressed
         if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
             if (!isCross) {
+                context.takeOwnership(drive);
                 drive.stopDrive();
                 drive.setCross();
             }
