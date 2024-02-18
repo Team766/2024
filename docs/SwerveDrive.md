@@ -24,13 +24,13 @@ The movement of a swerve drive can be broken into two main components: translati
 
 The translation is the easier component, as it requires a single direction and magnitude that all modules use, illustrated in the image below. By converting the overall translational speed or movement inputs from a joystick input or `chassisSpeeds` into a vector, we can find the required angle **θ** to move in that direction by taking the inverse tangent of its components and the required power with its magnitude.
 
-TODO: ADD IMAGE
+![Image](images/Swerve_Translation.png)
 
 Turning is slightly more difficult, due to each wheel needing a unique steer angle to rotate properly. For any swerve drive (even non-square ones), turning in place involves aligning each wheel to be tangent to the circle and applying power based on the desired angular velocity, meaning we need a vector tangent to this circle.
 
 To create this tangent vector, we can assign each module a position relative to the center of the robot, which can be visualized as the radius to the turning circle. Thus, a vector perpendicular to this position is perpendicular to the radius and tangent to the vector. By scaling this vector to have a magnitude of the desired turn power/angular velocity, we create a vector for each swerve module based on its position that allows to robot to spin in place.
 
-TODO: ADD IMAGE
+![Image](images/Swerve_Rotation.png)
 
 Now that we have the concepts for both translation and turning, we can combine them to get a single vector for each module representing the wheel's spin and power. This is achieved by the expression:
 **[module]**`.driveAndSteer(new Vector2D(x, y).add(turn, createOrthogonalVector(`**[module location]**`).normalize()));`
@@ -49,6 +49,8 @@ There are a few additional features that swerve drive needs to function properly
 The previosuly found vectors for each wheel to control the robot work perfectly for moving the robot if the driver is oriented the same direction as the robot. However, if this is not the case, pushing forward on the joystick would move the robot towards its own forward direction, rather than the static and more intuitive field oriented forward. This would not be a solvable issue on a different drive train like west coast, but since a swerve drive separates the robot's angle from its position, this can be corrected for.
 
 We do this by rotating the input vector based on the yaw of the robot, recorded by the gyro. This is easily achievable by using a rotation matrix (which only needs to be two dimensional), which is in short a set of sines and cosines which rotate the specified vector by a specified angle when applied to its x and y coordinates. By using the negative yaw as this angle, we counteract the turning of the robot's forward direction compared to the driver's forward direction, allowing for field oriented control.
+
+![Image](images/Field_Oriented.png)
 
 ### Absolute Encoder Wheel Alignment
 

@@ -44,9 +44,9 @@ public class Drive extends Mechanism {
     private SwerveDriveKinematics swerveDriveKinematics;
 
     private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
-    NetworkTableInstance.getDefault()
-            .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
-            .publish(); 
+            NetworkTableInstance.getDefault()
+                    .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+                    .publish();
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -86,17 +86,17 @@ public class Drive extends Mechanism {
         Point[] wheelPositions =
                 new Point[] {
                     new Point(
-                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
-                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER),
+                            OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER,
+                            OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER),
                     new Point(
-                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
-                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER),
+                            OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER,
+                            -OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER),
                     new Point(
-                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
-                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER),
+                            -OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER,
+                            -OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER),
                     new Point(
-                            -OdometryInputConstants.WHEEL_DIST_FROM_CENTER,
-                            OdometryInputConstants.WHEEL_DIST_FROM_CENTER)
+                            -OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER,
+                            OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER)
                 };
 
         swerveDriveKinematics =
@@ -107,7 +107,7 @@ public class Drive extends Mechanism {
                             new Translation2d(wheelPositions[2].getX(), wheelPositions[2].getY()),
                             new Translation2d(wheelPositions[3].getX(), wheelPositions[3].getY())
                         });
-        
+
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
@@ -143,27 +143,27 @@ public class Drive extends Mechanism {
                 "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
         // Calculate the necessary turn velocity (m/s) for each motor:
-        double vTurn = OdometryInputConstants.WHEEL_DIST_FROM_CENTER * turn;
+        double turnVelocity = OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER * turn;
 
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFL.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
-                                vTurn,
+                                turnVelocity,
                                 createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveFR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
-                                vTurn,
+                                turnVelocity,
                                 createOrthogonalVector(config.frontRightLocation()).normalize()));
         swerveBL.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(vTurn, createOrthogonalVector(config.backLeftLocation()).normalize()));
+                        .add(turnVelocity, createOrthogonalVector(config.backLeftLocation()).normalize()));
         swerveBR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
-                                vTurn,
+                                turnVelocity,
                                 createOrthogonalVector(config.backRightLocation()).normalize()));
     }
 
@@ -271,12 +271,13 @@ public class Drive extends Mechanism {
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
 
-        SwerveModuleState[] states = new SwerveModuleState[] {
-            swerveFL.getModuleState(),
-            swerveFR.getModuleState(),
-            swerveBL.getModuleState(),
-            swerveFR.getModuleState(),
-        };
+        SwerveModuleState[] states =
+                new SwerveModuleState[] {
+                    swerveFL.getModuleState(),
+                    swerveFR.getModuleState(),
+                    swerveBL.getModuleState(),
+                    swerveFR.getModuleState(),
+                };
         if (Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
         }
