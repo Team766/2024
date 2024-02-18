@@ -31,7 +31,7 @@ public class Shoulder extends Mechanism {
     private MotorController rightMotor;
 
     public Shoulder() {
-	// TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
+        // TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
 
