@@ -8,7 +8,6 @@ import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-import com.team766.robot.gatorade.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -43,9 +42,9 @@ public class Odometry {
     private Pose2d currentPosition;
 
     // In meters
-    private static double WHEEL_CIRCUMFERENCE;
-    public static double GEAR_RATIO;
-    public static int ENCODER_TO_REVOLUTION_CONSTANT;
+    private double WHEEL_CIRCUMFERENCE;
+    public double GEAR_RATIO;
+    public int ENCODER_TO_REVOLUTION_CONSTANT;
 
     // In the same order as motorList, relative to the center of the robot
     private Translation2d[] wheelPositions;
