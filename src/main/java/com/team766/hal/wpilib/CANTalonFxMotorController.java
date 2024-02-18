@@ -24,6 +24,9 @@ import com.team766.logging.LoggerExceptionUtils;
 
 public class CANTalonFxMotorController extends TalonFX implements MotorController {
 
+    // NOTE: whenever we make changes to this (or embedded parts of it), we refresh the config
+    // out of paranoia, in case some code casts this MotorController to a TalonFX directly
+    // and changes a configuration, bypassing this code.
     private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
 
     // TODO: add support for taking a CANcoder as a ctor parameter
