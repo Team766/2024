@@ -178,6 +178,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     private void setRemoteFeedbackSensor(CANcoder canCoder) {
+        // TODO: we need to refresh this if we ever use this.
         FeedbackConfigs feedback = new FeedbackConfigs();
         feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
         feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
