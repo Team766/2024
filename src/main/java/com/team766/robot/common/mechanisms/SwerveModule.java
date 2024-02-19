@@ -65,7 +65,7 @@ public class SwerveModule {
      * @param steer Steer MotorController for this module.
      * @param encoder CANCoder for this module.
      */
-    public SwerveModule(
+    public SwerveModule (
             String modulePlacement,
             MotorController drive,
             MotorController steer,
@@ -116,8 +116,7 @@ public class SwerveModule {
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
 
         // Add 360 * number of full rotations to vectorTheta, then add offset
-        final double angleDegrees =
-                vectorTheta
+        double realAngleDegrees = vectorTheta
                         + 360
                                 * (Math.round(
                                         (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR
@@ -125,6 +124,16 @@ public class SwerveModule {
                                                         - vectorTheta)
                                                 / 360))
                         + offset;
+        if (realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) > 90) {
+                realAngleDegrees += 180;
+                reversed = true;
+        }
+        if (realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) < - 90) {
+                realAngleDegrees -=180;
+                reversed = true;
+        }
+        final double angleDegrees = realAngleDegrees;
+
 
         // Sets the degree of the steer wheel
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
@@ -154,7 +163,12 @@ public class SwerveModule {
         // sets the power to the magnitude of the vector
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
-        double power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+        double power;
+        if (reversed) {
+        power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;     
+        }
+        else {power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+        }
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
 

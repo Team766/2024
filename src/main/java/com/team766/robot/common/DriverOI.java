@@ -84,6 +84,7 @@ public class DriverOI extends OIFragment {
         } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
+            //drive.setCross();
         }
     }
 
