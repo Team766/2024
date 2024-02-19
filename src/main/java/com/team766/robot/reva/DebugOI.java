@@ -67,6 +67,13 @@ public class DebugOI {
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 intake.nudgeDown();
             }
+
+            if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_1)) {
+                intake.in();
+            } else if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_2)) {
+                intake.out();
+            }
+            
             context.releaseOwnership(intake);
         } else if (intake.getState() != Intake.State.STOPPED) {
             context.takeOwnership(intake);
@@ -88,20 +95,6 @@ public class DebugOI {
             context.takeOwnership(shooter);
             shooter.stop();
             context.takeOwnership(shooter);
-        }
-
-        if (macropad.getButton(InputConstants.INTAKE_IN)) {
-            context.takeOwnership(intake);
-            intake.in();
-            context.releaseOwnership(intake);
-        } else if (macropad.getButton(InputConstants.INTAKE_OUT)) {
-            context.takeOwnership(intake);
-            intake.out();
-            context.releaseOwnership(intake);
-        } else {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.takeOwnership(intake);
         }
     }
 }
