@@ -124,13 +124,18 @@ public class SwerveModule {
                                                         - vectorTheta)
                                                 / 360))
                         + offset;
-        if (realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) > 90) {
+        double degreeChange = realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
+        //checks if it would be more efficient to move the wheel in the opposite direction
+        if (degreeChange > 90) {
                 realAngleDegrees -= 180;
                 reversed = true;
         }
-        if (realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) < - 90) {
+        else if (degreeChange < - 90) {
                 realAngleDegrees +=180;
                 reversed = true;
+        }
+        else {
+                reversed = false;
         }
         final double angleDegrees = realAngleDegrees;
 
@@ -160,7 +165,7 @@ public class SwerveModule {
         // apply the steer
         steer(vector);
 
-        // sets the power to the magnitude of the vector
+        // sets the power to the magnitude of the vector and reverses power if necessary
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
