@@ -21,6 +21,7 @@ public class DriveToAndScoreAt extends Procedure {
 	}
 
     public void run(final Context context) {
+		//the intent of this while loop is to make it so the code runs until this is met. However, right now, this wont work (obvious). Lets fix
 		while(VisionPIDControllers.xPID.getOutput() + VisionPIDControllers.yPID.getOutput() != 0){
 			VisionPIDControllers.yPID.setSetpoint(score.y_position);
 			VisionPIDControllers.xPID.setSetpoint(score.x_position);
