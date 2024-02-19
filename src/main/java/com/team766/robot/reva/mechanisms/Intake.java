@@ -32,7 +32,7 @@ public class Intake extends Mechanism {
         return state;
     }
 
-    private void runIntake() {
+    public void runIntake() {
         checkContextOwnership();
         intakeMotor.set(intakePower);
         if (intakePower == 0) {
