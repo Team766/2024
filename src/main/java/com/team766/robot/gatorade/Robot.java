@@ -5,7 +5,6 @@ import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import com.team766.robot.gatorade.mechanisms.*;
 
