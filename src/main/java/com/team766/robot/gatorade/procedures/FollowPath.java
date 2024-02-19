@@ -8,7 +8,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.odometry.PointDir;
 import com.team766.robot.gatorade.Robot;
 import com.team766.robot.gatorade.constants.ConfigConstants;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
@@ -90,7 +89,7 @@ public class FollowPath extends Procedure {
         // intitialization
 
         // TODO: flip path as necessary
-        Pose2d curPose = getPose();
+        Pose2d curPose = Robot.drive.getCurrentPosition();
         ChassisSpeeds currentSpeeds = Robot.drive.getChassisSpeeds();
 
         controller.reset(curPose, currentSpeeds);
@@ -109,8 +108,7 @@ public class FollowPath extends Procedure {
         while (timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            curPose = getPose();
-            // TODO: get actual speed
+            curPose = Robot.drive.getCurrentPosition();
             currentSpeeds = Robot.drive.getChassisSpeeds();
 
             if (replanningConfig.enableDynamicReplanning) {
@@ -144,11 +142,5 @@ public class FollowPath extends Procedure {
         PathPlannerPath replanned = path.replan(currentPose, currentSpeeds);
         generatedTrajectory =
                 new PathPlannerTrajectory(replanned, currentSpeeds, currentPose.getRotation());
-    }
-
-    private Pose2d getPose() {
-        PointDir curPos_pd = Robot.drive.getCurrentPosition();
-        return new Pose2d(
-                curPos_pd.getX(), curPos_pd.getY(), new Rotation2d(curPos_pd.getHeading()));
     }
 }
