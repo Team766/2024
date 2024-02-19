@@ -74,7 +74,8 @@ public class DebugOI {
                 Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "Nudging shooter up");
                 shooter.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "Nudging shooter down");
+                Logger.get(Category.OPERATOR_INTERFACE)
+                        .logRaw(Severity.INFO, "Nudging shooter down");
                 shooter.nudgeDown();
             }
             context.takeOwnership(shooter);
@@ -91,11 +92,11 @@ public class DebugOI {
         } else if (macropad.getButton(InputConstants.INTAKE_OUT)) {
             context.takeOwnership(intake);
             intake.out();
-            context.releaseOwnership(intake);           
+            context.releaseOwnership(intake);
         } else {
             context.takeOwnership(intake);
             intake.stop();
-            context.takeOwnership(intake);           
+            context.takeOwnership(intake);
         }
     }
 }
