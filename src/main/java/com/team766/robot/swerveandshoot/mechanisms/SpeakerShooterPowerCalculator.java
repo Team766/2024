@@ -103,12 +103,7 @@ public class SpeakerShooterPowerCalculator extends Mechanism {
      * @author Max Spier, 1/7/2024
      */
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        CameraPlus toUse;
-        try {
-            toUse = VisionUtil.findApriltagCameraThatHas(tagId);
-        } catch (AprilTagGeneralCheckedException e) {
-            throw new AprilTagGeneralCheckedException("Cameras could not find tag, try again.");
-        }
+        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
 
         Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
 

@@ -4,9 +4,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class NoteCamera extends PhotonCamera {
+public class ColorCamera extends PhotonCamera {
 
-    public NoteCamera(String cameraName) {
+    public ColorCamera(String cameraName) {
         super(cameraName);
     }
 

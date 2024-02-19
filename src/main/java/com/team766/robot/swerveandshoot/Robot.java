@@ -19,6 +19,8 @@ public class Robot implements RobotConfigurator {
     public static Lights lights;
     public static Drive drive;
     public static SpeakerShooterPowerCalculator speakerShooter;
+    public static NoteCamera noteDetectorCamera;
+    public static ForwardApriltagCamera forwardApriltagCamera;
 
     @Override
     public void initializeMechanisms() {
@@ -36,7 +38,9 @@ public class Robot implements RobotConfigurator {
         noteUtil = new NoteUtil();
         lights = new Lights();
         drive = new Drive(config);
-
+        noteDetectorCamera = new NoteCamera();
+        forwardApriltagCamera = new ForwardApriltagCamera();
+        
         try {
             speakerShooter = new SpeakerShooterPowerCalculator();
         } catch (AprilTagGeneralCheckedException e) {

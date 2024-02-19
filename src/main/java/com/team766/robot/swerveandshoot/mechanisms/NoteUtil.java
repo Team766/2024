@@ -28,7 +28,7 @@ public class NoteUtil extends Mechanism {
     public NoteUtil.status getStatus() {
 
         try {
-            StaticCameras.noteDetectorCamera.getRing();
+            Robot.noteDetectorCamera.getCamera().getRing();
         } catch (AprilTagGeneralCheckedException e) {
             return status.NO_RING_IN_VIEW;
         }
@@ -41,7 +41,7 @@ public class NoteUtil extends Mechanism {
         try {
             if (!hasNoteInIntake()) {
 
-                double yawInDegrees = StaticCameras.noteDetectorCamera.getYawOfRing();
+                double yawInDegrees = Robot.noteDetectorCamera.getCamera().getYawOfRing();
                 yawPID.calculate(yawInDegrees);
                 double power = yawPID.getOutput();
 
@@ -61,7 +61,7 @@ public class NoteUtil extends Mechanism {
                     Robot.drive.controlRobotOriented(0, -0.3, 0);
                 }
 
-                // double pitchInDegrees = StaticCameras.noteDetectorCamera.getPitchOfRing();
+                // double pitchInDegrees = Robot.noteDetectorCamera.getCamera().getPitchOfRing();
                 return status.RING_IN_VIEW;
 
             } else {
@@ -75,7 +75,7 @@ public class NoteUtil extends Mechanism {
 
     public void test() {
         try {
-            log(StaticCameras.noteDetectorCamera.getTransform3dOfRing().toString());
+            log(Robot.noteDetectorCamera.getCamera().getTransform3dOfRing().toString());
         } catch (AprilTagGeneralCheckedException e) {
             // TODO Auto-generated catch block
             // e.printStackTrace();
