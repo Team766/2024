@@ -31,10 +31,12 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private static final double SHOULDER_NUDGE_AMOUNT = 10; // degrees
+    private static final double NUDGE_AMOUNT = 10; // degrees
 
     private MotorController leftMotor;
     private MotorController rightMotor;
+
+    private double targetRotations = 0.0;
 
     public Shoulder() {
         // TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
@@ -45,15 +47,11 @@ public class Shoulder extends Mechanism {
     }
 
     public void nudgeUp() {
-        double angle = getAngle();
-        double targetAngle = Math.min(angle + SHOULDER_NUDGE_AMOUNT, Position.TOP.getAngle());
-        rotate(targetAngle);
+        rotate(getAngle() + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        double angle = getAngle();
-        double targetAngle = Math.max(angle - SHOULDER_NUDGE_AMOUNT, Position.BOTTOM.getAngle());
-        rotate(targetAngle);
+        rotate(getAngle() - NUDGE_AMOUNT);
     }
 
     public double getRotations() {
@@ -80,13 +78,16 @@ public class Shoulder extends Mechanism {
 
     public void rotate(double angle) {
         checkContextOwnership();
-        double rotations = degreesToRotations(angle);
-        leftMotor.set(ControlMode.Position, rotations);
+        double targetAngle =
+                Math.max(Position.BOTTOM.getAngle(), Math.min(Position.BOTTOM.getAngle(), angle));
+        targetRotations = degreesToRotations(targetAngle);
+        leftMotor.set(ControlMode.Position, targetRotations);
     }
 
     @Override
     public void run() {
         SmartDashboard.putNumber("[SHOULDER] Angle: ", getAngle());
         SmartDashboard.putNumber("[SHOULDER] Rotations: ", getRotations());
+        SmartDashboard.putNumber("[SHOULDER] Target Rotations: ", targetRotations);
     }
 }

@@ -9,6 +9,6 @@ public class RetractClimber extends Procedure {
     @Override
     public void run(Context context) {
         context.takeOwnership(Robot.climber);
-        Robot.climber.setClimbPosition(0);
+        Robot.climber.setClimberHeight(0);
     }
 }
