@@ -24,6 +24,9 @@ import com.team766.logging.LoggerExceptionUtils;
 
 public class CANTalonFxMotorController extends TalonFX implements MotorController {
 
+    // NOTE: whenever we make changes to this (or embedded parts of it), we refresh the config
+    // out of paranoia, in case some code casts this MotorController to a TalonFX directly
+    // and changes a configuration, bypassing this code.
     private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
 
     // TODO: add support for taking a CANcoder as a ctor parameter
@@ -163,7 +166,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setI(final double value) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
+        refreshConfig();
         // code.
         talonFXConfig.Slot0.kI = value;
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
@@ -171,13 +174,14 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setD(final double value) {
-        refreshConfig(); // necessary?  I don't *think* this should be modified external to this
+        refreshConfig();
         // code.
         talonFXConfig.Slot0.kD = value;
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
     }
 
     private void setRemoteFeedbackSensor(CANcoder canCoder) {
+        // TODO: we need to refresh this if we ever use this.
         FeedbackConfigs feedback = new FeedbackConfigs();
         feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
         feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
@@ -212,19 +216,18 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
 
     @Override
     public void setOutputRange(final double minOutput, final double maxOutput) {
-        MotorOutputConfigs motorOutput =
-                new MotorOutputConfigs()
-                        .withPeakReverseDutyCycle(minOutput)
-                        .withPeakForwardDutyCycle(maxOutput);
+        MotorOutputConfigs motorOutput = new MotorOutputConfigs();
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(motorOutput));
+
+        motorOutput.withPeakReverseDutyCycle(minOutput).withPeakForwardDutyCycle(maxOutput);
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(motorOutput));
     }
 
     @Override
     public void setCurrentLimit(final double ampsLimit) {
-        CurrentLimitsConfigs config =
-                new CurrentLimitsConfigs()
-                        .withSupplyCurrentLimit(ampsLimit)
-                        .withSupplyCurrentLimitEnable(true);
+        CurrentLimitsConfigs config = new CurrentLimitsConfigs();
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(config));
+        config.withSupplyCurrentLimit(ampsLimit).withSupplyCurrentLimitEnable(true);
         statusCodeToException(ExceptionTarget.LOG, super.getConfigurator().apply(config));
     }
 

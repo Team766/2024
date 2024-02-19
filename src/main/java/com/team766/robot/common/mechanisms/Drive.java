@@ -8,12 +8,17 @@ import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
-import com.team766.odometry.Point;
-import com.team766.odometry.PointDir;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -27,18 +32,18 @@ public class Drive extends Mechanism {
     private final SwerveModule swerveBR;
     private final SwerveModule swerveBL;
 
-    // TODO: rework odometry so it doesn't have to go through drive
-
     private final GyroReader gyro;
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
-    private static PointDir currentPosition;
+    private static Pose2d currentPosition;
 
-    /* private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
-    NetworkTableInstance.getDefault()
-            .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
-            .publish(); */
+    private SwerveDriveKinematics swerveDriveKinematics;
+
+    private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
+            NetworkTableInstance.getDefault()
+                    .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
+                    .publish();
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -72,21 +77,21 @@ public class Drive extends Mechanism {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        currentPosition = new PointDir(0, 0, 0);
+        currentPosition = new Pose2d();
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
         CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
-        Point[] wheelPositions =
-                new Point[] {
-                    new Point(
+        Translation2d[] wheelPositions =
+                new Translation2d[] {
+                    new Translation2d(
                             OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
                             OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Point(
+                    new Translation2d(
                             OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
                             -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Point(
+                    new Translation2d(
                             -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
                             -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Point(
+                    new Translation2d(
                             -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
                             OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)
                 };
@@ -104,44 +109,58 @@ public class Drive extends Mechanism {
                         OdometryInputConstants.RATE_LIMITER_TIME);
     }
 
+    /**
+     * Helper method to create a new vector counterclockwise orthogonal to the given one
+     * @param vector input vector
+     * @return clockwise orthoginal output vector
+     */
     private static Vector2D createOrthogonalVector(Vector2D vector) {
-        return new Vector2D(vector.getY(), -vector.getX());
+        return new Vector2D(-vector.getY(), vector.getX());
     }
 
     /**
      * Maps parameters to robot oriented swerve movement
-     * @param x the x value for the position joystick
-     * @param y the y value for the position joystick
-     * @param turn the turn value from the rotation joystick
+     * @param x the x value for the position joystick, positive being forward
+     * @param y the y value for the position joystick, positive being left
+     * @param turn the turn value from the rotation joystick, positive being CCW
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
         SmartDashboard.putString(
                 "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
+        // Calculate the necessary turn velocity (m/s) for each motor:
+        double turnVelocity = OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER * turn;
+
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
         swerveFL.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.frontLeftLocation()).normalize()));
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveFR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
-                                turn,
+                                turnVelocity,
                                 createOrthogonalVector(config.frontRightLocation()).normalize()));
-        swerveBR.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.backRightLocation()).normalize()));
         swerveBL.driveAndSteer(
                 new Vector2D(x, y)
-                        .add(turn, createOrthogonalVector(config.backLeftLocation()).normalize()));
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.backLeftLocation()).normalize()));
+        swerveBR.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.backRightLocation()).normalize()));
     }
 
     /**
      * Uses controlRobotOriented() to control the robot relative to the field
-     * @param x the x value for the position joystick
-     * @param y the y value for the position joystick
-     * @param turn the turn value from the rotation joystick
+     * @param x the x value for the position joystick, positive being forward, in meters/sec
+     * @param y the y value for the position joystick, positive being left, in meters/sec
+     * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
@@ -158,7 +177,6 @@ public class Drive extends Mechanism {
 
     /**
      * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param yawRad
      * @param chassisSpeeds
      */
     public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
@@ -209,18 +227,25 @@ public class Drive extends Mechanism {
         return gyro.getRoll();
     }
 
-    // TODO: rework odometry so it doesn't have to go through drive
     // TODO: figure out why odometry x and y are swapped
-    public PointDir getCurrentPosition() {
+    public Pose2d getCurrentPosition() {
         return currentPosition;
     }
 
-    public void setCurrentPosition(Point P) {
+    public void setCurrentPosition(Pose2d P) {
         swerveOdometry.setCurrentPosition(P);
     }
 
     public void resetCurrentPosition() {
-        swerveOdometry.setCurrentPosition(new Point(0, 0));
+        swerveOdometry.setCurrentPosition(new Pose2d());
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return swerveDriveKinematics.toChassisSpeeds(
+                swerveFR.getModuleState(),
+                swerveFL.getModuleState(),
+                swerveBL.getModuleState(),
+                swerveBR.getModuleState());
     }
 
     // Odometry
@@ -228,14 +253,23 @@ public class Drive extends Mechanism {
     public void run() {
         currentPosition = swerveOdometry.run();
         // log(currentPosition.toString());
-        SmartDashboard.putString("position", currentPosition.toString());
+        SmartDashboard.putString("pos", currentPosition.toString());
+        // SmartDashboard.putString();
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
 
-        // TODO: get the SwerveModuleStates
-        /* SwerveModuleState[] states = null; // TODO
-        swerveModuleStatePublisher.set(states); */
+        SwerveModuleState[] states =
+                new SwerveModuleState[] {
+                    swerveFL.getModuleState(),
+                    swerveFR.getModuleState(),
+                    swerveBL.getModuleState(),
+                    swerveFR.getModuleState(),
+                };
+        if (Logger.isLoggingToDataLog()) {
+            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
+        }
+        swerveModuleStatePublisher.set(states);
     }
 }

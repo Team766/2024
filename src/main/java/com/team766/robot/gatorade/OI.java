@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
+import com.team766.robot.gatorade.constants.ControlConstants;
 import com.team766.robot.gatorade.constants.InputConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
@@ -22,12 +23,11 @@ public class OI extends Procedure {
     private JoystickReader leftJoystick;
     private JoystickReader rightJoystick;
     private JoystickReader boxopGamepad;
-    private double rightJoystickX = 0;
+    private double rightJoystickY = 0;
     private double leftJoystickX = 0;
     private double leftJoystickY = 0;
     private boolean isCross = false;
 
-    private static final double FINE_DRIVING_COEFFICIENT = 0.25;
     double turningValue = 0;
     boolean manualControl = true;
     PlacementPosition placementPosition = PlacementPosition.NONE;
@@ -58,10 +58,19 @@ public class OI extends Procedure {
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
 
-            leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
-            leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-            rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
-            // Robot.drive.setGyro(-Robot.gyro.getGyroYaw());
+            // Negative because forward is negative in driver station
+            leftJoystickX =
+                    -createJoystickDeadzone(
+                                    leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
+                            * ControlConstants.MAX_VEL_POS; // For fwd/rv
+            // Negative because left is negative in driver station
+            leftJoystickY =
+                    -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
+                            * ControlConstants.MAX_VEL_POS; // For left/right
+            // Negative because left is negative in driver station
+            rightJoystickY =
+                    -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
+                            * ControlConstants.MAX_VEL_ROT; // For steer
 
             if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
                 new IntakeOut().run(context);
@@ -77,23 +86,6 @@ public class OI extends Procedure {
                 Robot.drive.resetCurrentPosition();
             }
 
-            if (Math.abs(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
-                rightJoystickX = rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT) / 2;
-            } else {
-                rightJoystickX = 0;
-            }
-
-            if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD)) > 0.05) {
-                leftJoystickY = leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD);
-            } else {
-                leftJoystickY = 0;
-            }
-            if (Math.abs(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)) > 0.05) {
-                leftJoystickX = leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT);
-            } else {
-                leftJoystickX = 0;
-            }
-
             // Sets the wheels to the cross position if the cross button is pressed
             if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
                 if (!isCross) {
@@ -104,19 +96,20 @@ public class OI extends Procedure {
 
             // Moves the robot if there are joystick inputs
             if (!isCross
-                    && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickX)
+                    && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
                             > 0) {
                 context.takeOwnership(Robot.drive);
+                // log("current pos: " + Robot.drive.getCurrentPosition());
                 // If a button is pressed, drive is just fine adjustment
                 if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
                     Robot.drive.controlFieldOriented(
-                            (leftJoystickX * FINE_DRIVING_COEFFICIENT),
-                            -(leftJoystickY * FINE_DRIVING_COEFFICIENT),
-                            (rightJoystickX * FINE_DRIVING_COEFFICIENT));
+                            (leftJoystickX * ControlConstants.FINE_DRIVING_COEFFICIENT),
+                            (leftJoystickY * ControlConstants.FINE_DRIVING_COEFFICIENT),
+                            (rightJoystickY * ControlConstants.FINE_DRIVING_COEFFICIENT));
                 } else {
                     // On default, controls the robot field oriented
                     Robot.drive.controlFieldOriented(
-                            (leftJoystickX), -(leftJoystickY), (rightJoystickX));
+                            (leftJoystickX), (leftJoystickY), (rightJoystickY));
                 }
             } else {
                 // if (rightJoystick.getButton(9)) {Robot.drive.controlFieldOriented(0, -0.2, 0);}
@@ -288,5 +281,14 @@ public class OI extends Procedure {
 
         lightsRateLimit.reset();
         lightsRateLimit.next();
+    }
+
+    /**
+     * Helper method to ignore joystick values below JOYSTICK_DEADZONE
+     * @param joystickValue the value to trim
+     * @return the trimmed joystick value
+     */
+    private double createJoystickDeadzone(double joystickValue) {
+        return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
     }
 }
