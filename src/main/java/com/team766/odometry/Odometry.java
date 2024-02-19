@@ -159,9 +159,8 @@ public class Odometry {
                                 positionStatus.getStatus().toString());
                 continue;
             }
-            // -90 there because coordinate system changed from +x forward to +x right
-            // FIXME: when we standardize the wheel system, revert back
-            double absolutePosition = 360 * positionStatus.getValueAsDouble() - 90;
+
+            double absolutePosition = 360 * positionStatus.getValueAsDouble();
 
             // prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 *
             // DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) *
@@ -273,8 +272,8 @@ public class Odometry {
             // log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " +
             // currPositions[i]);
         }
-        // x is inverted to match the standard of positive y = to the right
-        currentPosition = new Pose2d(-sumX / motorCount, sumY / motorCount, gyroPosition);
+        
+        currentPosition = new Pose2d(sumX / motorCount, sumY / motorCount, gyroPosition);
     }
 
     // Intended to be placed inside Robot.drive.run()
