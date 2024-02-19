@@ -74,10 +74,10 @@ public class Intake extends Mechanism {
         SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
     }
 
-    //TODO: Implement
+    // TODO: Implement
 
-	public boolean hasNoteInIntake() {
-		return false;
-	}
+    public boolean hasNoteInIntake() {
+        return false;
+    }
 }
 ;
