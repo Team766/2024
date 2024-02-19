@@ -25,5 +25,5 @@ public final class ConfigConstants {
 
     // shooter config values
     public static final String SHOOTER_MOTOR_TOP = "shooter.topMotor";
-    public static final String BOTTOM_MOTOR_TOP = "shooter.bottomMotor";
+    public static final String SHOOTER_MOTOR_BOTTOM = "shooter.bottomMotor";
 }

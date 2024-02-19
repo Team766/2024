@@ -19,7 +19,7 @@ public class Shooter extends Mechanism {
 
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
-        shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
+        shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
     }
 
     public void runShooter() {
