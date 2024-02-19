@@ -14,7 +14,6 @@ import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -255,7 +254,7 @@ public class Drive extends Mechanism {
         currentPosition = swerveOdometry.run();
         // log(currentPosition.toString());
         SmartDashboard.putString("pos", currentPosition.toString());
-        //SmartDashboard.putString();
+        // SmartDashboard.putString();
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
