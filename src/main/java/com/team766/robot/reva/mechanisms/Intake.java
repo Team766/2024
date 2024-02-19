@@ -1,6 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
-import static com.team766.robot.gatorade.constants.ConfigConstants.*;
+import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -48,24 +48,22 @@ public class Intake extends Mechanism {
     }
 
     public void intakeOut() {
-        checkContextOwnership();
-        intakeMotor.set(-1 * DEFAULT_POWER);
-        state = State.OUT;
+        intakePower = -1 * DEFAULT_POWER;
+        runIntake();
     }
 
     public void intakeStop() {
-        checkContextOwnership();
-        intakeMotor.set(0);
-        state = State.STOPPED;
+        intakePower = 0;
+        runIntake();
     }
 
-    public void nudgeUp() {
+    public void intakeNudgeUp() {
         checkContextOwnership();
         intakePower = Math.min(intakePower + NUDGE_INCREMENT, MAX_POWER);
         intakeMotor.set(intakePower);
     }
 
-    public void nudgeDown() {
+    public void intakeNudgeDown() {
         checkContextOwnership();
         intakePower = Math.max(intakePower - NUDGE_INCREMENT, MIN_POWER);
         intakeMotor.set(intakePower);
@@ -73,6 +71,7 @@ public class Intake extends Mechanism {
 
     public void run() {
         SmartDashboard.putString("[INTAKE]", state.toString());
+        SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
     }
 }
 ;
