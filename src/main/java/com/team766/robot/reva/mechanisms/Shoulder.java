@@ -46,6 +46,10 @@ public class Shoulder extends Mechanism {
         leftMotor.setNeutralMode(NeutralMode.Brake);
     }
 
+    public void stop() {
+        leftMotor.stopMotor();
+    }
+
     public void nudgeUp() {
         rotate(getAngle() + NUDGE_AMOUNT);
     }

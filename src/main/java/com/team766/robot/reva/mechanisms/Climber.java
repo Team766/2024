@@ -35,6 +35,7 @@ public class Climber extends Mechanism {
     private static final double GEAR_RATIO_AND_CIRCUMFERENCE =
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
     private static final double NUDGE_AMOUNT = 10; // in cm
+    private double pidlessPower = 0.0;
 
     public Climber() {
         leftMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
@@ -42,6 +43,19 @@ public class Climber extends Mechanism {
         // rightMotor.follow(leftMotor);
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public boolean isRunningNoPID() {
+        return pidlessPower != 0.0;
+    }
+
+    public void goNoPID() {
+        leftMotor.set(pidlessPower);
+    }
+
+    public void stop() {
+        pidlessPower = 0.0;
+        leftMotor.stopMotor();
     }
 
     private double heightToRotations(double height) {
@@ -68,11 +82,13 @@ public class Climber extends Mechanism {
     }
 
     public void nudgeUp() {
-        setHeight(getHeight() + NUDGE_AMOUNT);
+        pidlessPower = Math.min(1.0, pidlessPower + 0.1);
+        // setHeight(getHeight() + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        setHeight(getHeight() - NUDGE_AMOUNT);
+        pidlessPower = Math.max(-1, pidlessPower - 0.1);
+        // setHeight(getHeight() - NUDGE_AMOUNT);
     }
 
     @Override

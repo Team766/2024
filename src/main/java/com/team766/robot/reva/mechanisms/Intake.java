@@ -53,7 +53,7 @@ public class Intake extends Mechanism {
     }
 
     public void stop() {
-        intakePower = 0;
+        intakePower = 0.0;
         runIntake();
     }
 

@@ -44,15 +44,18 @@ public class DebugOI {
         }
         if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
             // Climber
+            context.takeOwnership(climber);
+            climber.goNoPID();
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                context.takeOwnership(climber);
                 climber.nudgeUp();
-                context.releaseOwnership(climber);
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                context.takeOwnership(climber);
                 climber.nudgeDown();
-                context.releaseOwnership(climber);
             }
+            context.releaseOwnership(climber);
+        } else if (climber.isRunningNoPID()) {
+            context.takeOwnership(climber);
+            climber.stop();
+            context.releaseOwnership(climber);
         }
 
         if (macropad.getButton(InputConstants.CONTROL_INTAKE)) {
@@ -65,7 +68,7 @@ public class DebugOI {
                 intake.nudgeDown();
             }
             context.releaseOwnership(intake);
-        } else {
+        } else if (intake.getState() != Intake.State.STOPPED) {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
