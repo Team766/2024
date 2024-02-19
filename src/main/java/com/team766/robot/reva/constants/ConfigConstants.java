@@ -19,4 +19,11 @@ public final class ConfigConstants {
 
     public static final String SHOULDER_RIGHT = "shoulder.rightMotor";
     public static final String SHOULDER_LEFT = "shoulder.leftMotor";
+
+    // intake config values
+    public static final String INTAKE_MOTOR = "intake.motor";
+
+    // shooter config values
+    public static final String SHOOTER_MOTOR_TOP = "shooter.topMotor";
+    public static final String SHOOTER_MOTOR_BOTTOM = "shooter.bottomMotor";
 }

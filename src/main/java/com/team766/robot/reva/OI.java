@@ -30,7 +30,7 @@ public class OI extends Procedure {
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
 
         driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
-        debugOI = new DebugOI(macropad, Robot.shoulder);
+        debugOI = new DebugOI(macropad, Robot.shoulder, Robot.intake, Robot.shooter);
     }
 
     public void run(Context context) {
