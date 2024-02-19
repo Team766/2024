@@ -4,6 +4,7 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
@@ -39,8 +40,7 @@ public class Robot implements RobotConfigurator {
         try {
             speakerShooter = new SpeakerShooterPowerCalculator();
         } catch (AprilTagGeneralCheckedException e) {
-            // Logger.logRaw(Severity.ERROR, "Couldn't find drive team alliance color to initialize
-            // the speaker shooter.");
+            LoggerExceptionUtils.logException(e);
         }
     }
 
