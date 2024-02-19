@@ -32,7 +32,6 @@ public class SwerveConfig {
     private Vector2D backRightLocation = new Vector2D(DEFAULT_BR_X, DEFAULT_BR_Y);
     private double driveMotorCurrentLimit = DEFAULT_DRIVE_CURRENT_LIMIT;
     private double steerMotorCurrentLimit = DEFAULT_STEER_CURRENT_LIMIT;
-    private double wheelCircumference = DEFAULT_WHEEL_CIRCUMFERENCE;
 
     public SwerveConfig() {}
 
@@ -54,10 +53,6 @@ public class SwerveConfig {
 
     public Vector2D backRightLocation() {
         return backRightLocation;
-    }
-
-    public double wheelCircumference() {
-        return wheelCircumference;
     }
 
     public double driveMotorCurrentLimit() {
@@ -90,11 +85,6 @@ public class SwerveConfig {
 
     public SwerveConfig withBackRightLocation(double x, double y) {
         this.backRightLocation = new Vector2D(x, y);
-        return this;
-    }
-
-    public SwerveConfig withWheelCircumference(double wheelCircumference) {
-        this.wheelCircumference = wheelCircumference;
         return this;
     }
 
