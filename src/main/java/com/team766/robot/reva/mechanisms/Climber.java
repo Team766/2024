@@ -34,7 +34,8 @@ public class Climber extends Mechanism {
 
     private static final double GEAR_RATIO_AND_CIRCUMFERENCE =
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
-    private static final double NUDGE_AMOUNT = 10; // in cm
+    private static final double NUDGE_INCREMENT = 10; // in cm
+    private static final double PIDLESS_NUDGE_INCREMENT = 0.1;
     private double pidlessPower = 0.0;
 
     public Climber() {
@@ -83,12 +84,12 @@ public class Climber extends Mechanism {
     }
 
     public void nudgeUp() {
-        pidlessPower = Math.min(1.0, pidlessPower + 0.1);
+        pidlessPower = Math.min(1.0, pidlessPower + PIDLESS_NUDGE_INCREMENT);
         // setHeight(getHeight() + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        pidlessPower = Math.max(-1, pidlessPower - 0.1);
+        pidlessPower = Math.max(-1, pidlessPower - PIDLESS_NUDGE_INCREMENT);
         // setHeight(getHeight() - NUDGE_AMOUNT);
     }
 
