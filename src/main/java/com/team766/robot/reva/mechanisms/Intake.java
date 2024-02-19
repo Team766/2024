@@ -42,28 +42,28 @@ public class Intake extends Mechanism {
         }
     }
 
-    public void intakeIn() {
+    public void in() {
         intakePower = DEFAULT_POWER;
         runIntake();
     }
 
-    public void intakeOut() {
+    public void out() {
         intakePower = -1 * DEFAULT_POWER;
         runIntake();
     }
 
-    public void intakeStop() {
+    public void stop() {
         intakePower = 0;
         runIntake();
     }
 
-    public void intakeNudgeUp() {
+    public void nudgeUp() {
         checkContextOwnership();
         intakePower = Math.min(intakePower + NUDGE_INCREMENT, MAX_POWER);
         intakeMotor.set(intakePower);
     }
 
-    public void intakeNudgeDown() {
+    public void nudgeDown() {
         checkContextOwnership();
         intakePower = Math.max(intakePower - NUDGE_INCREMENT, MIN_POWER);
         intakeMotor.set(intakePower);

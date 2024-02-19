@@ -7,6 +7,6 @@ import com.team766.robot.reva.Robot;
 public class IntakeStop extends Procedure {
     public void run(Context context) {
         context.takeOwnership(Robot.intake);
-        Robot.intake.intakeStop();
+        Robot.intake.stop();
     }
 }
