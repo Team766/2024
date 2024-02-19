@@ -64,8 +64,7 @@ public class OI extends Procedure {
             if (joystick0.getButtonPressed(1)) {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 visionProcedure =
-                        context.startAsync(
-                                new DriveToAndScoreAt(ScoringPositions.makerSpace1R));
+                        context.startAsync(new DriveToAndScoreAt(ScoringPositions.makerSpace1R));
             }
 
             if (joystick0.getButtonReleased(1)) {
@@ -79,8 +78,7 @@ public class OI extends Procedure {
             if (joystick0.getButtonPressed(2)) {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 visionProcedure =
-                        context.startAsync(
-                                new DriveToAndScoreAt(ScoringPositions.makerSpace1L));
+                        context.startAsync(new DriveToAndScoreAt(ScoringPositions.makerSpace1L));
             }
 
             if (joystick0.getButtonReleased(2)) {

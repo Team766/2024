@@ -1,10 +1,8 @@
 package com.team766.robot.swerveandshoot;
 
-import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
-import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;

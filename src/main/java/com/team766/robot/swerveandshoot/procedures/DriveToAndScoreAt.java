@@ -83,15 +83,14 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
 
         Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
 
-		int tagId = toUse.getTagIdOfBestTarget();
+        int tagId = toUse.getTagIdOfBestTarget();
 
-		//this is the tag we will be using for testing in the time being. later we will need to set based on alliance color
-		if(tagId == 5){
-			return robotToTag;
-		}
+        // this is the tag we will be using for testing in the time being. later we will need to set
+        // based on alliance color
+        if (tagId == 5) {
+            return robotToTag;
+        }
 
-		throw new AprilTagGeneralCheckedException("Could not find tag with the correct tagId");
-
-        
+        throw new AprilTagGeneralCheckedException("Could not find tag with the correct tagId");
     }
 }
