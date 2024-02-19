@@ -32,11 +32,7 @@ public class GrayScaleCamera extends PhotonCamera {
      * @throws AprilTagGeneralCheckedException the checked exception from before if there were any errors in the getter methods
      */
     public int getTagIdOfBestTarget() throws AprilTagGeneralCheckedException {
-        try {
-            return getBestTrackedTarget().getFiducialId();
-        } catch (AprilTagGeneralCheckedException e) {
-            throw e;
-        }
+        return getBestTrackedTarget().getFiducialId();
     }
 
     /**
