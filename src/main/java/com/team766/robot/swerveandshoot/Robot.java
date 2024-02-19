@@ -15,10 +15,8 @@ public class Robot implements RobotConfigurator {
     // Declare mechanisms here
     public static TempPickerUpper tempPickerUpper;
     public static TempShooter tempShooter;
-    public static NoteUtil noteUtil;
     public static Lights lights;
     public static Drive drive;
-    public static SpeakerShooterPowerCalculator speakerShooter;
     public static NoteCamera noteDetectorCamera;
     public static ForwardApriltagCamera forwardApriltagCamera;
 
@@ -35,17 +33,10 @@ public class Robot implements RobotConfigurator {
                         SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
         tempPickerUpper = new TempPickerUpper();
         tempShooter = new TempShooter();
-        noteUtil = new NoteUtil();
         lights = new Lights();
         drive = new Drive(config);
         noteDetectorCamera = new NoteCamera();
         forwardApriltagCamera = new ForwardApriltagCamera();
-
-        try {
-            speakerShooter = new SpeakerShooterPowerCalculator();
-        } catch (AprilTagGeneralCheckedException e) {
-            LoggerExceptionUtils.logException(e);
-        }
     }
 
     @Override

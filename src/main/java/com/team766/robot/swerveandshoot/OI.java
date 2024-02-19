@@ -6,7 +6,6 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.swerveandshoot.mechanisms.SpeakerShooterPowerCalculator;
 import com.team766.robot.swerveandshoot.procedures.*;
 
 /**
@@ -66,7 +65,7 @@ public class OI extends Procedure {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 visionProcedure =
                         context.startAsync(
-                                new DriveToAndScoreAt(SpeakerShooterPowerCalculator.makerSpace1R));
+                                new DriveToAndScoreAt(ScoringPositions.makerSpace1R));
             }
 
             if (joystick0.getButtonReleased(1)) {
@@ -81,7 +80,7 @@ public class OI extends Procedure {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 visionProcedure =
                         context.startAsync(
-                                new DriveToAndScoreAt(SpeakerShooterPowerCalculator.makerSpace1L));
+                                new DriveToAndScoreAt(ScoringPositions.makerSpace1L));
             }
 
             if (joystick0.getButtonReleased(2)) {
