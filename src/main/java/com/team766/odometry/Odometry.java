@@ -272,8 +272,8 @@ public class Odometry {
             // log("sumX: " + sumX + " Motor Count: " + motorCount + " CurrentPosition: " +
             // currPositions[i]);
         }
-        
-        currentPosition = new Pose2d(sumX / motorCount, sumY / motorCount, gyroPosition);
+        // x and y are inverted to follow directional conventions
+        currentPosition = new Pose2d(-sumX / motorCount, -sumY / motorCount, gyroPosition);
     }
 
     // Intended to be placed inside Robot.drive.run()
