@@ -42,13 +42,11 @@ public class Shooter extends Mechanism {
 
     public void nudgeUp() {
         shooterPower = Math.min(shooterPower + NUDGE_INCREMENT, MAX_POWER);
-        System.err.println("Upping shooter power: " + shooterPower);
         runShooter();
     }
 
     public void nudgeDown() {
         shooterPower = Math.max(shooterPower - NUDGE_INCREMENT, MIN_POWER);
-        System.err.println("Downing shooter power: " + shooterPower);
         runShooter();
     }
 

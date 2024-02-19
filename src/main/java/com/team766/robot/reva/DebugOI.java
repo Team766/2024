@@ -71,11 +71,8 @@ public class DebugOI {
             Robot.shooter.runShooter();
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "Nudging shooter up");
                 shooter.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                Logger.get(Category.OPERATOR_INTERFACE)
-                        .logRaw(Severity.INFO, "Nudging shooter down");
                 shooter.nudgeDown();
             }
             context.takeOwnership(shooter);
