@@ -46,7 +46,9 @@ public class DebugOI {
             }
         } else if (macropad.getButton(InputConstants.CONTROL_INTAKE)) {
             // Intake
+            context.takeOwnership(intake);
             intake.runIntake();
+            context.releaseOwnership(intake);
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 context.takeOwnership(intake);
                 intake.nudgeUp();
@@ -59,17 +61,20 @@ public class DebugOI {
                 context.takeOwnership(intake);
                 intake.stop();
                 context.releaseOwnership(intake);
-            }
-        } else if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
-            // Shooter
-            if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
+            } else if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
+                // Shooter
                 context.takeOwnership(shooter);
-                shooter.nudgeUp();
+                shooter.runShooter();
                 context.releaseOwnership(shooter);
-            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                context.takeOwnership(shooter);
-                shooter.nudgeDown();
-                context.releaseOwnership(shooter);
+                if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
+                    context.takeOwnership(shooter);
+                    shooter.nudgeUp();
+                    context.releaseOwnership(shooter);
+                } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
+                    context.takeOwnership(shooter);
+                    shooter.nudgeDown();
+                    context.releaseOwnership(shooter);
+                }
             } else if (macropad.getButtonReleased(InputConstants.CONTROL_SHOOTER)) {
                 context.takeOwnership(shooter);
                 shooter.stop();

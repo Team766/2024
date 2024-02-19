@@ -15,17 +15,17 @@ public class Shooter extends Mechanism {
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
-    private double shooterPower = 0;
+    private double shooterPower = DEFAULT_POWER;
 
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
     }
 
-    private void runShooter() {
+    public void runShooter() {
         checkContextOwnership();
         shooterMotorTop.set(shooterPower);
-        shooterMotorBottom.set(shooterPower);
+        // shooterMotorBottom.set(shooterPower);
     }
 
     public void shoot() {

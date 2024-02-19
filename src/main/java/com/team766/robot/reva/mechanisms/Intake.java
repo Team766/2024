@@ -21,7 +21,7 @@ public class Intake extends Mechanism {
     private static final double MIN_POWER = -1 * MAX_POWER;
 
     private MotorController intakeMotor;
-    private double intakePower = 0;
+    private double intakePower = DEFAULT_POWER;
     private State state = State.STOPPED;
 
     public Intake() {
