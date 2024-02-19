@@ -2,9 +2,6 @@ package com.team766.robot.reva;
 
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
