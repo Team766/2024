@@ -19,9 +19,6 @@ public class SwerveConfig {
     public static final double DEFAULT_BL_Y = 1;
     public static final double DEFAULT_BR_X = -1;
     public static final double DEFAULT_BR_Y = -1;
-    // Circumference of the wheels. It was measured to be 30.5cm, then experimentally this value had
-    // an error of 2.888%. This was then converted to meters.
-    public static final double DEFAULT_WHEEL_CIRCUMFERENCE = 30.5 * 1.02888 / 100;
     public static final double DEFAULT_DRIVE_CURRENT_LIMIT = 35;
     public static final double DEFAULT_STEER_CURRENT_LIMIT = 30;
 
