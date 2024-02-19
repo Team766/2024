@@ -73,7 +73,7 @@ public class DebugOI {
             } else if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_2)) {
                 intake.out();
             }
-            
+
             context.releaseOwnership(intake);
         } else if (intake.getState() != Intake.State.STOPPED) {
             context.takeOwnership(intake);
