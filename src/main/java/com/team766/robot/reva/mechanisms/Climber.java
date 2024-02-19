@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Climber extends Mechanism {
 
     public enum Position {
+        // A very rough measurement, and was being very safe.
+        // TODO: Needs to be measured more accurately.
         TOP(43.18),
         BOTTOM(0);
 
