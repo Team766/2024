@@ -3,6 +3,7 @@ package com.team766.robot.reva;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -11,12 +12,14 @@ public class DebugOI {
     private final JoystickReader macropad;
 
     private final Shoulder shoulder;
+    private final Climber climber;
     private final Intake intake;
     private final Shooter shooter;
 
-    public DebugOI(JoystickReader macropad, Shoulder shoulder, Intake intake, Shooter shooter) {
+    public DebugOI(JoystickReader macropad, Shoulder shoulder, Climber climber, Intake intake, Shooter shooter) {
         this.macropad = macropad;
         this.shoulder = shoulder;
+        this.climber = climber;
         this.intake = intake;
         this.shooter = shooter;
     }
@@ -37,13 +40,13 @@ public class DebugOI {
         if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
             // Climber
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                // context.takeOwnership(climber);
-                // climber.nudgeUp();
-                // context.releaseOwnership(climber);
+                context.takeOwnership(climber);
+                climber.nudgeUp();
+                context.releaseOwnership(climber);
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                // context.takeOwnership(climber);
-                // climber.nudgeDown();
-                // context.releaseOwnership(climber);
+                context.takeOwnership(climber);
+                climber.nudgeDown();
+                context.releaseOwnership(climber);
             }
         }
 
