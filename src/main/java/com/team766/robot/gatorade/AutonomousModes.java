@@ -22,8 +22,8 @@ public class AutonomousModes {
                 // OnePieceExitCommunity(GamePieceType.CUBE)),
                 // new AutonomousMode("OnePieceExitCommunityBalance", () -> new
                 // OnePieceExitCommunityBalance(GamePieceType.CUBE)),
-                new AutonomousMode(
-                        "OnePieceBalanceCube", () -> new OnePieceBalance(GamePieceType.CUBE)),
+                // new AutonomousMode(
+                //        "OnePieceBalanceCube", () -> new OnePieceBalance(GamePieceType.CUBE)),
                 // new AutonomousMode("FollowPointsFile", () -> new
                 // FollowPoints("FollowPoints.json")),
                 // //new AutonomousMode("FollowPointsH", () -> new FollowPoints(new PointDir[]{new
@@ -31,5 +31,6 @@ public class AutonomousModes {
                 // PointDir(2, 1), new PointDir(0, 1)})),
                 // new AutonomousMode("DoNothing", () -> new DoNothing()),
                 // new AutonomousMode("FollowExamplePath", () -> new FollowPath()),
+                new AutonomousMode("TestPathAuto", () -> new TestPathAuto())
             };
 }

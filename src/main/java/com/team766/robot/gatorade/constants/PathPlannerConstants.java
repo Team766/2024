@@ -17,5 +17,5 @@ public final class PathPlannerConstants {
     public static final double ROTATION_D = 0;
 
     // default values
-    public static final double MAX_SPEED_MPS = 1;
+    public static final double MAX_SPEED_MPS = 0.5;
 }

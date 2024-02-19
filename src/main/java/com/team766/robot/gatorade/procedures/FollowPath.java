@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FollowPath extends Procedure {
     private PathPlannerPath path;
@@ -91,6 +92,7 @@ public class FollowPath extends Procedure {
         // TODO: flip path as necessary
         Pose2d curPose = Robot.drive.getCurrentPosition();
         ChassisSpeeds currentSpeeds = Robot.drive.getChassisSpeeds();
+        log("Autoning");
 
         controller.reset(curPose, currentSpeeds);
 
