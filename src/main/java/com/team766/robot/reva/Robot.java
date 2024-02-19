@@ -12,9 +12,9 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
-    public static Intake intake;
     public static Drive drive;
     public static Shoulder shoulder;
+    public static Intake intake;
 
     @Override
     public void initializeMechanisms() {
