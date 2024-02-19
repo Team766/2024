@@ -98,6 +98,10 @@ public final class Logger {
         m_category = category;
     }
 
+    public static boolean isLoggingToDataLog() {
+        return alsoLogToDataLog;
+    }
+
     public Collection<LogEntry> recentEntries() {
         return Collections.unmodifiableCollection(m_recentEntries);
     }
@@ -121,7 +125,7 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.logStoredFormat(entry);
         }
-        if (alsoLogToDataLog) {
+        if (alsoLogToDataLog && (severity.compareTo(Severity.INFO) >= 0)) {
             DataLogManager.log(message);
         }
     }
@@ -138,7 +142,7 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.log(entry);
         }
-        if (alsoLogToDataLog) {
+        if (alsoLogToDataLog && (severity.compareTo(Severity.INFO) >= 0)) {
             DataLogManager.log(message);
         }
     }
