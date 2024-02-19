@@ -40,7 +40,7 @@ public class Robot implements RobotConfigurator {
         drive = new Drive(config);
         noteDetectorCamera = new NoteCamera();
         forwardApriltagCamera = new ForwardApriltagCamera();
-        
+
         try {
             speakerShooter = new SpeakerShooterPowerCalculator();
         } catch (AprilTagGeneralCheckedException e) {

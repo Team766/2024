@@ -64,6 +64,7 @@ public class OI extends Procedure {
             if (joystick0.getButton(1)) {
                 try {
                     Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
+                    
                 } catch (AprilTagGeneralCheckedException e) {
                     // Can do whatever here
                 }

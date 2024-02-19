@@ -4,68 +4,71 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.ViSIONbase.ScoringPosition;
 import com.team766.framework.Context;
-import com.team766.framework.Procedure;
 import com.team766.robot.swerveandshoot.Robot;
+import com.team766.robot.swerveandshoot.VisionPIDProcedure;
 import edu.wpi.first.math.geometry.Transform3d;
-import com.team766.robot.swerveandshoot.VisionPIDControllers;
 
+public class DriveToAndScoreAt extends VisionPIDProcedure {
 
-public class DriveToAndScoreAt extends Procedure {
+    private ScoringPosition score;
+    private double lastX;
+    private double lastY;
 
-	private ScoringPosition score;
-	private double lastX;
-	private double lastY;
+    public DriveToAndScoreAt(ScoringPosition score) {
+        this.score = score;
+    }
 
-	public DriveToAndScoreAt(ScoringPosition score){
-		this.score = score;
-	}
-
+    // button needs to be held down
     public void run(final Context context) {
-		//the intent of this while loop is to make it so the code runs until this is met. However, right now, this wont work (obvious). Lets fix
-		while(VisionPIDControllers.xPID.getOutput() + VisionPIDControllers.yPID.getOutput() != 0){
-			VisionPIDControllers.yPID.setSetpoint(score.y_position);
-			VisionPIDControllers.xPID.setSetpoint(score.x_position);
-			Transform3d robotToTag;
-			double turnConstant = 0;
+        context.takeOwnership(Robot.drive);
+        context.takeOwnership(Robot.tempPickerUpper);
+        context.takeOwnership(Robot.tempShooter);
 
-			try {
-				robotToTag = this.getTransform3dOfRobotToTag();
+        yPID.setSetpoint(score.y_position);
+        xPID.setSetpoint(score.x_position);
 
-				VisionPIDControllers.yPID.calculate(robotToTag.getY());
-				VisionPIDControllers.xPID.calculate(robotToTag.getX());
+        while (Math.abs(xPID.getOutput()) + Math.abs(yPID.getOutput()) != 0) {
+            context.yield();
 
-				lastX = robotToTag.getX();
-				lastY = robotToTag.getY();
+            Transform3d robotToTag;
+            double turnConstant = 0;
 
-				// If it is more that four degrees off...
-				if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
+            try {
+                robotToTag = this.getTransform3dOfRobotToTag();
 
-				} else {
-					if (robotToTag.getRotation().getZ() < 0) {
-						turnConstant = -0.02;
-					} else {
-						turnConstant = 0.02;
-					}
-				}
-			} catch (AprilTagGeneralCheckedException e) {
+                yPID.calculate(robotToTag.getY());
+                xPID.calculate(robotToTag.getX());
 
-				VisionPIDControllers.yPID.calculate(lastY);
-				VisionPIDControllers.xPID.calculate(lastX);
+                lastX = robotToTag.getX();
+                lastY = robotToTag.getY();
 
-				turnConstant = 0; // needed?
-			}
+                // If it is more that four degrees off...
+                if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
 
-			Robot.tempShooter.setAngle(score.angle);
-			Robot.tempShooter.runMotors(score.power);
+                } else {
+                    if (robotToTag.getRotation().getZ() < 0) {
+                        turnConstant = -0.02;
+                    } else {
+                        turnConstant = 0.02;
+                    }
+                }
+            } catch (AprilTagGeneralCheckedException e) {
 
-			Robot.drive.controlRobotOriented(VisionPIDControllers.yPID.getOutput(), -VisionPIDControllers.xPID.getOutput(), turnConstant);
+                yPID.calculate(lastY);
+                xPID.calculate(lastX);
 
+                turnConstant = 0; // needed?
+            }
 
-		}
-		Robot.tempShooter.shoot();
-	}
+            Robot.tempShooter.setAngle(score.angle);
+            Robot.tempShooter.runMotors(score.power);
 
-	/**
+            Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+        }
+        Robot.tempShooter.shoot();
+    }
+
+    /**
      * This method will return the transform3d of the robot to the tag.
      * It checks to make sure the tag is of the correct tag ID (according to the current alliance),
      * where it will then give that transform3d.

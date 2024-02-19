@@ -2,27 +2,29 @@ package com.team766.robot.swerveandshoot.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
-import com.team766.framework.Procedure;
 import com.team766.robot.swerveandshoot.Robot;
-import com.team766.robot.swerveandshoot.VisionPIDControllers;
+import com.team766.robot.swerveandshoot.VisionPIDProcedure;
 
-public class PickupNote extends Procedure{
+public class PickupNote extends VisionPIDProcedure {
 
-	public enum status {
+    public enum status {
         RING_IN_VIEW,
         NO_RING_IN_VIEW,
         RING_IN_INTAKE
     }
 
-	
-	public void run(Context context) {
-		VisionPIDControllers.yawPID.setSetpoint(0.00);
-		try {
-            if (!Robot.tempPickerUpper.hasNoteInIntake()) {
+    // button needs to be held down
+    public void run(Context context) {
+        yawPID.setSetpoint(0.00);
+        context.takeOwnership(Robot.drive);
+        context.takeOwnership(Robot.tempPickerUpper);
+
+        try {
+            while (!Robot.tempPickerUpper.hasNoteInIntake()) {
 
                 double yawInDegrees = Robot.noteDetectorCamera.getCamera().getYawOfRing();
-                VisionPIDControllers.yawPID.calculate(yawInDegrees);
-                double power = VisionPIDControllers.yawPID.getOutput();
+                yawPID.calculate(yawInDegrees);
+                double power = yawPID.getOutput();
 
                 if (power > 0 && yawInDegrees > 0) {
                     power *= -1;
@@ -30,7 +32,6 @@ public class PickupNote extends Procedure{
 
                 log("power: " + power);
 
-                
                 if (Math.abs(power) > 0.045) {
                     // x needs inverted if camera is on front (found out through tests)
                     Robot.drive.controlRobotOriented(power, 0, 0);
@@ -41,16 +42,13 @@ public class PickupNote extends Procedure{
                 }
 
                 // double pitchInDegrees = Robot.noteDetectorCamera.getCamera().getPitchOfRing();
-                //return status.RING_IN_VIEW;
+                // return status.RING_IN_VIEW;
 
-            } else {
-                //return status.RING_IN_INTAKE;
             }
+            Robot.tempPickerUpper.runIntake();
 
         } catch (AprilTagGeneralCheckedException e) {
-            //return status.NO_RING_IN_VIEW;
+            // return status.NO_RING_IN_VIEW;
         }
-	}
-	
-	
+    }
 }
