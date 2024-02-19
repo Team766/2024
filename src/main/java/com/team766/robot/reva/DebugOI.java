@@ -16,7 +16,12 @@ public class DebugOI {
     private final Intake intake;
     private final Shooter shooter;
 
-    public DebugOI(JoystickReader macropad, Shoulder shoulder, Climber climber, Intake intake, Shooter shooter) {
+    public DebugOI(
+            JoystickReader macropad,
+            Shoulder shoulder,
+            Climber climber,
+            Intake intake,
+            Shooter shooter) {
         this.macropad = macropad;
         this.shoulder = shoulder;
         this.climber = climber;
