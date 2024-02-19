@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Shooter extends Mechanism {
     private static final double DEFAULT_POWER = 0.25;
     private static final double NUDGE_INCREMENT = 0.05;
-    private static final double MAX_POWER = 0.5;
-    private static final double MIN_POWER = 0;
+    private static final double MAX_POWER = 0.8;
+    private static final double MIN_POWER = 0.0;
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
@@ -25,7 +25,7 @@ public class Shooter extends Mechanism {
     public void runShooter() {
         checkContextOwnership();
         shooterMotorTop.set(shooterPower);
-        // shooterMotorBottom.set(shooterPower);
+        shooterMotorBottom.set(shooterPower);
     }
 
     public void shoot() {
@@ -42,11 +42,13 @@ public class Shooter extends Mechanism {
 
     public void nudgeUp() {
         shooterPower = Math.min(shooterPower + NUDGE_INCREMENT, MAX_POWER);
+        System.err.println("Upping shooter power: " + shooterPower);
         runShooter();
     }
 
     public void nudgeDown() {
         shooterPower = Math.max(shooterPower - NUDGE_INCREMENT, MIN_POWER);
+        System.err.println("Downing shooter power: " + shooterPower);
         runShooter();
     }
 

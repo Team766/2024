@@ -15,9 +15,9 @@ public class Intake extends Mechanism {
         STOPPED
     }
 
-    private static final double DEFAULT_POWER = 0.25;
+    private static final double DEFAULT_POWER = 0.5;
     private static final double NUDGE_INCREMENT = 0.05;
-    private static final double MAX_POWER = 0.5;
+    private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
 
     private MotorController intakeMotor;

@@ -16,6 +16,8 @@ public final class InputConstants {
     public static final int CONTROL_CLIMBER = 2;
     public static final int CONTROL_INTAKE = 3;
     public static final int CONTROL_SHOOTER = 4;
-    public static final int NUDGE_UP = 11;
-    public static final int NUDGE_DOWN = 7;
+    public static final int INTAKE_IN = 5;
+    public static final int INTAKE_OUT = 6;
+    public static final int NUDGE_UP = 12;
+    public static final int NUDGE_DOWN = 8;
 }

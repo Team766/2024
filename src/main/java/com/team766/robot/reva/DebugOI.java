@@ -51,35 +51,51 @@ public class DebugOI {
         }
 
         if (macropad.getButton(InputConstants.CONTROL_INTAKE)) {
-            context.takeOwnership(Robot.intake);
-            Robot.intake.in();
+            context.takeOwnership(intake);
+            intake.runIntake();
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                Robot.intake.nudgeUp();
+                intake.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                Robot.intake.nudgeDown();
+                intake.nudgeDown();
             }
-            context.releaseOwnership(Robot.intake);
+            context.releaseOwnership(intake);
         } else {
-            context.takeOwnership(Robot.intake);
-            Robot.intake.stop();
-            context.releaseOwnership(Robot.intake);
+            context.takeOwnership(intake);
+            intake.stop();
+            context.releaseOwnership(intake);
         }
 
         if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
-            context.takeOwnership(Robot.shooter);
-            Robot.shooter.shoot();
+            context.takeOwnership(shooter);
+            Robot.shooter.runShooter();
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                Robot.shooter.nudgeUp();
+                Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "Nudging shooter up");
+                shooter.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                Robot.shooter.nudgeDown();
+                Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "Nudging shooter down");
+                shooter.nudgeDown();
             }
-            context.takeOwnership(Robot.shooter);
+            context.takeOwnership(shooter);
         } else {
-            context.takeOwnership(Robot.shooter);
-            Robot.shooter.stop();
-            context.takeOwnership(Robot.shooter);
+            context.takeOwnership(shooter);
+            shooter.stop();
+            context.takeOwnership(shooter);
+        }
+
+        if (macropad.getButton(InputConstants.INTAKE_IN)) {
+            context.takeOwnership(intake);
+            intake.in();
+            context.releaseOwnership(intake);
+        } else if (macropad.getButton(InputConstants.INTAKE_OUT)) {
+            context.takeOwnership(intake);
+            intake.out();
+            context.releaseOwnership(intake);           
+        } else {
+            context.takeOwnership(intake);
+            intake.stop();
+            context.takeOwnership(intake);           
         }
     }
 }
