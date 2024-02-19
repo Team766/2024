@@ -41,9 +41,10 @@ public class Climber extends Mechanism {
     public Climber() {
         leftMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
         rightMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
-        // rightMotor.follow(leftMotor);
+        rightMotor.follow(leftMotor);
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public boolean isRunningNoPID() {
