@@ -35,7 +35,6 @@ public class Drive extends Mechanism {
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
-    private static Pose2d currentPosition;
 
     private SwerveDriveKinematics swerveDriveKinematics;
 
@@ -104,7 +103,6 @@ public class Drive extends Mechanism {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        currentPosition = new Pose2d();
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
         CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
@@ -246,12 +244,12 @@ public class Drive extends Mechanism {
         return gyro.getRoll();
     }
 
-    // TODO: figure out why odometry x and y are swapped
     public Pose2d getCurrentPosition() {
-        return currentPosition;
+        return swerveOdometry.getCurrPosition();
     }
 
     public void setCurrentPosition(Pose2d P) {
+        log("setCurrentPosition(): " + P);
         swerveOdometry.setCurrentPosition(P);
     }
 
@@ -270,10 +268,9 @@ public class Drive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        currentPosition = swerveOdometry.run();
+        swerveOdometry.run();
         // log(currentPosition.toString());
-        SmartDashboard.putString("pos", currentPosition.toString());
-        // SmartDashboard.putString();
+        SmartDashboard.putString("pos",getCurrentPosition().toString());
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());

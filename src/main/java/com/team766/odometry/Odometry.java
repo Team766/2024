@@ -103,8 +103,9 @@ public class Odometry {
      * @param P The point to set the current robot position to
      */
     public void setCurrentPosition(final Pose2d point) {
+
         currentPosition = point;
-        // log("Set Current Position to: " + P.toString());
+        Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, "Set Current Position to: " + point.toString());
         for (int i = 0; i < motorCount; i++) {
             prevPositions[i] =
                     currentPosition.plus(new Transform2d(wheelPositions[i], new Rotation2d()));
@@ -254,8 +255,8 @@ public class Odometry {
 
             currPositions[i] =
                     new Pose2d(
-                            currPositions[i].getX() - wheelMotion.getX(),
-                            currPositions[i].getY() - wheelMotion.getY(),
+                            currPositions[i].getX() + wheelMotion.getX(),
+                            currPositions[i].getY() + wheelMotion.getY(),
                             currPositions[i].getRotation());
         }
     }
@@ -273,18 +274,18 @@ public class Odometry {
             // currPositions[i]);
         }
         // x and y are inverted to follow directional conventions
-        currentPosition = new Pose2d(-sumX / motorCount, -sumY / motorCount, gyroPosition);
+        // FIXME: stop doing the bandaid solution and randomly invert
+        currentPosition = new Pose2d(sumX / motorCount, sumY / motorCount, gyroPosition);
     }
 
     // Intended to be placed inside Robot.drive.run()
-    public Pose2d run() {
+    public void run() {
         if (odometryLimiter.next()) {
             setCurrentEncoderValues();
             updateCurrentPositions();
             findRobotPosition();
             // log(currentPosition.toString());
         }
-        return currentPosition;
     }
 
     public Pose2d getCurrPosition() {

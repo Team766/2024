@@ -12,9 +12,9 @@ public final class PathPlannerConstants {
     public static final double TRANSLATION_I = 0;
     public static final double TRANSLATION_D = 0;
 
-    public static final double ROTATION_P = 0.3;
+    public static final double ROTATION_P = 0.1;
     public static final double ROTATION_I = 0;
-    public static final double ROTATION_D = 0;
+    public static final double ROTATION_D = 0.1;
 
     // default values
     public static final double MAX_SPEED_MPS = 0.5;

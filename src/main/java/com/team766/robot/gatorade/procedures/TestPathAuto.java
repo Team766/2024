@@ -10,8 +10,10 @@ public class TestPathAuto extends Procedure {
 	public void run(Context context) {
 		context.takeOwnership(Robot.drive);
 		Robot.drive.resetGyro();
-		Robot.drive.setCurrentPosition(new Pose2d(2.05, 6.50, new Rotation2d(0)));
-		new FollowPath("TestPath1").run(context);
+		Robot.drive.setCurrentPosition(new Pose2d(2.00, 7.00, new Rotation2d(0)));
+		log("set current pos: " + Robot.drive.getCurrentPosition());
+		new FollowPath("RotationTest").run(context);
+		new SetCross().run(context);
 	}
 	
 }

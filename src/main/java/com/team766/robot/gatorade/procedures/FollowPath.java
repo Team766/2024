@@ -25,15 +25,15 @@ public class FollowPath extends Procedure {
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
 
-    public FollowPath(
-            PathPlannerPath path,
-            ReplanningConfig replanningConfig,
-            PPHolonomicDriveController controller
-            /* TODO: add flip path support */ ) {
-        this.path = path;
-        this.replanningConfig = replanningConfig;
-        this.controller = controller;
-    }
+//     public FollowPath(
+//             PathPlannerPath path,
+//             ReplanningConfig replanningConfig,
+//             PPHolonomicDriveController controller
+//             /* TODO: add flip path support */ ) {
+//         this.path = path;
+//         this.replanningConfig = replanningConfig;
+//         this.controller = controller;
+//     }
 
     public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig) {
         this.path = path;
@@ -42,6 +42,8 @@ public class FollowPath extends Procedure {
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
                         .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
+        
+        // log("max speed: " + maxSpeed);
 
         double translationP =
                 ConfigFileReader.getInstance()
@@ -73,9 +75,7 @@ public class FollowPath extends Procedure {
                         new PIDConstants(translationP, translationI, translationD),
                         new PIDConstants(rotationP, rotationI, rotationD),
                         maxSpeed,
-                        OdometryInputConstants.DISTANCE_BETWEEN_WHEELS
-                                * Math.sqrt(2)
-                                / 2 // calculating distance between center of robot and wheels
+                        OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER
                         );
     }
 
@@ -92,23 +92,27 @@ public class FollowPath extends Procedure {
         // TODO: flip path as necessary
         Pose2d curPose = Robot.drive.getCurrentPosition();
         ChassisSpeeds currentSpeeds = Robot.drive.getChassisSpeeds();
-        log("Autoning");
+        // log("Autoning");
+        // log("current pose in fp: " + curPose);
 
         controller.reset(curPose, currentSpeeds);
 
         if (curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
             replanPath(curPose, currentSpeeds);
+        //    log("replanned path");
         } else {
             generatedTrajectory = path.getTrajectory(currentSpeeds, curPose.getRotation());
+        //    log("generated normal trajectory");
         }
 
         timer.reset();
         timer.start();
 
         // execute
-
-        while (timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
+        log("time: " + generatedTrajectory.getTotalTimeSeconds());
+        while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
+            // log("current time: " + currentTime);
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
             curPose = Robot.drive.getCurrentPosition();
             currentSpeeds = Robot.drive.getChassisSpeeds();
@@ -131,8 +135,16 @@ public class FollowPath extends Procedure {
 
             ChassisSpeeds targetSpeeds =
                     controller.calculateRobotRelativeSpeeds(curPose, targetState);
-
+        //     log("curPose: " + curPose);
+        //     log("cur rot vel: " + currentSpeeds.omegaRadiansPerSecond);
+        //     log("targetState: " + targetState.getTargetHolonomicPose());
+        //     log("intended ang vel rps: " + targetState.headingAngularVelocityRps);
+            
+        //     log("targetSpeeds: " + targetSpeeds);
+            org.littletonrobotics.junction.Logger.recordOutput("curPose", curPose);
+            org.littletonrobotics.junction.Logger.recordOutput("targetState", targetState.getTargetHolonomicPose());
             Robot.drive.controlFieldOriented(targetSpeeds);
+            context.yield();
         }
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
