@@ -9,6 +9,6 @@ public class ExtendClimber extends Procedure {
     @Override
     public void run(Context context) {
         context.takeOwnership(Robot.climber);
-        Robot.climber.setClimberHeight(1);
+        Robot.climber.setHeight(1);
     }
 }

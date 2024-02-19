@@ -50,33 +50,33 @@ public class Climber extends Mechanism {
         return rotations / GEAR_RATIO_AND_CIRCUMFERENCE;
     }
 
-    public void setClimberHeight(Position position) {
-        setClimberHeight(position.getHeight());
+    public void setHeight(Position position) {
+        setHeight(position.getHeight());
     }
 
-    public void setClimberHeight(double height) {
+    public void setHeight(double height) {
         double targetHeight =
                 Math.max(Position.BOTTOM.getHeight(), Math.min(height, Position.TOP.getHeight()));
         targetRotations = heightToRotations(targetHeight);
         leftMotor.set(MotorController.ControlMode.Position, targetRotations);
     }
 
-    public double getClimberHeight() {
+    public double getHeight() {
         return rotationsToHeight(leftMotor.getSensorPosition());
     }
 
     public void nudgeUp() {
-        setClimberHeight(getClimberHeight() + NUDGE_AMOUNT);
+        setHeight(getHeight() + NUDGE_AMOUNT);
     }
 
     public void nudgeDown() {
-        setClimberHeight(getClimberHeight() - NUDGE_AMOUNT);
+        setHeight(getHeight() - NUDGE_AMOUNT);
     }
 
     @Override
     public void run() {
         SmartDashboard.putNumber("[CLIMBER] Rotations", leftMotor.getSensorPosition());
         SmartDashboard.putNumber("[CLIMBER] Target Rotations", targetRotations);
-        SmartDashboard.putNumber("[CLIMBER] Height", getClimberHeight());
+        SmartDashboard.putNumber("[CLIMBER] Height", getHeight());
     }
 }
