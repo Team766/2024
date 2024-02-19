@@ -83,7 +83,8 @@ public class Shoulder extends Mechanism {
     public void rotate(double angle) {
         checkContextOwnership();
         double targetAngle =
-                Math.max(Position.BOTTOM.getAngle(), Math.min(Position.BOTTOM.getAngle(), angle));
+                com.team766.math.Math.clamp(
+                        angle, Position.BOTTOM.getAngle(), Position.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         leftMotor.set(ControlMode.Position, targetRotations);
     }
