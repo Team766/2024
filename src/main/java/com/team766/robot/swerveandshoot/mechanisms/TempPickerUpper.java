@@ -12,4 +12,8 @@ public class TempPickerUpper extends Mechanism {
     public TempPickerUpper() {}
 
     public void runIntake() {}
+
+	public boolean hasNoteInIntake() {
+		return false;
+	}
 }
