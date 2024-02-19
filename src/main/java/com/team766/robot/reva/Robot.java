@@ -6,7 +6,9 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.constants.SwerveDriveConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -17,6 +19,8 @@ public class Robot implements RobotConfigurator {
     public static Shoulder shoulder;
     public static Intake intake;
     public static Shooter shooter;
+    public static ForwardApriltagCamera forwardApriltagCamera;
+    public static NoteCamera noteCamera;
 
     @Override
     public void initializeMechanisms() {
@@ -34,6 +38,9 @@ public class Robot implements RobotConfigurator {
         shoulder = new Shoulder();
         intake = new Intake();
         shooter = new Shooter();
+        forwardApriltagCamera = new ForwardApriltagCamera();
+        noteCamera = new NoteCamera();
+
     }
 
     @Override
