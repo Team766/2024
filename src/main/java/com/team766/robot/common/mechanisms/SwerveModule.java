@@ -125,11 +125,11 @@ public class SwerveModule {
                                                 / 360))
                         + offset;
         if (realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) > 90) {
-                realAngleDegrees += 180;
+                realAngleDegrees -= 180;
                 reversed = true;
         }
         if (realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR) < - 90) {
-                realAngleDegrees -=180;
+                realAngleDegrees +=180;
                 reversed = true;
         }
         final double angleDegrees = realAngleDegrees;
@@ -165,7 +165,8 @@ public class SwerveModule {
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
         if (reversed) {
-        power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;     
+        power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS; 
+        reversed = false;    
         }
         else {power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         }
