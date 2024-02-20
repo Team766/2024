@@ -4,9 +4,14 @@ import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.library.ValueProvider;
 import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -31,11 +36,12 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private static final double NUDGE_AMOUNT = 10; // degrees
+    private static final double NUDGE_AMOUNT = 30; // degrees
 
     private MotorController leftMotor;
     private MotorController rightMotor;
 
+    private ValueProvider<Double> ffGain;
     private double targetRotations = 0.0;
 
     public Shoulder() {
@@ -44,10 +50,17 @@ public class Shoulder extends Mechanism {
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
         rightMotor.follow(leftMotor);
         leftMotor.setNeutralMode(NeutralMode.Brake);
+        ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
+        leftMotor.setSensorPosition(0);
     }
 
     public void stop() {
         leftMotor.stopMotor();
+    }
+
+    public void reset() {
+        targetRotations = 0.0;
+        leftMotor.setSensorPosition(0.0);
     }
 
     public void nudgeUp() {
@@ -86,13 +99,23 @@ public class Shoulder extends Mechanism {
                 com.team766.math.Math.clamp(
                         angle, Position.BOTTOM.getAngle(), Position.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
-        leftMotor.set(ControlMode.Position, targetRotations);
+        SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
+        // actual rotation will happen in run()
     }
 
     @Override
     public void run() {
-        SmartDashboard.putNumber("[SHOULDER] Angle: ", getAngle());
-        SmartDashboard.putNumber("[SHOULDER] Rotations: ", getRotations());
-        SmartDashboard.putNumber("[SHOULDER] Target Rotations: ", targetRotations);
+        SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
+        SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+
+        TalonFX leftTalon = (TalonFX) leftMotor;
+        SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
+        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getAngle()));
+        SmartDashboard.putNumber("[SHOULDER] FF", ff);
+        SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
+        PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
+        positionRequest.FeedForward = ff;
+        leftTalon.setControl(positionRequest);
     }
 }

@@ -32,15 +32,16 @@ public class DebugOI {
     public void handleOI(Context context) {
         if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
             // Shoulder
+            context.takeOwnership(shoulder);
+            
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                context.takeOwnership(shoulder);
                 shoulder.nudgeUp();
-                context.releaseOwnership(shoulder);
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                context.takeOwnership(shoulder);
                 shoulder.nudgeDown();
-                context.releaseOwnership(shoulder);
+            } else if (macropad.getButtonPressed(9)) {
+                shoulder.reset();
             }
+            context.releaseOwnership(shoulder);
         }
         if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
             // Climber
@@ -89,6 +90,9 @@ public class DebugOI {
                 shooter.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shooter.nudgeDown();
+            }
+            if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_3)) {
+                shooter.shoot();
             }
             context.takeOwnership(shooter);
         } else {
