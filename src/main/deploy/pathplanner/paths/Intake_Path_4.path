@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.2418759624486673,
+        "y": 5.555162990025228
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.2418759624486673,
+        "y": 5.555162990025228
+      },
+      "isLocked": false,
+      "linkedName": "intake test 3"
+    },
+    {
+      "anchor": {
+        "x": 3.3426212215832956,
+        "y": 5.90493251161941
+      },
+      "prevControl": {
+        "x": 3.674838120352668,
+        "y": 5.68960674389852
+      },
+      "nextControl": {
+        "x": 2.787104922580773,
+        "y": 6.264989372084007
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.087565879392411,
+        "y": 5.555162990025228
+      },
+      "prevControl": {
+        "x": 2.9414150056370305,
+        "y": 6.131253966768585
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -175.072890052351,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Intake_Path_Auto",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
