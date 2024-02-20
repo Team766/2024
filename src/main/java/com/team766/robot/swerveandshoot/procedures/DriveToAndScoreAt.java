@@ -4,6 +4,7 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.ViSIONbase.ScoringPosition;
 import com.team766.framework.Context;
+import com.team766.hal.RobotProvider;
 import com.team766.robot.swerveandshoot.Robot;
 import com.team766.robot.swerveandshoot.VisionPIDProcedure;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -13,6 +14,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
     private ScoringPosition score;
     private double lastX;
     private double lastY;
+
+	private double timeLastSeen = -1;
 
     public DriveToAndScoreAt(ScoringPosition score) {
         this.score = score;
@@ -36,6 +39,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
             try {
                 robotToTag = this.getTransform3dOfRobotToTag();
 
+				timeLastSeen = RobotProvider.instance.getClock().getTime();
+
                 yPID.calculate(robotToTag.getY());
                 xPID.calculate(robotToTag.getX());
 
@@ -53,11 +58,16 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     }
                 }
             } catch (AprilTagGeneralCheckedException e) {
+				double time = RobotProvider.instance.getClock().getTime();
 
-                yPID.calculate(lastY);
-                xPID.calculate(lastX);
-
-                turnConstant = 0; // needed?
+				if(time - timeLastSeen >= 1){
+					Robot.drive.controlRobotOriented(0, 0, 0);
+				}else{
+					turnConstant = 0; // needed?
+					yPID.calculate(lastY);
+                	xPID.calculate(lastX);
+					Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+				}
             }
 
             Robot.tempShooter.setAngle(score.angle);

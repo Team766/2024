@@ -4,6 +4,7 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.ViSIONbase.ScoringPosition;
 import com.team766.framework.Context;
+import com.team766.hal.RobotProvider;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -13,6 +14,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
     private ScoringPosition score;
     private double lastX;
     private double lastY;
+
+	private double timeLastSeen = -1;
 
     public DriveToAndScoreAt(ScoringPosition score) {
         this.score = score;
@@ -27,6 +30,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
         yPID.setSetpoint(score.y_position);
         xPID.setSetpoint(score.x_position);
 
+		
+
         while (Math.abs(xPID.getOutput()) + Math.abs(yPID.getOutput()) != 0) {
             context.yield();
 
@@ -35,6 +40,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
 
             try {
                 robotToTag = this.getTransform3dOfRobotToTag();
+
+				timeLastSeen = RobotProvider.instance.getClock().getTime();
 
                 yPID.calculate(robotToTag.getY());
                 xPID.calculate(robotToTag.getX());
@@ -52,18 +59,29 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                         turnConstant = 0.02;
                     }
                 }
+
+				Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
             } catch (AprilTagGeneralCheckedException e) {
+				double time = RobotProvider.instance.getClock().getTime();
 
-                yPID.calculate(lastY);
-                xPID.calculate(lastX);
 
-                turnConstant = 0; // needed?
+				if(time - timeLastSeen >= 1){
+					Robot.drive.controlRobotOriented(0, 0, 0);
+				}else{
+					turnConstant = 0; // needed?
+					yPID.calculate(lastY);
+                	xPID.calculate(lastX);
+					Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+				}
+
+                
+
             }
 
             // Robot.shooter.setAngle(score.angle);
             // Robot.shooter.runMotors(score.power);
 
-            Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+            
         }
         Robot.shooter.shootPower(score.power);
     }
