@@ -38,12 +38,6 @@ public class ColorCamera extends PhotonCamera {
         }
     }
 
-    public Transform3d getTransform3dOfRing() throws AprilTagGeneralCheckedException {
-        PhotonTrackedTarget e = getRing();
-
-        return e.getBestCameraToTarget();
-    }
-
     // To be renamed once we know if yaw is X or Y
     public double getYawOfRing() throws AprilTagGeneralCheckedException {
 
