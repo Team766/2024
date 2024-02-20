@@ -103,13 +103,13 @@ public class Drive extends Mechanism {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
-        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
+        MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBR, driveBL};
+        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         Translation2d[] wheelPositions =
                 new Translation2d[] {
-                    new Translation2d(halfDistanceBetweenWheels, halfDistanceBetweenWheels),
                     new Translation2d(halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
+                    new Translation2d(halfDistanceBetweenWheels, halfDistanceBetweenWheels),
                     new Translation2d(-halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
                     new Translation2d(-halfDistanceBetweenWheels, halfDistanceBetweenWheels)
                 };
@@ -151,26 +151,27 @@ public class Drive extends Mechanism {
 
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
-        swerveFL.driveAndSteer(
-                new Vector2D(x, y)
-                        .add(
-                                turnVelocity,
-                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveFR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
                                 turnVelocity,
                                 createOrthogonalVector(config.frontRightLocation()).normalize()));
-        swerveBL.driveAndSteer(
+        swerveFL.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
                                 turnVelocity,
-                                createOrthogonalVector(config.backLeftLocation()).normalize()));
+                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
         swerveBR.driveAndSteer(
                 new Vector2D(x, y)
                         .add(
                                 turnVelocity,
                                 createOrthogonalVector(config.backRightLocation()).normalize()));
+        swerveBL.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.backLeftLocation()).normalize()));
+        
     }
 
     /**
@@ -204,6 +205,18 @@ public class Drive extends Mechanism {
         controlFieldOriented(vx, vy, vang);
     }
 
+    /**
+     * Overloads controlFieldOriented to work with a chassisSpeeds input
+     * @param chassisSpeeds
+     */
+    public void controlRobotOriented(ChassisSpeeds chassisSpeeds) {
+        double vx = chassisSpeeds.vxMetersPerSecond;
+        double vy = chassisSpeeds.vyMetersPerSecond;
+        double vang = chassisSpeeds.omegaRadiansPerSecond;
+
+        controlRobotOriented(vx, vy, vang);
+    }
+
     /*
      * Stops each drive motor
      */
@@ -220,11 +233,10 @@ public class Drive extends Mechanism {
      */
     public void setCross() {
         checkContextOwnership();
-
-        swerveFL.steer(config.frontLeftLocation());
         swerveFR.steer(config.frontRightLocation());
-        swerveBL.steer(config.backLeftLocation());
+        swerveFL.steer(config.frontLeftLocation());
         swerveBR.steer(config.backRightLocation());
+        swerveBL.steer(config.backLeftLocation());
     }
 
     public void resetGyro() {
@@ -261,8 +273,8 @@ public class Drive extends Mechanism {
         return swerveDriveKinematics.toChassisSpeeds(
                 swerveFR.getModuleState(),
                 swerveFL.getModuleState(),
-                swerveBL.getModuleState(),
-                swerveBR.getModuleState());
+                swerveBR.getModuleState(),
+                swerveBL.getModuleState());
     }
 
     // Odometry
@@ -278,12 +290,13 @@ public class Drive extends Mechanism {
 
         SwerveModuleState[] states =
                 new SwerveModuleState[] {
+                    swerveFR.getModuleState(),
                     swerveFL.getModuleState(),
-                    swerveFR.getModuleState(),
+                    swerveBR.getModuleState(),
                     swerveBL.getModuleState(),
-                    swerveFR.getModuleState(),
                 };
         if (Logger.isLoggingToDataLog()) {
+            org.littletonrobotics.junction.Logger.recordOutput("current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
         }
         swerveModuleStatePublisher.set(states);

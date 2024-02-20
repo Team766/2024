@@ -97,7 +97,7 @@ public class FollowPath extends Procedure {
 
         controller.reset(curPose, currentSpeeds);
 
-        if (curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
+        if (replanningConfig.enableInitialReplanning && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
             replanPath(curPose, currentSpeeds);
         //    log("replanned path");
         } else {
@@ -141,9 +141,12 @@ public class FollowPath extends Procedure {
         //     log("intended ang vel rps: " + targetState.headingAngularVelocityRps);
             
         //     log("targetSpeeds: " + targetSpeeds);
+            org.littletonrobotics.junction.Logger.recordOutput("current heading", curPose.getRotation().getRadians());
+
+            org.littletonrobotics.junction.Logger.recordOutput("input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("curPose", curPose);
             org.littletonrobotics.junction.Logger.recordOutput("targetState", targetState.getTargetHolonomicPose());
-            Robot.drive.controlFieldOriented(targetSpeeds);
+            Robot.drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
 
