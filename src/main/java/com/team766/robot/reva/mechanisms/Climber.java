@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends Mechanism {
 
-    public enum Position {
+    public enum ClimberPosition {
         // A very rough measurement, and was being very safe.
         // TODO: Needs to be measured more accurately.
         TOP(43.18),
@@ -18,7 +18,7 @@ public class Climber extends Mechanism {
 
         private final double height;
 
-        private Position(double height) {
+        private ClimberPosition(double height) {
             this.height = height;
         }
 
@@ -35,7 +35,7 @@ public class Climber extends Mechanism {
     private static final double GEAR_RATIO_AND_CIRCUMFERENCE =
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
     private static final double NUDGE_INCREMENT = 10; // in cm
-    private static final double PIDLESS_NUDGE_INCREMENT = 0.1;
+    private static final double PIDLESS_NUDGE_INCREMENT = 0.2;
     private double pidlessPower = 0.0;
 
     public Climber() {
@@ -52,7 +52,7 @@ public class Climber extends Mechanism {
     }
 
     public void goNoPID() {
-        leftMotor.set(pidlessPower);
+        leftMotor.set(PIDLESS_NUDGE_INCREMENT);
     }
 
     public void stop() {
@@ -68,14 +68,14 @@ public class Climber extends Mechanism {
         return rotations / GEAR_RATIO_AND_CIRCUMFERENCE;
     }
 
-    public void setHeight(Position position) {
+    public void setHeight(ClimberPosition position) {
         setHeight(position.getHeight());
     }
 
     public void setHeight(double height) {
         double targetHeight =
                 com.team766.math.Math.clamp(
-                        height, Position.BOTTOM.getHeight(), Position.TOP.getHeight());
+                        height, ClimberPosition.BOTTOM.getHeight(), ClimberPosition.TOP.getHeight());
         targetRotations = heightToRotations(targetHeight);
         leftMotor.set(MotorController.ControlMode.Position, targetRotations);
     }
