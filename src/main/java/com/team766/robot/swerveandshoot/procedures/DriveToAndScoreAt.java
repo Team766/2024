@@ -15,7 +15,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
     private double lastX;
     private double lastY;
 
-	private double timeLastSeen = -1;
+    private double timeLastSeen = -1;
 
     public DriveToAndScoreAt(ScoringPosition score) {
         this.score = score;
@@ -39,7 +39,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
             try {
                 robotToTag = this.getTransform3dOfRobotToTag();
 
-				timeLastSeen = RobotProvider.instance.getClock().getTime();
+                timeLastSeen = RobotProvider.instance.getClock().getTime();
 
                 yPID.calculate(robotToTag.getY());
                 xPID.calculate(robotToTag.getX());
@@ -58,16 +58,17 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     }
                 }
             } catch (AprilTagGeneralCheckedException e) {
-				double time = RobotProvider.instance.getClock().getTime();
+                double time = RobotProvider.instance.getClock().getTime();
 
-				if(time - timeLastSeen >= 1){
-					Robot.drive.controlRobotOriented(0, 0, 0);
-				}else{
-					turnConstant = 0; // needed?
-					yPID.calculate(lastY);
-                	xPID.calculate(lastX);
-					Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
-				}
+                if (time - timeLastSeen >= 1) {
+                    Robot.drive.controlRobotOriented(0, 0, 0);
+                } else {
+                    turnConstant = 0; // needed?
+                    yPID.calculate(lastY);
+                    xPID.calculate(lastX);
+                    Robot.drive.controlRobotOriented(
+                            yPID.getOutput(), -xPID.getOutput(), turnConstant);
+                }
             }
 
             Robot.tempShooter.setAngle(score.angle);
@@ -76,7 +77,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
             Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
         }
 
-		//Stand in for a full shoot procedure
+        // Stand in for a full shoot procedure
         Robot.tempShooter.shoot();
     }
 

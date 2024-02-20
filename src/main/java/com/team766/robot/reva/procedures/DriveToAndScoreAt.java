@@ -15,7 +15,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
     private double lastX;
     private double lastY;
 
-	private double timeLastSeen = -1;
+    private double timeLastSeen = -1;
 
     public DriveToAndScoreAt(ScoringPosition score) {
         this.score = score;
@@ -30,8 +30,6 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
         yPID.setSetpoint(score.y_position);
         xPID.setSetpoint(score.x_position);
 
-		
-
         while (Math.abs(xPID.getOutput()) + Math.abs(yPID.getOutput()) != 0) {
             context.yield();
 
@@ -41,7 +39,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
             try {
                 robotToTag = this.getTransform3dOfRobotToTag();
 
-				timeLastSeen = RobotProvider.instance.getClock().getTime();
+                timeLastSeen = RobotProvider.instance.getClock().getTime();
 
                 yPID.calculate(robotToTag.getY());
                 xPID.calculate(robotToTag.getX());
@@ -49,9 +47,9 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                 lastX = robotToTag.getX();
                 lastY = robotToTag.getY();
 
+                // TODO: Turn this into PID?
                 // If it is more that four degrees off...
                 if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
-
                 } else {
                     if (robotToTag.getRotation().getZ() < 0) {
                         turnConstant = -0.02;
@@ -60,28 +58,24 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     }
                 }
 
-				Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+                Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
             } catch (AprilTagGeneralCheckedException e) {
-				double time = RobotProvider.instance.getClock().getTime();
+                double time = RobotProvider.instance.getClock().getTime();
 
-
-				if(time - timeLastSeen >= 1){
-					Robot.drive.controlRobotOriented(0, 0, 0);
-				}else{
-					turnConstant = 0; // needed?
-					yPID.calculate(lastY);
-                	xPID.calculate(lastX);
-					Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
-				}
-
-                
-
+                if (time - timeLastSeen >= 1) {
+                    Robot.drive.controlRobotOriented(0, 0, 0);
+                } else {
+                    turnConstant = 0; // needed?
+                    yPID.calculate(lastY);
+                    xPID.calculate(lastX);
+                    Robot.drive.controlRobotOriented(
+                            yPID.getOutput(), -xPID.getOutput(), turnConstant);
+                }
             }
 
             // Robot.shooter.setAngle(score.angle);
             // Robot.shooter.runMotors(score.power);
 
-            
         }
         Robot.shooter.shootPower(score.power);
     }

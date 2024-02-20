@@ -66,7 +66,7 @@ public class GrayScaleCamera extends PhotonCamera {
      * @param target the target that you want to get the transform 3d of
      * @return Transform3d the transform 3d of the target
      */
-    public Transform3d getBestTargetTransform3d(PhotonTrackedTarget target) {
+    public static Transform3d getBestTargetTransform3d(PhotonTrackedTarget target) {
         return target.getBestCameraToTarget();
     }
 }

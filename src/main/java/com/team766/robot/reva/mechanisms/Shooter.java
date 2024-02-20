@@ -36,8 +36,8 @@ public class Shooter extends Mechanism {
 
     public void shootPower(double power) {
         checkContextOwnership();
-        shooterMotorTop.set(power);
-        shooterMotorBottom.set(power);
+        shooterPower = power;
+        runShooter();
     }
 
     public void stop() {
