@@ -1,26 +1,22 @@
-package com.team766.robot.reva;
+package com.team766.robot.swerveandshoot;
 
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.reva.constants.SwerveDriveConstants;
-import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
-import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.NoteCamera;
-import com.team766.robot.reva.mechanisms.Shooter;
-import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
+import com.team766.robot.swerveandshoot.mechanisms.*;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
-    // Declare mechanisms (as static fields) here
+    // Declare mechanisms here
+    public static TempPickerUpper tempPickerUpper;
+    public static TempShooter tempShooter;
+    public static Lights lights;
     public static Drive drive;
-    public static Shoulder shoulder;
-    public static Intake intake;
-    public static Shooter shooter;
+    public static NoteCamera noteDetectorCamera;
     public static ForwardApriltagCamera forwardApriltagCamera;
-    public static NoteCamera noteCamera;
 
     @Override
     public void initializeMechanisms() {
@@ -34,12 +30,12 @@ public class Robot implements RobotConfigurator {
                         SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT,
                         SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT,
                         SwerveDriveConstants.WHEEL_CIRCUMFERENCE);
+        tempPickerUpper = new TempPickerUpper();
+        tempShooter = new TempShooter();
+        lights = new Lights();
         drive = new Drive(config);
-        shoulder = new Shoulder();
-        intake = new Intake();
-        shooter = new Shooter();
+        noteDetectorCamera = new NoteCamera();
         forwardApriltagCamera = new ForwardApriltagCamera();
-        noteCamera = new NoteCamera();
     }
 
     @Override

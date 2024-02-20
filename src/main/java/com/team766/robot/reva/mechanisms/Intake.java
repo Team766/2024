@@ -73,5 +73,11 @@ public class Intake extends Mechanism {
         SmartDashboard.putString("[INTAKE]", state.toString());
         SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
     }
+
+    // TODO: Implement
+
+    public boolean hasNoteInIntake() {
+        return false;
+    }
 }
 ;

@@ -34,6 +34,12 @@ public class Shooter extends Mechanism {
         runShooter();
     }
 
+    public void shootPower(double power) {
+        checkContextOwnership();
+        shooterPower = power;
+        runShooter();
+    }
+
     public void stop() {
         checkContextOwnership();
         shooterPower = 0;
