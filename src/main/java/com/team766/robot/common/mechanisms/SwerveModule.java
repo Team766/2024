@@ -65,7 +65,7 @@ public class SwerveModule {
      * @param steer Steer MotorController for this module.
      * @param encoder CANCoder for this module.
      */
-    public SwerveModule (
+    public SwerveModule(
             String modulePlacement,
             MotorController drive,
             MotorController steer,
@@ -116,7 +116,8 @@ public class SwerveModule {
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
 
         // Add 360 * number of full rotations to vectorTheta, then add offset
-        double realAngleDegrees = vectorTheta
+        double realAngleDegrees =
+                vectorTheta
                         + 360
                                 * (Math.round(
                                         (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR
@@ -124,21 +125,19 @@ public class SwerveModule {
                                                         - vectorTheta)
                                                 / 360))
                         + offset;
-        double degreeChange = realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
-        //checks if it would be more efficient to move the wheel in the opposite direction
+        double degreeChange =
+                realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
+        // checks if it would be more efficient to move the wheel in the opposite direction
         if (degreeChange > 90) {
-                realAngleDegrees -= 180;
-                reversed = true;
-        }
-        else if (degreeChange < - 90) {
-                realAngleDegrees +=180;
-                reversed = true;
-        }
-        else {
-                reversed = false;
+            realAngleDegrees -= 180;
+            reversed = true;
+        } else if (degreeChange < -90) {
+            realAngleDegrees += 180;
+            reversed = true;
+        } else {
+            reversed = false;
         }
         final double angleDegrees = realAngleDegrees;
-
 
         // Sets the degree of the steer wheel
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
@@ -170,10 +169,10 @@ public class SwerveModule {
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
         if (reversed) {
-        power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS; 
-        reversed = false;    
-        }
-        else {power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+            power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+            reversed = false;
+        } else {
+            power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         }
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);

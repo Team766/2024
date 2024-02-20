@@ -78,13 +78,13 @@ public class DriverOI extends OIFragment {
             }
             context.takeOwnership(drive);
             drive.controlFieldOriented(
-                    (drivingCoefficient * leftJoystickX),
-                    (drivingCoefficient * leftJoystickY),
-                    (drivingCoefficient * rightJoystickY));
+                    (drivingCoefficient * curvedJoystickPower(leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
+                    (drivingCoefficient * curvedJoystickPower(leftJoystickY, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
+                    (drivingCoefficient * curvedJoystickPower(rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)));
         } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
-            //drive.setCross();
+            drive.setCross();
         }
     }
 
@@ -95,5 +95,8 @@ public class DriverOI extends OIFragment {
      */
     private double createJoystickDeadzone(double joystickValue) {
         return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
+    }
+    private double curvedJoystickPower(double value, double power) {
+        return Math.signum(value) * Math.pow(Math.abs(value), power);
     }
 }

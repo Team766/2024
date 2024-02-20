@@ -11,7 +11,7 @@ public class ControlConstants {
     /**
      * Positional velocity of robot that max joystick power controls in m/s
      */
-    public static final double MAX_POSITIONAL_VELOCITY = 2.0;
+    public static final double MAX_POSITIONAL_VELOCITY = 4.0;
 
     /**
      * Rotational velocity of robot that max joystick power controls in rad/s
