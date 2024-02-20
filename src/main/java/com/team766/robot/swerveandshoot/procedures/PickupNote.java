@@ -45,8 +45,8 @@ public class PickupNote extends VisionPIDProcedure {
                 // return status.RING_IN_VIEW;
 
             }
-            Robot.tempPickerUpper.runIntake();
-
+            //Robot.tempPickerUpper.runIntake();
+			//Todo: create method to stop intake
         } catch (AprilTagGeneralCheckedException e) {
             // return status.NO_RING_IN_VIEW;
         }
