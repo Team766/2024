@@ -14,12 +14,12 @@ import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends Mechanism {
-    enum Position {
+    public enum Position {
         // TODO: Find actual values.
         BOTTOM(0),
         INTAKE_FLOOR(0),
-        SHOOT_LOW(35),
-        SHOOT_MEDIUM(45),
+        SHOOT_LOW(10),
+        SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
         TOP(90);
 
