@@ -33,7 +33,7 @@ public class DebugOI {
         if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
             // Shoulder
             context.takeOwnership(shoulder);
-            
+
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 shoulder.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
