@@ -34,7 +34,7 @@ public class OI extends Procedure {
 
         driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
-        boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter);
+        boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter, Robot.climber);
 
     }
 

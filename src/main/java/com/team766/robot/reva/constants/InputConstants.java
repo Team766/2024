@@ -27,13 +27,15 @@ public final class InputConstants {
 
     // Xbox buttons
     // TODO: change
-    public static final int XBOX_A = 0;
-    public static final int XBOX_B = 1;
-    public static final int XBOX_X = 2;
-    public static final int XBOX_Y = 3;
-    public static final int XBOX_LB = 4;
-    public static final int XBOX_RB = 5;
+    public static final int XBOX_A = 1;
+    public static final int XBOX_B = 2;
+    public static final int XBOX_X = 3;
+    public static final int XBOX_Y = 4;
+    public static final int XBOX_LB = 5;
+    public static final int XBOX_RB = 6;
     public static final int XBOX_LT = 2;
     public static final int XBOX_RT = 3;
 
+    public static final int POV_UP = 0;
+    public static final int POV_DOWN = 180;
 }
