@@ -15,7 +15,7 @@ public class Intake extends Mechanism {
         STOPPED
     }
 
-    private static final double DEFAULT_POWER = 0.5;
+    private static final double DEFAULT_POWER = 0.75;
     private static final double NUDGE_INCREMENT = 0.05;
     private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
@@ -53,7 +53,7 @@ public class Intake extends Mechanism {
     }
 
     public void stop() {
-        intakePower = 0;
+        intakePower = 0.0;
         runIntake();
     }
 

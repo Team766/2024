@@ -17,6 +17,9 @@ public final class ConfigConstants {
     public static final String DRIVE_STEER_BACK_RIGHT = "drive.SteerBackRight";
     public static final String DRIVE_STEER_BACK_LEFT = "drive.SteerBackLeft";
 
+    public static final String CLIMBER_LEFT_MOTOR = "climber.leftMotor";
+    public static final String CLIMBER_RIGHT_MOTOR = "climber.rightMotor";
+
     public static final String SHOULDER_RIGHT = "shoulder.rightMotor";
     public static final String SHOULDER_LEFT = "shoulder.leftMotor";
 

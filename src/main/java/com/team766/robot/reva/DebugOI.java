@@ -3,6 +3,7 @@ package com.team766.robot.reva;
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -11,12 +12,19 @@ public class DebugOI {
     private final JoystickReader macropad;
 
     private final Shoulder shoulder;
+    private final Climber climber;
     private final Intake intake;
     private final Shooter shooter;
 
-    public DebugOI(JoystickReader macropad, Shoulder shoulder, Intake intake, Shooter shooter) {
+    public DebugOI(
+            JoystickReader macropad,
+            Shoulder shoulder,
+            Climber climber,
+            Intake intake,
+            Shooter shooter) {
         this.macropad = macropad;
         this.shoulder = shoulder;
+        this.climber = climber;
         this.intake = intake;
         this.shooter = shooter;
     }
@@ -24,27 +32,31 @@ public class DebugOI {
     public void handleOI(Context context) {
         if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
             // Shoulder
+            context.takeOwnership(shoulder);
+
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                context.takeOwnership(shoulder);
                 shoulder.nudgeUp();
-                context.releaseOwnership(shoulder);
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                context.takeOwnership(shoulder);
                 shoulder.nudgeDown();
-                context.releaseOwnership(shoulder);
+            } else if (macropad.getButtonPressed(9)) {
+                shoulder.reset();
             }
+            context.releaseOwnership(shoulder);
         }
         if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
             // Climber
+            context.takeOwnership(climber);
+            climber.goNoPID();
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                // context.takeOwnership(climber);
-                // climber.nudgeUp();
-                // context.releaseOwnership(climber);
+                climber.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                // context.takeOwnership(climber);
-                // climber.nudgeDown();
-                // context.releaseOwnership(climber);
+                climber.nudgeDown();
             }
+            context.releaseOwnership(climber);
+        } else if (climber.isRunningNoPID()) {
+            context.takeOwnership(climber);
+            climber.stop();
+            context.releaseOwnership(climber);
         }
 
         if (macropad.getButton(InputConstants.CONTROL_INTAKE)) {
@@ -56,8 +68,15 @@ public class DebugOI {
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 intake.nudgeDown();
             }
+
+            if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_1)) {
+                intake.in();
+            } else if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_2)) {
+                intake.out();
+            }
+
             context.releaseOwnership(intake);
-        } else {
+        } else if (intake.getState() != Intake.State.STOPPED) {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
@@ -72,25 +91,14 @@ public class DebugOI {
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shooter.nudgeDown();
             }
+            if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_3)) {
+                shooter.shoot();
+            }
             context.takeOwnership(shooter);
         } else {
             context.takeOwnership(shooter);
             shooter.stop();
             context.takeOwnership(shooter);
-        }
-
-        if (macropad.getButton(InputConstants.INTAKE_IN)) {
-            context.takeOwnership(intake);
-            intake.in();
-            context.releaseOwnership(intake);
-        } else if (macropad.getButton(InputConstants.INTAKE_OUT)) {
-            context.takeOwnership(intake);
-            intake.out();
-            context.releaseOwnership(intake);
-        } else {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.takeOwnership(intake);
         }
     }
 }
