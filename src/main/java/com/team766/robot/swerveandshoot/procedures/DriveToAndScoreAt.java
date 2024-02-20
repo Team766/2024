@@ -75,6 +75,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
 
             Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
         }
+
+		//Stand in for a full shoot procedure
         Robot.tempShooter.shoot();
     }
 
