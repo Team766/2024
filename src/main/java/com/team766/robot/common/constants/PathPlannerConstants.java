@@ -1,4 +1,4 @@
-package com.team766.robot.gatorade.constants;
+package com.team766.robot.common.constants;
 
 import com.pathplanner.lib.util.ReplanningConfig;
 

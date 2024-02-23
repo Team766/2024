@@ -2,6 +2,7 @@ package com.team766.robot.gatorade.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.robot.common.procedures.FollowPath;
 import com.team766.robot.gatorade.Robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

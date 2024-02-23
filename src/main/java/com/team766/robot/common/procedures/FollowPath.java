@@ -1,4 +1,4 @@
-package com.team766.robot.gatorade.procedures;
+package com.team766.robot.common.procedures;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -10,8 +10,8 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.gatorade.Robot;
 import com.team766.robot.gatorade.constants.ConfigConstants;
-import com.team766.robot.gatorade.constants.OdometryInputConstants;
-import com.team766.robot.gatorade.constants.PathPlannerConstants;
+import com.team766.robot.common.constants.OdometryInputConstants;
+import com.team766.robot.common.constants.PathPlannerConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
