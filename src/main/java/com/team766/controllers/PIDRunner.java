@@ -17,15 +17,15 @@ import java.util.function.Supplier;
  */
 public class PIDRunner {
 
-    public static Supplier<Integer> DEFAULT_SLOT_PICKER = () -> 1;
-    public static Supplier<Double> NO_FEED_FORWARD = () -> 0.0;
+    public static final Supplier<Integer> DEFAULT_SLOT_PICKER = () -> 0;
+    public static final Supplier<Double> NO_FEED_FORWARD = () -> 0.0;
 
     /**
      * Returns a fixed FeedForward supplier, simply returning the latest input ffGain from a config file.
      * @param ffGain Input FeedForward Gain, read from a config file.
      * @return Fixed FeedForward Gain from the current value of ffGain.
      */
-    public static Supplier<Double> fixedFeedForward(ValueProvider<Double> ffGain) {
+    public static final Supplier<Double> fixedFeedForward(ValueProvider<Double> ffGain) {
         return () -> ffGain.get();
     }
 
@@ -39,7 +39,7 @@ public class PIDRunner {
      * @param angle Current angle of the mechanism.  0 is parallel to the ground, 90 is perpendicular & up.
      * @return Proportional FeedForward Gain based on the angle.
      */
-    public static Supplier<Double> cosineFeedForward(
+    public static final Supplier<Double> cosineFeedForward(
             ValueProvider<Double> ffGain, Supplier<Double> angle) {
         return () -> ffGain.valueOr(0.0) * Math.cos(Math.toRadians(angle.get()));
     }
