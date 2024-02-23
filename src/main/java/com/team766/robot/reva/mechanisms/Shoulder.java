@@ -4,9 +4,8 @@ import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.config.ConfigFileReader;
+import com.team766.controllers.PIDRunner;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -36,8 +35,9 @@ public class Shoulder extends Mechanism {
 
     private static final double NUDGE_AMOUNT = 30; // degrees
 
-    private MotorController leftMotor;
-    private MotorController rightMotor;
+    private final MotorController leftMotor;
+    private final MotorController rightMotor;
+    private final PIDRunner pidRunner;
 
     private ValueProvider<Double> ffGain;
     private double targetRotations = 0.0;
@@ -50,6 +50,16 @@ public class Shoulder extends Mechanism {
         leftMotor.setNeutralMode(NeutralMode.Brake);
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
         leftMotor.setSensorPosition(0);
+
+        pidRunner =
+                new PIDRunner(
+                        "SHOULDER",
+                        leftMotor,
+                        MotorController.ControlMode.Position,
+                        this::getTargetRotations,
+                        this::getAngle,
+                        PIDRunner.DEFAULT_SLOT_PICKER,
+                        PIDRunner.cosineFeedForward(ffGain, this::getAngle));
     }
 
     public void stop() {
@@ -71,6 +81,10 @@ public class Shoulder extends Mechanism {
 
     public double getRotations() {
         return leftMotor.getSensorPosition();
+    }
+
+    public double getTargetRotations() {
+        return targetRotations;
     }
 
     public double getAngle() {
@@ -103,17 +117,9 @@ public class Shoulder extends Mechanism {
 
     @Override
     public void run() {
-        SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
-        SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
-        SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
-
-        TalonFX leftTalon = (TalonFX) leftMotor;
-        SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
-        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getAngle()));
-        SmartDashboard.putNumber("[SHOULDER] FF", ff);
+        pidRunner.run();
+        // also log velocity, for PID tuning
+        // TODO: consider moving this into PIDRunner
         SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
-        PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
-        positionRequest.FeedForward = ff;
-        leftTalon.setControl(positionRequest);
     }
 }
