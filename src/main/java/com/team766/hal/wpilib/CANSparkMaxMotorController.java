@@ -66,7 +66,8 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void set(final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
+    public void set(
+            final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
         // get the latest PID values for this slot
         pidSlotHelper.refreshPIDForSlot(this, slot);
         switch (mode) {
@@ -75,19 +76,35 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
                 break;
             case PercentOutput:
                 getPIDController()
-                        .setReference(value, CANSparkMax.ControlType.kDutyCycle, slot, arbitraryFeedForward);
+                        .setReference(
+                                value,
+                                CANSparkMax.ControlType.kDutyCycle,
+                                slot,
+                                arbitraryFeedForward);
                 break;
             case Position:
                 getPIDController()
-                        .setReference(value, CANSparkMax.ControlType.kPosition, slot, arbitraryFeedForward);
+                        .setReference(
+                                value,
+                                CANSparkMax.ControlType.kPosition,
+                                slot,
+                                arbitraryFeedForward);
                 break;
             case Velocity:
                 getPIDController()
-                        .setReference(value, CANSparkMax.ControlType.kVelocity, slot, arbitraryFeedForward);
+                        .setReference(
+                                value,
+                                CANSparkMax.ControlType.kVelocity,
+                                slot,
+                                arbitraryFeedForward);
                 break;
             case Voltage:
                 getPIDController()
-                        .setReference(value, CANSparkMax.ControlType.kVoltage, slot, arbitraryFeedForward);
+                        .setReference(
+                                value,
+                                CANSparkMax.ControlType.kVoltage,
+                                slot,
+                                arbitraryFeedForward);
             default:
                 throw new IllegalArgumentException("Unsupported control mode " + mode);
         }

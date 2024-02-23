@@ -183,7 +183,8 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
+    public void set(
+            final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slots not supported on LocalMotorController");

@@ -75,7 +75,8 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void set(final ControlMode mode, double value, int pidSlot, double arbitraryFeedForward) {
+    public void set(
+            final ControlMode mode, double value, int pidSlot, double arbitraryFeedForward) {
         switch (mode) {
             case Disabled:
                 super.disable();
