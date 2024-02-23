@@ -8,17 +8,22 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAnalogSensor;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.hal.PIDSlotHelper;
+import com.team766.library.ValueProvider;
 import com.team766.logging.LoggerExceptionUtils;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CANSparkMaxMotorController extends CANSparkMax implements MotorController {
 
+    private static final int NUM_PID_SLOTS = 2; // should be 4, only exposing 2 at this time.
+
     private Supplier<Double> sensorPositionSupplier;
     private Supplier<Double> sensorVelocitySupplier;
     private Function<Double, REVLibError> sensorPositionSetter;
     private Function<Boolean, REVLibError> sensorInvertedSetter;
     private boolean sensorInverted = false;
+    private final PIDSlotHelper pidSlotHelper;
 
     public CANSparkMaxMotorController(final int deviceId) {
         super(deviceId, MotorType.kBrushless);
@@ -27,6 +32,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
         // getSensorPosition/getSensorVelocity return values that match what the
         // device's PID controller is using.
         setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
     }
 
     private enum ExceptionTarget {
@@ -60,22 +66,28 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(final ControlMode mode, final double value, int slot, double feedForward) {
+        // get the latest PID values for this slot
+        pidSlotHelper.refreshPIDForSlot(this, slot);
         switch (mode) {
             case Disabled:
                 disable();
                 break;
             case PercentOutput:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kDutyCycle);
+                getPIDController()
+                        .setReference(value, CANSparkMax.ControlType.kDutyCycle, slot, feedForward);
                 break;
             case Position:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kPosition);
+                getPIDController()
+                        .setReference(value, CANSparkMax.ControlType.kPosition, slot, feedForward);
                 break;
             case Velocity:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kVelocity);
+                getPIDController()
+                        .setReference(value, CANSparkMax.ControlType.kVelocity, slot, feedForward);
                 break;
             case Voltage:
-                getPIDController().setReference(value, CANSparkMax.ControlType.kVoltage);
+                getPIDController()
+                        .setReference(value, CANSparkMax.ControlType.kVoltage, slot, feedForward);
             default:
                 throw new IllegalArgumentException("Unsupported control mode " + mode);
         }
@@ -88,8 +100,12 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 
     @Override
     public void follow(final MotorController leader) {
+        // see if the follow request should specify inverting the motor.
+        // we do this based on whether or not the leader and follower have different inversion
+        // settings.
+        boolean invert = getInverted() != leader.getInverted();
         try {
-            revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax) leader));
+            revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax) leader, invert));
         } catch (ClassCastException ex) {
             LoggerExceptionUtils.logException(
                     new IllegalArgumentException(
@@ -114,23 +130,52 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setP(final double value) {
-        revErrorToException(ExceptionTarget.LOG, getPIDController().setP(value));
+    public int numPIDSlots() {
+        return NUM_PID_SLOTS;
     }
 
     @Override
-    public void setI(final double value) {
-        revErrorToException(ExceptionTarget.LOG, getPIDController().setI(value));
+    public void setP(ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setP(value, slot);
+        if (value.hasValue()) setP(value.get(), slot);
     }
 
     @Override
-    public void setD(final double value) {
-        revErrorToException(ExceptionTarget.LOG, getPIDController().setD(value));
+    public void setP(final double value, int slot) {
+        revErrorToException(ExceptionTarget.LOG, getPIDController().setP(value, slot));
     }
 
     @Override
-    public void setFF(final double value) {
-        revErrorToException(ExceptionTarget.LOG, getPIDController().setFF(value));
+    public void setI(ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setI(value, slot);
+        if (value.hasValue()) setI(value.get(), slot);
+    }
+
+    @Override
+    public void setI(final double value, int slot) {
+        revErrorToException(ExceptionTarget.LOG, getPIDController().setI(value, slot));
+    }
+
+    @Override
+    public void setD(ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setD(value, slot);
+        if (value.hasValue()) setD(value.get(), slot);
+    }
+
+    @Override
+    public void setD(final double value, int slot) {
+        revErrorToException(ExceptionTarget.LOG, getPIDController().setD(value, slot));
+    }
+
+    @Override
+    public void setFF(ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setFF(value, slot);
+        if (value.hasValue()) setFF(value.get(), slot);
+    }
+
+    @Override
+    public void setFF(final double value, int slot) {
+        revErrorToException(ExceptionTarget.LOG, getPIDController().setFF(value, slot));
     }
 
     @Override
@@ -220,9 +265,18 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput) {
+    public void setOutputRange(
+            ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
+        setOutputRange(minOutput.get(), maxOutput.get(), slot);
+        if (minOutput.hasValue() && maxOutput.hasValue()) {
+            setOutputRange(minOutput.get(), maxOutput.get(), slot);
+        }
+    }
+
+    @Override
+    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
         revErrorToException(
-                ExceptionTarget.LOG, getPIDController().setOutputRange(minOutput, maxOutput));
+                ExceptionTarget.LOG, getPIDController().setOutputRange(minOutput, maxOutput, slot));
     }
 
     public void setCurrentLimit(final double ampsLimit) {

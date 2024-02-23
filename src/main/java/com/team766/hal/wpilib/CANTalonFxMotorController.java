@@ -20,20 +20,29 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorControllerCommandFailedException;
+import com.team766.hal.PIDSlotHelper;
+import com.team766.library.ValueProvider;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 
 public class CANTalonFxMotorController extends TalonFX implements MotorController {
+
+    private static final int NUM_PID_SLOTS = 2;
 
     // NOTE: whenever we make changes to this (or embedded parts of it), we refresh the config
     // out of paranoia, in case some code casts this MotorController to a TalonFX directly
     // and changes a configuration, bypassing this code.
     private TalonFXConfiguration talonFXConfig = new TalonFXConfiguration();
+    private final PIDSlotHelper pidSlotHelper;
 
     // TODO: add support for taking a CANcoder as a ctor parameter
     public CANTalonFxMotorController(final int deviceNumber, final String canBus) {
         super(deviceNumber, canBus);
         TalonFXConfigurator configurator = getConfigurator();
         statusCodeToException(ExceptionTarget.LOG, configurator.refresh(talonFXConfig));
+        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
     }
 
     public CANTalonFxMotorController(final int deviceNumber) {
@@ -66,24 +75,47 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void set(final ControlMode mode, double value) {
+    public void set(final ControlMode mode, double value, int pidSlot, double feedForward) {
         switch (mode) {
             case Disabled:
                 super.disable();
                 break;
             case PercentOutput:
+                // PID values don't apply here.
+                // TODO: soften this to a warning?
+                if ((pidSlot != 0) || (feedForward != 0.0)) {
+                    throw new IllegalArgumentException(
+                            "PercentOutput requested with PID slot ("
+                                    + pidSlot
+                                    + ") or feedForward ("
+                                    + feedForward
+                                    + ")");
+                }
                 DutyCycleOut percent = new DutyCycleOut(value);
                 super.setControl(percent);
                 break;
             case Position:
                 PositionDutyCycle position = new PositionDutyCycle(value);
+                position.Slot = pidSlot;
                 super.setControl(position);
                 break;
             case Velocity:
                 VelocityDutyCycle velocity = new VelocityDutyCycle(value);
+                velocity.Slot = pidSlot;
+                velocity.FeedForward = feedForward;
                 super.setControl(velocity);
                 break;
             case Voltage:
+                // PID values don't apply here.
+                // TODO: soften this to a warning?
+                if ((pidSlot != 0) || (feedForward != 0.0)) {
+                    throw new IllegalArgumentException(
+                            "PercentOutput requested with PID slot ("
+                                    + pidSlot
+                                    + ") or feedForward ("
+                                    + feedForward
+                                    + ")");
+                }
                 VoltageOut voltage = new VoltageOut(value);
                 super.setControl(voltage);
                 break;
@@ -151,33 +183,78 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setFF(final double value) {
-        refreshConfig();
-        talonFXConfig.Slot0.kV = value;
-        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+    public int numPIDSlots() {
+        return NUM_PID_SLOTS;
     }
 
     @Override
-    public void setP(final double value) {
-        refreshConfig();
-        talonFXConfig.Slot0.kP = value;
-        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+    public void setFF(ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setFF(value, slot);
+        if (value.hasValue()) setFF(value.get(), slot);
     }
 
     @Override
-    public void setI(final double value) {
+    public void setFF(final double value, int slot) {
         refreshConfig();
-        // code.
-        talonFXConfig.Slot0.kI = value;
-        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+        switch (slot) {
+            case 0:
+                talonFXConfig.Slot0.kV = value;
+                break;
+            case 1:
+                talonFXConfig.Slot1.kV = value;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported slot " + slot);
+        }
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig));
     }
 
     @Override
-    public void setD(final double value) {
+    public void setP(final double value, int slot) {
         refreshConfig();
-        // code.
-        talonFXConfig.Slot0.kD = value;
-        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig.Slot0));
+        switch (slot) {
+            case 0:
+                talonFXConfig.Slot0.kP = value;
+                break;
+            case 1:
+                talonFXConfig.Slot1.kP = value;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported slot " + slot);
+        }
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig));
+    }
+
+    @Override
+    public void setI(final double value, int slot) {
+        refreshConfig();
+        switch (slot) {
+            case 0:
+                talonFXConfig.Slot0.kI = value;
+                break;
+            case 1:
+                talonFXConfig.Slot1.kI = value;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported slot " + slot);
+        }
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig));
+    }
+
+    @Override
+    public void setD(final double value, int slot) {
+        refreshConfig();
+        switch (slot) {
+            case 0:
+                talonFXConfig.Slot0.kD = value;
+                break;
+            case 1:
+                talonFXConfig.Slot1.kD = value;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported slot " + slot);
+        }
+        statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig));
     }
 
     private void setRemoteFeedbackSensor(CANcoder canCoder) {
@@ -215,7 +292,20 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput) {
+    public void setOutputRange(
+            ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
+        pidSlotHelper.setOutputRange(minOutput, maxOutput, slot);
+        setOutputRange(minOutput.get(), maxOutput.get(), slot);
+    }
+
+    @Override
+    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+        if (slot != 0) {
+            Logger.get(Category.HAL)
+                    .logRaw(
+                            Severity.WARNING,
+                            "Ignoring slot for setOutputRange - unsupported on TalonFX");
+        }
         MotorOutputConfigs motorOutput = new MotorOutputConfigs();
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().refresh(motorOutput));
 
