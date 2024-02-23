@@ -51,8 +51,10 @@ public class PIDRunner {
     private final Supplier<Double> output;
     private final Supplier<Integer> slot;
     private final Supplier<Double> feedForward;
+    private boolean first = true;
     private double prevSetPoint = 0.0;
-    private double prevOutput = 0.0;
+    private double prevFeedForward = 0.0;
+    private int prevSlot = 0;
 
     public PIDRunner(
             String label,
@@ -83,12 +85,26 @@ public class PIDRunner {
     public void run() {
         double currentSetPoint = setPoint.get();
         double currentOutput = output.get();
-        if (prevSetPoint != currentOutput || prevOutput != currentOutput) {
+        double currentFeedForward = feedForward.get();
+        int currentSlot = slot.get();
+
+        // if we haven't set the setpoint yet, or if the setpoint, feedforward, or slot have
+        // changed, set the setpoint.
+        if (first
+                || prevSetPoint != currentSetPoint
+                || prevFeedForward != currentFeedForward
+                || currentSlot != prevSlot) {
+            first = false;
             prevSetPoint = currentSetPoint;
-            prevOutput = currentOutput;
+            prevFeedForward = currentFeedForward;
+            prevSlot = currentSlot;
+
+            // log to SmartDashboard - useful for PID tuning.
             SmartDashboard.putNumber(label + " setpoint", currentSetPoint);
             SmartDashboard.putNumber(label + " output", currentOutput);
-            // FIXME: switch to supporting slot, feedForward once integrated
+            SmartDashboard.putNumber(label + " PID slot", currentSlot);
+
+            // FIXME: switch to supporting slot, feedForward once that PR is integrated
             // motor.set(mode, currentSetPoint, slot.get(), feedForward.get());
             motor.set(mode, currentSetPoint);
         }
