@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * Can use with lambdas and/or method references, eg:
  *
  * PIDRunner pidRunner = new PIDRunner("SHOULDER", leftMotor, ControlMode.Position,
- *                                     this::getSetPoint, this::getAngle);
+ *                                     this::getTargetRotations, this::getRotations);
  */
 public class PIDRunner {
 

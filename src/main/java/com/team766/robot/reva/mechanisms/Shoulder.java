@@ -60,7 +60,7 @@ public class Shoulder extends Mechanism {
                         this::getTargetRotations,
                         this::getAngle,
                         PIDRunner.DEFAULT_SLOT_PICKER,
-                        PIDRunner.cosineFeedForward(ffGain, this::getAngle));
+                        PIDRunner.cosineFeedForward(ffGain, this::getRotations));
     }
 
     public void stop() {
