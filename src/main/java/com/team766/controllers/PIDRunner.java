@@ -18,15 +18,15 @@ import java.util.function.Supplier;
 public class PIDRunner {
 
     public static final Supplier<Integer> DEFAULT_SLOT_PICKER = () -> 0;
-    public static final Supplier<Double> NO_FEED_FORWARD = () -> 0.0;
+    public static final Supplier<Double> NO_ARBITRARY_FEED_FORWARD = () -> 0.0;
 
     /**
-     * Returns a fixed FeedForward supplier, simply returning the latest input ffGain from a config file.
-     * @param ffGain Input FeedForward Gain, read from a config file.
+     * Returns a fixed arbitrary FeedForward supplier, simply returning the latest input ffGain from a config file.
+     * @param arbitraryFFGain Input FeedForward Gain, read from a config file.
      * @return Fixed FeedForward Gain from the current value of ffGain.
      */
-    public static final Supplier<Double> fixedFeedForward(ValueProvider<Double> ffGain) {
-        return () -> ffGain.get();
+    public static final Supplier<Double> fixedArbitraryFeedForward(ValueProvider<Double> arbitraryFFGain) {
+        return () -> arbitraryFFGain.get();
     }
 
     /**
@@ -35,13 +35,13 @@ public class PIDRunner {
      * counteract gravity proportionally to the arm's current angle, where 0 is parallel to the ground and 90
      * is perpendicular & up.
      *
-     * @param ffGain Input FeedForward Gain, read from a config file.
+     * @param arbitraryFFGain Input FeedForward Gain, read from a config file.
      * @param angle Current angle of the mechanism.  0 is parallel to the ground, 90 is perpendicular & up.
      * @return Proportional FeedForward Gain based on the angle.
      */
-    public static final Supplier<Double> cosineFeedForward(
-            ValueProvider<Double> ffGain, Supplier<Double> angle) {
-        return () -> ffGain.valueOr(0.0) * Math.cos(Math.toRadians(angle.get()));
+    public static final Supplier<Double> cosineArbitraryFeedForward(
+            ValueProvider<Double> arbitraryFFGain, Supplier<Double> angle) {
+        return () -> arbitraryFFGain.valueOr(0.0) * Math.cos(Math.toRadians(angle.get()));
     }
 
     private final String label;
@@ -50,10 +50,10 @@ public class PIDRunner {
     private final Supplier<Double> setPoint;
     private final Supplier<Double> output;
     private final Supplier<Integer> slot;
-    private final Supplier<Double> feedForward;
+    private final Supplier<Double> arbitraryFeedForward;
     private boolean first = true;
     private double prevSetPoint = 0.0;
-    private double prevFeedForward = 0.0;
+    private double prevArbitraryFeedForward = 0.0;
     private int prevSlot = 0;
 
     public PIDRunner(
@@ -62,7 +62,7 @@ public class PIDRunner {
             MotorController.ControlMode mode,
             Supplier<Double> setPoint,
             Supplier<Double> output) {
-        this(label, motor, mode, setPoint, output, DEFAULT_SLOT_PICKER, NO_FEED_FORWARD);
+        this(label, motor, mode, setPoint, output, DEFAULT_SLOT_PICKER, NO_ARBITRARY_FEED_FORWARD);
     }
 
     public PIDRunner(
@@ -72,31 +72,31 @@ public class PIDRunner {
             Supplier<Double> setPoint,
             Supplier<Double> output,
             Supplier<Integer> slot,
-            Supplier<Double> feedForward) {
+            Supplier<Double> arbitraryFeedForward) {
         this.label = label;
         this.motor = motor;
         this.mode = mode;
         this.setPoint = setPoint;
         this.output = output;
         this.slot = slot;
-        this.feedForward = feedForward;
+        this.arbitraryFeedForward = arbitraryFeedForward;
     }
 
     public void run() {
         double currentSetPoint = setPoint.get();
         double currentOutput = output.get();
-        double currentFeedForward = feedForward.get();
+        double currentArbitraryFeedForward = arbitraryFeedForward.get();
         int currentSlot = slot.get();
 
         // if we haven't set the setpoint yet, or if the setpoint, feedforward, or slot have
         // changed, set the setpoint.
         if (first
                 || prevSetPoint != currentSetPoint
-                || prevFeedForward != currentFeedForward
+                || prevArbitraryFeedForward != currentArbitraryFeedForward
                 || currentSlot != prevSlot) {
             first = false;
             prevSetPoint = currentSetPoint;
-            prevFeedForward = currentFeedForward;
+            prevArbitraryFeedForward = currentArbitraryFeedForward;
             prevSlot = currentSlot;
 
             // log to SmartDashboard - useful for PID tuning.
@@ -105,7 +105,7 @@ public class PIDRunner {
             SmartDashboard.putNumber(label + " PID slot", currentSlot);
 
             // FIXME: switch to supporting slot, feedForward once that PR is integrated
-            // motor.set(mode, currentSetPoint, slot.get(), feedForward.get());
+            // motor.set(mode, currentSetPoint, slot.get(), arbitraryFeedForward.get());
             motor.set(mode, currentSetPoint);
         }
     }

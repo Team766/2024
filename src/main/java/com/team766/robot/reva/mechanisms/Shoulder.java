@@ -1,6 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
-import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_FFGAIN;
+import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_ARBITRARY_FFGAIN;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
@@ -40,7 +40,7 @@ public class Shoulder extends Mechanism {
     private final MotorController rightMotor;
     private final PIDRunner pidRunner;
 
-    private ValueProvider<Double> ffGain;
+    private ValueProvider<Double> arbitraryFFGain;
     private double targetRotations = 0.0;
 
     public Shoulder() {
@@ -49,7 +49,7 @@ public class Shoulder extends Mechanism {
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
         rightMotor.follow(leftMotor);
         leftMotor.setNeutralMode(NeutralMode.Brake);
-        ffGain = ConfigFileReader.getInstance().getDouble(SHOULDER_FFGAIN);
+        arbitraryFFGain = ConfigFileReader.getInstance().getDouble(SHOULDER_ARBITRARY_FFGAIN);
         leftMotor.setSensorPosition(0);
 
         pidRunner =
@@ -58,9 +58,9 @@ public class Shoulder extends Mechanism {
                         leftMotor,
                         MotorController.ControlMode.Position,
                         this::getTargetRotations,
-                        this::getAngle,
+                        this::getRotations,
                         PIDRunner.DEFAULT_SLOT_PICKER,
-                        PIDRunner.cosineFeedForward(ffGain, this::getRotations));
+                        PIDRunner.cosineArbitraryFeedForward(arbitraryFFGain, this::getAngle));
     }
 
     public void stop() {
@@ -122,5 +122,6 @@ public class Shoulder extends Mechanism {
         // also log velocity, for PID tuning
         // TODO: consider moving this into PIDRunner
         SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
+        SmartDashboard.putNumber("[SHOULDER ANGLE]", getAngle());
     }
 }
