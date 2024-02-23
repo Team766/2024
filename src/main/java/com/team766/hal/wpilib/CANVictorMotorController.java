@@ -25,7 +25,7 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
-    public void set(final ControlMode mode, double value, int slot, double feedForward) {
+    public void set(final ControlMode mode, double value, int slot, double arbitraryrFeedForward) {
         pidSlotHelper.refreshPIDForSlot(this, slot);
         m_device.selectProfileSlot(slot, 0 /* primary closed loop */);
 
@@ -63,7 +63,7 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
             ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
         }
         if (useFourTermSet) {
-            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, feedForward);
+            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, arbitraryrFeedForward);
         } else {
             m_device.set(ctre_mode, value);
         }

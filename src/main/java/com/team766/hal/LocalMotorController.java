@@ -183,15 +183,15 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value, int slot, double feedForward) {
+    public void set(final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slots not supported on LocalMotorController");
         }
 
-        if (feedForward != 0.0) {
+        if (arbitraryFeedForward != 0.0) {
             throw new UnsupportedOperationException(
-                    "Arbitrary feedForward not supported on LocalMotorController");
+                    "Arbitrary feed forward not supported on LocalMotorController");
         }
 
         if (this.controlMode != mode || this.leader != null) {

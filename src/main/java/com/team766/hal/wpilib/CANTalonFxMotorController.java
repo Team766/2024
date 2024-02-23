@@ -75,7 +75,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void set(final ControlMode mode, double value, int pidSlot, double feedForward) {
+    public void set(final ControlMode mode, double value, int pidSlot, double arbitraryFeedForward) {
         switch (mode) {
             case Disabled:
                 super.disable();
@@ -83,12 +83,12 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
             case PercentOutput:
                 // PID values don't apply here.
                 // TODO: soften this to a warning?
-                if ((pidSlot != 0) || (feedForward != 0.0)) {
+                if ((pidSlot != 0) || (arbitraryFeedForward != 0.0)) {
                     throw new IllegalArgumentException(
                             "PercentOutput requested with PID slot ("
                                     + pidSlot
                                     + ") or feedForward ("
-                                    + feedForward
+                                    + arbitraryFeedForward
                                     + ")");
                 }
                 DutyCycleOut percent = new DutyCycleOut(value);
@@ -102,18 +102,18 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
             case Velocity:
                 VelocityDutyCycle velocity = new VelocityDutyCycle(value);
                 velocity.Slot = pidSlot;
-                velocity.FeedForward = feedForward;
+                velocity.FeedForward = arbitraryFeedForward;
                 super.setControl(velocity);
                 break;
             case Voltage:
                 // PID values don't apply here.
                 // TODO: soften this to a warning?
-                if ((pidSlot != 0) || (feedForward != 0.0)) {
+                if ((pidSlot != 0) || (arbitraryFeedForward != 0.0)) {
                     throw new IllegalArgumentException(
                             "PercentOutput requested with PID slot ("
                                     + pidSlot
                                     + ") or feedForward ("
-                                    + feedForward
+                                    + arbitraryFeedForward
                                     + ")");
                 }
                 VoltageOut voltage = new VoltageOut(value);

@@ -61,8 +61,10 @@ public interface MotorController extends BasicMotorController {
      * duplicate.
      *
      * @param value The setpoint value, as described above.
+     * @param slot The PID slot to use, if the mode uses PID.
+     * @param arbitraryFeedForward An arbitrary feed forward value to use when calculating PID.
      */
-    void set(ControlMode mode, double value, int pidSlot, double feedForward);
+    void set(ControlMode mode, double value, int slot, double arbitraryFeedForward);
 
     /**
      * Common interface for inverting direction of a motor controller.
