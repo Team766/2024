@@ -1,5 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
+import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_FFGAIN;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
@@ -48,7 +49,7 @@ public class Shoulder extends Mechanism {
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
         rightMotor.follow(leftMotor);
         leftMotor.setNeutralMode(NeutralMode.Brake);
-        ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
+        ffGain = ConfigFileReader.getInstance().getDouble(SHOULDER_FFGAIN);
         leftMotor.setSensorPosition(0);
 
         pidRunner =
