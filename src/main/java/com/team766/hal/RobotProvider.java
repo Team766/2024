@@ -210,7 +210,7 @@ public abstract class RobotProvider {
             // check for a single port encoder
             final ValueProvider<Integer> port =
                     ConfigFileReader.getInstance().getInt(configName + ".port");
-            if (deviceId.hasValue()) {
+            if (port.hasValue()) {
                 // TODO: should we check the type here?
                 return getEncoder(port.get(), configName);
             }
