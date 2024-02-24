@@ -25,7 +25,8 @@ public class PIDRunner {
      * @param arbitraryFFGain Input FeedForward Gain, read from a config file.
      * @return Fixed FeedForward Gain from the current value of ffGain.
      */
-    public static final Supplier<Double> fixedArbitraryFeedForward(ValueProvider<Double> arbitraryFFGain) {
+    public static final Supplier<Double> fixedArbitraryFeedForward(
+            ValueProvider<Double> arbitraryFFGain) {
         return () -> arbitraryFFGain.get();
     }
 
