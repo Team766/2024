@@ -3,12 +3,11 @@ package com.team766.hal.wpilib;
 import com.team766.hal.EncoderReader;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
-public class RevThroughBoreDutyCycleEncoder extends DutyCycleEncoder implements EncoderReader {
+public class REVThroughBoreDutyCycleEncoder extends DutyCycleEncoder implements EncoderReader {
 
-    public RevThroughBoreDutyCycleEncoder(int channel) {
+    public REVThroughBoreDutyCycleEncoder(int channel) {
         super(channel);
-        // TODO: figure out what this should be
-        setDutyCycleRange(0, 4096);
+        setDutyCycleRange(1, 1024);
     }
 
     @Override
