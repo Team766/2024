@@ -189,6 +189,8 @@ public class WPIRobotProvider extends RobotProvider {
                 ValueProvider<String> canBus =
                         ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
                 return new CANcoderEncoder(index1, canBus.get());
+            } else if (type.get() == EncoderReader.Type.DutyCycle) {
+                return new DutyCycleEncoderReader(index1);
             } else {
                 Logger.get(Category.CONFIGURATION)
                         .logData(
