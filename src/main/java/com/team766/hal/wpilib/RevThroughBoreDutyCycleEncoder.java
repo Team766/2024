@@ -3,9 +3,9 @@ package com.team766.hal.wpilib;
 import com.team766.hal.EncoderReader;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
-public class DutyCycleEncoderReader extends DutyCycleEncoder implements EncoderReader {
+public class RevThroughBoreDutyCycleEncoder extends DutyCycleEncoder implements EncoderReader {
 
-    public DutyCycleEncoderReader(int channel) {
+    public RevThroughBoreDutyCycleEncoder(int channel) {
         super(channel);
     }
 

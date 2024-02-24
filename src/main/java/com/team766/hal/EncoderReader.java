@@ -4,7 +4,7 @@ public interface EncoderReader extends ControlInputReader {
 
     enum Type {
         CANcoder,
-        DutyCycle
+        REVThroughBoreDutyCycle
     };
 
     /**
