@@ -11,6 +11,9 @@ public class DutyCycleEncoderReader extends DutyCycleEncoder implements EncoderR
 
     @Override
     public double getRate() {
+		// getRate() is not supported in the current WPILib DutyCycleEncoder class.
+		// DutyCycleEncoder does include a Counter, which does support getRate(), so we might be able
+		// to add support via a small change in WPILib.
         throw new UnsupportedOperationException("getRate() not supported.");
     }
 
