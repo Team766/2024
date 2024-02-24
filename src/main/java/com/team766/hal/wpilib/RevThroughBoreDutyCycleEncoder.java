@@ -7,6 +7,8 @@ public class RevThroughBoreDutyCycleEncoder extends DutyCycleEncoder implements 
 
     public RevThroughBoreDutyCycleEncoder(int channel) {
         super(channel);
+        // TODO: figure out what this should be
+        setDutyCycleRange(0, 4096);
     }
 
     @Override
