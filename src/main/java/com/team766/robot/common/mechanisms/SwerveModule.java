@@ -23,6 +23,9 @@ public class SwerveModule {
     private final CANcoder encoder;
     private final double offset;
 
+    // FIXME: have these be passed in from Drive (via SwerveConfig).  Many of these are
+    // passed into Odometry.  (Swerve and Odometry code need to be renconciled.)
+
     /*
      * Factor that converts between motor rotations and wheel degrees
      * Multiply to convert from wheel degrees to motor rotations
