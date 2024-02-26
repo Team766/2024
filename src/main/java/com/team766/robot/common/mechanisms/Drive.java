@@ -36,6 +36,7 @@ public class Drive extends Mechanism {
     private Odometry swerveOdometry;
     // variable representing current position
 
+    private Translation2d[] wheelPositions;
     private SwerveDriveKinematics swerveDriveKinematics;
 
     private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
@@ -106,7 +107,7 @@ public class Drive extends Mechanism {
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBR, driveBL};
         CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
-        Translation2d[] wheelPositions =
+        this.wheelPositions =
                 new Translation2d[] {
                     new Translation2d(halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
                     new Translation2d(halfDistanceBetweenWheels, halfDistanceBetweenWheels),
@@ -171,7 +172,6 @@ public class Drive extends Mechanism {
                         .add(
                                 turnVelocity,
                                 createOrthogonalVector(config.backLeftLocation()).normalize()));
-        
     }
 
     /**
@@ -277,12 +277,20 @@ public class Drive extends Mechanism {
                 swerveBL.getModuleState());
     }
 
+    public double maxWheelDistToCenter() {
+        double max = 0;
+        for (Translation2d translation : wheelPositions) {
+            max = Math.max(max, translation.getNorm());
+        }
+        return max;
+    }
+
     // Odometry
     @Override
     public void run() {
         swerveOdometry.run();
         // log(currentPosition.toString());
-        SmartDashboard.putString("pos",getCurrentPosition().toString());
+        SmartDashboard.putString("pos", getCurrentPosition().toString());
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
@@ -296,7 +304,8 @@ public class Drive extends Mechanism {
                     swerveBL.getModuleState(),
                 };
         if (Logger.isLoggingToDataLog()) {
-            org.littletonrobotics.junction.Logger.recordOutput("current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
+            org.littletonrobotics.junction.Logger.recordOutput(
+                    "current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
         }
         swerveModuleStatePublisher.set(states);

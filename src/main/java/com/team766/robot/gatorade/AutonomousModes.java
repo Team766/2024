@@ -1,7 +1,6 @@
 package com.team766.robot.gatorade;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
 
 public class AutonomousModes {

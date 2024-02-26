@@ -8,41 +8,40 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.gatorade.Robot;
-import com.team766.robot.gatorade.constants.ConfigConstants;
-import com.team766.robot.common.constants.OdometryInputConstants;
+import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
+import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class FollowPath extends Procedure {
+    private Drive drive;
     private PathPlannerPath path;
     private PathPlannerTrajectory generatedTrajectory;
     private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
 
-//     public FollowPath(
-//             PathPlannerPath path,
-//             ReplanningConfig replanningConfig,
-//             PPHolonomicDriveController controller
-//             /* TODO: add flip path support */ ) {
-//         this.path = path;
-//         this.replanningConfig = replanningConfig;
-//         this.controller = controller;
-//     }
+    //     public FollowPath(
+    //             PathPlannerPath path,
+    //             ReplanningConfig replanningConfig,
+    //             PPHolonomicDriveController controller
+    //             /* TODO: add flip path support */ ) {
+    //         this.path = path;
+    //         this.replanningConfig = replanningConfig;
+    //         this.controller = controller;
+    //     }
 
-    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig) {
+    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, Drive drive) {
         this.path = path;
         this.replanningConfig = replanningConfig;
+        this.drive = drive;
         double maxSpeed =
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
                         .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
-        
+
         // log("max speed: " + maxSpeed);
 
         double translationP =
@@ -75,34 +74,34 @@ public class FollowPath extends Procedure {
                         new PIDConstants(translationP, translationI, translationD),
                         new PIDConstants(rotationP, rotationI, rotationD),
                         maxSpeed,
-                        OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER
-                        );
+                        drive.maxWheelDistToCenter());
     }
 
-    public FollowPath(String autoName) {
-        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG);
+    public FollowPath(String autoName, Drive drive) {
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, drive);
     }
 
     @Override
     public void run(Context context) {
-        context.takeOwnership(Robot.drive);
+        context.takeOwnership(drive);
 
         // intitialization
 
         // TODO: flip path as necessary
-        Pose2d curPose = Robot.drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = Robot.drive.getChassisSpeeds();
+        Pose2d curPose = drive.getCurrentPosition();
+        ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
         // log("Autoning");
         // log("current pose in fp: " + curPose);
 
         controller.reset(curPose, currentSpeeds);
 
-        if (replanningConfig.enableInitialReplanning && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
+        if (replanningConfig.enableInitialReplanning
+                && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
             replanPath(curPose, currentSpeeds);
-        //    log("replanned path");
+            //    log("replanned path");
         } else {
             generatedTrajectory = path.getTrajectory(currentSpeeds, curPose.getRotation());
-        //    log("generated normal trajectory");
+            //    log("generated normal trajectory");
         }
 
         timer.reset();
@@ -114,8 +113,8 @@ public class FollowPath extends Procedure {
             double currentTime = timer.get();
             // log("current time: " + currentTime);
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            curPose = Robot.drive.getCurrentPosition();
-            currentSpeeds = Robot.drive.getChassisSpeeds();
+            curPose = drive.getCurrentPosition();
+            currentSpeeds = drive.getChassisSpeeds();
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
@@ -135,23 +134,26 @@ public class FollowPath extends Procedure {
 
             ChassisSpeeds targetSpeeds =
                     controller.calculateRobotRelativeSpeeds(curPose, targetState);
-        //     log("curPose: " + curPose);
-        //     log("cur rot vel: " + currentSpeeds.omegaRadiansPerSecond);
-        //     log("targetState: " + targetState.getTargetHolonomicPose());
-        //     log("intended ang vel rps: " + targetState.headingAngularVelocityRps);
-            
-        //     log("targetSpeeds: " + targetSpeeds);
-            org.littletonrobotics.junction.Logger.recordOutput("current heading", curPose.getRotation().getRadians());
+            //     log("curPose: " + curPose);
+            //     log("cur rot vel: " + currentSpeeds.omegaRadiansPerSecond);
+            //     log("targetState: " + targetState.getTargetHolonomicPose());
+            //     log("intended ang vel rps: " + targetState.headingAngularVelocityRps);
 
-            org.littletonrobotics.junction.Logger.recordOutput("input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
+            //     log("targetSpeeds: " + targetSpeeds);
+            org.littletonrobotics.junction.Logger.recordOutput(
+                    "current heading", curPose.getRotation().getRadians());
+
+            org.littletonrobotics.junction.Logger.recordOutput(
+                    "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("curPose", curPose);
-            org.littletonrobotics.junction.Logger.recordOutput("targetState", targetState.getTargetHolonomicPose());
-            Robot.drive.controlRobotOriented(targetSpeeds);
+            org.littletonrobotics.junction.Logger.recordOutput(
+                    "targetState", targetState.getTargetHolonomicPose());
+            drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
-            Robot.drive.stopDrive();
+            drive.stopDrive();
         }
     }
 
