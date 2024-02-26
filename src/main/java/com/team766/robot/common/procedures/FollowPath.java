@@ -23,15 +23,15 @@ public class FollowPath extends Procedure {
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
 
-        public FollowPath(
-                PathPlannerPath path,
-                ReplanningConfig replanningConfig,
-                PPHolonomicDriveController controller
-                /* TODO: add flip path support */ ) {
-            this.path = path;
-            this.replanningConfig = replanningConfig;
-            this.controller = controller;
-        }
+    public FollowPath(
+            PathPlannerPath path,
+            ReplanningConfig replanningConfig,
+            PPHolonomicDriveController controller
+            /* TODO: add flip path support */ ) {
+        this.path = path;
+        this.replanningConfig = replanningConfig;
+        this.controller = controller;
+    }
 
     public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, Drive drive) {
         this.path = path;

@@ -28,9 +28,9 @@ public class PathSequenceAuto extends Procedure {
         pathItems.add(procedure);
     }
 
-	public void add(double waitForSeconds) {
-		pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
-	}
+    public void add(double waitForSeconds) {
+        pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
+    }
 
     @Override
     public final void run(Context context) {
