@@ -40,6 +40,7 @@ public class PathSequenceAuto extends Procedure {
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
+            context.yield();
         }
     }
 }

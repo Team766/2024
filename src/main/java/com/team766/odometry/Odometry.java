@@ -275,7 +275,6 @@ public class Odometry {
             // currPositions[i]);
         }
         // x and y are inverted to follow directional conventions
-        // FIXME: stop doing the bandaid solution and randomly invert
         currentPosition = new Pose2d(sumX / motorCount, sumY / motorCount, gyroPosition);
     }
 

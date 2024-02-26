@@ -125,8 +125,6 @@ public class SwerveModule {
                 "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
 
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
-        // org.littletonrobotics.junction.Logger.recordOutput("current wheel angle velocity",
-        // steer.getSensorVelocity() / ENCODER_CONVERSION_FACTOR * (2 * Math.PI) / 180);
 
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
         SmartDashboard.putNumber(

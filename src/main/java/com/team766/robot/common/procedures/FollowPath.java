@@ -16,21 +16,24 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 
 public class FollowPath extends Procedure {
-    private Drive drive;
-    private PathPlannerPath path;
-    private PathPlannerTrajectory generatedTrajectory;
+    private final Drive drive;
+    private final PathPlannerPath path;
     private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
+    private PathPlannerTrajectory generatedTrajectory;
+
 
     public FollowPath(
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
-            PPHolonomicDriveController controller
+            PPHolonomicDriveController controller,
+            Drive drive
             /* TODO: add flip path support */ ) {
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
+        this.drive = drive;
     }
 
     public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, Drive drive) {
