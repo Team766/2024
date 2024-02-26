@@ -124,7 +124,7 @@ public class Drive extends Mechanism {
                         encoderList,
                         wheelPositions,
                         config.wheelCircumference(),
-                        config.gearRatio(),
+                        config.driveGearRatio(),
                         config.encoderToRevolutionConstant());
     }
 

@@ -19,18 +19,30 @@ public class SwerveConfig {
     public static final double DEFAULT_BL_Y = 1;
     public static final double DEFAULT_BR_X = -1;
     public static final double DEFAULT_BR_Y = -1;
+
+    // Radius of the wheels. The circumference was measured to be 30.5cm, then experimentally this
+    // value had an error of 2.888%. This was then converted to meters, and then the radius.
+    public static final double DEFAULT_WHEEL_RADIUS = 30.5 * 1.02888 / 100 / (2 * Math.PI);
+
     // Circumference of the wheels. It was measured to be 30.5cm, then experimentally this value had
     // an error of 2.888%. This was then converted to meters.
+    // TODO: compute this from the wheel radius!
     public static final double DEFAULT_WHEEL_CIRCUMFERENCE = 30.5 * 1.02888 / 100;
-    // Unique to the type of swerve module we have. This is the factor converting motor revolutions
-    // to wheel revolutions.
-    public static final double DEFAULT_GEAR_RATIO = 6.75;
+
+    // Unique to the type of swerve module we have. This is the gear ratio for the drive motors.
+    public static final double DEFAULT_DRIVE_GEAR_RATIO = 6.75;
+
+    // Unique to the type of swerve module we have. This is the gear ratio for the steer motors.
+    public static final double DEFAULT_STEER_GEAR_RATIO = 150.0 / 7.0;
+
     // The distance between the center of a wheel to the center of an adjacent wheel, assuming the
     // robot is square. This was measured as 20.5 inches, then converted to meters.
     public static final double DEFAULT_DISTANCE_BETWEEN_WHEELS = 20.5 * 2.54 / 100;
+
     // Unique to the type of swerve module we have. For every revolution of the wheel, the encoders
     // will increase by 1.
     public static final int DEFAULT_ENCODER_TO_REVOLUTION_CONSTANT = 1;
+
     public static final double DEFAULT_DRIVE_CURRENT_LIMIT = 35;
     public static final double DEFAULT_STEER_CURRENT_LIMIT = 30;
 
@@ -40,8 +52,10 @@ public class SwerveConfig {
     private Vector2D frontRightLocation = new Vector2D(DEFAULT_FR_X, DEFAULT_FR_Y);
     private Vector2D backLeftLocation = new Vector2D(DEFAULT_BL_X, DEFAULT_BL_Y);
     private Vector2D backRightLocation = new Vector2D(DEFAULT_BR_X, DEFAULT_BR_Y);
+    private double wheelRadius = DEFAULT_WHEEL_RADIUS;
     private double wheelCircumference = DEFAULT_WHEEL_CIRCUMFERENCE;
-    private double gearRatio = DEFAULT_GEAR_RATIO;
+    private double driveGearRatio = DEFAULT_DRIVE_GEAR_RATIO;
+    private double steerGearRatio = DEFAULT_STEER_GEAR_RATIO;
     private double distanceBetweenWheels = DEFAULT_DISTANCE_BETWEEN_WHEELS;
     private double wheelDistanceFromCenter = Math.sqrt(2) * DEFAULT_DISTANCE_BETWEEN_WHEELS / 2;
     private int encoderToRevolutionConstant = DEFAULT_ENCODER_TO_REVOLUTION_CONSTANT;
@@ -70,12 +84,20 @@ public class SwerveConfig {
         return backRightLocation;
     }
 
+    public double wheelRadius() {
+        return wheelRadius;
+    }
+
     public double wheelCircumference() {
         return wheelCircumference;
     }
 
-    public double gearRatio() {
-        return gearRatio;
+    public double driveGearRatio() {
+        return driveGearRatio;
+    }
+
+    public double steerGearRatio() {
+        return steerGearRatio;
     }
 
     public double distanceBetweenWheels() {
@@ -123,13 +145,23 @@ public class SwerveConfig {
         return this;
     }
 
+    public SwerveConfig withWheelRadius(double wheelRadius) {
+        this.wheelRadius = wheelRadius;
+        return this;
+    }
+
     public SwerveConfig withWheelCircumference(double wheelCircumference) {
         this.wheelCircumference = wheelCircumference;
         return this;
     }
 
-    public SwerveConfig withGearRatio(double gearRatio) {
-        this.gearRatio = gearRatio;
+    public SwerveConfig withDriveGearRatio(double driveGearRatio) {
+        this.driveGearRatio = driveGearRatio;
+        return this;
+    }
+
+    public SwerveConfig withSteerGearRatio(double steerGearRatio) {
+        this.steerGearRatio = steerGearRatio;
         return this;
     }
 
