@@ -114,6 +114,9 @@ public class Drive extends Mechanism {
                     new Translation2d(-halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
                     new Translation2d(-halfDistanceBetweenWheels, halfDistanceBetweenWheels)
                 };
+
+        swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
+
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
@@ -291,6 +294,7 @@ public class Drive extends Mechanism {
         swerveOdometry.run();
         // log(currentPosition.toString());
         SmartDashboard.putString("pos", getCurrentPosition().toString());
+        org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
