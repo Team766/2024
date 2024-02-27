@@ -24,6 +24,8 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
  */
 public class Odometry {
 
+    private static final double RATE_LIMITER_TIME = 0.05;
+
     // probably good at every 100th of a second but test
     private RateLimiter odometryLimiter;
 
@@ -43,9 +45,9 @@ public class Odometry {
     private Pose2d currentPosition;
 
     // In meters
-    private double WHEEL_CIRCUMFERENCE;
-    public double GEAR_RATIO;
-    public int ENCODER_TO_REVOLUTION_CONSTANT;
+    private double wheelCircumference;
+    public double gearRatio;
+    public int encoderToRevolutionConstant;
 
     // In the same order as motorList, relative to the center of the robot
     private Translation2d[] wheelPositions;
@@ -59,7 +61,6 @@ public class Odometry {
      * @param wheelCircumference The circumfrence of the wheels, including treads.
      * @param gearRatio The gear ratio of the wheels.
      * @param encoderToRevolutionConstant The encoder to revolution constant of the wheels.
-     * @param rateLimiterTime How often odometry should run.
      */
     public Odometry(
             GyroReader gyro,
@@ -68,11 +69,10 @@ public class Odometry {
             Translation2d[] wheelLocations,
             double wheelCircumference,
             double gearRatio,
-            int encoderToRevolutionConstant,
-            double rateLimiterTime) {
+            int encoderToRevolutionConstant) {
 
         this.gyro = gyro;
-        odometryLimiter = new RateLimiter(rateLimiterTime);
+        odometryLimiter = new RateLimiter(RATE_LIMITER_TIME);
         motorList = motors;
         CANCoderList = CANCoders;
         motorCount = motorList.length;
@@ -85,9 +85,9 @@ public class Odometry {
         currentPosition = new Pose2d();
 
         wheelPositions = wheelLocations;
-        WHEEL_CIRCUMFERENCE = wheelCircumference;
-        GEAR_RATIO = gearRatio;
-        ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
+        this.wheelCircumference = wheelCircumference;
+        this.gearRatio = gearRatio;
+        this.encoderToRevolutionConstant = encoderToRevolutionConstant;
         currentPosition = new Pose2d(0, 0, new Rotation2d());
 
         for (int i = 0; i < motorCount; i++) {
@@ -244,7 +244,7 @@ public class Odometry {
             }
             wheelMotion =
                     wheelMotion.scalarMultiply(
-                            WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
+                            wheelCircumference / (gearRatio * encoderToRevolutionConstant));
             // wheelMotion = rotate(wheelMotion, Math.toRadians(gyroPosition));
             // log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY -
             // wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current

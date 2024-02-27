@@ -1,6 +1,6 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.robot.gatorade.constants.ConfigConstants.*;
+import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.framework.Mechanism;
@@ -11,7 +11,6 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
-import com.team766.robot.gatorade.constants.OdometryInputConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -69,10 +68,38 @@ public class Drive extends Mechanism {
         CANcoder encoderBL = new CANcoder(1, config.canBus());
 
         // initialize the swerve modules
-        swerveFR = new SwerveModule("FR", driveFR, steerFR, encoderFR);
-        swerveFL = new SwerveModule("FL", driveFL, steerFL, encoderFL);
-        swerveBR = new SwerveModule("BR", driveBR, steerBR, encoderBR);
-        swerveBL = new SwerveModule("BL", driveBL, steerBL, encoderBL);
+        swerveFR =
+                new SwerveModule(
+                        "FR",
+                        driveFR,
+                        steerFR,
+                        encoderFR,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveFL =
+                new SwerveModule(
+                        "FL",
+                        driveFL,
+                        steerFL,
+                        encoderFL,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveBR =
+                new SwerveModule(
+                        "BR",
+                        driveBR,
+                        steerBR,
+                        encoderBR,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveBL =
+                new SwerveModule(
+                        "BL",
+                        driveBL,
+                        steerBL,
+                        encoderBL,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
@@ -80,20 +107,13 @@ public class Drive extends Mechanism {
         currentPosition = new Pose2d();
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBL, driveBR};
         CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBL, encoderBR};
+        double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         Translation2d[] wheelPositions =
                 new Translation2d[] {
-                    new Translation2d(
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Translation2d(
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Translation2d(
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
-                    new Translation2d(
-                            -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2,
-                            OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2)
+                    new Translation2d(halfDistanceBetweenWheels, halfDistanceBetweenWheels),
+                    new Translation2d(halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
+                    new Translation2d(-halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
+                    new Translation2d(-halfDistanceBetweenWheels, halfDistanceBetweenWheels)
                 };
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
@@ -103,10 +123,9 @@ public class Drive extends Mechanism {
                         motorList,
                         encoderList,
                         wheelPositions,
-                        OdometryInputConstants.WHEEL_CIRCUMFERENCE,
-                        OdometryInputConstants.GEAR_RATIO,
-                        OdometryInputConstants.ENCODER_TO_REVOLUTION_CONSTANT,
-                        OdometryInputConstants.RATE_LIMITER_TIME);
+                        config.wheelCircumference(),
+                        config.driveGearRatio(),
+                        config.encoderToRevolutionConstant());
     }
 
     /**
@@ -130,7 +149,7 @@ public class Drive extends Mechanism {
                 "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
         // Calculate the necessary turn velocity (m/s) for each motor:
-        double turnVelocity = OdometryInputConstants.WHEEL_DISTANCE_FROM_CENTER * turn;
+        double turnVelocity = config.wheelDistanceFromCenter() * turn;
 
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
