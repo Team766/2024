@@ -23,7 +23,6 @@ public class FollowPath extends Procedure {
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
-
     public FollowPath(
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
@@ -36,50 +35,8 @@ public class FollowPath extends Procedure {
         this.drive = drive;
     }
 
-    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, Drive drive) {
-        this.path = path;
-        this.replanningConfig = replanningConfig;
-        this.drive = drive;
-        double maxSpeed =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
-                        .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
-
-        double translationP =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
-                        .valueOr(PathPlannerConstants.TRANSLATION_P);
-        double translationI =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
-                        .valueOr(PathPlannerConstants.TRANSLATION_I);
-        double translationD =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
-                        .valueOr(PathPlannerConstants.TRANSLATION_D);
-        double rotationP =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
-                        .valueOr(PathPlannerConstants.ROTATION_P);
-        double rotationI =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
-                        .valueOr(PathPlannerConstants.ROTATION_I);
-        double rotationD =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
-                        .valueOr(PathPlannerConstants.ROTATION_D);
-
-        controller =
-                new PPHolonomicDriveController(
-                        new PIDConstants(translationP, translationI, translationD),
-                        new PIDConstants(rotationP, rotationI, rotationD),
-                        maxSpeed,
-                        drive.maxWheelDistToCenter());
-    }
-
-    public FollowPath(String autoName, Drive drive) {
-        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, drive);
+    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive) {
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, controller, drive);
     }
 
     @Override
