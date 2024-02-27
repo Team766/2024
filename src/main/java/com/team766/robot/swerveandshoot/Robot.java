@@ -7,7 +7,6 @@ import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
 import com.team766.robot.swerveandshoot.mechanisms.*;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms here
