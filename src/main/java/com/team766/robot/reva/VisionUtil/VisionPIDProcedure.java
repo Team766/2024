@@ -14,18 +14,18 @@ public abstract class VisionPIDProcedure extends Procedure {
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
      */
-    private AnywhereScoringPosition a1 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a2 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a3 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a4 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a5 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a6 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a7 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a8 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a9 = new AnywhereScoringPosition(0, 0, 0);
-    private AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a1 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a2 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a8 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a9 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
 
-    protected ArrayList<AnywhereScoringPosition> scoringPositions = new ArrayList<AnywhereScoringPosition>() {{
+    protected static ArrayList<AnywhereScoringPosition> scoringPositions = new ArrayList<AnywhereScoringPosition>() {{
         add(a1);
         add(a2);
         add(a3);
@@ -38,7 +38,7 @@ public abstract class VisionPIDProcedure extends Procedure {
         add(a10);
     }};
 
-    protected double getBestPowerToUse(double distanceFromCenterApriltag) {
+    public static double getBestPowerToUse(double distanceFromCenterApriltag) {
         for (int i = 0; i < scoringPositions.size(); i++) {
             if (distanceFromCenterApriltag <= scoringPositions.get(i).distanceFromCenterApriltag()) {
                 if (i == 0) {
@@ -51,7 +51,7 @@ public abstract class VisionPIDProcedure extends Procedure {
         return 0;
     }
 
-    protected double getBestArmAngleToUse(double distanceFromCenterApriltag) { 
+    public static double getBestArmAngleToUse(double distanceFromCenterApriltag) { 
         for (int i = 0; i < scoringPositions.size(); i++) {
             if (distanceFromCenterApriltag <= scoringPositions.get(i).distanceFromCenterApriltag()) {
                 if (i == 0) {
