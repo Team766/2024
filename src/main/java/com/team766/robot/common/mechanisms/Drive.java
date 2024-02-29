@@ -109,10 +109,10 @@ public class Drive extends Mechanism {
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         this.wheelPositions =
                 new Translation2d[] {
-                    new Translation2d(halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
-                    new Translation2d(halfDistanceBetweenWheels, halfDistanceBetweenWheels),
-                    new Translation2d(-halfDistanceBetweenWheels, -halfDistanceBetweenWheels),
-                    new Translation2d(-halfDistanceBetweenWheels, halfDistanceBetweenWheels)
+                    getPositionForWheel(config.frontRightLocation(), halfDistanceBetweenWheels),
+                    getPositionForWheel(config.frontLeftLocation(), halfDistanceBetweenWheels),
+                    getPositionForWheel(config.backRightLocation(), halfDistanceBetweenWheels),
+                    getPositionForWheel(config.backLeftLocation(), halfDistanceBetweenWheels)
                 };
 
         swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
@@ -288,13 +288,16 @@ public class Drive extends Mechanism {
         return max;
     }
 
+    private static Translation2d getPositionForWheel(Vector2D relativeLocation, double halfDistance) {
+        return new Translation2d(relativeLocation.getX() * halfDistance, relativeLocation.getY() * halfDistance);
+    }
+
     // Odometry
     @Override
     public void run() {
         swerveOdometry.run();
         // log(currentPosition.toString());
         SmartDashboard.putString("pos", getCurrentPosition().toString());
-        org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
 
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
@@ -308,6 +311,7 @@ public class Drive extends Mechanism {
                     swerveBL.getModuleState(),
                 };
         if (Logger.isLoggingToDataLog()) {
+            org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
