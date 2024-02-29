@@ -10,6 +10,7 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -36,6 +37,8 @@ public class Shoulder extends Mechanism {
 
     private static final double NUDGE_AMOUNT = 30; // degrees
 
+    final REVThroughBoreDutyCycleEncoder absoluteEncoder;
+
     private MotorController leftMotor;
     private MotorController rightMotor;
 
@@ -49,7 +52,11 @@ public class Shoulder extends Mechanism {
         rightMotor.follow(leftMotor);
         leftMotor.setNeutralMode(NeutralMode.Brake);
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
-        leftMotor.setSensorPosition(0);
+
+        absoluteEncoder = RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
+
+        leftMotor.setSensorPosition(0.0);
+        rotate(Position.BOTTOM);
     }
 
     public void stop() {
@@ -106,6 +113,8 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber(
+                "[SHOULDER] Absolute Encoder Position", absoluteEncoder.getPosition());
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

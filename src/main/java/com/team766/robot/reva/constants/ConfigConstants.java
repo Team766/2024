@@ -8,8 +8,10 @@ public final class ConfigConstants {
     public static final String CLIMBER_LEFT_MOTOR = "climber.leftMotor";
     public static final String CLIMBER_RIGHT_MOTOR = "climber.rightMotor";
 
+    // shoulder config values
     public static final String SHOULDER_RIGHT = "shoulder.rightMotor";
     public static final String SHOULDER_LEFT = "shoulder.leftMotor";
+    public static final String SHOULDER_ENCODER = "shoulder.encoder";
 
     // intake config values
     public static final String INTAKE_MOTOR = "intake.motor";
