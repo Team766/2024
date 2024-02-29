@@ -1,5 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
+import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_ENCODER;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
@@ -37,7 +38,7 @@ public class Shoulder extends Mechanism {
 
     private static final double NUDGE_AMOUNT = 30; // degrees
 
-    final REVThroughBoreDutyCycleEncoder absoluteEncoder;
+    private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -53,10 +54,12 @@ public class Shoulder extends Mechanism {
         leftMotor.setNeutralMode(NeutralMode.Brake);
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
 
-        absoluteEncoder = RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
+        absoluteEncoder =
+                (REVThroughBoreDutyCycleEncoder)
+                        RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
 
-        leftMotor.setSensorPosition(0.0);
         rotate(Position.BOTTOM);
+        leftMotor.setSensorPosition(0.0);
     }
 
     public void stop() {
@@ -74,6 +77,10 @@ public class Shoulder extends Mechanism {
 
     public void nudgeDown() {
         rotate(getAngle() - NUDGE_AMOUNT);
+    }
+
+    public double getAbsoluteEncoderPosition() {
+        return absoluteEncoder.getPosition();
     }
 
     public double getRotations() {
@@ -114,7 +121,7 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
         SmartDashboard.putNumber(
-                "[SHOULDER] Absolute Encoder Position", absoluteEncoder.getPosition());
+                "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
