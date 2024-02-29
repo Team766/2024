@@ -3,12 +3,9 @@ package com.team766.robot.common.procedures;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,7 +33,11 @@ public class FollowPath extends Procedure {
     }
 
     public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive) {
-        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, controller, drive);
+        this(
+                PathPlannerPath.fromPathFile(autoName),
+                PathPlannerConstants.REPLANNING_CONFIG,
+                controller,
+                drive);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class PathSequenceAuto extends Procedure {
     public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
         pathItems = new LinkedList<RunnableWithContext>();
         this.drive = drive;
-        this.controller = createDriveController(drive) ;
+        this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
     }
 
@@ -59,10 +59,10 @@ public class PathSequenceAuto extends Procedure {
                         .valueOr(PathPlannerConstants.ROTATION_D);
 
         return new PPHolonomicDriveController(
-                        new PIDConstants(translationP, translationI, translationD),
-                        new PIDConstants(rotationP, rotationI, rotationD),
-                        maxSpeed,
-                        drive.maxWheelDistToCenter());
+                new PIDConstants(translationP, translationI, translationD),
+                new PIDConstants(rotationP, rotationI, rotationD),
+                maxSpeed,
+                drive.maxWheelDistToCenter());
     }
 
     protected void add(String pathName) {

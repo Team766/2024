@@ -288,8 +288,10 @@ public class Drive extends Mechanism {
         return max;
     }
 
-    private static Translation2d getPositionForWheel(Vector2D relativeLocation, double halfDistance) {
-        return new Translation2d(relativeLocation.getX() * halfDistance, relativeLocation.getY() * halfDistance);
+    private static Translation2d getPositionForWheel(
+            Vector2D relativeLocation, double halfDistance) {
+        return new Translation2d(
+                relativeLocation.getX() * halfDistance, relativeLocation.getY() * halfDistance);
     }
 
     // Odometry
