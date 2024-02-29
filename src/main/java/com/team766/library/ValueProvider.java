@@ -1,14 +1,16 @@
 package com.team766.library;
 
-public interface ValueProvider<E> {
-	E get();
+import java.util.Optional;
 
-	boolean hasValue();
+public interface ValueProvider<E> extends Observable<Optional<E>> {
+    E get();
 
-	default E valueOr(E default_value) {
-		if (hasValue()) {
-			return get();
-		}
-		return default_value;
-	}
+    boolean hasValue();
+
+    default E valueOr(E default_value) {
+        if (hasValue()) {
+            return get();
+        }
+        return default_value;
+    }
 }

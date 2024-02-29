@@ -2,8 +2,9 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team766.library.ValueProvider;
+import com.team766.library.ValueProviderUtils;
 
-// TODO: add support for live refreshes of PID values, via PIDSlotHelper?
 public class MotorControllerWithSensorScale implements MotorController {
     private MotorController delegate;
     private double scale;
@@ -85,23 +86,23 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void setP(final double value, int slot) {
-        delegate.setP(value * scale, slot);
+    public void setP(final ValueProvider<Double> value, int slot) {
+        delegate.setP(ValueProviderUtils.transform(value, v -> v * scale), slot);
     }
 
     @Override
-    public void setI(final double value, int slot) {
-        delegate.setI(value * scale, slot);
+    public void setI(final ValueProvider<Double> value, int slot) {
+        delegate.setI(ValueProviderUtils.transform(value, v -> v * scale), slot);
     }
 
     @Override
-    public void setD(final double value, int slot) {
-        delegate.setD(value * scale, slot);
+    public void setD(final ValueProvider<Double> value, int slot) {
+        delegate.setD(ValueProviderUtils.transform(value, v -> v * scale), slot);
     }
 
     @Override
-    public void setFF(final double value, int slot) {
-        delegate.setFF(value * scale, slot);
+    public void setFF(final ValueProvider<Double> value, int slot) {
+        delegate.setFF(ValueProviderUtils.transform(value, v -> v * scale), slot);
     }
 
     @Override
@@ -115,7 +116,10 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+    public void setOutputRange(
+            final ValueProvider<Double> minOutput,
+            final ValueProvider<Double> maxOutput,
+            int slot) {
         delegate.setOutputRange(minOutput, maxOutput, slot);
     }
 

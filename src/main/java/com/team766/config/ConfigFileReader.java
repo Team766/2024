@@ -29,10 +29,6 @@ public class ConfigFileReader {
 
     private static final String KEY_DELIMITER = ".";
 
-    // This is incremented each time the config file is reloaded to ensure that ConfigValues use the
-    // most recent setting.
-    private int m_generation = 0;
-
     private String m_fileName;
     private String m_backupFileName; // if set, will also save here
     private JSONObject m_values = new JSONObject();
@@ -81,12 +77,11 @@ public class ConfigFileReader {
                         "Could not parse config value for " + param.getKey(), ex);
             }
         }
+        // All values parsed successfully; now actually apply the new values.
         m_values = newValues;
-        ++m_generation;
-    }
-
-    public int getGeneration() {
-        return m_generation;
+        for (AbstractConfigValue<?> param : AbstractConfigValue.accessedValues()) {
+            param.update();
+        }
     }
 
     public boolean containsKey(final String key) {

@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Scheduler;
+import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
@@ -25,16 +26,11 @@ public class LocalMotorController implements MotorController {
     private MotorController leader = null;
 
     public LocalMotorController(
-            String configPrefix,
-            final BasicMotorController motor_,
-            final ControlInputReader sensor_) {
+            final BasicMotorController motor_, final ControlInputReader sensor_) {
         this.motor = motor_;
         this.sensor = sensor_;
 
-        if (!configPrefix.endsWith(".")) {
-            configPrefix += ".";
-        }
-        this.pidController = PIDController.loadFromConfig(configPrefix + "pid.");
+        this.pidController = new PIDController();
 
         Scheduler.getInstance()
                 .add(
@@ -231,7 +227,7 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setP(final double value, int slot) {
+    public void setP(final ValueProvider<Double> value, int slot) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slot not supported on LocalMotorController");
@@ -240,7 +236,7 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setI(final double value, int slot) {
+    public void setI(final ValueProvider<Double> value, int slot) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slot not supported on LocalMotorController");
@@ -249,7 +245,7 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setD(final double value, int slot) {
+    public void setD(final ValueProvider<Double> value, int slot) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slot not supported on LocalMotorController");
@@ -258,7 +254,7 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setFF(final double value, int slot) {
+    public void setFF(final ValueProvider<Double> value, int slot) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slot not supported on LocalMotorController");
@@ -279,7 +275,10 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+    public void setOutputRange(
+            final ValueProvider<Double> minOutput,
+            final ValueProvider<Double> maxOutput,
+            int slot) {
         if (slot != 0) {
             throw new UnsupportedOperationException(
                     "Selecting PID slot not supported on LocalMotorController");
@@ -303,8 +302,8 @@ public class LocalMotorController implements MotorController {
         this.setI(0.0, 0);
         this.setD(0.0, 0);
         this.setFF(0.0, 0);
-        this.pidController.setMaxoutputLow(null);
-        this.pidController.setMaxoutputHigh(null);
+        this.pidController.clearMaxoutputLow();
+        this.pidController.clearMaxoutputHigh();
 
         this.inverted = false;
         this.sensorInverted = false;

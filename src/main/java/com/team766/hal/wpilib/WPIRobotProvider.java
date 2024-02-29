@@ -131,9 +131,7 @@ public class WPIRobotProvider extends RobotProvider {
                     motor = new CANSparkMaxMotorController(index);
                 } catch (Exception ex) {
                     LoggerExceptionUtils.logException(ex);
-                    motor =
-                            new LocalMotorController(
-                                    configPrefix, new MockMotorController(index), localSensor);
+                    motor = new LocalMotorController(new MockMotorController(index), localSensor);
                     localSensor = null;
                 }
                 break;
@@ -149,7 +147,7 @@ public class WPIRobotProvider extends RobotProvider {
                 motor = new CANTalonFxMotorController(index, getStringOrEmpty(canBus));
                 break;
             case VictorSP:
-                motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
+                motor = new LocalMotorController(new PWMVictorSP(index), localSensor);
                 localSensor = null;
                 break;
             default:
@@ -158,13 +156,11 @@ public class WPIRobotProvider extends RobotProvider {
         if (motor == null) {
             LoggerExceptionUtils.logException(
                     new IllegalArgumentException("Unsupported motor type " + type));
-            motor =
-                    new LocalMotorController(
-                            configPrefix, new MockMotorController(index), localSensor);
+            motor = new LocalMotorController(new MockMotorController(index), localSensor);
             localSensor = null;
         }
         if (localSensor != null) {
-            motor = new LocalMotorController(configPrefix, motor, localSensor);
+            motor = new LocalMotorController(motor, localSensor);
         }
         motors[type.ordinal()][index] = motor;
         return motor;

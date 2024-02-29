@@ -163,7 +163,7 @@ public abstract class RobotProvider {
                             "Error getting configuration for motor %s from config file, using mock motor instead.\nDetailed error: %s",
                             configName,
                             LoggerExceptionUtils.exceptionToString(ex));
-            return new LocalMotorController(configName, new MockMotorController(0), sensor);
+            return new LocalMotorController(new MockMotorController(0), sensor);
         }
     }
 
@@ -183,33 +183,11 @@ public abstract class RobotProvider {
                 ConfigFileReader.getInstance()
                         .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY);
 
-        if (pValue.hasValue()) {
-            motor.setP(pValue, slot);
-        }
-
-        if (iValue.hasValue()) {
-            motor.setI(iValue, slot);
-        }
-
-        if (dValue.hasValue()) {
-            motor.setD(dValue, slot);
-        }
-
-        if (ffValue.hasValue()) {
-            motor.setFF(ffValue, slot);
-        }
-
-        if (outputMaxLowValue.hasValue() || outputMaxHighValue.hasValue()) {
-            if (!outputMaxLowValue.hasValue() || !outputMaxHighValue.hasValue()) {
-                Logger.get(Category.HAL)
-                        .logRaw(
-                                Severity.WARNING,
-                                "Both outputMaxLow and outputMaxHigh must be set within "
-                                        + configName
-                                        + ". Ignoring.");
-            }
-            motor.setOutputRange(outputMaxLowValue, outputMaxHighValue, slot);
-        }
+        motor.setP(pValue, slot);
+        motor.setI(iValue, slot);
+        motor.setD(dValue, slot);
+        motor.setFF(ffValue, slot);
+        motor.setOutputRange(outputMaxLowValue, outputMaxHighValue, slot);
     }
 
     public EncoderReader getEncoder(final String configName) {

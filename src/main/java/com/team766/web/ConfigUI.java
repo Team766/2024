@@ -2,10 +2,27 @@ package com.team766.web;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.config.ConfigValueParseException;
+import com.team766.framework.Scheduler;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 
 public class ConfigUI implements WebServer.Handler {
+    private RunnableFuture<Void> configToApply = null;
+
+    public ConfigUI() {
+        Scheduler.getInstance()
+                .add(
+                        () -> {
+                            if (configToApply != null && !configToApply.isDone()) {
+                                configToApply.run();
+                            }
+                        });
+    }
+
     @Override
     public String endpoint() {
         return "/config";
@@ -19,18 +36,25 @@ public class ConfigUI implements WebServer.Handler {
         if (params.containsKey("configJson")) {
             String configJsonString = (String) params.get("configJson");
             ArrayList<String> validationErrors = new ArrayList<String>();
+            configToApply =
+                    new FutureTask<Void>(
+                            () -> {
+                                try {
+                                    ConfigFileReader.getInstance().reloadFromJson(configJsonString);
+                                } catch (ConfigValueParseException ex) {
+                                    validationErrors.add(ex.toString());
+                                } catch (Exception ex) {
+                                    validationErrors.add("Failed to parse config json: " + ex);
+                                }
+                                return null;
+                            });
             try {
-                ConfigFileReader.getInstance().reloadFromJson(configJsonString);
-            } catch (ConfigValueParseException ex) {
+                configToApply.get();
+            } catch (InterruptedException | ExecutionException ex) {
                 validationErrors.add(ex.toString());
-            } catch (Exception ex) {
-                validationErrors.add("Failed to parse config json: " + ex);
             }
             if (validationErrors.isEmpty()) {
-                r +=
-                        "<p>New configuration (v"
-                                + ConfigFileReader.getInstance().getGeneration()
-                                + ") has been applied</p>";
+                r += "<p>New configuration (" + new Date().toString() + ") has been applied</p>";
                 r +=
                         "<p><b>Remember to click Restart Robot Code in the driver station if you have changed any motor/sensor settings</b></p>";
                 if (params.containsKey("saveToFile")) {

@@ -3,7 +3,6 @@ package com.team766.controllers;
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.RobotProvider;
 import com.team766.library.SetValueProvider;
-import com.team766.library.SettableValueProvider;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -40,13 +39,13 @@ public class PIDController {
     private int printCounter = 0;
     private boolean print = false;
 
-    private final ValueProvider<Double> Kp;
-    private final ValueProvider<Double> Ki;
-    private final ValueProvider<Double> Kd;
-    private final ValueProvider<Double> Kff;
-    private final ValueProvider<Double> maxoutput_low;
-    private final ValueProvider<Double> maxoutput_high;
-    private final ValueProvider<Double> endthreshold;
+    private ValueProvider<Double> Kp;
+    private ValueProvider<Double> Ki;
+    private ValueProvider<Double> Kd;
+    private ValueProvider<Double> Kff;
+    private ValueProvider<Double> maxoutput_low;
+    private ValueProvider<Double> maxoutput_high;
+    private ValueProvider<Double> endthreshold;
 
     private double setpoint = Double.NaN;
 
@@ -77,6 +76,20 @@ public class PIDController {
     }
 
     /**
+     * Default constructor. PID gains should be set later using mutator methods.
+     */
+    public PIDController() {
+        this(
+                new SetValueProvider<Double>(),
+                new SetValueProvider<Double>(),
+                new SetValueProvider<Double>(),
+                new SetValueProvider<Double>(),
+                new SetValueProvider<Double>(),
+                new SetValueProvider<Double>(),
+                new SetValueProvider<Double>());
+    }
+
+    /**
      *
      * @param P P constant
      * @param I I constant
@@ -92,14 +105,7 @@ public class PIDController {
             final double outputmax_low,
             final double outputmax_high,
             final double threshold) {
-        Kp = new SetValueProvider<Double>(P);
-        Ki = new SetValueProvider<Double>(I);
-        Kd = new SetValueProvider<Double>(D);
-        Kff = new SetValueProvider<Double>();
-        maxoutput_low = new SetValueProvider<Double>(outputmax_low);
-        maxoutput_high = new SetValueProvider<Double>(outputmax_high);
-        endthreshold = new SetValueProvider<Double>(threshold);
-        setTimeProvider(RobotProvider.getTimeProvider());
+        this(P, I, D, 0.0, outputmax_low, outputmax_high, threshold);
     }
 
     public PIDController(
@@ -110,8 +116,14 @@ public class PIDController {
             final double outputmax_low,
             final double outputmax_high,
             final double threshold) {
-        this(P, I, D, outputmax_low, outputmax_high, threshold);
-        ((SetValueProvider<Double>) Kff).set(FF);
+        Kp = new SetValueProvider<Double>(P);
+        Ki = new SetValueProvider<Double>(I);
+        Kd = new SetValueProvider<Double>(D);
+        Kff = new SetValueProvider<Double>(FF);
+        maxoutput_low = new SetValueProvider<Double>(outputmax_low);
+        maxoutput_high = new SetValueProvider<Double>(outputmax_high);
+        endthreshold = new SetValueProvider<Double>(threshold);
+        setTimeProvider(RobotProvider.getTimeProvider());
     }
 
     private void setTimeProvider(final TimeProviderI timeProvider_) {
@@ -204,30 +216,41 @@ public class PIDController {
      * @param D Derivative value used in the PID controller
      */
     public void setConstants(final double P, final double I, final double D) {
-        ((SettableValueProvider<Double>) Kp).set(P);
-        ((SettableValueProvider<Double>) Ki).set(I);
-        ((SettableValueProvider<Double>) Kd).set(D);
-        needsUpdate = true;
+        Kp = new SetValueProvider<Double>(P);
+        Ki = new SetValueProvider<Double>(I);
+        Kd = new SetValueProvider<Double>(D);
     }
 
     public void setP(final double P) {
-        ((SettableValueProvider<Double>) Kp).set(P);
-        needsUpdate = true;
+        setP(new SetValueProvider<Double>(P));
+    }
+
+    public void setP(final ValueProvider<Double> P) {
+        Kp = P;
     }
 
     public void setI(final double I) {
-        ((SettableValueProvider<Double>) Ki).set(I);
-        needsUpdate = true;
+        setI(new SetValueProvider<Double>(I));
+    }
+
+    public void setI(final ValueProvider<Double> I) {
+        Ki = I;
     }
 
     public void setD(final double D) {
-        ((SettableValueProvider<Double>) Kd).set(D);
-        needsUpdate = true;
+        setD(new SetValueProvider<Double>(D));
+    }
+
+    public void setD(final ValueProvider<Double> D) {
+        Kd = D;
     }
 
     public void setFF(final double FF) {
-        ((SettableValueProvider<Double>) Kff).set(FF);
-        needsUpdate = true;
+        setFF(new SetValueProvider<Double>(FF));
+    }
+
+    public void setFF(final ValueProvider<Double> FF) {
+        Kff = FF;
     }
 
     /**
@@ -347,20 +370,28 @@ public class PIDController {
         return cur_error;
     }
 
-    public void setMaxoutputHigh(final Double in) {
-        if (in == null) {
-            ((SettableValueProvider<Double>) maxoutput_high).clear();
-        } else {
-            ((SettableValueProvider<Double>) maxoutput_high).set(in);
-        }
+    public void clearMaxoutputHigh() {
+        maxoutput_high = new SetValueProvider<Double>();
     }
 
-    public void setMaxoutputLow(final Double in) {
-        if (in == null) {
-            ((SettableValueProvider<Double>) maxoutput_low).clear();
-        } else {
-            ((SettableValueProvider<Double>) maxoutput_low).set(in);
-        }
+    public void setMaxoutputHigh(final double in) {
+        maxoutput_high = new SetValueProvider<Double>(in);
+    }
+
+    public void setMaxoutputHigh(final ValueProvider<Double> in) {
+        maxoutput_high = in;
+    }
+
+    public void clearMaxoutputLow() {
+        maxoutput_low = new SetValueProvider<Double>();
+    }
+
+    public void setMaxoutputLow(final double in) {
+        maxoutput_low = new SetValueProvider<Double>(in);
+    }
+
+    public void setMaxoutputLow(final ValueProvider<Double> in) {
+        maxoutput_low = in;
     }
 
     public double getSetpoint() {
