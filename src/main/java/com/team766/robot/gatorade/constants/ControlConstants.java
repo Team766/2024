@@ -9,8 +9,8 @@ public class ControlConstants {
     public static final double JOYSTICK_DEADZONE = 0.05;
 
     // Positional velocity of robot that max joystick power controls in m/s
-    public static final double MAX_VEL_POS = 5.0;
+    public static final double MAX_VEL_POS = 6.0;
 
     // Rotational velocity of robot that max joystick power controls in rad/s
-    public static final double MAX_VEL_ROT = 3.0;
+    public static final double MAX_VEL_ROT = 6.0;
 }

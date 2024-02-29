@@ -1,7 +1,6 @@
 package com.team766.robot.gatorade;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
 
 public class AutonomousModes {
@@ -22,13 +21,15 @@ public class AutonomousModes {
                 // OnePieceExitCommunity(GamePieceType.CUBE)),
                 // new AutonomousMode("OnePieceExitCommunityBalance", () -> new
                 // OnePieceExitCommunityBalance(GamePieceType.CUBE)),
-                new AutonomousMode(
-                        "OnePieceBalanceCube", () -> new OnePieceBalance(GamePieceType.CUBE)),
+                // new AutonomousMode(
+                //        "OnePieceBalanceCube", () -> new OnePieceBalance(GamePieceType.CUBE)),
                 // new AutonomousMode("FollowPointsFile", () -> new
                 // FollowPoints("FollowPoints.json")),
                 // //new AutonomousMode("FollowPointsH", () -> new FollowPoints(new PointDir[]{new
                 // PointDir(0, 0), new PointDir(2, 0), new PointDir(1, 0), new PointDir(1, 1), new
                 // PointDir(2, 1), new PointDir(0, 1)})),
                 // new AutonomousMode("DoNothing", () -> new DoNothing()),
+                // new AutonomousMode("FollowExamplePath", () -> new FollowPath()),
+                new AutonomousMode("LoopAuto", () -> new LoopAuto())
             };
 }
