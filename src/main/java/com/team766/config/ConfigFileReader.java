@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -121,6 +122,13 @@ public class ConfigFileReader {
         String[] keyParts = splitKey(key);
         JSONObject parentObj = getParent(m_values, keyParts);
         parentObj.putOpt(keyParts[keyParts.length - 1], value == null ? JSONObject.NULL : value);
+
+        for (AbstractConfigValue<?> otherValue : AbstractConfigValue.accessedValues()) {
+            String[] otherValueKeyParts = splitKey(otherValue.getKey());
+            if (isPrefix(keyParts, otherValueKeyParts) || isPrefix(otherValueKeyParts, keyParts)) {
+                otherValue.update();
+            }
+        }
     }
 
     Object getRawValue(final String key) {
@@ -147,8 +155,15 @@ public class ConfigFileReader {
         return rawValue;
     }
 
-    private static String[] splitKey(final String key) {
+    static String[] splitKey(final String key) {
         return key.split(Pattern.quote(KEY_DELIMITER));
+    }
+
+    static boolean isPrefix(final String[] a, final String[] b) {
+        if (a.length > b.length) {
+            return false;
+        }
+        return Arrays.equals(a, 0, a.length, b, 0, a.length);
     }
 
     private static JSONObject getParent(JSONObject obj, final String[] keyParts) {

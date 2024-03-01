@@ -6,7 +6,7 @@ import edu.wpi.first.math.Pair;
 
 public class PIDSlotHelper {
     private class Slot {
-        final int slot;
+        private final int slot;
         final ObserveValue<Double> pGain;
         final ObserveValue<Double> iGain;
         final ObserveValue<Double> dGain;
@@ -14,7 +14,7 @@ public class PIDSlotHelper {
         final ObserveValue<Double> outputMin;
         final ObserveValue<Double> outputMax;
 
-        Slot(int slot) {
+        private Slot(int slot) {
             this.slot = slot;
             this.pGain =
                     new ObserveValue<Double>(

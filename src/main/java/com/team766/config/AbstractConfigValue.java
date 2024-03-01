@@ -77,12 +77,10 @@ public abstract class AbstractConfigValue<E> extends AbstractObservable<Optional
 
     public void set(final E value) {
         ConfigFileReader.instance.setValue(m_key, value);
-        notifyObservers(Optional.of(value));
     }
 
     public void clear() {
         ConfigFileReader.instance.setValue(m_key, null);
-        notifyObservers(Optional.empty());
     }
 
     protected abstract E parseJsonValue(Object configValue);

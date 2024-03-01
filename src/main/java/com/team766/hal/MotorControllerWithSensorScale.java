@@ -2,8 +2,8 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team766.library.TransformingValueProvider;
 import com.team766.library.ValueProvider;
-import com.team766.library.ValueProviderUtils;
 
 public class MotorControllerWithSensorScale implements MotorController {
     private MotorController delegate;
@@ -87,22 +87,22 @@ public class MotorControllerWithSensorScale implements MotorController {
 
     @Override
     public void setP(final ValueProvider<Double> value, int slot) {
-        delegate.setP(ValueProviderUtils.transform(value, v -> v * scale), slot);
+        delegate.setP(new TransformingValueProvider<>(value, v -> v * scale), slot);
     }
 
     @Override
     public void setI(final ValueProvider<Double> value, int slot) {
-        delegate.setI(ValueProviderUtils.transform(value, v -> v * scale), slot);
+        delegate.setI(new TransformingValueProvider<>(value, v -> v * scale), slot);
     }
 
     @Override
     public void setD(final ValueProvider<Double> value, int slot) {
-        delegate.setD(ValueProviderUtils.transform(value, v -> v * scale), slot);
+        delegate.setD(new TransformingValueProvider<>(value, v -> v * scale), slot);
     }
 
     @Override
     public void setFF(final ValueProvider<Double> value, int slot) {
-        delegate.setFF(ValueProviderUtils.transform(value, v -> v * scale), slot);
+        delegate.setFF(new TransformingValueProvider<>(value, v -> v * scale), slot);
     }
 
     @Override
