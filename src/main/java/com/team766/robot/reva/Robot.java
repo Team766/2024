@@ -9,6 +9,7 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.NoteCamera;
+import com.team766.robot.reva.mechanisms.RightProximitySensor;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 
@@ -22,6 +23,7 @@ public class Robot implements RobotConfigurator {
     // not yet initialized, until we have the camera on the robot and test it.
     public static ForwardApriltagCamera forwardApriltagCamera;
     public static NoteCamera noteCamera;
+    public static RightProximitySensor proximitySensor;
 
     @Override
     public void initializeMechanisms() {
