@@ -22,6 +22,10 @@ public class Shooter extends Mechanism {
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
     }
 
+    public double getCurrentSpeed() {
+        return shooterMotorTop.getSensorVelocity();
+    }
+
     public void runShooter() {
         checkContextOwnership();
         shooterMotorTop.set(shooterPower);
@@ -30,8 +34,7 @@ public class Shooter extends Mechanism {
 
     public void shoot() {
         checkContextOwnership();
-        shooterPower = DEFAULT_POWER;
-        runShooter();
+        shootPower(DEFAULT_POWER);
     }
 
     public void shootPower(double power) {
@@ -58,5 +61,6 @@ public class Shooter extends Mechanism {
 
     public void run() {
         SmartDashboard.putNumber("[SHOOTER POWER]", shooterPower);
+        SmartDashboard.putNumber("[SHOOTER SPEED]", getCurrentSpeed());
     }
 }
