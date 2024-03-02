@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class ShootNow extends VisionPIDProcedure {
 
 	int tagId;
+	double angle;
 
 	public ShootNow() {
 		Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -26,9 +27,27 @@ public class ShootNow extends VisionPIDProcedure {
 		} else {
 			tagId = -1;
 		}
+
+		Transform3d toUse;
+
+		try {
+			toUse = getTransform3dOfRobotToTag();
+			
+		} catch (AprilTagGeneralCheckedException e) {
+			return;
+		}
+
+		double x = toUse.getX();
+		double y = toUse.getY();
+
+		angle = Math.atan(y / x);
+		anglePID.setSetpoint(angle);
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.drive);
+		context.takeOwnership(Robot.shooter);
+		context.takeOwnership(Robot.shoulder);
 		Transform3d toUse;
 		try {
 			toUse = getTransform3dOfRobotToTag();
@@ -37,14 +56,39 @@ public class ShootNow extends VisionPIDProcedure {
 			return;
 		}
 
+		/*
+		 * Should we calculate these before angleing the robot or after?
+		 */
 		double distanceOfRobotToTag = Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
 		
 		double power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
 		double armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
 
-		//Placeholder method calls for procedures to be made
-		Robot.shooter.shootPower(power);
+		while (anglePID.getOutput() != 0) {
+			context.yield();
+
+			try {
+				toUse = getTransform3dOfRobotToTag();
+				
+				anglePID.calculate(toUse.getRotation().getZ());
+			} catch (AprilTagGeneralCheckedException e) {
+				continue;
+			}
+
+			Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
+			
+		}
+
 		Robot.shoulder.rotate(armAngle);
+
+		while (!Robot.shoulder.isFinished()) {
+			context.yield();
+		}
+		
+
+		//Placeholder method calls for procedure to be made
+		Robot.shooter.shootPower(power);
+		
 
 	}
 	

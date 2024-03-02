@@ -34,6 +34,8 @@ public class Shoulder extends Mechanism {
         }
     }
 
+    private double curSetpoint;
+
     private static final double NUDGE_AMOUNT = 30; // degrees
 
     private MotorController leftMotor;
@@ -50,6 +52,7 @@ public class Shoulder extends Mechanism {
         leftMotor.setNeutralMode(NeutralMode.Brake);
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
         leftMotor.setSensorPosition(0);
+        curSetpoint = -1;
     }
 
     public void stop() {
@@ -89,6 +92,7 @@ public class Shoulder extends Mechanism {
 
     public void rotate(Position position) {
         rotate(position.getAngle());
+        curSetpoint = position.getAngle();
     }
 
     public void rotate(double angle) {
@@ -98,7 +102,12 @@ public class Shoulder extends Mechanism {
                         angle, Position.BOTTOM.getAngle(), Position.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
+        curSetpoint = angle;
         // actual rotation will happen in run()
+    }
+
+    public boolean isFinished() {
+        return Math.abs(getAngle() - curSetpoint) < 1;
     }
 
     @Override
