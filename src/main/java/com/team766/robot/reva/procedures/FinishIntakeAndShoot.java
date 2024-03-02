@@ -7,6 +7,10 @@ import com.team766.robot.reva.Robot;
 public class FinishIntakeAndShoot extends Procedure {
     private final double power;
 
+    public FinishIntakeAndShoot() {
+        this.power = 1.0;
+    }
+
     public FinishIntakeAndShoot(double power) {
         this.power = power;
     }
