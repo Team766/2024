@@ -11,17 +11,14 @@ public class RightProximitySensor extends Mechanism {
 	private static double noNoteRange;
 
 	//This should be the amount that getRange() should return less than noNoteRange for a note to be classified as in
-	private static double threshold = null;
+	private static double threshold = 0; // needs calibration
 
 	public RightProximitySensor(){
-		sensor = new TimeOfFlight(null);
-
-		//Notes should not start in the intake for this logic to work
-		noNoteRange = sensor.getRange();
+		sensor = new TimeOfFlight(0); // needs calibration
 	}
 
 	public boolean isNoteReady(){
-		return (noNoteRange - threshold) > sensor.getRange() && sensor.isRangeValid();
+		return (threshold) > sensor.getRange() && sensor.isRangeValid();
 	}
 
 	
