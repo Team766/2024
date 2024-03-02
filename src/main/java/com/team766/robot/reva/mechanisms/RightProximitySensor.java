@@ -1,6 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
-import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.*;
 import com.team766.framework.Mechanism;
 
 public class RightProximitySensor extends Mechanism {
@@ -13,6 +13,8 @@ public class RightProximitySensor extends Mechanism {
 
 	public RightProximitySensor(){
 		sensor = new TimeOfFlight(0); // needs calibration
+
+		sensor.setRangingMode(RangingMode.Short);
 	}
 
 	public boolean isNoteReady(){
