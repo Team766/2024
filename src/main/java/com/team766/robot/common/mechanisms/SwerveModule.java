@@ -7,7 +7,6 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +22,9 @@ public class SwerveModule {
     private final MotorController steer;
     private final CANcoder encoder;
     private final double offset;
+
+    // FIXME: have these be passed in from Drive (via SwerveConfig).  Many of these are
+    // passed into Odometry.  (Swerve and Odometry code need to be renconciled.)
 
     /*
      * Factor that converts between motor rotations and wheel degrees
@@ -62,7 +64,9 @@ public class SwerveModule {
             String modulePlacement,
             MotorController drive,
             MotorController steer,
-            CANcoder encoder) {
+            CANcoder encoder,
+            double driveMotorCurrentLimit,
+            double steerMotorCurrentLimit) {
         this.modulePlacement = modulePlacement;
         this.drive = drive;
         this.steer = steer;
@@ -71,8 +75,8 @@ public class SwerveModule {
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
         // Current limit for motors to avoid breaker problems
-        drive.setCurrentLimit(SwerveDriveConstants.DRIVE_MOTOR_CURRENT_LIMIT);
-        steer.setCurrentLimit(SwerveDriveConstants.STEER_MOTOR_CURRENT_LIMIT);
+        drive.setCurrentLimit(driveMotorCurrentLimit);
+        steer.setCurrentLimit(steerMotorCurrentLimit);
     }
 
     private double computeEncoderOffset() {

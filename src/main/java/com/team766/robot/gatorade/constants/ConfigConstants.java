@@ -5,18 +5,6 @@ public final class ConfigConstants {
     // utility class
     private ConfigConstants() {}
 
-    // drive config values
-    public static final String DRIVE_GYRO = "drive.Gyro";
-    public static final String DRIVE_DRIVE_FRONT_RIGHT = "drive.DriveFrontRight";
-    public static final String DRIVE_DRIVE_FRONT_LEFT = "drive.DriveFrontLeft";
-    public static final String DRIVE_DRIVE_BACK_RIGHT = "drive.DriveBackRight";
-    public static final String DRIVE_DRIVE_BACK_LEFT = "drive.DriveBackLeft";
-
-    public static final String DRIVE_STEER_FRONT_RIGHT = "drive.SteerFrontRight";
-    public static final String DRIVE_STEER_FRONT_LEFT = "drive.SteerFrontLeft";
-    public static final String DRIVE_STEER_BACK_RIGHT = "drive.SteerBackRight";
-    public static final String DRIVE_STEER_BACK_LEFT = "drive.SteerBackLeft";
-
     // intake config values
     public static final String INTAKE_MOTOR = "intake.motor";
 
@@ -48,4 +36,15 @@ public final class ConfigConstants {
     public static final String SHOULDER_MAX_VELOCITY = "shoulder.sparkPID.maxVelocity";
     public static final String SHOULDER_MIN_OUTPUT_VELOCITY = "shoulder.sparkPID.minOutputVelocity";
     public static final String SHOULDER_MAX_ACCEL = "shoulder.sparkPID.maxAccel";
+
+    // pathplanner config values
+    public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS =
+            "followpath.maxSpeedMetersPerSecond";
+
+    public static final String PATH_FOLLOWING_TRANSLATION_P = "followpath.translationP";
+    public static final String PATH_FOLLOWING_TRANSLATION_I = "followpath.translationI";
+    public static final String PATH_FOLLOWING_TRANSLATION_D = "followpath.translationD";
+    public static final String PATH_FOLLOWING_ROTATION_P = "followpath.rotationP";
+    public static final String PATH_FOLLOWING_ROTATION_I = "followpath.rotationI";
+    public static final String PATH_FOLLOWING_ROTATION_D = "followpath.rotationD";
 }
