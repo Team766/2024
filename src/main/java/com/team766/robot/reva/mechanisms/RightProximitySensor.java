@@ -7,10 +7,8 @@ public class RightProximitySensor extends Mechanism {
 	
 	private TimeOfFlight sensor;
 
-	//This should be the value returned by getRange() 
-	private static double noNoteRange;
 
-	//This should be the amount that getRange() should return less than noNoteRange for a note to be classified as in
+	//This should be the amount that getRange() should return less than for a note to be classified as in
 	private static double threshold = 0; // needs calibration
 
 	public RightProximitySensor(){
