@@ -107,7 +107,8 @@ public class SwerveModule {
      * Can be used to turn the wheels without moving
      * @param vector the vector specifying the module's motion
      */
-    public void steer(Vector2D vector) {
+    public boolean steer(Vector2D vector) {
+        boolean reversed = false;
         SmartDashboard.putString(
                 "[" + modulePlacement + "]" + "x, y",
                 String.format("%.2f, %.2f", vector.getX(), vector.getY()));
@@ -154,6 +155,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(
                 "[" + modulePlacement + "]" + "CANCoder",
                 encoder.getAbsolutePosition().getValueAsDouble() * 360);
+        return reversed;
     }
 
     /**
@@ -162,7 +164,7 @@ public class SwerveModule {
      */
     public void driveAndSteer(Vector2D vector) {
         // apply the steer
-        steer(vector);
+        boolean reversed = steer(vector);
 
         // sets the power to the magnitude of the vector and reverses power if necessary
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
