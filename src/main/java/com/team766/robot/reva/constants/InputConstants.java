@@ -17,9 +17,12 @@ public final class InputConstants {
     public static final int CONTROL_INTAKE = 3;
     public static final int CONTROL_SHOOTER = 4;
     public static final int NUDGE_UP = 8;
+    public static final int SHOOT_ANYWHERE = 9;
     public static final int NUDGE_DOWN = 12;
+
     public static final int MACROPAD_PRESET_1 = 13;
     public static final int MACROPAD_PRESET_2 = 14;
     public static final int MACROPAD_PRESET_3 = 15;
     public static final int MACROPAD_PRESET_4 = 16;
+    
 }

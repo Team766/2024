@@ -7,6 +7,7 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.procedures.ShootNow;
 
 public class DebugOI {
     private final JoystickReader macropad;
@@ -80,6 +81,10 @@ public class DebugOI {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
+        }
+
+        if(macropad.getButtonPressed(InputConstants.SHOOT_ANYWHERE)){
+            context.startAsync(new ShootNow());
         }
 
         if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {

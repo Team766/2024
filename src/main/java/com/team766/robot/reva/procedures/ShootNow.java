@@ -3,6 +3,7 @@ package com.team766.robot.reva.procedures;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Context;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -34,6 +35,7 @@ public class ShootNow extends VisionPIDProcedure {
             toUse = getTransform3dOfRobotToTag();
 
         } catch (AprilTagGeneralCheckedException e) {
+            LoggerExceptionUtils.logException(e);
             return;
         }
 
@@ -42,6 +44,7 @@ public class ShootNow extends VisionPIDProcedure {
 
         angle = Math.atan(y / x);
         anglePID.setSetpoint(angle);
+        log("Finihed constructor");
     }
 
     public void run(Context context) {
@@ -53,6 +56,7 @@ public class ShootNow extends VisionPIDProcedure {
             toUse = getTransform3dOfRobotToTag();
 
         } catch (AprilTagGeneralCheckedException e) {
+            LoggerExceptionUtils.logException(e);
             return;
         }
 
@@ -61,9 +65,13 @@ public class ShootNow extends VisionPIDProcedure {
          */
         double distanceOfRobotToTag =
                 Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
+        
+        log("Found distance: " + distanceOfRobotToTag);
 
         double power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
         double armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
+
+        log("Found power + armangle: " + power + " : " + armAngle);
 
         while (anglePID.getOutput() != 0) {
             context.yield();
@@ -86,7 +94,16 @@ public class ShootNow extends VisionPIDProcedure {
         }
 
         // Placeholder method calls for procedure to be made
+
         Robot.shooter.shootPower(power);
+        context.waitForSeconds(3);
+        new IntakeIn().run(context);
+
+
+        context.waitForSeconds(1);
+
+        Robot.shooter.stop();
+        new IntakeStop().run(context);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
@@ -99,9 +116,11 @@ public class ShootNow extends VisionPIDProcedure {
         // this is the tag we will be using for testing in the time being. later we will need to set
         // based on alliance color
         if (tagId == tagIdInCamera) {
+            log("Finihed getting transform 3d");
             return robotToTag;
         }
 
-        throw new AprilTagGeneralCheckedException("Could not find tag with the correct tagId");
+        throw new AprilTagGeneralCheckedException("Could not find tag with the correct tagId. Currently found: " + tagIdInCamera);
+        
     }
 }

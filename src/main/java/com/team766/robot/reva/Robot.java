@@ -32,6 +32,7 @@ public class Robot implements RobotConfigurator {
         intake = new Intake();
         shooter = new Shooter();
         noteCamera = new NoteCamera();
+        forwardApriltagCamera = new ForwardApriltagCamera();
     }
 
     @Override
