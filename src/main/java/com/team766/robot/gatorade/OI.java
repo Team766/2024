@@ -44,7 +44,6 @@ public class OI extends Procedure {
         boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
         driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
-
     }
 
     public void run(Context context) {
