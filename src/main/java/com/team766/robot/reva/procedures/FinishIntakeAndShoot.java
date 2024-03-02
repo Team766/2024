@@ -5,10 +5,11 @@ import com.team766.framework.Procedure;
 import com.team766.robot.reva.Robot;
 
 public class FinishIntakeAndShoot extends Procedure {
+    private static final double DEFAULT_SHOOTER_POWER = 0.95;
     private final double power;
 
     public FinishIntakeAndShoot() {
-        this.power = 1.0;
+        this(DEFAULT_SHOOTER_POWER);
     }
 
     public FinishIntakeAndShoot(double power) {
@@ -21,8 +22,7 @@ public class FinishIntakeAndShoot extends Procedure {
         context.takeOwnership(Robot.shooter);
 
         Robot.shooter.shootPower(power);
-        // HACK.  replace with actually measuring velocity, once we switch to velocity-based PID
-        context.waitForSeconds(3.0);
+        context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
         Robot.intake.in();
     }
 }

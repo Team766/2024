@@ -35,6 +35,8 @@ public class Shoulder extends Mechanism {
     }
 
     private static final double NUDGE_AMOUNT = 30; // degrees
+    private static final double ROTATIONS_TOLERANCE =
+            5. /* degrees */ * (54. / 15.) * (4. / 1.) * (3. / 1.) * (3. / 1.) * (1. / 360.);
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -75,6 +77,10 @@ public class Shoulder extends Mechanism {
 
     public double getAngle() {
         return rotationsToDegrees(leftMotor.getSensorPosition());
+    }
+
+    public boolean isCloseToTargetAngle() {
+        return Math.abs(getRotations() - targetRotations) < ROTATIONS_TOLERANCE;
     }
 
     private double degreesToRotations(double angle) {
