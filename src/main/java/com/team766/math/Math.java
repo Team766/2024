@@ -26,6 +26,29 @@ public class Math {
         return angle;
     }
 
+    /**
+     * Performs simple linear interpolation (as described in
+     * https://en.wikipedia.org/wiki/Linear_interpolation) of data in an array of type T.
+     *
+     * The x values (eg measured data and target data point) should be available via a getter in T.
+     * The y values (what this interpolates from measured data) should be available via a getter in T.
+     *
+     * Example usage:
+     * <pre>
+     *   public record Data(double x, double y);
+     *   ...
+     *   Data[] data = new Data[] { new Data(0.0, 1.0), new Data(1.0, 32.0), ... };
+     *   Math.interpolate(data, 0.5, Data::x, Data::y);
+     * </pre>
+     *
+     * @param <T> The class containing the x and y data.
+     * @param data An array of data points, sorted by x from lowest to highest.
+     * @param targetX The target x value.
+     * @param xGetter A getter function that takes a T and returns the x value for that data point.
+     * @param yGetter A getter function that takes a T and returns the y value for that data point.
+     * @return The interpolated y value.  Returns the lowest y in data if x is below/at the low end of the range.
+     * Returns the highest y if x is above.
+     */
     public static <T> double interpolate(
             T[] data, double targetX, Function<T, Double> xGetter, Function<T, Double> yGetter) {
         if (data.length == 0) {
