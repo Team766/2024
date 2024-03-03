@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 public class MathTest {
 
     private record TestData(double x, double y) {}
-    ;
 
     @Test
     public void testInterpolateEmpty() {
@@ -53,8 +52,10 @@ public class MathTest {
                     new TestData(10.0, 100.0)
                 };
 
+        assertEquals(0.0, Math.interpolate(data, 0.0, TestData::x, TestData::y));
         assertEquals(25.0, Math.interpolate(data, 2.5, TestData::x, TestData::y));
         assertEquals(50.0, Math.interpolate(data, 5.0, TestData::x, TestData::y));
+        assertEquals(100.0, Math.interpolate(data, 10.0, TestData::x, TestData::y));
     }
 
     @Test

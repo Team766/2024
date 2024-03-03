@@ -77,11 +77,12 @@ public class Math {
         }
 
         // interpolate
-        double x0 = xGetter.apply(data[index - 1]);
-        double y0 = yGetter.apply(data[index - 1]);
-        double y1 = yGetter.apply(data[index]);
+        final double x0 = xGetter.apply(data[index - 1]);
+        final double y0 = yGetter.apply(data[index - 1]);
+        final double y1 = yGetter.apply(data[index]);
 
-        double slope = (y1 - y0) / (x1 - x0);
+        final double slope = (y1 - y0) / (x1 - x0);
+
         return y0 + (targetX - x0) * slope;
     }
 }
