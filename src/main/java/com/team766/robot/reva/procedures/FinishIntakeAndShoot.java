@@ -5,15 +5,15 @@ import com.team766.framework.Procedure;
 import com.team766.robot.reva.Robot;
 
 public class FinishIntakeAndShoot extends Procedure {
-    private static final double DEFAULT_SHOOTER_POWER = 0.95;
-    private final double power;
+    private static final double DEFAULT_SHOOTER_SPEED = 20.0;
+    private final double speed;
 
     public FinishIntakeAndShoot() {
-        this(DEFAULT_SHOOTER_POWER);
+        this(DEFAULT_SHOOTER_SPEED);
     }
 
-    public FinishIntakeAndShoot(double power) {
-        this.power = power;
+    public FinishIntakeAndShoot(double speed) {
+        this.speed = speed;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class FinishIntakeAndShoot extends Procedure {
         context.takeOwnership(Robot.intake);
         context.takeOwnership(Robot.shooter);
 
-        Robot.shooter.shootPower(power);
+        Robot.shooter.shootSpeed(speed);
         context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
         Robot.intake.in();
     }

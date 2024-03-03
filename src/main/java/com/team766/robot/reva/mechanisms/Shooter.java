@@ -7,66 +7,67 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class Shooter extends Mechanism {
-    // TODO: fill in appropriate gear ratio
-    private static final double GEAR_RATIO = 1.0 * 1.0;
-    private static final double DEFAULT_SPEED = 20; // rps
+    private static final double DEFAULT_SPEED = 20.0; // rps
     private static final double NUDGE_INCREMENT = 0.05;
     private static final double MAX_SPEED = 0.8;
     private static final double MIN_SPEED = 0.0;
+    private static final double SPEED_TOLERANCE = 5.0; // rps
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
-    private double shooterSpeed = DEFAULT_SPEED;
+    private double targetShooterSpeed = DEFAULT_SPEED;
 
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
     }
 
-    public double getShooterVelocity() {
-        return shooterMotorBottom.getSensorVelocity() * GEAR_RATIO;
+    public boolean isCloseToExpectedSpeed() {
+        return (Math.abs(targetShooterSpeed - getShooterSpeed()) < SPEED_TOLERANCE);
+    }
+
+    public double getShooterSpeed() {
+        return shooterMotorBottom.getSensorVelocity();
     }
 
     public void runShooter() {
         checkContextOwnership();
-        shooterMotorTop.set(ControlMode.Velocity, shooterSpeed);
-        shooterMotorBottom.set(ControlMode.Velocity, shooterSpeed);
+        shooterMotorTop.set(ControlMode.Velocity, targetShooterSpeed);
+        shooterMotorBottom.set(ControlMode.Velocity, targetShooterSpeed);
     }
 
     public void shoot() {
         checkContextOwnership();
-        shooterSpeed = DEFAULT_SPEED;
+        targetShooterSpeed = DEFAULT_SPEED;
         runShooter();
     }
 
-    public void shootSpeed(double power) {
+    public void shootSpeed(double speed) {
         checkContextOwnership();
-        shooterSpeed = power;
+        targetShooterSpeed = speed;
         runShooter();
     }
 
     public void stop() {
         checkContextOwnership();
-        shooterSpeed = 0;
+        targetShooterSpeed = 0;
         runShooter();
     }
 
     public void nudgeUp() {
-        shooterSpeed = Math.min(shooterSpeed + NUDGE_INCREMENT, MAX_SPEED);
+        targetShooterSpeed = Math.min(targetShooterSpeed + NUDGE_INCREMENT, MAX_SPEED);
         runShooter();
     }
 
     public void nudgeDown() {
-        shooterSpeed = Math.max(shooterSpeed - NUDGE_INCREMENT, MIN_SPEED);
+        targetShooterSpeed = Math.max(targetShooterSpeed - NUDGE_INCREMENT, MIN_SPEED);
         runShooter();
     }
 
     public void run() {
-        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shooterSpeed);
-        SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterVelocity());
+        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", targetShooterSpeed);
+        SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterSpeed());
     }
 }

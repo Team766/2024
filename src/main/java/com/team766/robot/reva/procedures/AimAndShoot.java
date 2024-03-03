@@ -7,18 +7,18 @@ import com.team766.robot.reva.Robot;
 public class AimAndShoot extends Procedure {
     // TODO: add rotation
     private final double angle;
-    private final double power;
+    private final double speed;
 
-    private static final double DEFAULT_SHOOTER_POWER = 0.95;
+    private static final double DEFAULT_SHOOTER_SPEED = 20.0;
     private static final double DEFAULT_SHOULDER_ANGLE = 10.0;
 
     public AimAndShoot() {
-        this(DEFAULT_SHOULDER_ANGLE, DEFAULT_SHOOTER_POWER);
+        this(DEFAULT_SHOULDER_ANGLE, DEFAULT_SHOOTER_SPEED);
     }
 
-    public AimAndShoot(double angle, double power) {
+    public AimAndShoot(double angle, double speed) {
         this.angle = angle;
-        this.power = power;
+        this.speed = speed;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class AimAndShoot extends Procedure {
         context.takeOwnership(Robot.shooter);
 
         Robot.shoulder.rotate(angle);
-        Robot.shooter.shootPower(power);
+        Robot.shooter.shootSpeed(speed);
 
         context.waitFor(Robot.shoulder::isCloseToTargetAngle);
         context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
