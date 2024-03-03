@@ -4,49 +4,52 @@ import com.team766.hal.GyroReader;
 
 public class MockGyro implements GyroReader {
 
-	private double angle = 0;
-	private double rate = 0;
-	private double pitch = 0;
-	private double roll = 0;
+    private double angle = 0;
+    private double rate = 0;
+    private double pitch = 0;
+    private double roll = 0;
 
-	public void calibrate() {
-		reset();
-	}
+    public void calibrate() {
+        reset();
+    }
 
-	public void reset() {
-		angle = 0;
-	}
+    public void reset() {
+        angle = 0;
+    }
 
-	public double getAngle() {
-		return angle;
-	}
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
 
-	public double getRate() {
-		return rate;
-	}
+    public double getAngle() {
+        return angle;
+    }
 
-	public double getPitch() {
-		return pitch;
-	}
+    public double getRate() {
+        return rate;
+    }
 
-	public double getRoll() {
-		return roll;
-	}
+    public double getPitch() {
+        return pitch;
+    }
 
-	public void setAngle(final double angle_) {
-		this.angle = angle_;
-	}
+    public double getRoll() {
+        return roll;
+    }
 
-	public void setRate(final double rate_) {
-		this.rate = rate_;
-	}
+    public void setAngle(final double angle_) {
+        this.angle = angle_;
+    }
 
-	public void setPitch(final double pitch_) {
-		this.pitch = pitch_;
-	}
+    public void setRate(final double rate_) {
+        this.rate = rate_;
+    }
 
-	public void setRoll(final double roll_) {
-		this.roll = roll_;
-	}
+    public void setPitch(final double pitch_) {
+        this.pitch = pitch_;
+    }
 
+    public void setRoll(final double roll_) {
+        this.roll = roll_;
+    }
 }

@@ -22,6 +22,14 @@ public interface GyroReader {
     void reset();
 
     /**
+     * Sets the gyro's heading.  This can be useful in scenarios where the robot is starting at
+     * a certain rotation relative to the operator.
+     */
+    default void setAngle(double angle) {
+        throw new UnsupportedOperationException("reset(degrees) not supported!");
+    }
+
+    /**
      * Return the actual angle in degrees that the robot is currently facing.
      *
      * The angle is based on the current accumulator value corrected by the oversampling rate, the
