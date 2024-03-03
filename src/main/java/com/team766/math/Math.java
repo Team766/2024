@@ -45,11 +45,6 @@ public class Math {
         for (int i = 0; i < data.length; ++i) {
             double x = xGetter.apply(data[i]);
 
-            // exact match!
-            // if (targetX == x) {
-            //     return yGetter.apply(data[i]);
-            // }
-
             // found where our target x fits in our data range
             if (targetX < x) {
                 index = i;
