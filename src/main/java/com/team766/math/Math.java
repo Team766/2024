@@ -65,19 +65,19 @@ public class Math {
 
         // search for the target x in the data range
         int index = 0;
-        for (int i = 0; i < data.length; ++i) {
-            double x = xGetter.apply(data[i]);
+        double x1 = xGetter.apply(data[index]);
+
+        for (index = 1; ; ++index) {
+            x1 = xGetter.apply(data[index]);
 
             // found where our target x fits in our data range
-            if (targetX < x) {
-                index = i;
+            if (targetX < x1) {
                 break;
             }
         }
 
         // interpolate
         double x0 = xGetter.apply(data[index - 1]);
-        double x1 = xGetter.apply(data[index]);
         double y0 = yGetter.apply(data[index - 1]);
         double y1 = yGetter.apply(data[index]);
 
