@@ -51,6 +51,7 @@ public class ShootNow extends VisionPIDProcedure {
         context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
+        context.takeOwnership(Robot.intake);
         Transform3d toUse;
         try {
             toUse = getTransform3dOfRobotToTag();
@@ -73,19 +74,19 @@ public class ShootNow extends VisionPIDProcedure {
 
         log("Found power + armangle: " + power + " : " + armAngle);
 
-        while (anglePID.getOutput() != 0) {
-            context.yield();
+        // while (anglePID.getOutput() != 0) {
+        //     context.yield();
 
-            try {
-                toUse = getTransform3dOfRobotToTag();
+        //     try {
+        //         toUse = getTransform3dOfRobotToTag();
 
-                anglePID.calculate(toUse.getRotation().getZ());
-            } catch (AprilTagGeneralCheckedException e) {
-                continue;
-            }
+        //         anglePID.calculate(toUse.getRotation().getZ());
+        //     } catch (AprilTagGeneralCheckedException e) {
+        //         continue;
+        //     }
 
-            Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
-        }
+        //     Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
+        // }
 
         Robot.shoulder.rotate(armAngle);
 
@@ -96,14 +97,15 @@ public class ShootNow extends VisionPIDProcedure {
         // Placeholder method calls for procedure to be made
 
         Robot.shooter.shootPower(power);
-        context.waitForSeconds(3);
+        context.waitForSeconds(2);
         new IntakeIn().run(context);
 
 
-        context.waitForSeconds(1);
+        context.waitForSeconds(1.1);
 
         Robot.shooter.stop();
         new IntakeStop().run(context);
+        Robot.shoulder.rotate(0);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
