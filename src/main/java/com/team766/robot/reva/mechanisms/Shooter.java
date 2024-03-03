@@ -4,72 +4,69 @@ import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
+import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Shooter extends Mechanism {
-
-    private static final double DEFAULT_POWER = 0.75;
+    // TODO: fill in appropriate gear ratio
+    private static final double GEAR_RATIO = 1.0 * 1.0;
+    private static final double DEFAULT_SPEED = 20; // rps
     private static final double NUDGE_INCREMENT = 0.05;
-    private static final double MAX_POWER = 0.8;
-    private static final double MIN_POWER = 0.0;
-    private static final double SPEED_TOLERANCE = 5.0; // rps
+    private static final double MAX_SPEED = 0.8;
+    private static final double MIN_SPEED = 0.0;
 
-    private final MotorController shooterMotorBottom;
-    private final MotorController shooterMotorTop;
-    private double shooterPower = DEFAULT_POWER;
+    private MotorController shooterMotorTop;
+    private MotorController shooterMotorBottom;
+    private double shooterSpeed = DEFAULT_SPEED;
 
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
     }
 
-    public double getCurrentSpeed() {
-        return shooterMotorTop.getSensorVelocity();
-    }
-
-    public boolean isCloseToExpectedSpeed() {
-        double expectedSpeed = 0.0;
-        return (Math.abs(getCurrentSpeed() - expectedSpeed) < SPEED_TOLERANCE);
+    public double getShooterVelocity() {
+        return shooterMotorBottom.getSensorVelocity() * GEAR_RATIO;
     }
 
     public void runShooter() {
         checkContextOwnership();
-        shooterMotorTop.set(shooterPower);
-        shooterMotorBottom.set(shooterPower);
+        shooterMotorTop.set(ControlMode.Velocity, shooterSpeed);
+        shooterMotorBottom.set(ControlMode.Velocity, shooterSpeed);
     }
 
     public void shoot() {
         checkContextOwnership();
-        shootPower(DEFAULT_POWER);
+        shooterSpeed = DEFAULT_SPEED;
+        runShooter();
     }
 
-    public void shootPower(double power) {
+    public void shootSpeed(double power) {
         checkContextOwnership();
-        shooterPower = power;
+        shooterSpeed = power;
         runShooter();
     }
 
     public void stop() {
         checkContextOwnership();
-        shooterPower = 0;
+        shooterSpeed = 0;
         runShooter();
     }
 
     public void nudgeUp() {
-        shooterPower = Math.min(shooterPower + NUDGE_INCREMENT, MAX_POWER);
+        shooterSpeed = Math.min(shooterSpeed + NUDGE_INCREMENT, MAX_SPEED);
         runShooter();
     }
 
     public void nudgeDown() {
-        shooterPower = Math.max(shooterPower - NUDGE_INCREMENT, MIN_POWER);
+        shooterSpeed = Math.max(shooterSpeed - NUDGE_INCREMENT, MIN_SPEED);
         runShooter();
     }
 
     public void run() {
-        SmartDashboard.putNumber("[SHOOTER POWER]", shooterPower);
-        SmartDashboard.putNumber("[SHOOTER SPEED]", getCurrentSpeed());
+        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shooterSpeed);
+        SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterVelocity());
     }
 }
