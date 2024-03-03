@@ -23,7 +23,7 @@ public class AnalogGyro extends edu.wpi.first.wpilibj.AnalogGyro implements Gyro
     }
 
     public void setAngle(double angle) {
-        double currentAngle = getAngle();
+        double currentAngle = super.getAngle();
         offset = angle - currentAngle;
     }
 
