@@ -37,7 +37,7 @@ public class NavXGyro implements GyroReader {
     }
 
     public void setAngle(double angle) {
-        double currentAngle = getAngle();
+        double currentAngle = m_gyro.getAngle();
         offset = angle - currentAngle;
     }
 

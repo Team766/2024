@@ -32,7 +32,7 @@ public class ADXRS450_Gyro extends edu.wpi.first.wpilibj.ADXRS450_Gyro implement
     }
 
     public void setAngle(double angle) {
-        double currentAngle = getAngle();
+        double currentAngle = super.getAngle();
         offset = angle - currentAngle;
     }
 
