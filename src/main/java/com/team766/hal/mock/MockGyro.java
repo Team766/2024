@@ -17,10 +17,6 @@ public class MockGyro implements GyroReader {
         angle = 0;
     }
 
-    public void setAngle(double angle) {
-        this.angle = angle;
-    }
-
     public double getAngle() {
         return angle;
     }
