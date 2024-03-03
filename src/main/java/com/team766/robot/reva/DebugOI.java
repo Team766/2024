@@ -8,6 +8,31 @@ import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 
+/**
+ * Programmer-centric controls to test each of our (non-drive) mechanisms.
+ * Useful for tuning and for testing, eg in the pit.
+ *
+ * Uses a DOIO KB16 macropad, as follows:
+ *
+ *
+ *      ┌───┬───┬───┬───┐   12<──  12<──
+ *      │ 1 │ 2 │ 3 │ 4 │   ( 3 )  ( 4 )
+ *      ├───┼───┼───┼───┤    -─>8  -─>8
+ *      │ 5 │ 6 │ 7 │ 8 │
+ *      ├───┼───┼───┼───┤
+ *      │ 9 │ 10| 11│ 12|     12<──
+ *      ├───┼───┼───┼───┤      (   )
+ *      │ 13│ 14│ 15│ 16│      -─>8
+ *      └───┴───┴───┴───┘
+ *
+ * 1 + 8/12 = Control Shoulder + Nudge Up/Down
+ * 2 + 8/12 = Control Climber + Nudge Up/Down
+ * 3 + 8/12 = Control Intake + Nudge Up/Down
+ * 4 + 8/12 = Control Shooter + Nudge Up/Down
+ * 13       = Intake In (default speed)
+ * 14       = Intake Out (default speed)
+ * 15       = Shoot (default speed)
+ */
 public class DebugOI {
     private final JoystickReader macropad;
 
