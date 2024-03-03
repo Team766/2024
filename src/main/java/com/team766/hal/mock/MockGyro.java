@@ -13,10 +13,6 @@ public class MockGyro implements GyroReader {
         reset();
     }
 
-    public void reset() {
-        angle = 0;
-    }
-
     public double getAngle() {
         return angle;
     }

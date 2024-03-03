@@ -8,7 +8,8 @@ import com.team766.hal.GyroReader;
 import edu.wpi.first.wpilibj.I2C;
 
 public class NavXGyro implements GyroReader {
-    private AHRS m_gyro;
+    private final AHRS m_gyro;
+    private double offset = 0.0;
 
     public NavXGyro(final I2C.Port port) {
         m_gyro = new AHRS(port);
@@ -32,11 +33,17 @@ public class NavXGyro implements GyroReader {
     @Override
     public void reset() {
         m_gyro.reset();
+        offset = 0.0;
+    }
+
+    public void setAngle(double angle) {
+        double currentAngle = getAngle();
+        offset = angle - currentAngle;
     }
 
     @Override
     public double getAngle() {
-        return m_gyro.getAngle();
+        return m_gyro.getAngle() + offset;
     }
 
     @Override

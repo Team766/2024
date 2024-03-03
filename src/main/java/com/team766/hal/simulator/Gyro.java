@@ -9,10 +9,6 @@ public class Gyro implements GyroReader {
         reset();
     }
 
-    public void reset() {
-        ProgramInterface.gyro.angle = 0;
-    }
-
     public void setAngle(double angle) {
         ProgramInterface.gyro.angle = angle;
     }

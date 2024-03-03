@@ -19,15 +19,15 @@ public interface GyroReader {
      * Reset the gyro. Resets the gyro to a heading of zero. This can be used if there is
      * significant drift in the gyro and it needs to be recalibrated after it has been running.
      */
-    void reset();
+    default void reset() {
+        setAngle(0.0);
+    }
 
     /**
      * Sets the gyro's heading.  This can be useful in scenarios where the robot is starting at
      * a certain rotation relative to the operator.
      */
-    default void setAngle(double angle) {
-        throw new UnsupportedOperationException("reset(degrees) not supported!");
-    }
+    void setAngle(double angle);
 
     /**
      * Return the actual angle in degrees that the robot is currently facing.
