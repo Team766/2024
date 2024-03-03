@@ -20,13 +20,18 @@ def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
 sourceSets {
     main {
         java {
-            srcDirs = fileTree(dir: ["/src/main/java"]) {
+            srcDirs = fileTree('src/main/java') {
+                include "**/*.java"
+                exclude "com/team766/robot/**/*.java"
             }
         }
     }
     test {
         java {
-            srcDirs = ["src/test/java"]
+            srcDirs = [
+                "src/main/java",
+                "src/test/java"
+            ]
         }
     }
 }
