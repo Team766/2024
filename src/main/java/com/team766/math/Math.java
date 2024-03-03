@@ -64,8 +64,8 @@ public class Math {
         }
 
         // search for the target x in the data range
-        int index = 0;
-        double x1 = xGetter.apply(data[index]);
+        int index;
+        double x1;
 
         for (index = 1; ; ++index) {
             x1 = xGetter.apply(data[index]);
