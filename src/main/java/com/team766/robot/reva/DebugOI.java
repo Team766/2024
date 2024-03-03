@@ -30,6 +30,9 @@ public class DebugOI {
     }
 
     public void handleOI(Context context) {
+        // fine-grained control of the shoulder
+        // used for testing and tuning
+        // press down the shoulder control button and nudge the angle up and down
         if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
             // Shoulder
             context.takeOwnership(shoulder);
@@ -43,6 +46,10 @@ public class DebugOI {
             }
             context.releaseOwnership(shoulder);
         }
+
+        // fine-grained control of the climber
+        // used for testing and tuning
+        // press down the climber control button and nudge the climber up and down
         if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
             // Climber
             context.takeOwnership(climber);
@@ -59,6 +66,12 @@ public class DebugOI {
             context.releaseOwnership(climber);
         }
 
+        // fine-grained control of the intake
+        // used for testing and tuning
+        // press down the intake control button and nudge ths intake speed up and down
+        // < 0 - outtake
+        // == 0 - stopped
+        // > 0 - intake
         if (macropad.getButton(InputConstants.CONTROL_INTAKE)) {
             context.takeOwnership(intake);
             intake.runIntake();
@@ -68,13 +81,6 @@ public class DebugOI {
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 intake.nudgeDown();
             }
-
-            if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_1)) {
-                intake.in();
-            } else if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_2)) {
-                intake.out();
-            }
-
             context.releaseOwnership(intake);
         } else if (intake.getState() != Intake.State.STOPPED) {
             context.takeOwnership(intake);
@@ -82,6 +88,26 @@ public class DebugOI {
             context.releaseOwnership(intake);
         }
 
+        // simple one-button controls for intake
+        // used for testing and tuning
+        // allows for running intake at default intake/outtake speeds.
+        if (macropad.getButton(InputConstants.INTAKE_IN)) {
+            context.takeOwnership(intake);
+            intake.in();
+            context.releaseOwnership(intake);
+        } else if (macropad.getButton(InputConstants.INTAKE_OUT)) {
+            context.takeOwnership(intake);
+            intake.out();
+            context.releaseOwnership(intake);
+        } else if (intake.getState() != Intake.State.STOPPED) {
+            context.takeOwnership(intake);
+            intake.stop();
+            context.releaseOwnership(intake);
+        }
+
+        // fine-grained controls for shooter
+        // used for testing and tuning
+        // press down the intake control button and nudge ths shooter speed up and down
         if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
             context.takeOwnership(shooter);
             Robot.shooter.runShooter();
@@ -91,14 +117,24 @@ public class DebugOI {
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shooter.nudgeDown();
             }
-            if (macropad.getButtonPressed(InputConstants.MACROPAD_PRESET_3)) {
-                shooter.shoot();
-            }
-            context.takeOwnership(shooter);
+            context.releaseOwnership(shooter);
         } else {
             context.takeOwnership(shooter);
             shooter.stop();
+            context.releaseOwnership(shooter);
+        }
+
+        // simpler one-button controls for shooter
+        // used for testing and tuning
+        // allows for running intake at default intake/outtake speeds.
+        if (macropad.getButton(InputConstants.SHOOTER_SHOOT)) {
             context.takeOwnership(shooter);
+            shooter.shoot();
+            context.releaseOwnership(shooter);
+        } else if (shooter.getPower() != 0) {
+            context.takeOwnership(shooter);
+            shooter.stop();
+            context.releaseOwnership(shooter);
         }
     }
 }
