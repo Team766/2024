@@ -11,30 +11,12 @@ import java.util.TreeMap;
 
 public class Shooter extends Mechanism {
 
-    private static class PowerToSpeedMap {
-        private final Map<Double, Double> map = new TreeMap<Double, Double>();
-
-        private PowerToSpeedMap() {
-            // TODO: fill this out based on measurements
-            map.put(0.0, 0.0);
-            map.put(0.25, 10.0);
-            map.put(0.5, 20.0);
-            map.put(0.75, 30.0);
-            map.put(1.0, 40.0);
-        }
-
-        private double getExpectedVelocityForPower(double power) {
-            return 0.0;
-        }
-    }
-
     private static final double DEFAULT_POWER = 0.75;
     private static final double NUDGE_INCREMENT = 0.05;
     private static final double MAX_POWER = 0.8;
     private static final double MIN_POWER = 0.0;
     private static final double SPEED_TOLERANCE = 5.0; // rps
 
-    private final PowerToSpeedMap powerToSpeedMap = new PowerToSpeedMap();
     private final MotorController shooterMotorBottom;
     private final MotorController shooterMotorTop;
     private double shooterPower = DEFAULT_POWER;
@@ -49,7 +31,7 @@ public class Shooter extends Mechanism {
     }
 
     public boolean isCloseToExpectedSpeed() {
-        double expectedSpeed = powerToSpeedMap.getExpectedVelocityForPower(shooterPower);
+        double expectedSpeed = 0.0;
         return (Math.abs(getCurrentSpeed() - expectedSpeed) < SPEED_TOLERANCE);
     }
 
