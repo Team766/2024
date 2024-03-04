@@ -21,7 +21,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
-      - name:  Apply spotless linter
-        run: ./gradlew spotlessApply
-      - name: Run spotless linter check
+          
+      - run: ./gradlew spotlessApply
+      
       - run: ./gradlew spotlessCheck
