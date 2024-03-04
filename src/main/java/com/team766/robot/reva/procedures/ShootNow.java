@@ -88,20 +88,18 @@ public class ShootNow extends VisionPIDProcedure {
         //     Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
         // }
 
+        Robot.shooter.shootPower(power);
         Robot.shoulder.rotate(armAngle);
 
-        while (!Robot.shoulder.isFinished()) {
-            context.yield();
-        }
+        context.waitFor(() -> Robot.shoulder.isFinished());
 
         // Placeholder method calls for procedure to be made
 
-        Robot.shooter.shootPower(power);
-        context.waitForSeconds(2);
+        context.waitForSeconds(1);
         new IntakeIn().run(context);
 
 
-        context.waitForSeconds(1.1);
+        context.waitForSeconds(3);
 
         Robot.shooter.stop();
         new IntakeStop().run(context);
