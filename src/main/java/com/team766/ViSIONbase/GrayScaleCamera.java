@@ -61,7 +61,7 @@ public class GrayScaleCamera extends PhotonCamera {
         }
     }
 
-    public PhotonTrackedTarget getTrackedTargetWithID(double ID) throws AprilTagGeneralCheckedException {
+    public PhotonTrackedTarget getTrackedTargetWithID(int ID) throws AprilTagGeneralCheckedException {
         var result = getLatestResult();
         boolean hasTargets =
                 result.hasTargets();
