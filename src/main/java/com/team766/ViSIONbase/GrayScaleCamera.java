@@ -61,10 +61,10 @@ public class GrayScaleCamera extends PhotonCamera {
         }
     }
 
-    public PhotonTrackedTarget getTrackedTargetWithID(int ID) throws AprilTagGeneralCheckedException {
+    public PhotonTrackedTarget getTrackedTargetWithID(int ID)
+            throws AprilTagGeneralCheckedException {
         var result = getLatestResult();
-        boolean hasTargets =
-                result.hasTargets();
+        boolean hasTargets = result.hasTargets();
         if (hasTargets) {
             List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
 
@@ -74,7 +74,8 @@ public class GrayScaleCamera extends PhotonCamera {
                 }
             }
 
-            throw new AprilTagGeneralCheckedException("No target with the desired ID of " + ID + " was found by the camera.");
+            throw new AprilTagGeneralCheckedException(
+                    "No target with the desired ID of " + ID + " was found by the camera.");
         } else {
             throw new AprilTagGeneralCheckedException(
                     "There were no targets that could be picked up by the camera.");
