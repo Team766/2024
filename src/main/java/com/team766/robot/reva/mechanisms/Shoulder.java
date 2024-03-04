@@ -92,7 +92,6 @@ public class Shoulder extends Mechanism {
 
     public void rotate(Position position) {
         rotate(position.getAngle());
-        curSetpoint = position.getAngle();
     }
 
     public void rotate(double angle) {
