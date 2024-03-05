@@ -13,6 +13,7 @@ public class Shooter extends Mechanism {
     private static final double NUDGE_INCREMENT = 0.05;
     private static final double MAX_SPEED = 0.8;
     private static final double MIN_SPEED = 0.0;
+    private static final double SPEED_TOLERANCE = 5.0; // rps
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
@@ -24,7 +25,22 @@ public class Shooter extends Mechanism {
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
     }
 
-    public double getShooterVelocity() {
+    public boolean isCloseToExpectedSpeed() {
+        return ((Math.abs(targetSpeed - getShooterSpeedTop()) < SPEED_TOLERANCE) &&
+                (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
+    }
+
+    public double getShooterSpeed() {
+        // TODO: get average or min of top and bottom?
+        // test on robot
+        return getShooterSpeedBottom();
+    }
+
+    private double getShooterSpeedTop() {
+        return shooterMotorTop.getSensorVelocity();
+    }
+
+    private double getShooterSpeedBottom() {
         return shooterMotorBottom.getSensorVelocity();
     }
 
@@ -54,7 +70,7 @@ public class Shooter extends Mechanism {
 
     public void run() {
         SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", targetSpeed);
-        SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterVelocity());
+        SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterSpeed());
 
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
