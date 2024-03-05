@@ -26,8 +26,8 @@ public class Shooter extends Mechanism {
     }
 
     public boolean isCloseToExpectedSpeed() {
-        return ((Math.abs(targetSpeed - getShooterSpeedTop()) < SPEED_TOLERANCE) &&
-                (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
+        return ((Math.abs(targetSpeed - getShooterSpeedTop()) < SPEED_TOLERANCE)
+                && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
     }
 
     public double getShooterSpeed() {
