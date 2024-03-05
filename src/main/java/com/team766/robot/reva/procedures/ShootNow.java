@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class ShootNow extends VisionPIDProcedure {
 
@@ -108,19 +109,7 @@ public class ShootNow extends VisionPIDProcedure {
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
         GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
-
-        Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
-
-        int tagIdInCamera = toUse.getTagIdOfBestTarget();
-
-        // this is the tag we will be using for testing in the time being. later we will need to set
-        // based on alliance color
-        if (tagId == tagIdInCamera) {
-            log("Finihed getting transform 3d");
-            return robotToTag;
-        }
-
-        throw new AprilTagGeneralCheckedException("Could not find tag with the correct tagId. Currently found: " + tagIdInCamera);
         
+        return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
     }
 }
