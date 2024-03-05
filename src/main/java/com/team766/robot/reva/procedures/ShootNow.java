@@ -94,8 +94,6 @@ public class ShootNow extends VisionPIDProcedure {
 
         context.waitFor(() -> Robot.shoulder.isFinished());
 
-        // Placeholder method calls for procedure to be made
-
         context.waitForSeconds(1);
         new IntakeIn().run(context);
 
@@ -104,12 +102,11 @@ public class ShootNow extends VisionPIDProcedure {
 
         Robot.shooter.stop();
         new IntakeStop().run(context);
-        Robot.shoulder.rotate(0);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
         GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
-        
+
         return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
     }
 }
