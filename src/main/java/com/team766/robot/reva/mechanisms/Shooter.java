@@ -30,7 +30,7 @@ public class Shooter extends Mechanism {
 
     public void shoot(double speed) {
         checkContextOwnership();
-        targetSpeed = speed;
+        targetSpeed = com.team766.math.Math.clamp(speed, MIN_SPEED, MAX_SPEED);
         speedUpdated = true;
     }
 
@@ -44,10 +44,12 @@ public class Shooter extends Mechanism {
 
     public void nudgeUp() {
         targetSpeed = Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED);
+        speedUpdated = true;
     }
 
     public void nudgeDown() {
         targetSpeed = Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED);
+        speedUpdated = true;
     }
 
     public void run() {
