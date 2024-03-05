@@ -43,9 +43,8 @@ public class ShootNow extends VisionPIDProcedure {
         double x = toUse.getX();
         double y = toUse.getY();
 
-        angle = Math.atan(y / x);
+        angle = Math.atan2(y , x);
         anglePID.setSetpoint(angle);
-        log("Finihed constructor");
     }
 
     public void run(Context context) {
@@ -53,6 +52,7 @@ public class ShootNow extends VisionPIDProcedure {
         context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
         context.takeOwnership(Robot.intake);
+
         Transform3d toUse;
         try {
             toUse = getTransform3dOfRobotToTag();
@@ -75,23 +75,23 @@ public class ShootNow extends VisionPIDProcedure {
 
         log("Found power + armangle: " + power + " : " + armAngle);
 
-        // while (anglePID.getOutput() != 0) {
-        //     context.yield();
-
-        //     try {
-        //         toUse = getTransform3dOfRobotToTag();
-
-        //         anglePID.calculate(toUse.getRotation().getZ());
-        //     } catch (AprilTagGeneralCheckedException e) {
-        //         continue;
-        //     }
-
-        //     Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
-        // }
-
         Robot.shooter.shootPower(power);
         Robot.shoulder.rotate(armAngle);
 
+        while (anglePID.getOutput() != 0) {
+            context.yield();
+
+            try {
+                toUse = getTransform3dOfRobotToTag();
+
+                anglePID.calculate(toUse.getRotation().getZ());
+            } catch (AprilTagGeneralCheckedException e) {
+                continue;
+            }
+
+            Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
+        }
+        
         context.waitFor(() -> Robot.shoulder.isFinished());
 
         context.waitForSeconds(1);
