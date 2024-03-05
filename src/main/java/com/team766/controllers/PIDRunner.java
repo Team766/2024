@@ -27,7 +27,7 @@ public class PIDRunner {
      */
     public static final Supplier<Double> fixedArbitraryFeedForward(
             ValueProvider<Double> arbitraryFFGain) {
-        return () -> arbitraryFFGain.get();
+        return () -> arbitraryFFGain.valueOr(0.0);
     }
 
     /**
