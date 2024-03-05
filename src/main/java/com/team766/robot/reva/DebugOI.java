@@ -84,8 +84,6 @@ public class DebugOI {
 
         if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
             context.takeOwnership(shooter);
-            Robot.shooter.runShooter();
-
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 shooter.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {

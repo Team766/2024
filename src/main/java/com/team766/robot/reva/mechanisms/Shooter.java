@@ -9,16 +9,15 @@ import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
-    // TODO: fill in appropriate gear ratio
-    private static final double GEAR_RATIO = 1.0 * 1.0;
-    private static final double DEFAULT_SPEED = 20; // rps
+    private static final double DEFAULT_SPEED = 20.0; // rps, does not take gearing into account
     private static final double NUDGE_INCREMENT = 0.05;
     private static final double MAX_SPEED = 0.8;
     private static final double MIN_SPEED = 0.0;
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
-    private double shooterSpeed = DEFAULT_SPEED;
+    private double targetSpeed = DEFAULT_SPEED;
+    private boolean speedUpdated = false;
 
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
@@ -26,45 +25,41 @@ public class Shooter extends Mechanism {
     }
 
     public double getShooterVelocity() {
-        return shooterMotorBottom.getSensorVelocity() * GEAR_RATIO;
+        return shooterMotorBottom.getSensorVelocity();
     }
 
-    public void runShooter() {
+    public void shoot(double speed) {
         checkContextOwnership();
-        shooterMotorTop.set(ControlMode.Velocity, shooterSpeed);
-        shooterMotorBottom.set(ControlMode.Velocity, shooterSpeed);
+        targetSpeed = speed;
+        speedUpdated = true;
     }
 
     public void shoot() {
-        checkContextOwnership();
-        shooterSpeed = DEFAULT_SPEED;
-        runShooter();
-    }
-
-    public void shootSpeed(double power) {
-        checkContextOwnership();
-        shooterSpeed = power;
-        runShooter();
+        shoot(DEFAULT_SPEED);
     }
 
     public void stop() {
-        checkContextOwnership();
-        shooterSpeed = 0;
-        runShooter();
+        shoot(0.0);
     }
 
     public void nudgeUp() {
-        shooterSpeed = Math.min(shooterSpeed + NUDGE_INCREMENT, MAX_SPEED);
-        runShooter();
+        targetSpeed = Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED);
     }
 
     public void nudgeDown() {
-        shooterSpeed = Math.max(shooterSpeed - NUDGE_INCREMENT, MIN_SPEED);
-        runShooter();
+        targetSpeed = Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED);
     }
 
     public void run() {
-        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shooterSpeed);
+        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", targetSpeed);
         SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterVelocity());
+
+        // FIXME: problem with this - does not pay attention to changes in PID values
+        // https://github.com/Team766/2024/pull/49 adds support to address this
+        // until then, this is equivalent to the earlier approach
+        if (speedUpdated) {
+            shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
+            shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
+        }
     }
 }
