@@ -29,9 +29,17 @@ public class ShootNow extends VisionPIDProcedure {
         } else {
             tagId = -1;
         }
+    }
+
+    public void run(Context context) {
+        context.takeOwnership(Robot.drive);
+        context.takeOwnership(Robot.shooter);
+        context.takeOwnership(Robot.shoulder);
+        context.takeOwnership(Robot.intake);
+
+        Robot.drive.stopDrive();
 
         Transform3d toUse;
-
         try {
             toUse = getTransform3dOfRobotToTag();
 
@@ -45,22 +53,6 @@ public class ShootNow extends VisionPIDProcedure {
 
         angle = Math.atan2(y, x);
         anglePID.setSetpoint(angle);
-    }
-
-    public void run(Context context) {
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.shooter);
-        context.takeOwnership(Robot.shoulder);
-        context.takeOwnership(Robot.intake);
-
-        Transform3d toUse;
-        try {
-            toUse = getTransform3dOfRobotToTag();
-
-        } catch (AprilTagGeneralCheckedException e) {
-            LoggerExceptionUtils.logException(e);
-            return;
-        }
 
         /*
          * Should we calculate these before angleing the robot or after?
