@@ -43,7 +43,7 @@ public class ShootNow extends VisionPIDProcedure {
         double x = toUse.getX();
         double y = toUse.getY();
 
-        angle = Math.atan2(y , x);
+        angle = Math.atan2(y, x);
         anglePID.setSetpoint(angle);
     }
 
@@ -70,14 +70,19 @@ public class ShootNow extends VisionPIDProcedure {
         
         log("Found distance: " + distanceOfRobotToTag);
 
-        double power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
-        double armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
+        double power;
+        double armAngle;
+        try {
+            power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
+            armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
 
-        log("Found power + armangle: " + power + " : " + armAngle);
+            Robot.shooter.shootPower(power);
+            Robot.shoulder.rotate(armAngle);
 
-        Robot.shooter.shootPower(power);
-        Robot.shoulder.rotate(armAngle);
-
+        } catch (AprilTagGeneralCheckedException e) {
+            LoggerExceptionUtils.logException(e);
+            
+        }
         while (anglePID.getOutput() != 0) {
             context.yield();
 
