@@ -10,6 +10,8 @@ public final class ConfigConstants {
 
     public static final String SHOULDER_RIGHT = "shoulder.rightMotor";
     public static final String SHOULDER_LEFT = "shoulder.leftMotor";
+    // TODO: change this to shoulder.arbitraryFFGain
+    public static final String SHOULDER_ARBITRARY_FFGAIN = "shoulder.leftMotor.ffGain";
 
     // intake config values
     public static final String INTAKE_MOTOR = "intake.motor";
