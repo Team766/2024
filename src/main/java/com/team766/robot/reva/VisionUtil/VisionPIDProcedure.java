@@ -36,15 +36,16 @@ public abstract class VisionPIDProcedure extends Procedure {
                     add(a3);
                     add(a4);
                     add(a5);
-                    //add(a6);
-                    //add(a7);
-                    //add(a8);
-                    //add(a9);
-                    //add(a10);
+                    // add(a6);
+                    // add(a7);
+                    // add(a8);
+                    // add(a9);
+                    // add(a10);
                 }
             };
 
-    public static double getBestPowerToUse(double distanceFromCenterApriltag) throws AprilTagGeneralCheckedException {
+    public static double getBestPowerToUse(double distanceFromCenterApriltag)
+            throws AprilTagGeneralCheckedException {
         for (int i = 0; i < scoringPositions.size(); i++) {
             if (distanceFromCenterApriltag
                     <= scoringPositions.get(i).distanceFromCenterApriltag()) {
@@ -70,7 +71,8 @@ public abstract class VisionPIDProcedure extends Procedure {
         throw new AprilTagGeneralCheckedException("No sutiable shooter power found.");
     }
 
-    public static double getBestArmAngleToUse(double distanceFromCenterApriltag) throws AprilTagGeneralCheckedException {
+    public static double getBestArmAngleToUse(double distanceFromCenterApriltag)
+            throws AprilTagGeneralCheckedException {
         for (int i = 0; i < scoringPositions.size(); i++) {
             if (distanceFromCenterApriltag
                     <= scoringPositions.get(i).distanceFromCenterApriltag()) {

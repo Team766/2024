@@ -24,5 +24,4 @@ public final class InputConstants {
     public static final int MACROPAD_PRESET_2 = 14;
     public static final int MACROPAD_PRESET_3 = 15;
     public static final int MACROPAD_PRESET_4 = 16;
-    
 }

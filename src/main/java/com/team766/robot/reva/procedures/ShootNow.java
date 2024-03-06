@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class ShootNow extends VisionPIDProcedure {
 
@@ -31,6 +30,7 @@ public class ShootNow extends VisionPIDProcedure {
         }
     }
 
+    // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.shooter);
@@ -59,7 +59,7 @@ public class ShootNow extends VisionPIDProcedure {
          */
         double distanceOfRobotToTag =
                 Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
-        
+
         log("Found distance: " + distanceOfRobotToTag);
 
         double power;
@@ -73,7 +73,6 @@ public class ShootNow extends VisionPIDProcedure {
 
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
-            
         }
         while (anglePID.getOutput() != 0) {
             context.yield();
@@ -88,12 +87,11 @@ public class ShootNow extends VisionPIDProcedure {
 
             Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
         }
-        
+
         context.waitFor(() -> Robot.shoulder.isFinished());
 
         context.waitForSeconds(1);
         new IntakeIn().run(context);
-
 
         context.waitForSeconds(3);
 
