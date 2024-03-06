@@ -1,6 +1,7 @@
 package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AnywhereScoringPosition;
+import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Procedure;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public abstract class VisionPIDProcedure extends Procedure {
                 }
             };
 
-    public static double getBestPowerToUse(double distanceFromCenterApriltag) {
+    public static double getBestPowerToUse(double distanceFromCenterApriltag) throws AprilTagGeneralCheckedException {
         for (int i = 0; i < scoringPositions.size(); i++) {
             if (distanceFromCenterApriltag
                     <= scoringPositions.get(i).distanceFromCenterApriltag()) {
@@ -66,10 +67,10 @@ public abstract class VisionPIDProcedure extends Procedure {
                 return powerToUse;
             }
         }
-        return 0;
+        throw new AprilTagGeneralCheckedException("No sutiable shooter power found.");
     }
 
-    public static double getBestArmAngleToUse(double distanceFromCenterApriltag) {
+    public static double getBestArmAngleToUse(double distanceFromCenterApriltag) throws AprilTagGeneralCheckedException {
         for (int i = 0; i < scoringPositions.size(); i++) {
             if (distanceFromCenterApriltag
                     <= scoringPositions.get(i).distanceFromCenterApriltag()) {
@@ -94,6 +95,6 @@ public abstract class VisionPIDProcedure extends Procedure {
                 return angleToUse;
             }
         }
-        return 0;
+        throw new AprilTagGeneralCheckedException("No sutiable arm angle found.");
     }
 }
