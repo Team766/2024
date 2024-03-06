@@ -59,13 +59,11 @@ public class Shooter extends Mechanism {
     }
 
     public void nudgeUp() {
-        targetSpeed = Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED);
-        speedUpdated = true;
+        shoot(Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED));
     }
 
     public void nudgeDown() {
-        targetSpeed = Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED);
-        speedUpdated = true;
+        shoot(Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED));
     }
 
     public void run() {
@@ -78,6 +76,7 @@ public class Shooter extends Mechanism {
         if (speedUpdated) {
             shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
             shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
+            speedUpdated = false;
         }
     }
 }
