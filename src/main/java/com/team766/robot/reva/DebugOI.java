@@ -85,7 +85,7 @@ public class DebugOI {
             context.releaseOwnership(intake);
         }
 
-        if(macropad.getButtonPressed(InputConstants.SHOOT_ANYWHERE)){
+        if (macropad.getButtonPressed(InputConstants.SHOOT_ANYWHERE)) {
             Robot.drive.stopDrive();
             context.startAsync(new ShootNow());
         }
@@ -103,7 +103,7 @@ public class DebugOI {
                 shooter.shoot();
             }
             context.takeOwnership(shooter);
-        } else {// (/*func.isDone() */) {
+        } else {
             context.takeOwnership(shooter);
             shooter.stop();
             context.takeOwnership(shooter);
