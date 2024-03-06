@@ -86,8 +86,10 @@ public class DebugOI {
         }
 
         if (macropad.getButtonPressed(InputConstants.SHOOT_ANYWHERE)) {
+            context.takeOwnership(Robot.drive);
             Robot.drive.stopDrive();
             context.startAsync(new ShootNow());
+            context.releaseOwnership(Robot.drive);
         }
 
         if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
