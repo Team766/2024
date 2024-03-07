@@ -9,11 +9,12 @@ import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
-    private static final double DEFAULT_SPEED = 20.0; // rps, does not take gearing into account
-    private static final double NUDGE_INCREMENT = 0.05;
-    private static final double MAX_SPEED = 0.8;
+    private static final double DEFAULT_SPEED =
+            2500.0; // motor shaft rps, does not take gearing into account
+    private static final double NUDGE_INCREMENT = 500.0;
+    private static final double MAX_SPEED = 5000.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
-    private static final double SPEED_TOLERANCE = 5.0; // rps
+    private static final double SPEED_TOLERANCE = 100.0; // rps
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
