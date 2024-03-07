@@ -31,18 +31,6 @@ public class Shooter extends Mechanism {
                 && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
     }
 
-    /**
-     * Returns the current speed for the shooter.
-     * NOTE: currently returns just the speed for the bottom motor.
-     *
-     * @return current speed (in motor shaft rps) for the shooter.
-     */
-    public double getShooterSpeed() {
-        // TODO: get average or min of top and bottom?
-        // test on robot
-        return getShooterSpeedBottom();
-    }
-
     private double getShooterSpeedTop() {
         return shooterMotorTop.getSensorVelocity();
     }
@@ -75,7 +63,6 @@ public class Shooter extends Mechanism {
 
     public void run() {
         SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", targetSpeed);
-        SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterSpeed());
         SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
         SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
 
