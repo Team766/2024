@@ -76,6 +76,8 @@ public class Shooter extends Mechanism {
     public void run() {
         SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", targetSpeed);
         SmartDashboard.putNumber("[SHOOTER ACTUAL SPEED]", getShooterSpeed());
+        SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
+        SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
 
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
