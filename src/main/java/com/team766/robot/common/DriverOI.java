@@ -26,9 +26,14 @@ public class DriverOI {
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
 
-        movingJoysticks = new OICondition(() -> !isCross
-                && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                        > 0);
+        movingJoysticks =
+                new OICondition(
+                        () ->
+                                !isCross
+                                        && Math.abs(leftJoystickX)
+                                                        + Math.abs(leftJoystickY)
+                                                        + Math.abs(rightJoystickY)
+                                                > 0);
     }
 
     public void handleOI(Context context) {
