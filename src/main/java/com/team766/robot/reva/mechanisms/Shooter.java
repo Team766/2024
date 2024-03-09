@@ -17,6 +17,7 @@ public class Shooter extends Mechanism {
     private static final double MIN_SPEED = 0.0;
     private static final double SPEED_TOLERANCE = 100.0; // rpm
 
+
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
     private double targetSpeed = DEFAULT_SPEED;
@@ -32,7 +33,7 @@ public class Shooter extends Mechanism {
     public boolean isCloseToExpectedSpeed() {
         return ((Math.abs(targetSpeed - getShooterSpeedTop()) < SPEED_TOLERANCE)
                 && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
-    }
+
 
     public boolean isSpinning() {
         return (Math.abs(getShooterSpeedBottom()) + Math.abs(getShooterSpeedTop())) > 50;

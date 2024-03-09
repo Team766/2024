@@ -66,7 +66,7 @@ public class DebugOI {
                 shoulder.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shoulder.nudgeDown();
-            } else if (macropad.getButtonPressed(9)) {
+            } else if (macropad.getButtonPressed(InputConstants.MACROPAD_RESET_SHOULDER)) {
                 shoulder.reset();
             }
             context.releaseOwnership(shoulder);
@@ -160,6 +160,7 @@ public class DebugOI {
             context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
+
         }
     }
 }

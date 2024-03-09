@@ -247,6 +247,15 @@ public class Drive extends Mechanism {
         gyro.reset();
     }
 
+    /**
+     * Sets gyro to value in degrees
+     * @param angle in degrees
+     */
+    public void resetGyro(double angle) {
+        checkContextOwnership();
+        gyro.setAngle(angle);
+    }
+
     public double getHeading() {
         return gyro.getAngle();
     }

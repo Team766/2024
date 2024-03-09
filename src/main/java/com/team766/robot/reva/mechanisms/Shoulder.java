@@ -14,18 +14,18 @@ import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends Mechanism {
-    enum Position {
+    public enum ShoulderPosition {
         // TODO: Find actual values.
         BOTTOM(0),
         INTAKE_FLOOR(0),
-        SHOOT_LOW(35),
-        SHOOT_MEDIUM(45),
+        SHOOT_LOW(10),
+        SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
         TOP(90);
 
         private final double angle;
 
-        Position(double angle) {
+        ShoulderPosition(double angle) {
             this.angle = angle;
         }
 
@@ -34,7 +34,7 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private static final double NUDGE_AMOUNT = 30; // degrees
+    private static final double NUDGE_AMOUNT = 5; // degrees
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -87,7 +87,7 @@ public class Shoulder extends Mechanism {
         return rotations * (15. / 54.) * (1. / 4.) * (1. / 3.) * (1. / 3.) * (360. / 1.);
     }
 
-    public void rotate(Position position) {
+    public void rotate(ShoulderPosition position) {
         rotate(position.getAngle());
     }
 
@@ -95,7 +95,7 @@ public class Shoulder extends Mechanism {
         checkContextOwnership();
         double targetAngle =
                 com.team766.math.Math.clamp(
-                        angle, Position.BOTTOM.getAngle(), Position.TOP.getAngle());
+                        angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
         // actual rotation will happen in run()
