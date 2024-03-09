@@ -19,7 +19,7 @@ public class RightProximitySensor extends Mechanism {
     public RightProximitySensor() {
         sensor = new TimeOfFlight(0); // needs calibration
 
-        sensor.setRangingMode(RangingMode.Short, 80);
+        sensor.setRangingMode(RangingMode.Short, 24);
     }
 
     public boolean isNoteReady() {
