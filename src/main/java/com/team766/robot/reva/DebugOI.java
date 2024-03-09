@@ -160,7 +160,6 @@ public class DebugOI {
             context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
-
         }
     }
 }
