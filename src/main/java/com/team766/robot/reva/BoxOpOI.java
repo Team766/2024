@@ -1,18 +1,13 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.Context;
-import com.team766.framework.LaunchedContext;
 import com.team766.hal.JoystickReader;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
-import com.team766.robot.reva.procedures.ShootNow;
 
 public class BoxOpOI {
     private final JoystickReader gamepad;
@@ -21,8 +16,6 @@ public class BoxOpOI {
     private final Intake intake;
     private final Shooter shooter;
     private final Climber climber;
-    private LaunchedContext launchedContext;
-    private boolean isAsyncFinished = true;
 
     public BoxOpOI(
             JoystickReader gamepad,
@@ -30,7 +23,6 @@ public class BoxOpOI {
             Intake intake,
             Shooter shooter,
             Climber climber) {
-        Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "Creating BoxOpOI");
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
@@ -87,31 +79,12 @@ public class BoxOpOI {
 
         // shooter
         if (gamepad.getAxis(InputConstants.XBOX_RT) > 0) {
-            // context.takeOwnership(shooter);
-            // shooter.shoot();
-            // context.releaseOwnership(shooter);
-        } else if (isAsyncFinished) {
+            context.takeOwnership(shooter);
+            shooter.shoot();
+            context.releaseOwnership(shooter);
+        } else {
             context.takeOwnership(shooter);
             shooter.stop();
-            context.releaseOwnership(shooter);
-        }
-
-        if (gamepad.getButtonPressed(8)) {
-            isAsyncFinished = false;
-            launchedContext = context.startAsync(new ShootNow());
-        } else if (gamepad.getButtonReleased(8)
-                || (launchedContext != null && launchedContext.isDone())) {
-            Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "reset");
-            if (launchedContext != null) {
-                launchedContext.stop();
-            }
-            isAsyncFinished = true;
-            launchedContext = null;
-        }
-
-        if (gamepad.getButtonPressed(7)) {
-            context.takeOwnership(shooter);
-            Robot.shooter.nudgeDown();
             context.releaseOwnership(shooter);
         }
 
@@ -124,7 +97,7 @@ public class BoxOpOI {
             context.takeOwnership(intake);
             intake.in();
             context.releaseOwnership(intake);
-        } else if (isAsyncFinished) {
+        } else {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
