@@ -1,7 +1,6 @@
 package com.team766.robot.common;
 
 import com.team766.framework.Context;
-import com.team766.framework.OICondition;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
@@ -30,7 +29,6 @@ public class DriverOI extends OIFragment {
 
         movingJoysticks =
                 new OICondition(
-                        this,
                         () ->
                                 !isCross
                                         && Math.abs(leftJoystickX)

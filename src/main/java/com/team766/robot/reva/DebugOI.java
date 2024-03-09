@@ -1,7 +1,6 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.Context;
-import com.team766.framework.OICondition;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
@@ -64,19 +63,14 @@ public class DebugOI extends OIFragment {
         this.shooter = shooter;
 
         controlShoulder =
-                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
-        controlClimber =
-                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
-        controlIntake =
-                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_INTAKE));
-        controlShooter =
-                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
-        intakeIn = new OICondition(this, () -> macropad.getButtonPressed(InputConstants.INTAKE_IN));
-        intakeOut =
-                new OICondition(this, () -> macropad.getButtonPressed(InputConstants.INTAKE_OUT));
+                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
+        controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
+        controlIntake = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_INTAKE));
+        controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
+        intakeIn = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_IN));
+        intakeOut = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_OUT));
         shooterShoot =
-                new OICondition(
-                        this, () -> macropad.getButtonPressed(InputConstants.SHOOTER_SHOOT));
+                new OICondition(() -> macropad.getButtonPressed(InputConstants.SHOOTER_SHOOT));
     }
 
     @Override
