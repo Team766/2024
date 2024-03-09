@@ -2,6 +2,7 @@ package com.team766.robot.reva;
 
 import com.team766.framework.Context;
 import com.team766.framework.OICondition;
+import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
@@ -34,7 +35,7 @@ import com.team766.robot.reva.mechanisms.Shoulder;
  * 14       = Intake Out (default speed)
  * 15       = Shoot (default speed)
  */
-public class DebugOI {
+public class DebugOI extends OIFragment {
     private final JoystickReader macropad;
 
     private final Shoulder shoulder;
@@ -55,6 +56,7 @@ public class DebugOI {
             Climber climber,
             Intake intake,
             Shooter shooter) {
+        super("DebugOI");
         this.macropad = macropad;
         this.shoulder = shoulder;
         this.climber = climber;
@@ -62,24 +64,26 @@ public class DebugOI {
         this.shooter = shooter;
 
         controlShoulder =
-                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
-        controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
-        controlIntake = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_INTAKE));
-        controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
-        intakeIn = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_IN));
-        intakeOut = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_OUT));
+                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
+        controlClimber =
+                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
+        controlIntake =
+                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_INTAKE));
+        controlShooter =
+                new OICondition(this, () -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
+        intakeIn = new OICondition(this, () -> macropad.getButtonPressed(InputConstants.INTAKE_IN));
+        intakeOut =
+                new OICondition(this, () -> macropad.getButtonPressed(InputConstants.INTAKE_OUT));
         shooterShoot =
-                new OICondition(() -> macropad.getButtonPressed(InputConstants.SHOOTER_SHOOT));
+                new OICondition(
+                        this, () -> macropad.getButtonPressed(InputConstants.SHOOTER_SHOOT));
     }
 
-    public void handleOI(Context context) {
+    @Override
+    protected void handleOI(Context context) {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
-        OICondition controlShoulder =
-                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
-        OICondition controlClimber =
-                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
 
         if (controlShoulder.isTriggering()) {
             // Shoulder
