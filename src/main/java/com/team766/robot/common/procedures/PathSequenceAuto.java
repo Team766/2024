@@ -11,6 +11,8 @@ import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.gatorade.Robot;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.LinkedList;
 
 public class PathSequenceAuto extends Procedure {
@@ -66,7 +68,7 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void add(String pathName) {
-        pathItems.add(new FollowPath(pathName, controller, drive));
+        pathItems.add(new FollowPath(pathName, controller, drive, DriverStation.getAlliance().get() == Alliance.Red));
     }
 
     protected void add(Procedure procedure) {
@@ -80,8 +82,8 @@ public class PathSequenceAuto extends Procedure {
     @Override
     public final void run(Context context) {
         context.takeOwnership(Robot.drive);
-        Robot.drive.resetGyro();
         Robot.drive.setCurrentPosition(initialPosition);
+        Robot.drive.resetGyro(initialPosition.getRotation().getDegrees() + (DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0));
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);

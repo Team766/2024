@@ -24,20 +24,21 @@ public class FollowPath extends Procedure {
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
             PPHolonomicDriveController controller,
-            Drive drive
-            /* TODO: add flip path support */ ) {
-        this.path = path;
+            Drive drive,
+            boolean shouldFlipPath) {
+        this.path = shouldFlipPath ? path.flipPath() : path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive) {
+    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive, boolean shouldFlipPath) {
         this(
                 PathPlannerPath.fromPathFile(autoName),
                 PathPlannerConstants.REPLANNING_CONFIG,
                 controller,
-                drive);
+                drive,
+                shouldFlipPath);
     }
 
     @Override
@@ -46,7 +47,6 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        // TODO: flip path as necessary
         Pose2d curPose = drive.getCurrentPosition();
         ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
 
