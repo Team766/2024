@@ -75,7 +75,9 @@ public class Climber extends Mechanism {
     public void setHeight(double height) {
         double targetHeight =
                 com.team766.math.Math.clamp(
-                        height, ClimberPosition.BOTTOM.getHeight(), ClimberPosition.TOP.getHeight());
+                        height,
+                        ClimberPosition.BOTTOM.getHeight(),
+                        ClimberPosition.TOP.getHeight());
         targetRotations = heightToRotations(targetHeight);
         leftMotor.set(MotorController.ControlMode.Position, targetRotations);
     }
