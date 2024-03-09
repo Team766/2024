@@ -93,15 +93,14 @@ public class BoxOpOI2 {
             context.takeOwnership(intake);
             intake.out();
             context.releaseOwnership(intake);
-        } else if (gamepad.getButton(InputConstants.XBOX_LB)){
+        } else if (gamepad.getButton(InputConstants.XBOX_LB)) {
             context.takeOwnership(intake);
             intake.in();
             context.releaseOwnership(intake);
         } else {
-			context.takeOwnership(intake);
+            context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
-		}
-
+        }
     }
 }
