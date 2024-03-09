@@ -61,13 +61,11 @@ public class Shooter extends Mechanism {
     }
 
     public void nudgeUp() {
-        targetSpeed += NUDGE_INCREMENT;
-        shoot(Math.min(targetSpeed, MAX_SPEED));
+        shoot(Math.min(targetSpeed + NUDGE_INCREMENT, MAX_SPEED));
     }
 
     public void nudgeDown() {
-        targetSpeed -= NUDGE_INCREMENT;
-        shoot(Math.max(targetSpeed, MIN_SPEED));
+        shoot(Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED));
     }
 
     public void run() {
