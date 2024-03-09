@@ -42,10 +42,7 @@ public class TestRobotProvider extends RobotProvider {
 
     @Override
     public EncoderReader getEncoder(final int index1, final int index2) {
-        if (encoders[index1] == null) {
-            encoders[index1] = new MockEncoder();
-        }
-        return encoders[index1];
+        return new MockEncoder();
     }
 
     @Override
@@ -55,42 +52,27 @@ public class TestRobotProvider extends RobotProvider {
 
     @Override
     public SolenoidController getSolenoid(final int index) {
-        if (solenoids[index] == null) {
-            solenoids[index] = new MockSolenoid(index);
-        }
-        return solenoids[index];
+        return new MockSolenoid(index);
     }
 
     @Override
     public GyroReader getGyro(final int index, String configPrefix) {
-        if (gyros[0] == null) {
-            gyros[0] = new MockGyro();
-        }
-        return gyros[0];
+        return new MockGyro();
     }
 
     @Override
     public CameraReader getCamera(final String id, final String value) {
-        if (!cams.containsKey(id)) {
-            cams.put(id, new MockCamera());
-        }
-        return cams.get(id);
+        return new MockCamera();
     }
 
     @Override
     public JoystickReader getJoystick(final int index) {
-        if (joysticks[index] == null) {
-            joysticks[index] = new MockJoystick();
-        }
-        return joysticks[index];
+        return new MockJoystick();
     }
 
     @Override
     public DigitalInputReader getDigitalInput(final int index) {
-        if (digInputs[index] == null) {
-            digInputs[index] = new MockDigitalInput();
-        }
-        return digInputs[index];
+        return new MockDigitalInput();
     }
 
     @Override
@@ -100,33 +82,21 @@ public class TestRobotProvider extends RobotProvider {
 
     @Override
     public AnalogInputReader getAnalogInput(final int index) {
-        if (angInputs[index] == null) {
-            angInputs[index] = new MockAnalogInput();
-        }
-        return angInputs[index];
+        return new MockAnalogInput();
     }
 
     public RelayOutput getRelay(final int index) {
-        if (relays[index] == null) {
-            relays[index] = new MockRelay(index);
-        }
-        return relays[index];
+        return new MockRelay(index);
     }
 
     @Override
     public PositionReader getPositionSensor() {
-        if (positionSensor == null) {
-            positionSensor = new MockPositionSensor();
-        }
-        return positionSensor;
+        return new MockPositionSensor();
     }
 
     @Override
     public BeaconReader getBeaconSensor() {
-        if (beaconSensor == null) {
-            beaconSensor = new MockBeaconSensor();
-        }
-        return beaconSensor;
+        return new MockBeaconSensor();
     }
 
     @Override

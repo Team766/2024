@@ -43,42 +43,27 @@ public class SimulationRobotProvider extends RobotProvider {
 
     @Override
     public EncoderReader getEncoder(final int index1, final int index2) {
-        if (encoders[index1] == null) {
-            encoders[index1] = new Encoder(index1);
-        }
-        return encoders[index1];
+        return new Encoder(index1);
     }
 
     @Override
     public EncoderReader getEncoder(final int index1, String configPrefix) {
-        if (encoders[index1] == null) {
-            encoders[index1] = new Encoder(index1);
-        }
-        return encoders[index1];
+        return new Encoder(index1);
     }
 
     @Override
     public SolenoidController getSolenoid(final int index) {
-        if (solenoids[index] == null) {
-            solenoids[index] = new Solenoid(index);
-        }
-        return solenoids[index];
+        return new Solenoid(index);
     }
 
     @Override
     public GyroReader getGyro(final int index, String configPrefix) {
-        if (gyros[0] == null) {
-            gyros[0] = new Gyro();
-        }
-        return gyros[0];
+        return new Gyro();
     }
 
     @Override
     public CameraReader getCamera(final String id, final String value) {
-        if (!cams.containsKey(id)) {
-            cams.put(id, new Camera());
-        }
-        return cams.get(id);
+        return new Camera();
     }
 
     @Override
@@ -88,10 +73,7 @@ public class SimulationRobotProvider extends RobotProvider {
 
     @Override
     public DigitalInputReader getDigitalInput(final int index) {
-        if (digInputs[index] == null) {
-            digInputs[index] = new DigitalInput(index);
-        }
-        return digInputs[index];
+        return new DigitalInput(index);
     }
 
     @Override
@@ -101,33 +83,21 @@ public class SimulationRobotProvider extends RobotProvider {
 
     @Override
     public AnalogInputReader getAnalogInput(final int index) {
-        if (angInputs[index] == null) {
-            angInputs[index] = new AnalogInput(index);
-        }
-        return angInputs[index];
+        return new AnalogInput(index);
     }
 
     public RelayOutput getRelay(final int index) {
-        if (relays[index] == null) {
-            relays[index] = new Relay(index);
-        }
-        return relays[index];
+        return new Relay(index);
     }
 
     @Override
     public PositionReader getPositionSensor() {
-        if (positionSensor == null) {
-            positionSensor = new PositionSensor();
-        }
-        return positionSensor;
+        return new PositionSensor();
     }
 
     @Override
     public BeaconReader getBeaconSensor() {
-        if (beaconSensor == null) {
-            beaconSensor = new BeaconSensor();
-        }
-        return beaconSensor;
+        return new BeaconSensor();
     }
 
     @Override
