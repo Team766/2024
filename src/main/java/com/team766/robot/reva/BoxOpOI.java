@@ -1,6 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.Context;
+import com.team766.framework.OICondition;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
@@ -18,6 +19,10 @@ public class BoxOpOI {
     private final Shooter shooter;
     private final Climber climber;
 
+    private final OICondition shooterShoot;
+    private final OICondition intakeIn;
+    private final OICondition intakeOut;
+
     public BoxOpOI(
             JoystickReader gamepad,
             Shoulder shoulder,
@@ -29,6 +34,10 @@ public class BoxOpOI {
         this.intake = intake;
         this.shooter = shooter;
         this.climber = climber;
+
+        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
+        intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
+        intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
     }
 
     public void handleOI(Context context) {
@@ -77,27 +86,26 @@ public class BoxOpOI {
         }
 
         // shooter
-        if (gamepad.getAxis(InputConstants.XBOX_RT) > 0) {
+        if (shooterShoot.isTriggering()) {
             context.takeOwnership(shooter);
             shooter.shoot();
             context.releaseOwnership(shooter);
-        } else {
+        } else if (shooterShoot.isFinishedTriggering()) {
             context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
         }
 
         // intake
-        if (gamepad.getButtonPressed(InputConstants.XBOX_RB)) {
+        if (intakeOut.isTriggering()) {
             context.takeOwnership(intake);
             intake.out();
             context.releaseOwnership(intake);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_LB)) {
+        } else if (intakeIn.isTriggering()) {
             context.takeOwnership(intake);
             intake.in();
             context.releaseOwnership(intake);
-        } else if (gamepad.getButtonReleased(InputConstants.XBOX_RB)
-                || gamepad.getButtonReleased(InputConstants.XBOX_LB)) {
+        } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
