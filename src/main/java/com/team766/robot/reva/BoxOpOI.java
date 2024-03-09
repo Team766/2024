@@ -4,7 +4,6 @@ import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
-import com.team766.robot.reva.mechanisms.Climber.ClimberPosition;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -32,40 +31,53 @@ public class BoxOpOI {
     }
 
     public void handleOI(Context context) {
-        if (gamepad.getButton(InputConstants.XBOX_LB)) {
-            // shoulder presets
+
+        // shoulder positions
+        if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
             context.takeOwnership(shoulder);
-
-            if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-                shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-                shoulder.rotate(ShoulderPosition.BOTTOM);
-            } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-                shoulder.rotate(ShoulderPosition.TOP);
-            } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-                shoulder.rotate(ShoulderPosition.SHOOT_LOW);
-            }
-
+            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            context.releaseOwnership(shoulder);
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.BOTTOM);
+            context.releaseOwnership(shoulder);
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.TOP);
+            context.releaseOwnership(shoulder);
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.SHOOT_LOW);
             context.releaseOwnership(shoulder);
         }
 
-        if (gamepad.getAxis(InputConstants.XBOX_LT) > 0) {
-            if (gamepad.getButton(InputConstants.XBOX_RB)) {
-                context.takeOwnership(intake);
-                intake.out();
-                context.releaseOwnership(intake);
-            } else {
-                context.takeOwnership(intake);
-                intake.in();
-                context.releaseOwnership(intake);
-            }
-
-        } else {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
+        // dpad
+        // shoulder up 5
+        if (gamepad.getPOV() == 0) {
+            context.takeOwnership(shoulder);
+            shoulder.nudgeUp();
+            context.releaseOwnership(shoulder);
         }
 
+        if (gamepad.getPOV() == 180) {
+            context.takeOwnership(shoulder);
+            shoulder.nudgeDown();
+            context.releaseOwnership(shoulder);
+        }
+
+        if (gamepad.getPOV() == 90) {
+            context.takeOwnership(climber);
+            // climber down method
+            context.releaseOwnership(climber);
+        }
+
+        if (gamepad.getPOV() == 360) {
+            context.takeOwnership(climber);
+            // climber up method
+            context.releaseOwnership(climber);
+        }
+
+        // shooter
         if (gamepad.getAxis(InputConstants.XBOX_RT) > 0) {
             context.takeOwnership(shooter);
             shooter.shoot();
@@ -76,40 +88,19 @@ public class BoxOpOI {
             context.releaseOwnership(shooter);
         }
 
-        if (gamepad.getPOV() == InputConstants.POV_UP) {
-            context.takeOwnership(climber);
-            climber.setHeight(ClimberPosition.TOP);
-            context.releaseOwnership(climber);
-        } else if (gamepad.getPOV() == InputConstants.POV_DOWN) {
-            context.takeOwnership(climber);
-            climber.setHeight(ClimberPosition.BOTTOM);
-            context.releaseOwnership(climber);
-        }
-
-        // if (gamepad.getButton(9)) {
-        // 	context.takeOwnership(climber);
-        // 	climber.();
-        // 	context.releaseOwnership(climber);
-        // }
-        // if (gamepad.getButton(10)) {
-        // 	context.takeOwnership(climber);
-        // 	climber.nudgeDown();
-        // 	context.releaseOwnership(climber);
-        // }
-        if (gamepad.getButton(7)) {
-            context.takeOwnership(climber);
-            climber.goNoPID();
-            context.releaseOwnership(climber);
+        // intake
+        if (gamepad.getButton(InputConstants.XBOX_RB)) {
+            context.takeOwnership(intake);
+            intake.out();
+            context.releaseOwnership(intake);
+        } else if (gamepad.getButton(InputConstants.XBOX_LB)) {
+            context.takeOwnership(intake);
+            intake.in();
+            context.releaseOwnership(intake);
         } else {
-            context.takeOwnership(climber);
-            climber.stop();
-            context.releaseOwnership(climber);
-        }
-
-        if (gamepad.getButtonPressed(8)) {
-            context.takeOwnership(shoulder);
-            shoulder.nudgeDown();
-            context.releaseOwnership(shoulder);
+            context.takeOwnership(intake);
+            intake.stop();
+            context.releaseOwnership(intake);
         }
     }
 }
