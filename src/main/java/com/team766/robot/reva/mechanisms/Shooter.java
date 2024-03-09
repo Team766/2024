@@ -7,11 +7,12 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
+import com.team766.library.RateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED =
-            2500.0; // motor shaft rps, does not take gearing into account
+            4500.0; // motor shaft rps, does not take gearing into account
     private static final double NUDGE_INCREMENT = 100.0;
     private static final double MAX_SPEED = 5600.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
@@ -19,6 +20,10 @@ public class Shooter extends Mechanism {
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
+    // decrease period if we're tuning PID
+    private RateLimiter rateLimiter = new RateLimiter(10.0);
+    private boolean shouldRun = false;
+    // only used if shouldRun is true
     private double targetSpeed = DEFAULT_SPEED;
     private boolean speedUpdated = false;
 
@@ -34,10 +39,6 @@ public class Shooter extends Mechanism {
                 && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
     }
 
-    public boolean isSpinning() {
-        return (Math.abs(getShooterSpeedBottom()) + Math.abs(getShooterSpeedTop())) > 50;
-    }
-
     private double getShooterSpeedTop() {
         return shooterMotorTop.getSensorVelocity();
     }
@@ -47,17 +48,19 @@ public class Shooter extends Mechanism {
     }
 
     public void shoot(double speed) {
-        checkContextOwnership();
         targetSpeed = com.team766.math.Math.clamp(speed, MIN_SPEED, MAX_SPEED);
-        speedUpdated = true;
+        shoot();
     }
 
     public void shoot() {
-        shoot(DEFAULT_SPEED);
+        checkContextOwnership();
+        shouldRun = targetSpeed > 0.0;
+        speedUpdated = true;
     }
 
     public void stop() {
-        shoot(0.0);
+        shouldRun = false;
+        speedUpdated = true;
     }
 
     public void nudgeUp() {
@@ -69,16 +72,23 @@ public class Shooter extends Mechanism {
     }
 
     public void run() {
-        SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", targetSpeed);
-        SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
-        SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+        if (speedUpdated || rateLimiter.next()) {
+            SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+            SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
+            SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+        }
 
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
         // until then, this is equivalent to the earlier approach
         if (speedUpdated) {
-            shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
-            shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
+            if (shouldRun) {
+                shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
+                shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
+            } else {
+                shooterMotorTop.set(ControlMode.Velocity, 0.0);
+                shooterMotorBottom.set(ControlMode.Velocity, 0.0);
+            }
             speedUpdated = false;
         }
     }

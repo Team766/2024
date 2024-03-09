@@ -95,6 +95,7 @@ public class BoxOpOI extends OIFragment {
             context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
+            controllingShooter = false;
         }
 
         // intake

@@ -28,11 +28,9 @@ import com.team766.robot.reva.mechanisms.Shoulder;
  *
  * 1 + 8/12 = Control Shoulder + Nudge Up/Down
  * 2 + 8/12 = Control Climber + Nudge Up/Down
- * 3 + 8/12 = Control Intake + Nudge Up/Down
+ * 3        = Intake In
  * 4 + 8/12 = Control Shooter + Nudge Up/Down
- * 13       = Intake In (default speed)
- * 14       = Intake Out (default speed)
- * 15       = Shoot (default speed)
+ * 7        = Intake Out
  */
 public class DebugOI extends OIFragment {
     private final JoystickReader macropad;
@@ -49,7 +47,7 @@ public class DebugOI extends OIFragment {
     private final OICondition intakeOut;
     private final OICondition shooterShoot;
 
-    public DebugOI(
+    public DebugOI extends OIFragment (
             JoystickReader macropad,
             Shoulder shoulder,
             Climber climber,
@@ -65,12 +63,9 @@ public class DebugOI extends OIFragment {
         controlShoulder =
                 new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
         controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
-        controlIntake = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_INTAKE));
         controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
         intakeIn = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_IN));
         intakeOut = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_OUT));
-        shooterShoot =
-                new OICondition(() -> macropad.getButtonPressed(InputConstants.SHOOTER_SHOOT));
     }
 
     @Override
