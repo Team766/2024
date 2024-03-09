@@ -1,6 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.Context;
+import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
@@ -9,7 +10,7 @@ import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 
-public class BoxOpOI {
+public class BoxOpOI extends OIFragment {
     private final JoystickReader gamepad;
 
     private final Shoulder shoulder;
@@ -23,84 +24,109 @@ public class BoxOpOI {
             Intake intake,
             Shooter shooter,
             Climber climber) {
+        super("BoxOpOI");
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
         this.shooter = shooter;
         this.climber = climber;
-    }
-
-    public void handleOI(Context context) {
 
         // shoulder positions
-        if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            context.releaseOwnership(shoulder);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.BOTTOM);
-            context.releaseOwnership(shoulder);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.TOP);
-            context.releaseOwnership(shoulder);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_LOW);
-            context.releaseOwnership(shoulder);
-        }
+        addRule(
+                () -> gamepad.getButtonPressed(InputConstants.XBOX_A),
+                (context) -> moveShoulder(context, ShoulderPosition.SHOOT_MEDIUM),
+                null);
 
-        // dpad
-        // shoulder up 5
-        if (gamepad.getPOV() == 0) {
-            context.takeOwnership(shoulder);
-            shoulder.nudgeUp();
-            context.releaseOwnership(shoulder);
-        }
+        addRule(
+                () -> gamepad.getButtonPressed(InputConstants.XBOX_B),
+                (context) -> moveShoulder(context, ShoulderPosition.BOTTOM),
+                null);
 
-        if (gamepad.getPOV() == 180) {
-            context.takeOwnership(shoulder);
-            shoulder.nudgeDown();
-            context.releaseOwnership(shoulder);
-        }
+        addRule(
+                () -> gamepad.getButtonPressed(InputConstants.XBOX_X),
+                (context) -> moveShoulder(context, ShoulderPosition.TOP),
+                null);
 
-        if (gamepad.getPOV() == 90) {
-            context.takeOwnership(climber);
-            // climber down method
-            context.releaseOwnership(climber);
-        }
+        addRule(
+                () -> gamepad.getButtonPressed(InputConstants.XBOX_Y),
+                (context) -> moveShoulder(context, ShoulderPosition.SHOOT_LOW),
+                null);
 
-        if (gamepad.getPOV() == 360) {
-            context.takeOwnership(climber);
-            // climber up method
-            context.releaseOwnership(climber);
-        }
+        addRule(
+                () -> gamepad.getPOV() == 0,
+                (context) -> nudgeShoulder(context, true /* up */),
+                null);
+
+        addRule(
+                () -> gamepad.getPOV() == 180,
+                (context) -> nudgeShoulder(context, false /* down */),
+                null);
+
+        // TODO: control climber up and down
+        addRule(() -> gamepad.getPOV() == 90, null, null);
+        addRule(() -> gamepad.getPOV() == 360, null, null);
 
         // shooter
-        if (gamepad.getAxis(InputConstants.XBOX_RT) > 0) {
-            context.takeOwnership(shooter);
-            shooter.shoot();
-            context.releaseOwnership(shooter);
-        } else {
-            context.takeOwnership(shooter);
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
+        addRule(
+                () -> gamepad.getAxis(InputConstants.XBOX_RT) > 0,
+                (context) -> shoot(context),
+                (context) -> shootDone(context));
 
         // intake
-        if (gamepad.getButton(InputConstants.XBOX_RB)) {
-            context.takeOwnership(intake);
-            intake.out();
-            context.releaseOwnership(intake);
-        } else if (gamepad.getButton(InputConstants.XBOX_LB)) {
-            context.takeOwnership(intake);
-            intake.in();
-            context.releaseOwnership(intake);
+        addRule(
+                () -> gamepad.getButton(InputConstants.XBOX_RB),
+                (context) -> intakeOut(context),
+                (context) -> intakeStop(context));
+
+        addRule(
+                () -> gamepad.getButton(InputConstants.XBOX_LB),
+                (context) -> intakeIn(context),
+                (context) -> intakeStop(context));
+    }
+
+    public void moveShoulder(Context context, ShoulderPosition position) {
+        context.takeOwnership(shoulder);
+        shoulder.rotate(position);
+        context.releaseOwnership(shoulder);
+    }
+
+    public void nudgeShoulder(Context context, boolean up) {
+        context.takeOwnership(shoulder);
+        if (up) {
+            shoulder.nudgeUp();
         } else {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
+            shoulder.nudgeDown();
         }
+        context.releaseOwnership(shoulder);
+    }
+
+    public void shoot(Context context) {
+        context.takeOwnership(shooter);
+        shooter.shoot();
+        context.releaseOwnership(shooter);
+    }
+
+    public void shootDone(Context context) {
+        context.takeOwnership(shooter);
+        shooter.stop();
+        context.releaseOwnership(shooter);
+    }
+
+    public void intakeIn(Context context) {
+        context.takeOwnership(intake);
+        intake.in();
+        context.releaseOwnership(intake);
+    }
+
+    public void intakeOut(Context context) {
+        context.takeOwnership(intake);
+        intake.out();
+        context.releaseOwnership(intake);
+    }
+
+    public void intakeStop(Context context) {
+        context.takeOwnership(intake);
+        intake.stop();
+        context.releaseOwnership(intake);
     }
 }
