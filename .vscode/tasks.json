@@ -36,6 +36,25 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Spotless Apply",
+            "type": "shell",
+            "command": "./gradlew spotlessApply",
+            "problemMatcher": [],
+            "showOutput": "always",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

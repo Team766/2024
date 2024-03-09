@@ -61,6 +61,27 @@ public class GrayScaleCamera extends PhotonCamera {
         }
     }
 
+    public PhotonTrackedTarget getTrackedTargetWithID(int ID)
+            throws AprilTagGeneralCheckedException {
+        var result = getLatestResult();
+        boolean hasTargets = result.hasTargets();
+        if (hasTargets) {
+            List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
+
+            for (PhotonTrackedTarget target : targets) {
+                if (target.getFiducialId() == ID) {
+                    return target;
+                }
+            }
+
+            throw new AprilTagGeneralCheckedException(
+                    "No target with the desired ID of " + ID + " was found by the camera.");
+        } else {
+            throw new AprilTagGeneralCheckedException(
+                    "There were no targets that could be picked up by the camera.");
+        }
+    }
+
     /**
      * This method gets the transform 3d of the best target picked up by the camera
      * @param target the target that you want to get the transform 3d of
