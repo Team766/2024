@@ -1,7 +1,6 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.Context;
-import com.team766.framework.OICondition;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
@@ -37,9 +36,9 @@ public class BoxOpOI extends OIFragment {
         this.shooter = shooter;
         this.climber = climber;
 
-        shooterShoot = new OICondition(this, () -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
-        intakeOut = new OICondition(this, () -> gamepad.getButton(InputConstants.XBOX_RB));
-        intakeIn = new OICondition(this, () -> gamepad.getButton(InputConstants.XBOX_LB));
+        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
+        intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
+        intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
     }
 
     @Override

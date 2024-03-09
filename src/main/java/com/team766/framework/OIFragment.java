@@ -2,6 +2,7 @@ package com.team766.framework;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Fragment of an OI, with facilities to make it easy to set up {@link OICondition}s for usage in the fragment's
@@ -14,6 +15,36 @@ import java.util.List;
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
  */
 public abstract class OIFragment extends LoggingBase {
+
+    protected class OICondition {
+        private final BooleanSupplier condition;
+        private boolean triggering = false;
+        private boolean finishedTriggering = false;
+
+        public OICondition(BooleanSupplier condition) {
+            this.condition = condition;
+            register(this);
+        }
+
+        private void evaluate() {
+            boolean triggeringNow = condition.getAsBoolean();
+            if (triggering && !triggeringNow) {
+                finishedTriggering = true;
+            } else {
+                finishedTriggering = false;
+            }
+            triggering = triggeringNow;
+        }
+
+        public boolean isTriggering() {
+            return triggering;
+        }
+
+        public boolean isFinishedTriggering() {
+            return finishedTriggering;
+        }
+    }
+
     private final String name;
     private final List<OICondition> conditions = new LinkedList<OICondition>();
 
@@ -29,7 +60,7 @@ public abstract class OIFragment extends LoggingBase {
         return name;
     }
 
-    /*package */ void register(OICondition condition) {
+    private void register(OICondition condition) {
         conditions.add(condition);
     }
 
