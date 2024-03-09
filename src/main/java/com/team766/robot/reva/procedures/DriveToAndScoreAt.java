@@ -76,7 +76,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
             // Robot.shooter.runMotors(score.power);
 
         }
-        Robot.shooter.shootPower(score.power);
+        Robot.shooter.shoot(score.speed);
     }
 
     /**

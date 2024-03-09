@@ -72,7 +72,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
             }
 
             Robot.tempShooter.setAngle(score.angle);
-            Robot.tempShooter.runMotors(score.power);
+            Robot.tempShooter.runMotors(score.speed);
 
             Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
         }
