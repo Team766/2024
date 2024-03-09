@@ -2,9 +2,13 @@ package com.team766.robot.reva.mechanisms;
 
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Mechanism {
@@ -20,12 +24,22 @@ public class Intake extends Mechanism {
     private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
 
+    // This should be the amount that getRange() should return less than for a note to be classified
+    // as in
+    private static ValueProvider<Double> threshold =
+            ConfigFileReader.getInstance()
+                    .getDouble("RightProximitySensor.threshold"); // needs calibration
+
     private MotorController intakeMotor;
     private double intakePower = DEFAULT_POWER;
     private State state = State.STOPPED;
+    private TimeOfFlight sensor;
 
     public Intake() {
         intakeMotor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
+        sensor = new TimeOfFlight(0); // needs calibration
+
+        sensor.setRangingMode(RangingMode.Short, 24);
     }
 
     public State getState() {
@@ -74,10 +88,14 @@ public class Intake extends Mechanism {
         SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
     }
 
-    // TODO: Implement
+    // feel free to refactor these two functions later - I didn't want to mess up existing code
+
+    private boolean isNoteReady() {
+        return (threshold.get()) > sensor.getRange() && sensor.isRangeValid();
+    }
 
     public boolean hasNoteInIntake() {
-        return false;
+        return isNoteReady();
     }
 }
 ;
