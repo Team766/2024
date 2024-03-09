@@ -6,31 +6,28 @@ import com.team766.robot.reva.Robot;
 
 public class ShootVelocityAndIntake extends Procedure {
 
-	double speed;
+    double speed;
 
-	public ShootVelocityAndIntake(){
-		this(2000);
-	}
+    public ShootVelocityAndIntake() {
+        this(2000);
+    }
 
-	public ShootVelocityAndIntake(double speed){
-		this.speed = speed;
-	}
-	
+    public ShootVelocityAndIntake(double speed) {
+        this.speed = speed;
+    }
 
-	public void run(Context context) {
-		context.takeOwnership(Robot.shooter);
-		context.takeOwnership(Robot.intake);
+    public void run(Context context) {
+        context.takeOwnership(Robot.shooter);
+        context.takeOwnership(Robot.intake);
 
-		Robot.shooter.shoot(speed);
-		context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
-		log("SUIIII");
+        Robot.shooter.shoot(speed);
+        context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
+        log("SUIIII");
 
-		new IntakeIn().run(context);
-		context.waitForSeconds(1.5);
+        new IntakeIn().run(context);
+        context.waitForSeconds(1.5);
 
-		new IntakeStop().run(context);
-		Robot.shooter.shoot(0);
-	}
-	
-	
+        new IntakeStop().run(context);
+        Robot.shooter.shoot(0);
+    }
 }

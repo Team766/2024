@@ -2,6 +2,7 @@ package com.team766.robot.reva.mechanisms;
 
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
@@ -24,6 +25,8 @@ public class Shooter extends Mechanism {
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
+        shooterMotorTop.setNeutralMode(NeutralMode.Coast);
+        shooterMotorBottom.setNeutralMode(NeutralMode.Coast);
     }
 
     public boolean isCloseToExpectedSpeed() {
