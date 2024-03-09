@@ -20,7 +20,7 @@ public class OICondition {
     }
 
     public boolean isFinishedTriggering() {
-        if (triggered && !isFinishedTriggering()) {
+        if (triggered && !condition.getAsBoolean()) {
             triggered = false;
             return true;
         }
