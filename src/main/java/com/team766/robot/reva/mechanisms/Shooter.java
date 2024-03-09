@@ -15,7 +15,7 @@ public class Shooter extends Mechanism {
     private static final double NUDGE_INCREMENT = 100.0;
     private static final double MAX_SPEED = 5600.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
-    private static final double SPEED_TOLERANCE = 100.0; // rpm
+    private static final double SPEED_TOLERANCE = 200.0; // rpm
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;

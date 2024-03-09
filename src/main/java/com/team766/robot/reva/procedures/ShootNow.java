@@ -32,12 +32,12 @@ public class ShootNow extends VisionPIDProcedure {
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
-        context.takeOwnership(Robot.drive);
+        // context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
         context.takeOwnership(Robot.intake);
 
-        Robot.drive.stopDrive();
+        // Robot.drive.stopDrive();
 
         Transform3d toUse;
         try {
@@ -85,12 +85,18 @@ public class ShootNow extends VisionPIDProcedure {
                 continue;
             }
 
-            Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
+            // Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
         }
 
         context.waitFor(() -> Robot.shoulder.isFinished());
 
-        context.startAsync(new ShootVelocityAndIntake(power));
+        log("Shoulder moved");
+
+        context.releaseOwnership(Robot.shooter);
+        context.releaseOwnership(Robot.intake);
+        new ShootVelocityAndIntake(power).run(context);
+
+        log("Done with power");
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
