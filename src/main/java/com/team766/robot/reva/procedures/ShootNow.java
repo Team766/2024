@@ -67,13 +67,13 @@ public class ShootNow extends VisionPIDProcedure {
         try {
             power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
             armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
-
-            Robot.shooter.shootPower(power);
-            Robot.shoulder.rotate(armAngle);
-
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
+            return;
         }
+
+        Robot.shoulder.rotate(armAngle);
+
         while (anglePID.getOutput() != 0) {
             context.yield();
 
@@ -90,13 +90,7 @@ public class ShootNow extends VisionPIDProcedure {
 
         context.waitFor(() -> Robot.shoulder.isFinished());
 
-        context.waitForSeconds(1);
-        new IntakeIn().run(context);
-
-        context.waitForSeconds(3);
-
-        Robot.shooter.stop();
-        new IntakeStop().run(context);
+        context.startAsync(new ShootVelocityAndIntake(power));
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
