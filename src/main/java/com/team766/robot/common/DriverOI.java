@@ -2,12 +2,13 @@ package com.team766.robot.common;
 
 import com.team766.framework.Context;
 import com.team766.framework.OICondition;
+import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.Drive;
 
-public class DriverOI {
+public class DriverOI extends OIFragment {
 
     protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
@@ -22,12 +23,14 @@ public class DriverOI {
     private final OICondition movingJoysticks;
 
     public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
+        super("DriverOI");
         this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
 
         movingJoysticks =
                 new OICondition(
+                        this,
                         () ->
                                 !isCross
                                         && Math.abs(leftJoystickX)

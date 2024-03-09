@@ -4,26 +4,29 @@ import java.util.function.BooleanSupplier;
 
 public class OICondition {
     private final BooleanSupplier condition;
-    private boolean triggered;
+    private boolean triggering = false;
+    private boolean finishedTriggering = false;
 
-    public OICondition(BooleanSupplier condition) {
+    public OICondition(OIFragment parent, BooleanSupplier condition) {
         this.condition = condition;
-        this.triggered = false;
+        parent.register(this);
+    }
+
+    /* package */ void evaluate() {
+        boolean triggeringNow = condition.getAsBoolean();
+        if (triggering && !triggeringNow) {
+            finishedTriggering = true;
+        } else {
+            finishedTriggering = false;
+        }
+        triggering = triggeringNow;
     }
 
     public boolean isTriggering() {
-        if (condition.getAsBoolean()) {
-            triggered = true;
-            return true;
-        }
-        return false;
+        return triggering;
     }
 
     public boolean isFinishedTriggering() {
-        if (triggered && !condition.getAsBoolean()) {
-            triggered = false;
-            return true;
-        }
-        return false;
+        return finishedTriggering;
     }
 }
