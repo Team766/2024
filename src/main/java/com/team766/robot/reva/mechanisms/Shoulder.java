@@ -35,7 +35,7 @@ public class Shoulder extends Mechanism {
     }
 
     private double curSetpoint;
-    private static final double NUDGE_AMOUNT = 5; // degrees
+    private static final double NUDGE_AMOUNT = 1; // degrees
 
     private MotorController leftMotor;
     private MotorController rightMotor;

@@ -79,12 +79,24 @@ public class BoxOpOI {
 
         // shooter
         if (gamepad.getAxis(InputConstants.XBOX_RT) > 0) {
-            context.takeOwnership(shooter);
-            shooter.shoot();
-            context.releaseOwnership(shooter);
+            // context.takeOwnership(shooter);
+            // shooter.shoot();
+            // context.releaseOwnership(shooter);
         } else {
             context.takeOwnership(shooter);
             shooter.stop();
+            context.releaseOwnership(shooter);
+        }
+
+        if (gamepad.getButtonPressed(8)){
+            context.takeOwnership(shooter);
+            Robot.shooter.nudgeUp();
+            context.releaseOwnership(shooter);
+        }
+
+        if(gamepad.getButtonPressed(7)){
+            context.takeOwnership(shooter);
+            Robot.shooter.nudgeDown();
             context.releaseOwnership(shooter);
         }
 

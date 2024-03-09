@@ -17,14 +17,14 @@ public abstract class VisionPIDProcedure extends Procedure {
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
      */
-    private static AnywhereScoringPosition a1 = new AnywhereScoringPosition(2.185, 0.75, 20);
-    private static AnywhereScoringPosition a2 = new AnywhereScoringPosition(2.791, 0.95, 25);
-    private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(3.140, 1, 32.22);
-    private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(3.631, 1, 32.5);
-    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(4.001, 1, 32.25);
-    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(0, 0, 0);
-    private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(0, 0, 0);
-    private static AnywhereScoringPosition a8 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a1 = new AnywhereScoringPosition(1.453,5600,17.80599);
+    private static AnywhereScoringPosition a2 = new AnywhereScoringPosition(1.7201,5600,22.205946);
+    private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(1.9506,5600,23.516);
+    private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(2.1839,5600,26.7537);
+    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.4616,5600,30.8987);
+    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.6942, 5600, 32.699);
+    private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(2.8657, 5600, 34.103733);
+    private static AnywhereScoringPosition a8 = new AnywhereScoringPosition(3.2926, 5600, 34.6842);
     private static AnywhereScoringPosition a9 = new AnywhereScoringPosition(0, 0, 0);
     private static AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
 
@@ -36,9 +36,9 @@ public abstract class VisionPIDProcedure extends Procedure {
                     add(a3);
                     add(a4);
                     add(a5);
-                    // add(a6);
-                    // add(a7);
-                    // add(a8);
+                    add(a6);
+                    add(a7);
+                    add(a8);
                     // add(a9);
                     // add(a10);
                 }
