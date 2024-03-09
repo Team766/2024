@@ -12,7 +12,7 @@ public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED =
             2500.0; // motor shaft rps, does not take gearing into account
     private static final double NUDGE_INCREMENT = 100.0;
-    private static final double MAX_SPEED = 5900.0; // spec is 6000.0
+    private static final double MAX_SPEED = 5600.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
     private static final double SPEED_TOLERANCE = 100.0; // rpm
 
@@ -29,6 +29,10 @@ public class Shooter extends Mechanism {
     public boolean isCloseToExpectedSpeed() {
         return ((Math.abs(targetSpeed - getShooterSpeedTop()) < SPEED_TOLERANCE)
                 && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
+    }
+
+    public boolean isSpinning() {
+        return (Math.abs(getShooterSpeedBottom()) + Math.abs(getShooterSpeedTop())) > 50;
     }
 
     private double getShooterSpeedTop() {

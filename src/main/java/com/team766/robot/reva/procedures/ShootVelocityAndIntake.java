@@ -23,9 +23,13 @@ public class ShootVelocityAndIntake extends Procedure {
 
 		Robot.shooter.shoot(speed);
 		context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
+		log("SUIIII");
 
-		Robot.intake.in();
+		new IntakeIn().run(context);
 		context.waitForSeconds(1.5);
+
+		new IntakeStop().run(context);
+		Robot.shooter.shoot(0);
 	}
 	
 	

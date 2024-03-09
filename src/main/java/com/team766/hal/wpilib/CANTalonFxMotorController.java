@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -80,7 +81,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
                 super.setControl(position);
                 break;
             case Velocity:
-                VelocityDutyCycle velocity = new VelocityDutyCycle(value);
+                VelocityVoltage velocity = new VelocityVoltage(value);
                 super.setControl(velocity);
                 break;
             case Voltage:

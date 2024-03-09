@@ -93,11 +93,11 @@ public class DebugOI {
             context.releaseOwnership(climber);
         }
 
-        // if (macropad.getButtonPressed(9)){
-        //     context.startAsync(new ShootVelocityAndIntake(3000));
-        // }
+        if (macropad.getButtonPressed(9)){
+            context.startAsync(new ShootVelocityAndIntake(5000));
+        }
 
-        
+
         // fine-grained control of the intake
         // used for testing and tuning
         // press down the intake control button and nudge ths intake speed up and down
@@ -114,11 +114,11 @@ public class DebugOI {
                 intake.nudgeDown();
             }
             context.releaseOwnership(intake);
-        } else if (intake.getState() != Intake.State.STOPPED) {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
-        }
+        }// } else if (intake.getState() != Intake.State.STOPPED) {
+        //     context.takeOwnership(intake);
+        //     intake.stop();
+        //     context.releaseOwnership(intake);
+        // }
 
         // simple one-button controls for intake
         // used for testing and tuning
@@ -131,11 +131,11 @@ public class DebugOI {
             context.takeOwnership(intake);
             intake.out();
             context.releaseOwnership(intake);
-        } else if (intake.getState() != Intake.State.STOPPED) {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
-        }
+        }// } else if (intake.getState() != Intake.State.STOPPED) {
+        //     context.takeOwnership(intake);
+        //     intake.stop();
+        //     context.releaseOwnership(intake);
+        // }
 
         // fine-grained controls for shooter
         // used for testing and tuning
@@ -148,11 +148,11 @@ public class DebugOI {
                 shooter.nudgeDown();
             }
             context.releaseOwnership(shooter);
-        } else {
-            context.takeOwnership(shooter);
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
+        }// } else {
+        //     context.takeOwnership(shooter);
+        //     shooter.stop();
+        //     context.releaseOwnership(shooter);
+        // }
 
         // simpler one-button controls for shooter
         // used for testing and tuning
@@ -161,10 +161,10 @@ public class DebugOI {
             context.takeOwnership(shooter);
             shooter.shoot();
             context.releaseOwnership(shooter);
-        } else if (shooter.getPower() != 0) {
-            context.takeOwnership(shooter);
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
+        }// } else if (shooter.isSpinning()) {
+        //     context.takeOwnership(shooter);
+        //     shooter.stop();
+        //     context.releaseOwnership(shooter);
+        // }
     }
 }
