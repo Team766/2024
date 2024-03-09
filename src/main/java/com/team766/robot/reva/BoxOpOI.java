@@ -96,17 +96,20 @@ public class BoxOpOI {
             context.releaseOwnership(shooter);
         }
 
-        if (gamepad.getButtonPressed(8)){
+        if (gamepad.getButtonPressed(8)) {
             isAsyncFinished = false;
             launchedContext = context.startAsync(new ShootNow());
-        } else if (gamepad.getButtonReleased(8) || (launchedContext != null && launchedContext.isDone())){
+        } else if (gamepad.getButtonReleased(8)
+                || (launchedContext != null && launchedContext.isDone())) {
             Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.INFO, "reset");
-            if (launchedContext != null) {launchedContext.stop();}
+            if (launchedContext != null) {
+                launchedContext.stop();
+            }
             isAsyncFinished = true;
             launchedContext = null;
         }
 
-        if(gamepad.getButtonPressed(7)){
+        if (gamepad.getButtonPressed(7)) {
             context.takeOwnership(shooter);
             Robot.shooter.nudgeDown();
             context.releaseOwnership(shooter);

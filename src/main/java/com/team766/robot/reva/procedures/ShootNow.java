@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
@@ -53,16 +52,15 @@ public class ShootNow extends VisionPIDProcedure {
         double x = toUse.getX();
         double y = toUse.getY();
 
-
         anglePID.setSetpoint(0);
 
         /*
          * Should we calculate these before angleing the robot or after?
          * 3/9 consensous: before
          */
-        
+
         double distanceOfRobotToTag =
-            Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
+                Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
 
         double power;
         double armAngle;
@@ -75,9 +73,6 @@ public class ShootNow extends VisionPIDProcedure {
         }
 
         Robot.shoulder.rotate(armAngle);
-    
-
-        
 
         // double toAdd;
 
@@ -87,7 +82,7 @@ public class ShootNow extends VisionPIDProcedure {
         //     toAdd = 3;
         // }
 
-        //anglePID.calculate(toUse.getRotation().getZ() + toAdd);
+        // anglePID.calculate(toUse.getRotation().getZ() + toAdd);
 
         angle = Math.atan2(y, x);
 
@@ -115,13 +110,9 @@ public class ShootNow extends VisionPIDProcedure {
 
             Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
         }
-        
+
         SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
-
-
-
-
 
         context.waitFor(() -> Robot.shoulder.isFinished());
 
