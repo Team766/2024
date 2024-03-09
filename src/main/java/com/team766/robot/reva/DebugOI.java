@@ -7,7 +7,6 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.procedures.ShootNow;
 
 /**
  * Programmer-centric controls to test each of our (non-drive) mechanisms.
@@ -114,13 +113,6 @@ public class DebugOI {
             context.releaseOwnership(intake);
         }
 
-        if (macropad.getButtonPressed(InputConstants.SHOOT_ANYWHERE)) {
-            context.takeOwnership(Robot.drive);
-            Robot.drive.stopDrive();
-            context.startAsync(new ShootNow());
-            context.releaseOwnership(Robot.drive);
-        }
-
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
@@ -136,13 +128,6 @@ public class DebugOI {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
-        }
-
-        if (macropad.getButtonPressed(InputConstants.SHOOT_ANYWHERE)) {
-            context.takeOwnership(Robot.drive);
-            Robot.drive.stopDrive();
-            context.startAsync(new ShootNow());
-            context.releaseOwnership(Robot.drive);
         }
 
         // fine-grained controls for shooter
