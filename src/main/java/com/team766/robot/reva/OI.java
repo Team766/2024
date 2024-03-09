@@ -50,7 +50,7 @@ public class OI extends Procedure {
             // Driver OI: take input from left, right joysticks.  control drive.
             driverOI.handleOI(context);
             // Debug OI: allow for finer-grain testing of each mechanism.
-            // debugOI.handleOI(context);
+            debugOI.handleOI(context);
 
             boxOpOI.handleOI(context);
         }
