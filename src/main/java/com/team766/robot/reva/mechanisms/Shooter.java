@@ -1,19 +1,20 @@
 package com.team766.robot.reva.mechanisms;
 
 import static com.team766.robot.reva.constants.ConfigConstants.*;
-
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.library.ValueProvider;
 import com.team766.hal.RobotProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED = 20.0; // rps
-    private static final double NUDGE_INCREMENT = 0.05;
-    private static final double MAX_SPEED = 0.8;
+    private static final double NUDGE_INCREMENT = 0.8;
+    private static final double MAX_SPEED = 112.5;
     private static final double MIN_SPEED = 0.0;
-    private static final double SPEED_TOLERANCE = 5.0; // rps
+    private static final double SPEED_TOLERANCE = 0.75; // rps
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
