@@ -20,12 +20,12 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 2.521515316586944,
-        "y": 6.993877922552484
+        "x": 2.647327938174395,
+        "y": 6.99797387557738
       },
       "nextControl": {
-        "x": 3.2911845272312097,
-        "y": 7.005677770754038
+        "x": 3.2912178856275127,
+        "y": 7.0027436819811815
       },
       "isLocked": false,
       "linkedName": null
@@ -67,7 +67,7 @@
   "reversed": false,
   "folder": "gatorade",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -140.22201891090498,
     "velocity": 0
   },
   "useDefaultConstraints": true
