@@ -95,6 +95,8 @@ public class Intake extends Mechanism {
     }
 
     public boolean hasNoteInIntake() {
+        //debug
+        log("Sensor thingy: " + sensor.getRange());
         return isNoteReady();
     }
 }
