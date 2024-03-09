@@ -27,6 +27,7 @@ public abstract class VisionPIDProcedure extends Procedure {
     private static AnywhereScoringPosition a8 = new AnywhereScoringPosition(0, 0, 0);
     private static AnywhereScoringPosition a9 = new AnywhereScoringPosition(0, 0, 0);
     private static AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
+    
 
     protected static ArrayList<AnywhereScoringPosition> scoringPositions =
             new ArrayList<AnywhereScoringPosition>() {
