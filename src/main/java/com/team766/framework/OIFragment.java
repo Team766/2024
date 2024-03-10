@@ -31,8 +31,10 @@ public abstract class OIFragment extends LoggingBase {
             boolean triggeringNow = condition.getAsBoolean();
             if (triggeringNow) {
                 newlyTriggering = !triggering;
+                finishedTriggering = false;
             } else {
                 finishedTriggering = triggering;
+                newlyTriggering = false;
             }
             triggering = triggeringNow;
         }
