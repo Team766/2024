@@ -50,7 +50,6 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                 // TODO: Turn this into PID?
                 // If it is more that four degrees off...
                 if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
-                } else {
                     if (robotToTag.getRotation().getZ() < 0) {
                         turnConstant = -0.02;
                     } else {
