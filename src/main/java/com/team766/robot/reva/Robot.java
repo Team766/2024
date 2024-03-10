@@ -23,7 +23,6 @@ public class Robot implements RobotConfigurator {
     // not yet initialized, until we have the camera on the robot and test it.
     public static ForwardApriltagCamera forwardApriltagCamera;
     public static NoteCamera noteCamera;
-    public static RightProximitySensor proximitySensor;
 
     @Override
     public void initializeMechanisms() {
