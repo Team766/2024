@@ -62,8 +62,8 @@ public class DebugOI extends OIFragment {
                 new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
         controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
         controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
-        intakeIn = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_IN));
-        intakeOut = new OICondition(() -> macropad.getButtonPressed(InputConstants.INTAKE_OUT));
+        intakeIn = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_IN));
+        intakeOut = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_OUT));
     }
 
     @Override
