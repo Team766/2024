@@ -16,11 +16,11 @@ TODO: consider this customization.
 <table>
   <tr>
     <td>
-	  <img align="left" src="images/thrustmaster.jpeg" alt="left"/>
-	</td>
-	<td>
+    <img align="left" src="images/thrustmaster.jpeg" alt="left"/>
+  </td>
+  <td>
       <img align="right" src="images/thrustmaster.jpeg" alt="right"/>
-	</td>
+  </td>
   </tr>
   <tr>
     <td><strong>Drive</strong></td>
@@ -36,11 +36,11 @@ TODO: consider this customization.
   </tr>
   <tr>
     <td><strong>Button 9</strong>: Reset gyro</td>
-  	<td><strong>Button 1 (Trigger)</strong>: Fine driving<br>(slow down to 25%)</td>
+    <td><strong>Button 1 (Trigger)</strong>: Fine driving<br>(slow down to 25%)</td>
   </tr>
   <tr>
     <td><strong>Button 15</strong>: Reset position (odometry)</td>
-  	<td><strong>Button 3</strong>: Cross wheels</td>
+    <td><strong>Button 3</strong>: Cross wheels</td>
   </tr>
   <tr>
     <td colspan="2"><strong>NOTE: X-axis is up/down, Y-axis is sideways</strong></td>
@@ -58,48 +58,48 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
 <table>
   <tr>
     <td colspan="2">
-	  <img src="images/xbox.svg" alt="gamepad"/>
-	</td>
+    <img src="images/xbox.svg" alt="gamepad"/>
+  </td>
   </tr>
   <tr>
   </tr>
   <tr>
     <td>A</td>
-	<td>Move shoulder to speaker shooting position</td>
+  <td>Move shoulder to speaker shooting position</td>
   </tr>
   <tr>
     <td>B</td>
-	<td>Intake piece from floor, using proximity sensor to stop</td>
+  <td>Intake piece from floor, using proximity sensor to stop</td>
   </tr>
  <tr>
     <td>X</td>
-	<td>Move shoulder to top (will hit climber).  DO NOT USE - NEEDS UPDATING.</td>
+  <td>Move shoulder to top (will hit climber).  DO NOT USE - NEEDS UPDATING.</td>
  </tr>
  <tr>
     <td>Y</td>
-	<td>Move shoulder to low position.  NEEDS UPDATING.</td>
+  <td>Move shoulder to low position.  NEEDS UPDATING.</td>
 </tr>
  <tr>
     <td>DPAD UP</td>
-	<td>Nudge shoulder up.</td>
+  <td>Nudge shoulder up.</td>
 </tr>
  <tr>
     <td>DPAD DOWN</td>
-	<td>Nudge shoulder down.</td>
+  <td>Nudge shoulder down.</td>
 </tr>
 
  <tr>
     <td>RT</td>
-	<td>Hold to spin shooter</td>
+  <td>Hold to spin shooter</td>
 </tr>
 
  <tr>
     <td>LB</td>
-	<td>Hold to run intake (in)</td>
+  <td>Hold to run intake (in)</td>
 </tr>
 <tr>
     <td>RB</td>
-	<td>Hold to run intake (out)</td>
+  <td>Hold to run intake (out)</td>
 </tr>
 </table>
 
@@ -117,43 +117,43 @@ TODO: put together page with instructions on how to flash the firmware.
 <table>
   <tr>
     <td colspan="2">
-	  <img src="images/kb16.png" alt="macropad"/>
-	</td>
+    <img src="images/kb16.png" alt="macropad"/>
+  </td>
   </tr>
   <tr>
     <td>1</td>
-  	<td>Hold to control shoulder (with up/down or dials)</td>
+    <td>Hold to control shoulder (with up/down or dials)</td>
   </tr>
   <tr>
     <td>2</td>
-  	<td>Hold to control climber (with up/down or dials)<br>Work in progress.</td>
+    <td>Hold to control climber (with up/down or dials)<br>Work in progress.</td>
   </tr>
   <tr>
     <td>3</td>
-  	<td>Hold to run intake (in)</td>
+    <td>Hold to run intake (in)</td>
   </tr>
   <tr>
     <td>4</td>
-  	<td>Hold to run shooter.  Can speed up and slow down (with up/down or dials).</td>
+    <td>Hold to run shooter.  Can speed up and slow down (with up/down or dials).</td>
   </tr>
   <tr>
     <td>7</td>
-  	<td>Hold to run intake (out).</td>
+    <td>Hold to run intake (out).</td>
   </tr>
 
   <tr>
     <td>8</td>
-  	<td>Moves mechanism being controlled (via another button) up.</td>
+    <td>Moves mechanism being controlled (via another button) up.</td>
   </tr>
 
   <tr>
     <td>12</td>
-  	<td>Moves mechanism being controlled (via another button) down.</td>
+    <td>Moves mechanism being controlled (via another button) down.</td>
   </tr>
 
   <tr>
     <td>9</td>
-  	<td>Rest relative encoders on shoulder.</td>
+    <td>Rest relative encoders on shoulder.</td>
   </tr>
 
 </table>
