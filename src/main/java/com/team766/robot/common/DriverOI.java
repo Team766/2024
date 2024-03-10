@@ -19,7 +19,7 @@ public class DriverOI extends OIFragment {
     protected double leftJoystickY = 0;
     protected boolean isCross = false;
 
-    private final OICondition movingJoysticks;
+    private final Condition movingJoysticks;
 
     public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         super("DriverOI");
@@ -28,7 +28,7 @@ public class DriverOI extends OIFragment {
         this.rightJoystick = rightJoystick;
 
         movingJoysticks =
-                new OICondition(
+                new Condition(
                         () ->
                                 !isCross
                                         && Math.abs(leftJoystickX)

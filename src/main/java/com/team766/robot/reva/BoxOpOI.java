@@ -19,9 +19,9 @@ public class BoxOpOI extends OIFragment {
     private final Shooter shooter;
     private final Climber climber;
 
-    private final OICondition shooterShoot;
-    private final OICondition intakeOut;
-    private final OICondition intakeIn;
+    private final Condition shooterShoot;
+    private final Condition intakeOut;
+    private final Condition intakeIn;
 
     public BoxOpOI(
             JoystickReader gamepad,
@@ -36,9 +36,9 @@ public class BoxOpOI extends OIFragment {
         this.shooter = shooter;
         this.climber = climber;
 
-        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
-        intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
-        intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
+        shooterShoot = new Condition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
+        intakeOut = new Condition(() -> gamepad.getButton(InputConstants.XBOX_RB));
+        intakeIn = new Condition(() -> gamepad.getButton(InputConstants.XBOX_LB));
     }
 
     @Override

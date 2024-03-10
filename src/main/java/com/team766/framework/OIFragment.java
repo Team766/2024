@@ -5,24 +5,24 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
- * Fragment of an OI, with facilities to make it easy to set up {@link OICondition}s for usage in the fragment's
+ * Fragment of an OI, with facilities to make it easy to set up {@link Condition}s for usage in the fragment's
  * {@link #handleOI} method.
  *
  * The overall OI for a robot will contain a set of fragments, typically one per set of controls (eg, driver, boxop, debug),
  * and it will call {@link #runOI(Context)} once per its own loop.  During each call to {@link #runOI}, the fragment
- * will evaluate any {@link OICondition}s that were created for this fragment.  This simplifies OI logic that checks if a
+ * will evaluate any {@link Condition}s that were created for this fragment.  This simplifies OI logic that checks if a
  * specific condition is currently triggering (eg pressing or holding down a joystick button) or if a condition that had been triggering
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
  */
 public abstract class OIFragment extends LoggingBase {
 
-    protected class OICondition {
+    protected class Condition {
         private final BooleanSupplier condition;
         private boolean triggering = false;
         private boolean newlyTriggering = false;
         private boolean finishedTriggering = false;
 
-        public OICondition(BooleanSupplier condition) {
+        public Condition(BooleanSupplier condition) {
             this.condition = condition;
             register(this);
         }
@@ -53,7 +53,7 @@ public abstract class OIFragment extends LoggingBase {
     }
 
     private final String name;
-    private final List<OICondition> conditions = new LinkedList<OICondition>();
+    private final List<Condition> conditions = new LinkedList<Condition>();
 
     /**
      * Creates a new OIFragment.
@@ -67,7 +67,7 @@ public abstract class OIFragment extends LoggingBase {
         return name;
     }
 
-    private void register(OICondition condition) {
+    private void register(Condition condition) {
         conditions.add(condition);
     }
 
@@ -79,10 +79,10 @@ public abstract class OIFragment extends LoggingBase {
 
     /**
      * OIFragments must override this method to implement their OI logic.  Typically called via the overall
-     * OI's loop, once per iteration through the loop.  Can use any {@link OICondition}s
-     * they have set up to simplify checking if the {@link OICondition} is {@link OICondition#isTriggering()},
+     * OI's loop, once per iteration through the loop.  Can use any {@link Condition}s
+     * they have set up to simplify checking if the {@link Condition} is {@link Condition#isTriggering()},
      * or, if it had been triggering in a previous iteration of the loop, if it is now
-     * {@link OICondition#isFinishedTriggering()}.
+     * {@link Condition#isFinishedTriggering()}.
      *
      * @param context The {@link Context} running the OI.
      */
@@ -100,7 +100,7 @@ public abstract class OIFragment extends LoggingBase {
      */
     public final void runOI(Context context) {
         handlePre();
-        for (OICondition condition : conditions) {
+        for (Condition condition : conditions) {
             condition.evaluate();
         }
         handleOI(context);
