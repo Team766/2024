@@ -67,7 +67,12 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void add(String pathName) {
-        pathItems.add(new FollowPath(pathName, controller, drive, DriverStation.getAlliance().get() == Alliance.Red));
+        pathItems.add(
+                new FollowPath(
+                        pathName,
+                        controller,
+                        drive,
+                        DriverStation.getAlliance().get() == Alliance.Red));
     }
 
     protected void add(Procedure procedure) {
@@ -82,7 +87,9 @@ public class PathSequenceAuto extends Procedure {
     public final void run(Context context) {
         context.takeOwnership(drive);
         drive.setCurrentPosition(initialPosition);
-        drive.resetGyro(initialPosition.getRotation().getDegrees() + (DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0));
+        drive.resetGyro(
+                initialPosition.getRotation().getDegrees()
+                        + (DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0));
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);

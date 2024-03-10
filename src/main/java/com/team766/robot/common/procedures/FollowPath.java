@@ -32,7 +32,11 @@ public class FollowPath extends Procedure {
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive, boolean shouldFlipPath) {
+    public FollowPath(
+            String autoName,
+            PPHolonomicDriveController controller,
+            Drive drive,
+            boolean shouldFlipPath) {
         this(
                 PathPlannerPath.fromPathFile(autoName),
                 PathPlannerConstants.REPLANNING_CONFIG,

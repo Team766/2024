@@ -10,7 +10,6 @@ import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.AutoIntake;
-import com.team766.robot.reva.procedures.ShootNow;
 
 public class BoxOpOI extends OIFragment {
     private final JoystickReader gamepad;

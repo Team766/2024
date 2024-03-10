@@ -5,7 +5,8 @@ import com.team766.robot.reva.procedures.ShootNow;
 import com.team766.robot.reva.procedures.ThreePieceAuton;
 
 public class AutonomousModes {
-    public static final AutonomousMode[] AUTONOMOUS_MODES = new AutonomousMode[] {
+    public static final AutonomousMode[] AUTONOMOUS_MODES =
+            new AutonomousMode[] {
                 // Add autonomous modes here like this:
                 //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
                 //
