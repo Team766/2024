@@ -9,7 +9,6 @@ import com.team766.framework.RunnableWithContext;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.gatorade.Robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -81,9 +80,9 @@ public class PathSequenceAuto extends Procedure {
 
     @Override
     public final void run(Context context) {
-        context.takeOwnership(Robot.drive);
-        Robot.drive.setCurrentPosition(initialPosition);
-        Robot.drive.resetGyro(initialPosition.getRotation().getDegrees() + (DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0));
+        context.takeOwnership(drive);
+        drive.setCurrentPosition(initialPosition);
+        drive.resetGyro(initialPosition.getRotation().getDegrees() + (DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0));
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);

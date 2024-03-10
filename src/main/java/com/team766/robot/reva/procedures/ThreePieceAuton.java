@@ -7,14 +7,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceAuton extends PathSequenceAuto {
 	public ThreePieceAuton() {
-		super(Robot.drive, new Pose2d(2.00, 6.75, new Rotation2d(33)));
-		// add(vision shoot);
-		// add(shoulder down and intake w/ prox sensor);
+		super(Robot.drive, new Pose2d(2.00, 6.75, Rotation2d.fromDegrees(33)));
+		add(new ShootNow());
+		add(new AutoIntake());
+		add(0.25);
 		add("3 Piece 1");
 		add("3 Piece 2");
-		// add(vision shoot);
-		// add(shoulder down and intake w/ prox sensor);
+		add(new ShootNow());
+		add(new AutoIntake());
+		add(0.25);
 		add("3 Piece 3");
-		// add(vision shoot);
+		add(new ShootNow());
 	}
 }

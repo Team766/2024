@@ -37,6 +37,9 @@ public class DriverOI extends OIFragment {
     }
 
     public void handleOI(Context context) {
+        if (!leftJoystick.getButton(1)) {
+            return;
+        }
 
         // Negative because forward is negative in driver station
         leftJoystickX =

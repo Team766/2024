@@ -1,6 +1,8 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
+import com.team766.robot.reva.procedures.ShootNow;
+import com.team766.robot.reva.procedures.ThreePieceAuton;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES = new AutonomousMode[] {
@@ -11,5 +13,7 @@ public class AutonomousModes {
                 // define one or more different autonomous modes with it like this:
                 //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+                new AutonomousMode("ThreePiece", () -> new ThreePieceAuton()),
+                new AutonomousMode("ShootNow", () -> new ShootNow())
             };
 }

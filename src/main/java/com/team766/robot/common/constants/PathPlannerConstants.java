@@ -7,7 +7,7 @@ public final class PathPlannerConstants {
     private PathPlannerConstants() {}
 
     // default replanning config values
-    public static final ReplanningConfig REPLANNING_CONFIG = new ReplanningConfig(false, false);
+    public static final ReplanningConfig REPLANNING_CONFIG = new ReplanningConfig(true, false);
 
     // PID constants for drive controller
     // TODO: change pathplanner constants

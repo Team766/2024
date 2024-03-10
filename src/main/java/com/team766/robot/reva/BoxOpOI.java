@@ -10,6 +10,7 @@ import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.AutoIntake;
+import com.team766.robot.reva.procedures.ShootNow;
 
 public class BoxOpOI extends OIFragment {
     private final JoystickReader gamepad;
@@ -44,9 +45,10 @@ public class BoxOpOI extends OIFragment {
     protected void handleOI(Context context) {
         // shoulder positions
         if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            context.releaseOwnership(shoulder);
+            context.startAsync(new ShootNow());
+            // context.takeOwnership(shoulder);
+            // shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            // context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
             context.takeOwnership(shoulder);
             shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);

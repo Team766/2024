@@ -111,6 +111,8 @@ public class ShootNow extends VisionPIDProcedure {
             Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
         }
 
+        Robot.drive.stopDrive();
+
         SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
