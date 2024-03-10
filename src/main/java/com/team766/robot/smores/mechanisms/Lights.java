@@ -10,9 +10,22 @@ import com.team766.framework.Mechanism;
 
 public class Lights extends Mechanism {
 
+    private static final int intakeLEDs = 50;
+    private static final int intakeOffset = 8;
+    public enum Intake { // which animation to use for the note
+        NOT_VISIBLE (),
+        VISIBLE (),
+        STUCK (new StrobeAnimation(25, 0, 0, 0, 0.)),
+        READY ();
+
+        Intake(Animation animation) {
+
+        }
+    } 
+
     private CANdle candle;
     private static final int CANID = 5;
-    private static final int LED_COUNT = 8;
+    private static final int LED_COUNT = 87;
 
     private double brightness;
     private Animation rainbowAnimation;
@@ -111,4 +124,6 @@ public class Lights extends Mechanism {
                         LED_COUNT));
         lastRun = () -> fade(r, g, b);
     }
+
 }
+
