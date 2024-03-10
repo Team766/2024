@@ -96,8 +96,9 @@ public class Intake extends Mechanism {
     }
 
     public void run() {
-        // SmartDashboard.putString("[INTAKE]", state.toString());
+        SmartDashboard.putString("[INTAKE]", state.toString());
         SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
+        SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
     }
 
     // feel free to refactor these two functions later - I didn't want to mess up existing code
@@ -109,19 +110,16 @@ public class Intake extends Mechanism {
     public boolean hasNoteInIntake() {
         // debug
         // log("Sensor thingy: " + sensor.getRange());
-        SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
         return isNoteReady();
     }
 
     public void setIntakePowerForSensorDistance() {
-        double power =
+        intakePower =
                 com.team766.math.Math.interpolate(
                         positions,
                         sensor.getRange(),
                         IntakePosition::proximityValue,
                         IntakePosition::intakePower);
-        SmartDashboard.putNumber("Set Power", power);
-        intakePower = power;
         runIntake();
     }
 }
