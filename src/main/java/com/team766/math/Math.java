@@ -39,7 +39,7 @@ public class Math {
      *   public record Data(double x, double y);
      *   ...
      *   Data[] data = new Data[] { new Data(0.0, 1.0), new Data(1.0, 32.0), ... };
-     *   Math.interpolate(data, 0.5, Data::x, Data::y);
+     *   double interpolatedY = Math.interpolate(data, 0.5, Data::x, Data::y);
      * </pre>
      *
      * @param <T> The class containing the x and y data.

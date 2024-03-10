@@ -58,8 +58,7 @@ public class DebugOI extends OIFragment {
         this.intake = intake;
         this.shooter = shooter;
 
-        controlShoulder =
-                new Condition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
+        controlShoulder = new Condition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
         controlClimber = new Condition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
         controlShooter = new Condition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
         intakeIn = new Condition(() -> macropad.getButton(InputConstants.INTAKE_IN));

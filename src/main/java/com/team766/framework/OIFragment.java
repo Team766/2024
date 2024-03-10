@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import com.team766.logging.Category;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -60,6 +61,7 @@ public abstract class OIFragment extends LoggingBase {
      * @param name The name of this part of the OI (eg, "BoxOpOI").  Used for logging.
      */
     public OIFragment(String name) {
+        loggerCategory = Category.OPERATOR_INTERFACE;
         this.name = name;
     }
 
