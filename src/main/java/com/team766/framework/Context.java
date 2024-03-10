@@ -52,7 +52,7 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-public final class Context implements Runnable, LaunchedContext {
+public class Context implements Runnable, LaunchedContext {
     /**
      * Represents the baton-passing state (see class comments). Instead of
      * passing a baton directly from one Context's thread to the next, each
@@ -161,7 +161,7 @@ public final class Context implements Runnable, LaunchedContext {
      * {@link Scheduler#startAsync}.
      */
 
-    private Context(final RunnableWithContext func, final Context parentContext) {
+    Context(final RunnableWithContext func, final Context parentContext) {
         m_func = func;
         m_parentContext = parentContext;
         Logger.get(Category.FRAMEWORK)
@@ -181,7 +181,7 @@ public final class Context implements Runnable, LaunchedContext {
         this(func, null);
     }
 
-    private Context(final Runnable func, final Context parentContext) {
+    Context(final Runnable func, final Context parentContext) {
         this((context) -> func.run());
     }
 
@@ -387,6 +387,13 @@ public final class Context implements Runnable, LaunchedContext {
      */
     public LaunchedContext startAsync(final RunnableWithContext func) {
         return new Context(func, this);
+    }
+
+    /**
+     * Start running a new Context so the given procedure can run in parallel.
+     */
+    public <T> LaunchedContextWithValue<T> startAsync(final RunnableWithContextWithValue<T> func) {
+        return new ContextWithValue<T>(func, this);
     }
 
     /**

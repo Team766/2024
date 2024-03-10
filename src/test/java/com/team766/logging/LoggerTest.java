@@ -48,6 +48,7 @@ public class LoggerTest {
         assertEquals("num: 63 str: second blurb", logString2);
         String logString3 = LogEntryRenderer.renderLogEntry(reader.readNext(), reader);
         assertEquals("Test raw log", logString3);
+        reader.close();
     }
 
     @Test
