@@ -28,8 +28,8 @@ import com.team766.robot.reva.mechanisms.Shoulder;
  *
  * 1 + 8/12 = Control Shoulder + Nudge Up/Down
  * 2 + 8/12 = Control Climber + Nudge Up/Down
- * 3        = Intake In
  * 4 + 8/12 = Control Shooter + Nudge Up/Down
+ *  3        = Intake In
  * 7        = Intake Out
  */
 public class DebugOI extends OIFragment {
@@ -45,7 +45,7 @@ public class DebugOI extends OIFragment {
     private final OICondition intakeIn;
     private final OICondition intakeOut;
 
-    public DebugOI (
+    public DebugOI(
             JoystickReader macropad,
             Shoulder shoulder,
             Climber climber,
@@ -106,28 +106,6 @@ public class DebugOI extends OIFragment {
             context.releaseOwnership(climber);
         }
 
-        // fine-grained control of the intake
-        // used for testing and tuning
-        // press down the intake control button and nudge ths intake speed up and down
-        // < 0 - outtake
-        // == 0 - stopped
-        // > 0 - intake
-        if (controlIntake.isTriggering()) {
-            context.takeOwnership(intake);
-            intake.runIntake();
-
-            if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                intake.nudgeUp();
-            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                intake.nudgeDown();
-            }
-            context.releaseOwnership(intake);
-        } else if (controlIntake.isFinishedTriggering()) {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
-        }
-
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
@@ -159,19 +137,6 @@ public class DebugOI extends OIFragment {
             }
             context.releaseOwnership(shooter);
         } else if (controlShooter.isFinishedTriggering()) {
-            context.takeOwnership(shooter);
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
-
-        // simpler one-button controls for shooter
-        // used for testing and tuning
-        // allows for running intake at default intake/outtake speeds.
-        if (shooterShoot.isTriggering()) {
-            context.takeOwnership(shooter);
-            shooter.shoot();
-            context.releaseOwnership(shooter);
-        } else if (shooterShoot.isFinishedTriggering()) {
             context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
