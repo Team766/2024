@@ -17,7 +17,7 @@ public class RightProximitySensor extends Mechanism {
                     .getDouble("RightProximitySensor.threshold"); // needs calibration
 
     public RightProximitySensor() {
-        sensor = new TimeOfFlight(0); // needs calibration
+        sensor = new TimeOfFlight(0);
 
         sensor.setRangingMode(RangingMode.Short, 24);
     }
