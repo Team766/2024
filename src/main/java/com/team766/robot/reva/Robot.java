@@ -9,7 +9,6 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.NoteCamera;
-import com.team766.robot.reva.mechanisms.RightProximitySensor;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 

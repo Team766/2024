@@ -1,6 +1,7 @@
 package com.team766.robot.reva.mechanisms;
 
 import static com.team766.robot.reva.constants.ConfigConstants.*;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
@@ -19,14 +20,15 @@ public class Intake extends Mechanism {
         STOPPED
     }
 
-    private record IntakePosition(double intakePower, double proximityValue) { }
+    private record IntakePosition(double intakePower, double proximityValue) {}
 
-    IntakePosition[] positions = new IntakePosition[] {
-        new IntakePosition(0, 150),
-        new IntakePosition(0.2, 200),
-        new IntakePosition(0.4, 400),
-        new IntakePosition(1.0, 480)
-    };
+    IntakePosition[] positions =
+            new IntakePosition[] {
+                new IntakePosition(0, 150),
+                new IntakePosition(0.2, 200),
+                new IntakePosition(0.4, 400),
+                new IntakePosition(1.0, 480)
+            };
 
     private static final double DEFAULT_POWER = 1.0;
     private static final double NUDGE_INCREMENT = 0.05;
@@ -112,7 +114,12 @@ public class Intake extends Mechanism {
     }
 
     public void setIntakePowerForSensorDistance() {
-        double power = com.team766.math.Math.interpolate(positions, sensor.getRange(), IntakePosition::proximityValue, IntakePosition::intakePower);
+        double power =
+                com.team766.math.Math.interpolate(
+                        positions,
+                        sensor.getRange(),
+                        IntakePosition::proximityValue,
+                        IntakePosition::intakePower);
         SmartDashboard.putNumber("Set Power", power);
         intakePower = power;
         runIntake();
