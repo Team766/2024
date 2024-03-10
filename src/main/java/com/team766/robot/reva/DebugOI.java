@@ -71,10 +71,10 @@ public class DebugOI extends OIFragment {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
-
         if (controlShoulder.isTriggering()) {
-            // Shoulder
-            context.takeOwnership(shoulder);
+            if (controlShoulder.isNewlyTriggering()) {
+                context.takeOwnership(shoulder);
+            }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 shoulder.nudgeUp();
@@ -83,25 +83,25 @@ public class DebugOI extends OIFragment {
             } else if (macropad.getButtonPressed(InputConstants.MACROPAD_RESET_SHOULDER)) {
                 shoulder.reset();
             }
+        } else if (controlShoulder.isFinishedTriggering()) {
             context.releaseOwnership(shoulder);
         }
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-
         if (controlClimber.isTriggering()) {
-            // Climber
-            context.takeOwnership(climber);
-            climber.goNoPID();
+            if (controlClimber.isNewlyTriggering()) {
+                climber.goNoPID();
+            }
+
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 climber.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 climber.nudgeDown();
             }
-            context.releaseOwnership(climber);
+
         } else if (controlClimber.isFinishedTriggering()) {
-            context.takeOwnership(climber);
             climber.stop();
             context.releaseOwnership(climber);
         }
@@ -110,15 +110,17 @@ public class DebugOI extends OIFragment {
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
         if (intakeIn.isTriggering()) {
-            context.takeOwnership(intake);
-            intake.in();
-            context.releaseOwnership(intake);
+
+            if (intakeIn.isNewlyTriggering()) {
+                context.takeOwnership(intake);
+                intake.in();
+            }
         } else if (intakeOut.isTriggering()) {
-            context.takeOwnership(intake);
-            intake.out();
-            context.releaseOwnership(intake);
+            if (intakeOut.isNewlyTriggering()) {
+                context.takeOwnership(intake);
+                intake.out();
+            }
         } else if (intakeIn.isFinishedTriggering() || intakeOut.isFinishedTriggering()) {
-            context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
         }
@@ -127,17 +129,18 @@ public class DebugOI extends OIFragment {
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
         if (controlShooter.isTriggering()) {
-            context.takeOwnership(shooter);
-            Robot.shooter.shoot();
+            if (controlShooter.isNewlyTriggering()) {
+                context.takeOwnership(shooter);
+                Robot.shooter.shoot();
+            }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 shooter.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shooter.nudgeDown();
             }
-            context.releaseOwnership(shooter);
+
         } else if (controlShooter.isFinishedTriggering()) {
-            context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
         }

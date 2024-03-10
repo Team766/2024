@@ -19,6 +19,7 @@ public abstract class OIFragment extends LoggingBase {
     protected class OICondition {
         private final BooleanSupplier condition;
         private boolean triggering = false;
+        private boolean newlyTriggering = false;
         private boolean finishedTriggering = false;
 
         public OICondition(BooleanSupplier condition) {
@@ -28,16 +29,20 @@ public abstract class OIFragment extends LoggingBase {
 
         private void evaluate() {
             boolean triggeringNow = condition.getAsBoolean();
-            if (triggering && !triggeringNow) {
-                finishedTriggering = true;
+            if (triggeringNow) {
+                newlyTriggering = !triggering;
             } else {
-                finishedTriggering = false;
+                finishedTriggering = triggering;
             }
             triggering = triggeringNow;
         }
 
         public boolean isTriggering() {
             return triggering;
+        }
+
+        public boolean isNewlyTriggering() {
+            return newlyTriggering;
         }
 
         public boolean isFinishedTriggering() {

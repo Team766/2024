@@ -87,27 +87,22 @@ public class BoxOpOI extends OIFragment {
         }
 
         // shooter
-        if (shooterShoot.isTriggering()) {
+        if (shooterShoot.isNewlyTriggering()) {
             context.takeOwnership(shooter);
             shooter.shoot();
-            context.releaseOwnership(shooter);
         } else if (shooterShoot.isFinishedTriggering()) {
-            context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
         }
 
         // intake
-        if (intakeOut.isTriggering()) {
+        if (intakeOut.isNewlyTriggering()) {
             context.takeOwnership(intake);
             intake.out();
-            context.releaseOwnership(intake);
-        } else if (intakeIn.isTriggering()) {
+        } else if (intakeIn.isNewlyTriggering()) {
             context.takeOwnership(intake);
             intake.in();
-            context.releaseOwnership(intake);
         } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
-            context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
         }
