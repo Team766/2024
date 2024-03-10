@@ -8,6 +8,7 @@ import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
+import com.team766.robot.reva.procedures.AutoIntake;
 
 public class BoxOpOI {
     private final JoystickReader gamepad;
@@ -38,9 +39,7 @@ public class BoxOpOI {
             shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
             context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.BOTTOM);
-            context.releaseOwnership(shoulder);
+            new AutoIntake().run(context);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
             context.takeOwnership(shoulder);
             shoulder.rotate(ShoulderPosition.TOP);
@@ -89,15 +88,16 @@ public class BoxOpOI {
         }
 
         // intake
-        if (gamepad.getButton(InputConstants.XBOX_RB)) {
+        if (gamepad.getButtonPressed(InputConstants.XBOX_RB)) {
             context.takeOwnership(intake);
             intake.out();
             context.releaseOwnership(intake);
-        } else if (gamepad.getButton(InputConstants.XBOX_LB)) {
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_LB)) {
             context.takeOwnership(intake);
             intake.in();
             context.releaseOwnership(intake);
-        } else {
+        } else if (gamepad.getButtonReleased(InputConstants.XBOX_RB)
+                || gamepad.getButtonReleased(InputConstants.XBOX_LB)) {
             context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
