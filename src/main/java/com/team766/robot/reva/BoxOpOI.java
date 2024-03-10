@@ -45,10 +45,9 @@ public class BoxOpOI extends OIFragment {
     protected void handleOI(Context context) {
         // shoulder positions
         if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-            context.startAsync(new ShootNow());
-            // context.takeOwnership(shoulder);
-            // shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            // context.releaseOwnership(shoulder);
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
             context.takeOwnership(shoulder);
             shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
