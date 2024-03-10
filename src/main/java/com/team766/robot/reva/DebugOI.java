@@ -92,6 +92,7 @@ public class DebugOI extends OIFragment {
         // press down the climber control button and nudge the climber up and down
         if (controlClimber.isTriggering()) {
             if (controlClimber.isNewlyTriggering()) {
+                context.takeOwnership(climber);
                 climber.goNoPID();
             }
 
@@ -109,17 +110,12 @@ public class DebugOI extends OIFragment {
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        if (intakeIn.isTriggering()) {
-
-            if (intakeIn.isNewlyTriggering()) {
-                context.takeOwnership(intake);
-                intake.in();
-            }
-        } else if (intakeOut.isTriggering()) {
-            if (intakeOut.isNewlyTriggering()) {
-                context.takeOwnership(intake);
-                intake.out();
-            }
+        if (intakeIn.isNewlyTriggering()) {
+            context.takeOwnership(intake);
+            intake.in();
+        } else if (intakeOut.isNewlyTriggering()) {
+            context.takeOwnership(intake);
+            intake.out();
         } else if (intakeIn.isFinishedTriggering() || intakeOut.isFinishedTriggering()) {
             intake.stop();
             context.releaseOwnership(intake);
