@@ -41,13 +41,11 @@ public class DebugOI extends OIFragment {
     private final Shooter shooter;
     private final OICondition controlShoulder;
     private final OICondition controlClimber;
-    private final OICondition controlIntake;
     private final OICondition controlShooter;
     private final OICondition intakeIn;
     private final OICondition intakeOut;
-    private final OICondition shooterShoot;
 
-    public DebugOI extends OIFragment (
+    public DebugOI (
             JoystickReader macropad,
             Shoulder shoulder,
             Climber climber,
