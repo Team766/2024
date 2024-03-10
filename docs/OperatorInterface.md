@@ -9,7 +9,7 @@ Code: [`src/main/java/com/team766/robot/common/DriverOI.java`](../src/main/java/
 
 The driver controls the movement of the robot on the field.  They also include game piece manipulation that is best done by the driver, such as shooting a gamepiece towards the target.  We use the [Thrustmaster T.16000M](https://www.amazon.com/Guillemot-Thrustmaster-T-16000M-Fcs-Joystick/dp/B01H6KXGEI) joysticks for these controls.
 
-We use the same basic driver controls that we use on any of our swerve-drive based robots.  In fact, the code for these controls is in a common directory alongside the [swerve code](../src/main/java/com/team766/robot/common/mechanisms/Drive.java) itself, and may be subclasses to allow for binding game-specific controls (eg binding the left trigger to fire the shooter), though we have not made any such customizations yet.
+We use the same basic driver controls that we use on any of our swerve-drive based robots.  In fact, the code for these controls is in a common directory alongside the [swerve](SwerveDrive.md) [code](../src/main/java/com/team766/robot/common/mechanisms/Drive.java) itself, and may be subclasses to allow for binding game-specific controls (eg binding the left trigger to fire the shooter), though we have not made any such customizations yet.
 
 TODO: consider this customization.
 
