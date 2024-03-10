@@ -15,14 +15,15 @@ public final class InputConstants {
     // Macropad buttons
     public static final int CONTROL_SHOULDER = 1;
     public static final int CONTROL_CLIMBER = 2;
-    public static final int CONTROL_INTAKE = 3;
+    public static final int INTAKE_IN = 3;
     public static final int CONTROL_SHOOTER = 4;
+    public static final int INTAKE_OUT = 7;
     public static final int NUDGE_UP = 8;
     public static final int MACROPAD_RESET_SHOULDER = 9;
     public static final int NUDGE_DOWN = 12;
-    public static final int INTAKE_IN = 13;
-    public static final int INTAKE_OUT = 14;
-    public static final int SHOOTER_SHOOT = 15;
+    public static final int MACROPAD_PRESET_1 = 13;
+    public static final int MACROPAD_PRESET_2 = 14;
+    public static final int MACROPAD_PRESET_3 = 15;
     public static final int MACROPAD_PRESET_4 = 16;
 
     // Xbox buttons

@@ -1,6 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.Context;
+import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
@@ -10,7 +11,7 @@ import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.AutoIntake;
 
-public class BoxOpOI {
+public class BoxOpOI extends OIFragment {
     private final JoystickReader gamepad;
 
     private final Shoulder shoulder;
@@ -18,21 +19,30 @@ public class BoxOpOI {
     private final Shooter shooter;
     private final Climber climber;
 
+    private final OICondition shooterShoot;
+    private final OICondition intakeOut;
+    private final OICondition intakeIn;
+
     public BoxOpOI(
             JoystickReader gamepad,
             Shoulder shoulder,
             Intake intake,
             Shooter shooter,
             Climber climber) {
+        super("BoxOpOI");
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
         this.shooter = shooter;
         this.climber = climber;
+
+        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
+        intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
+        intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
     }
 
-    public void handleOI(Context context) {
-
+    @Override
+    protected void handleOI(Context context) {
         // shoulder positions
         if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
             context.takeOwnership(shoulder);
@@ -77,28 +87,22 @@ public class BoxOpOI {
         }
 
         // shooter
-        if (gamepad.getAxis(InputConstants.XBOX_RT) > 0) {
+        if (shooterShoot.isNewlyTriggering()) {
             context.takeOwnership(shooter);
             shooter.shoot();
-            context.releaseOwnership(shooter);
-        } else {
-            context.takeOwnership(shooter);
+        } else if (shooterShoot.isFinishedTriggering()) {
             shooter.stop();
             context.releaseOwnership(shooter);
         }
 
         // intake
-        if (gamepad.getButtonPressed(InputConstants.XBOX_RB)) {
+        if (intakeOut.isNewlyTriggering()) {
             context.takeOwnership(intake);
             intake.out();
-            context.releaseOwnership(intake);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_LB)) {
+        } else if (intakeIn.isNewlyTriggering()) {
             context.takeOwnership(intake);
             intake.in();
-            context.releaseOwnership(intake);
-        } else if (gamepad.getButtonReleased(InputConstants.XBOX_RB)
-                || gamepad.getButtonReleased(InputConstants.XBOX_LB)) {
-            context.takeOwnership(intake);
+        } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
             intake.stop();
             context.releaseOwnership(intake);
         }
