@@ -29,6 +29,7 @@ public class Math {
     /**
      * Performs simple linear interpolation (as described in
      * https://en.wikipedia.org/wiki/Linear_interpolation) of data in an array of type T.
+     * NOTE: the data array must be sorted by x, from lowest to highest.
      *
      * The x values (eg measured data and target data point) should be available via a getter in T.
      * The y values (what this interpolates from measured data) should be available via a getter in T.
