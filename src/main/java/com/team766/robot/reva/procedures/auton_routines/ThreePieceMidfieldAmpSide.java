@@ -1,5 +1,6 @@
 package com.team766.robot.reva.procedures.auton_routines;
 
+import com.team766.framework.Context;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
@@ -12,15 +13,33 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceMidfieldAmpSide extends AutoBase {
+    private final Drive drive;
+    private final Shoulder shoulder;
+    private final Shooter shooter;
+    private final Intake intake;
+
     public ThreePieceMidfieldAmpSide(
             Drive drive, Shoulder shoulder, Shooter shooter, Intake intake, Climber climber) {
-        super(drive, shooter, climber, new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
-        addProcedure(new ShootAtSubwoofer(shoulder, shooter, intake));
-        addProcedure(new StartAutoIntake(shoulder, intake));
-        addPath("Amp Side Start to Top Piece");
-        addProcedure(new ShootNow(drive, shoulder, shooter, intake));
-        addProcedure(new StartAutoIntake(shoulder, intake));
-        addPath("Retrieve Top Midfield from Top Piece");
-        addProcedure(new ShootNow(drive, shoulder, shooter, intake));
+        super(
+                reservations(drive, shoulder, shooter, intake),
+                drive,
+                shooter,
+                climber,
+                new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
+        this.drive = drive;
+        this.shoulder = shoulder;
+        this.shooter = shooter;
+        this.intake = intake;
+    }
+
+    @Override
+    protected void runAuto(Context context) {
+        context.runSync(new ShootAtSubwoofer(shoulder, shooter, intake));
+        context.runSync(new StartAutoIntake(shoulder, intake));
+        runPath(context, "Amp Side Start to Top Piece");
+        context.runSync(new ShootNow(drive, shoulder, shooter, intake));
+        context.runSync(new StartAutoIntake(shoulder, intake));
+        runPath(context, "Retrieve Top Midfield from Top Piece");
+        context.runSync(new ShootNow(drive, shoulder, shooter, intake));
     }
 }

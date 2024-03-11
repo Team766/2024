@@ -6,7 +6,6 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.framework.ProcedureInterface;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
@@ -14,13 +13,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
-public class PathSequenceAuto extends Procedure {
+public abstract class PathSequenceAuto extends Procedure {
 
-    private final LinkedList<ProcedureInterface> pathItems;
     private final Drive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
@@ -30,9 +27,10 @@ public class PathSequenceAuto extends Procedure {
      * @param drive The instantiation of drive for the robot (pass in Robot.drive)
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
-    public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
-        super(reservations(drive));
-        pathItems = new LinkedList<ProcedureInterface>();
+    public PathSequenceAuto(
+            Collection<Subsystem> reservations, Drive drive, Pose2d initialPosition) {
+        super(reservations);
+        addReservations(drive);
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
@@ -69,28 +67,11 @@ public class PathSequenceAuto extends Procedure {
                 drive.maxWheelDistToCenter());
     }
 
-    protected void addPath(String pathName) {
-        addProcedure(new FollowPath(pathName, controller, drive));
+    protected void runPath(Context context, String pathName) {
+        context.runSync(new FollowPath(pathName, controller, drive));
     }
 
-    protected void addProcedure(ProcedureInterface procedure) {
-        pathItems.add(procedure);
-        addReservations(procedure.getReservations().toArray(Subsystem[]::new));
-    }
-
-    protected void addWait(double waitForSeconds) {
-        addProcedure(new ProcedureInterface() {
-            @Override
-            public void execute(Context context) {
-                context.waitForSeconds(waitForSeconds);
-            }
-
-            @Override
-            public Set<Subsystem> getReservations() {
-                return Set.of();
-            }
-        });
-    }
+    protected abstract void runSequence(Context context);
 
     public void runAtEnd() {}
 
@@ -115,10 +96,7 @@ public class PathSequenceAuto extends Procedure {
                         ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                         : initialPosition.getRotation())
                 .getDegrees());
-        for (ProcedureInterface pathItem : pathItems) {
-            context.runSync(pathItem);
-            context.yield();
-        }
+        runSequence(context);
 
         runAtEnd();
 
