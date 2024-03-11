@@ -1,7 +1,7 @@
 package com.team766.robot.example.constants;
 
 public class InputConstants {
-    // this class only contains constants - instances should never be instantiated
+    // this class only contains constants - should never be instantiated
     private InputConstants() {}
 
     public static final int AXIS_X = 0;
