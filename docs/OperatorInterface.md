@@ -32,7 +32,7 @@ TODO: consider this customization.
   </tr>
     <tr>
     <td><strong>Y-axis:</strong> Move left/right</td>
-    <td><strong>Y-axis:</strong>Rotate counter/clockwise</td>
+    <td><strong>Y-axis:</strong>Rotate counterclockwise/clockwise</td>
   </tr>
   <tr>
     <td><strong>Button 9</strong>: Reset gyro</td>
