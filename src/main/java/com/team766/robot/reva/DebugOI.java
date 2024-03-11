@@ -51,7 +51,6 @@ public class DebugOI extends OIFragment {
             Climber climber,
             Intake intake,
             Shooter shooter) {
-        super("DebugOI");
         this.macropad = macropad;
         this.shoulder = shoulder;
         this.climber = climber;
