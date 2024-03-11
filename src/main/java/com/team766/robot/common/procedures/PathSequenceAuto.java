@@ -82,7 +82,7 @@ public class PathSequenceAuto extends Procedure {
         pathItems.add(new FollowPath(pathName, controller, drive));
     }
 
-    protected void addProcedure(Procedure procedure) {
+    protected void addProcedure(RunnableWithContext procedure) {
         pathItems.add(procedure);
     }
 

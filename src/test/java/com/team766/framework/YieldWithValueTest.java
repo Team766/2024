@@ -30,10 +30,12 @@ public class YieldWithValueTest extends TestCase {
     }
 
     private static class ValueGenerator extends ProcedureWithValue<Integer> {
+        public int nextToYield = 0;
+
         @Override
         public void run(ContextWithValue<Integer> context) {
-            for (int i = 0; i <= 10; ++i) {
-                context.yield(i);
+            for (; nextToYield <= 10; ++nextToYield) {
+                context.yield(nextToYield);
             }
         }
     }
@@ -47,6 +49,52 @@ public class YieldWithValueTest extends TestCase {
             step();
         }
 
-        assertEquals(consumer.values, List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+        assertEquals(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9), consumer.values);
+    }
+
+    private static class DiscardingCaller extends Procedure {
+        private ValueGenerator generator = new ValueGenerator();
+
+        public int stepCount() {
+            return generator.nextToYield;
+        }
+
+        @Override
+        public void run(Context context) {
+            context.runSync(generator);
+        }
+    }
+
+    @Test
+    public void testDiscardYieldedValues() {
+        var caller = new DiscardingCaller();
+        Scheduler.getInstance().startAsync(caller);
+
+        for (int i = 0; i < 50; ++i) {
+            step();
+        }
+
+        assertEquals(11, caller.stepCount());
+    }
+
+    private static class CollectingCaller extends Procedure {
+        public List<Integer> values;
+
+        @Override
+        public void run(Context context) {
+            values = context.runSyncAndCollectValues(new ValueGenerator());
+        }
+    }
+
+    @Test
+    public void testCollectYieldedValues() {
+        var consumer = new CollectingCaller();
+        Scheduler.getInstance().startAsync(consumer);
+
+        for (int i = 0; i < 50; ++i) {
+            step();
+        }
+
+        assertEquals(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), consumer.values);
     }
 }
