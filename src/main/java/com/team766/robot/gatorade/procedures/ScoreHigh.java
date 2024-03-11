@@ -16,9 +16,9 @@ public class ScoreHigh extends Procedure {
         context.takeOwnership(Robot.intake);
         Robot.intake.setGamePieceType(type);
         context.releaseOwnership(Robot.intake);
-        new ExtendWristvatorToHigh().run(context);
-        new IntakeOut().run(context);
+        context.runSync(new ExtendWristvatorToHigh());
+        context.runSync(new IntakeOut());
         context.waitForSeconds(1);
-        new IntakeStop().run(context);
+        context.runSync(new IntakeStop());
     }
 }

@@ -49,7 +49,7 @@ public class NoRotateShootNow extends Procedure {
 
             context.releaseOwnership(Robot.shooter);
             context.releaseOwnership(Robot.shoulder);
-            new ShootVelocityAndIntake(power).run(context);
+            context.runSync(new ShootVelocityAndIntake(power));
 
         } else {
             // context.takeOwnership(Robot.shooter);
@@ -64,7 +64,7 @@ public class NoRotateShootNow extends Procedure {
             // context.releaseOwnership(Robot.shoulder);
             // context.releaseOwnership(Robot.shooter);
 
-            new ShootVelocityAndIntake(3000).run(context);
+            context.runSync(new ShootVelocityAndIntake(3000));
         }
     }
 }

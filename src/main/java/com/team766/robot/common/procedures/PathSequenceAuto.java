@@ -116,7 +116,7 @@ public class PathSequenceAuto extends Procedure {
                                 : initialPosition.getRotation())
                         .getDegrees());
         for (RunnableWithContext pathItem : pathItems) {
-            pathItem.run(context);
+            context.runSync(pathItem);
             context.yield();
         }
 

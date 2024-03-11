@@ -17,7 +17,7 @@ public class ExtendToHumanWithIntake extends Procedure {
         context.takeOwnership(Robot.wrist);
         context.takeOwnership(Robot.elevator);
 
-        new IntakeIn().run(context);
-        new ExtendWristvatorToHuman(gamePieceType).run(context);
+        context.runSync(new IntakeIn());
+        context.runSync(new ExtendWristvatorToHuman(gamePieceType));
     }
 }

@@ -65,20 +65,20 @@ public class OI extends Procedure {
             driverOI.handleOI(context);
 
             if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
-                new IntakeOut().run(context);
+                context.runSync(new IntakeOut());
             } else if (leftJoystick.getButtonReleased(InputConstants.INTAKE_OUT)) {
-                new IntakeStop().run(context);
+                context.runSync(new IntakeStop());
             }
 
             // Respond to boxop commands
 
             // first, check if the boxop is making a cone or cube selection
             if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
-                new GoForCones().run(context);
+                context.runSync(new GoForCones());
                 setLightsForGamePiece();
                 SmartDashboard.putBoolean("Game Piece", true);
             } else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
-                new GoForCubes().run(context);
+                context.runSync(new GoForCubes());
                 setLightsForGamePiece();
                 SmartDashboard.putBoolean("Game Piece", false);
             }
@@ -103,11 +103,11 @@ public class OI extends Procedure {
 
             // look for button hold to start intake, release to idle intake
             if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_INTAKE_IN)) {
-                new IntakeIn().run(context);
+                context.runSync(new IntakeIn());
             } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_INTAKE_IN)) {
-                new IntakeIdle().run(context);
+                context.runSync(new IntakeIdle());
             } else if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
-                new IntakeStop().run(context);
+                context.runSync(new IntakeStop());
             }
 
             // look for button hold to extend intake/wrist/elevator superstructure,

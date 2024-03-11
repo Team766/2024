@@ -40,7 +40,7 @@ public class OnePieceBalance extends Procedure {
             log("invalid alliance");
             return;
         }
-        new ScoreHigh(type).run(context);
-        new GyroBalance(alliance.get()).run(context);
+        context.runSync(new ScoreHigh(type));
+        context.runSync(new GyroBalance(alliance.get()));
     }
 }
