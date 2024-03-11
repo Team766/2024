@@ -37,8 +37,8 @@ public class DriverOI extends OIFragment {
                                                 > 0);
     }
 
-    public void handleOI(Context context) {
-
+    @Override
+    protected void handlePre() {
         // Negative because forward is negative in driver station
         leftJoystickX =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
@@ -51,7 +51,10 @@ public class DriverOI extends OIFragment {
         rightJoystickY =
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
+    }
 
+    @Override
+    protected void handleOI(Context context) {
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
         }
