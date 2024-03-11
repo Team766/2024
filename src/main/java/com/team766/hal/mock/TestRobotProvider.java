@@ -33,7 +33,6 @@ public class TestRobotProvider extends RobotProvider {
         if (motors[index] == null) {
             motors[index] =
                     new LocalMotorController(
-                            configPrefix,
                             new MockMotorController(index),
                             localSensor != null ? localSensor : new MockEncoder());
         }

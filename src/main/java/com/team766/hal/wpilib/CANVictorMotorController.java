@@ -21,12 +21,11 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
 
     public CANVictorMotorController(final int deviceNumber) {
         m_device = new WPI_VictorSPX(deviceNumber);
-        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
+        pidSlotHelper = new PIDSlotHelper(this);
     }
 
     @Override
     public void set(final ControlMode mode, double value, int slot, double arbitraryrFeedForward) {
-        pidSlotHelper.refreshPIDForSlot(this, slot);
         m_device.selectProfileSlot(slot, 0 /* primary closed loop */);
 
         com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
@@ -117,6 +116,11 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
+    public void setFF(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setFF(value, slot);
+    }
+
+    @Override
     public void setFF(final double value, int slot) {
         errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(slot, value, TIMEOUT_MS));
     }
@@ -152,13 +156,28 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
+    public void setP(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setP(value, slot);
+    }
+
+    @Override
     public void setP(final double value, int slot) {
         errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(slot, value, TIMEOUT_MS));
     }
 
     @Override
+    public void setI(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setI(value, slot);
+    }
+
+    @Override
     public void setI(final double value, int slot) {
         errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(slot, value, TIMEOUT_MS));
+    }
+
+    @Override
+    public void setD(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setD(value, slot);
     }
 
     @Override
@@ -181,7 +200,6 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     public void setOutputRange(
             ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
         pidSlotHelper.setOutputRange(minOutput, maxOutput, slot);
-        setOutputRange(minOutput.get(), maxOutput.get(), slot);
     }
 
     @Override

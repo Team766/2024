@@ -32,10 +32,9 @@ public class SimulationRobotProvider extends RobotProvider {
         if (motors[index] == null) {
             if (localSensor != null) {
                 motors[index] =
-                        new LocalMotorController(
-                                configPrefix, new SimBasicMotorController(index), localSensor);
+                        new LocalMotorController(new SimBasicMotorController(index), localSensor);
             } else {
-                motors[index] = new SimMotorController(configPrefix, index);
+                motors[index] = new SimMotorController(index);
             }
         }
         return motors[index];

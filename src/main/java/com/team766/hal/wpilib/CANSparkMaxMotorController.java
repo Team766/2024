@@ -32,7 +32,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
         // getSensorPosition/getSensorVelocity return values that match what the
         // device's PID controller is using.
         setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
+        pidSlotHelper = new PIDSlotHelper(this);
     }
 
     private enum ExceptionTarget {
@@ -68,8 +68,6 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void set(
             final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
-        // get the latest PID values for this slot
-        pidSlotHelper.refreshPIDForSlot(this, slot);
         switch (mode) {
             case Disabled:
                 disable();
@@ -154,7 +152,6 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void setP(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setP(value, slot);
-        if (value.hasValue()) setP(value.get(), slot);
     }
 
     @Override
@@ -165,7 +162,6 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void setI(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setI(value, slot);
-        if (value.hasValue()) setI(value.get(), slot);
     }
 
     @Override
@@ -176,7 +172,6 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void setD(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setD(value, slot);
-        if (value.hasValue()) setD(value.get(), slot);
     }
 
     @Override
@@ -187,7 +182,6 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void setFF(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setFF(value, slot);
-        if (value.hasValue()) setFF(value.get(), slot);
     }
 
     @Override
@@ -284,10 +278,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void setOutputRange(
             ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
-        setOutputRange(minOutput.get(), maxOutput.get(), slot);
-        if (minOutput.hasValue() && maxOutput.hasValue()) {
-            setOutputRange(minOutput.get(), maxOutput.get(), slot);
-        }
+        pidSlotHelper.setOutputRange(minOutput, maxOutput, slot);
     }
 
     @Override

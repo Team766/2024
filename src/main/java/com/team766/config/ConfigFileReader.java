@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -28,10 +29,6 @@ public class ConfigFileReader {
     public static ConfigFileReader instance;
 
     private static final String KEY_DELIMITER = ".";
-
-    // This is incremented each time the config file is reloaded to ensure that ConfigValues use the
-    // most recent setting.
-    private int m_generation = 0;
 
     private String m_fileName;
     private String m_backupFileName; // if set, will also save here
@@ -81,12 +78,11 @@ public class ConfigFileReader {
                         "Could not parse config value for " + param.getKey(), ex);
             }
         }
+        // All values parsed successfully; now actually apply the new values.
         m_values = newValues;
-        ++m_generation;
-    }
-
-    public int getGeneration() {
-        return m_generation;
+        for (AbstractConfigValue<?> param : AbstractConfigValue.accessedValues()) {
+            param.update();
+        }
     }
 
     public boolean containsKey(final String key) {
@@ -126,6 +122,13 @@ public class ConfigFileReader {
         String[] keyParts = splitKey(key);
         JSONObject parentObj = getParent(m_values, keyParts);
         parentObj.putOpt(keyParts[keyParts.length - 1], value == null ? JSONObject.NULL : value);
+
+        for (AbstractConfigValue<?> otherValue : AbstractConfigValue.accessedValues()) {
+            String[] otherValueKeyParts = splitKey(otherValue.getKey());
+            if (isPrefix(keyParts, otherValueKeyParts) || isPrefix(otherValueKeyParts, keyParts)) {
+                otherValue.update();
+            }
+        }
     }
 
     Object getRawValue(final String key) {
@@ -152,8 +155,15 @@ public class ConfigFileReader {
         return rawValue;
     }
 
-    private static String[] splitKey(final String key) {
+    static String[] splitKey(final String key) {
         return key.split(Pattern.quote(KEY_DELIMITER));
+    }
+
+    static boolean isPrefix(final String[] a, final String[] b) {
+        if (a.length > b.length) {
+            return false;
+        }
+        return Arrays.equals(a, 0, a.length, b, 0, a.length);
     }
 
     private static JSONObject getParent(JSONObject obj, final String[] keyParts) {

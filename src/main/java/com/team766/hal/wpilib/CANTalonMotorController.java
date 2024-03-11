@@ -21,12 +21,11 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 
     public CANTalonMotorController(final int deviceNumber) {
         m_device = new WPI_TalonSRX(deviceNumber);
-        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
+        pidSlotHelper = new PIDSlotHelper(this);
     }
 
     @Override
     public void set(final ControlMode mode, double value, int slot, double arbitraryFeedForward) {
-        pidSlotHelper.refreshPIDForSlot(this, slot);
         com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
         boolean useFourTermSet = true;
         switch (mode) {
@@ -122,25 +121,21 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     @Override
     public void setFF(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setFF(value, slot);
-        setFF(value.get(), slot);
     }
 
     @Override
     public void setP(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setP(value, slot);
-        setP(value.get(), slot);
     }
 
     @Override
     public void setI(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setI(value, slot);
-        setI(value.get(), slot);
     }
 
     @Override
     public void setD(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setD(value, slot);
-        setD(value.get(), slot);
     }
 
     @Override
@@ -178,7 +173,6 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
     public void setOutputRange(
             ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
         pidSlotHelper.setOutputRange(minOutput, maxOutput, slot);
-        setOutputRange(minOutput.get(), maxOutput.get(), slot);
     }
 
     @Override

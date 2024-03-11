@@ -2,6 +2,7 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team766.library.SetValueProvider;
 import com.team766.library.ValueProvider;
 
 /**
@@ -116,29 +117,29 @@ public interface MotorController extends BasicMotorController {
         return 1;
     }
 
-    default void setP(ValueProvider<Double> value, int slot) {
-        setP(value.get(), slot);
+    void setP(ValueProvider<Double> value, int slot);
+
+    default void setP(double value, int slot) {
+        setP(new SetValueProvider<Double>(value), slot);
     }
 
-    void setP(double value, int slot);
+    void setI(ValueProvider<Double> value, int slot);
 
-    default void setI(ValueProvider<Double> value, int slot) {
-        setI(value.get(), slot);
+    default void setI(double value, int slot) {
+        setI(new SetValueProvider<Double>(value), slot);
     }
 
-    void setI(double value, int slot);
+    void setD(ValueProvider<Double> value, int slot);
 
-    default void setD(ValueProvider<Double> value, int slot) {
-        setD(value.get(), slot);
+    default void setD(double value, int slot) {
+        setD(new SetValueProvider<Double>(value), slot);
     }
 
-    void setD(double value, int slot);
+    void setFF(ValueProvider<Double> value, int slot);
 
-    default void setFF(ValueProvider<Double> value, int slot) {
-        setFF(value.get(), slot);
+    default void setFF(double value, int slot) {
+        setFF(new SetValueProvider<Double>(value), slot);
     }
-
-    void setFF(double value, int slot);
 
     void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
 
@@ -152,12 +153,14 @@ public interface MotorController extends BasicMotorController {
      */
     void setSensorInverted(boolean inverted);
 
-    default void setOutputRange(
-            ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
-        setOutputRange(minOutput.get(), maxOutput.get(), slot);
-    }
+    void setOutputRange(ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot);
 
-    void setOutputRange(double minOutput, double maxOutput, int slot);
+    default void setOutputRange(double minOutput, double maxOutput, int slot) {
+        setOutputRange(
+                new SetValueProvider<Double>(minOutput),
+                new SetValueProvider<Double>(maxOutput),
+                slot);
+    }
 
     void setCurrentLimit(double ampsLimit);
 

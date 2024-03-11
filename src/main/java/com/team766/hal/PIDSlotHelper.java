@@ -1,85 +1,99 @@
 package com.team766.hal;
 
+import com.team766.library.ObserveValue;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.math.Pair;
-import java.util.ArrayList;
 
 public class PIDSlotHelper {
-    private final ArrayList<ValueProvider<Double>> pGains;
-    private final ArrayList<ValueProvider<Double>> iGains;
-    private final ArrayList<ValueProvider<Double>> dGains;
-    private final ArrayList<ValueProvider<Double>> ffGains;
-    private final ArrayList<Pair<ValueProvider<Double>, ValueProvider<Double>>> outputMaxes;
+    private class Slot {
+        private final int slot;
+        final ObserveValue<Double> pGain;
+        final ObserveValue<Double> iGain;
+        final ObserveValue<Double> dGain;
+        final ObserveValue<Double> ffGain;
+        final ObserveValue<Double> outputMin;
+        final ObserveValue<Double> outputMax;
 
-    public PIDSlotHelper(int numSlots) {
-        int num = numSlots;
-        pGains = new ArrayList<ValueProvider<Double>>(num);
-        iGains = new ArrayList<ValueProvider<Double>>(num);
-        dGains = new ArrayList<ValueProvider<Double>>(num);
-        ffGains = new ArrayList<ValueProvider<Double>>(num);
-        outputMaxes = new ArrayList<Pair<ValueProvider<Double>, ValueProvider<Double>>>(num);
+        private Slot(int slot) {
+            this.slot = slot;
+            this.pGain =
+                    new ObserveValue<Double>(
+                            ObserveValue.whenPresent((p) -> motor.setP(p, this.slot)));
+            this.iGain =
+                    new ObserveValue<Double>(
+                            ObserveValue.whenPresent((i) -> motor.setI(i, this.slot)));
+            this.dGain =
+                    new ObserveValue<Double>(
+                            ObserveValue.whenPresent((d) -> motor.setD(d, this.slot)));
+            this.ffGain =
+                    new ObserveValue<Double>(
+                            ObserveValue.whenPresent((ff) -> motor.setFF(ff, this.slot)));
+            this.outputMin =
+                    new ObserveValue<Double>(ObserveValue.whenPresent((__) -> updateOutputRange()));
+            this.outputMax =
+                    new ObserveValue<Double>(ObserveValue.whenPresent((__) -> updateOutputRange()));
+        }
+
+        private void updateOutputRange() {
+            motor.setOutputRange(
+                    outputMin.getValueProvider().valueOr(-1.0),
+                    outputMax.getValueProvider().valueOr(1.0),
+                    slot);
+        }
+    }
+
+    private final MotorController motor;
+    private final Slot[] slots;
+
+    public PIDSlotHelper(MotorController motor) {
+        this.motor = motor;
+        final int size = motor.numPIDSlots();
+        this.slots = new Slot[size];
+        for (int i = 0; i < size; ++i) {
+            this.slots[i] = new Slot(i);
+        }
     }
 
     public ValueProvider<Double> getP(int slot) {
-        return pGains.get(slot);
+        return slots[slot].pGain.getValueProvider();
     }
 
     public void setP(ValueProvider<Double> value, int slot) {
-        pGains.set(slot, value);
+        slots[slot].pGain.setValueProvider(value);
     }
 
     public ValueProvider<Double> getI(int slot) {
-        return iGains.get(slot);
+        return slots[slot].iGain.getValueProvider();
     }
 
     public void setI(ValueProvider<Double> value, int slot) {
-        iGains.set(slot, value);
+        slots[slot].iGain.setValueProvider(value);
     }
 
     public ValueProvider<Double> getD(int slot) {
-        return dGains.get(slot);
+        return slots[slot].dGain.getValueProvider();
     }
 
     public void setD(ValueProvider<Double> value, int slot) {
-        dGains.set(slot, value);
+        slots[slot].dGain.setValueProvider(value);
     }
 
     public ValueProvider<Double> getFF(int slot) {
-        return ffGains.get(slot);
+        return slots[slot].ffGain.getValueProvider();
     }
 
     public void setFF(ValueProvider<Double> value, int slot) {
-        ffGains.set(slot, value);
+        slots[slot].ffGain.setValueProvider(value);
     }
 
     public Pair<ValueProvider<Double>, ValueProvider<Double>> getOutputRange(int slot) {
-        return outputMaxes.get(slot);
+        return new Pair<ValueProvider<Double>, ValueProvider<Double>>(
+                slots[slot].outputMin.getValueProvider(), slots[slot].outputMax.getValueProvider());
     }
 
     public void setOutputRange(
             ValueProvider<Double> minValue, ValueProvider<Double> maxValue, int slot) {
-        outputMaxes.set(
-                slot, new Pair<ValueProvider<Double>, ValueProvider<Double>>(maxValue, maxValue));
-    }
-
-    public void refreshPIDForSlot(MotorController motor, int slot) {
-        if ((pGains.get(slot) != null) && pGains.get(slot).hasValue())
-            motor.setP(pGains.get(slot).get(), slot);
-        if ((iGains.get(slot) != null) && iGains.get(slot).hasValue())
-            motor.setI(pGains.get(slot).get(), slot);
-        if ((dGains.get(slot) != null) && dGains.get(slot).hasValue())
-            motor.setD(pGains.get(slot).get(), slot);
-        if ((ffGains.get(slot) != null) && ffGains.get(slot).hasValue())
-            motor.setFF(pGains.get(slot).get(), slot);
-        if (outputMaxes.get(slot) != null
-                && (outputMaxes.get(slot).getFirst() != null)
-                && (outputMaxes.get(slot).getSecond() != null)
-                && outputMaxes.get(slot).getFirst().hasValue()
-                && outputMaxes.get(slot).getSecond().hasValue()) {
-            motor.setOutputRange(
-                    outputMaxes.get(slot).getFirst().get(),
-                    outputMaxes.get(slot).getSecond().get(),
-                    slot);
-        }
+        slots[slot].outputMin.setValueProvider(minValue);
+        slots[slot].outputMax.setValueProvider(maxValue);
     }
 }

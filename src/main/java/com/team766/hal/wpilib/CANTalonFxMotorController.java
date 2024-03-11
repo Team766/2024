@@ -42,7 +42,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         super(deviceNumber, canBus);
         TalonFXConfigurator configurator = getConfigurator();
         statusCodeToException(ExceptionTarget.LOG, configurator.refresh(talonFXConfig));
-        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
+        pidSlotHelper = new PIDSlotHelper(this);
     }
 
     public CANTalonFxMotorController(final int deviceNumber) {
@@ -191,7 +191,6 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     @Override
     public void setFF(ValueProvider<Double> value, int slot) {
         pidSlotHelper.setFF(value, slot);
-        if (value.hasValue()) setFF(value.get(), slot);
     }
 
     @Override
@@ -211,6 +210,11 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
+    public void setP(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setP(value, slot);
+    }
+
+    @Override
     public void setP(final double value, int slot) {
         refreshConfig();
         switch (slot) {
@@ -227,6 +231,11 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
+    public void setI(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setI(value, slot);
+    }
+
+    @Override
     public void setI(final double value, int slot) {
         refreshConfig();
         switch (slot) {
@@ -240,6 +249,11 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
                 throw new IllegalArgumentException("Unsupported slot " + slot);
         }
         statusCodeToException(ExceptionTarget.LOG, getConfigurator().apply(talonFXConfig));
+    }
+
+    @Override
+    public void setD(final ValueProvider<Double> value, int slot) {
+        pidSlotHelper.setD(value, slot);
     }
 
     @Override
@@ -296,7 +310,6 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     public void setOutputRange(
             ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
         pidSlotHelper.setOutputRange(minOutput, maxOutput, slot);
-        setOutputRange(minOutput.get(), maxOutput.get(), slot);
     }
 
     @Override
