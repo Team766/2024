@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 6.745887190848456
+        "x": 2.0015228271197283,
+        "y": 6.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2897957647767146,
-        "y": 6.7383453748388975
+        "x": 2.3093120584389317,
+        "y": 6.672844405873997
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 6.943637169681748
       },
       "prevControl": {
-        "x": 2.490493795802407,
-        "y": 6.863824565612095
+        "x": 2.553975695914355,
+        "y": 6.773025851607259
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "RevA",
   "previewStartingState": {
     "rotation": 32.34093783035961,
     "velocity": 0

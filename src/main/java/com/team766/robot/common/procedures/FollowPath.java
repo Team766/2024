@@ -106,6 +106,7 @@ public class FollowPath extends Procedure {
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
             drive.stopDrive();
+            drive.setCross();
         }
     }
 

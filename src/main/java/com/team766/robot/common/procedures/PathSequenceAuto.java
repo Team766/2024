@@ -1,6 +1,7 @@
 package com.team766.robot.common.procedures;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.GeometryUtil;
 import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
@@ -20,12 +21,19 @@ public class PathSequenceAuto extends Procedure {
     private final Drive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
+    private final boolean shouldFlipAuton;
 
+    /**
+     * Sequencer for using path following with other procedures
+     * @param drive The instantiation of drive for the robot (pass in Robot.drive)
+     * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
+     */
     public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
         pathItems = new LinkedList<RunnableWithContext>();
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
+        shouldFlipAuton = (DriverStation.getAlliance().get() == Alliance.Red);
     }
 
     private PPHolonomicDriveController createDriveController(Drive drive) {
@@ -66,30 +74,24 @@ public class PathSequenceAuto extends Procedure {
                 drive.maxWheelDistToCenter());
     }
 
-    protected void add(String pathName) {
-        pathItems.add(
-                new FollowPath(
-                        pathName,
-                        controller,
-                        drive,
-                        DriverStation.getAlliance().get() == Alliance.Red));
+    protected void addPath(String pathName) {
+        pathItems.add(new FollowPath(pathName, controller, drive, shouldFlipAuton));
     }
 
-    protected void add(Procedure procedure) {
+    protected void addProcedure(Procedure procedure) {
         pathItems.add(procedure);
     }
 
-    protected void add(double waitForSeconds) {
+    protected void addWait(double waitForSeconds) {
         pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
     }
 
     @Override
     public final void run(Context context) {
         context.takeOwnership(drive);
-        drive.setCurrentPosition(initialPosition);
-        drive.resetGyro(
-                initialPosition.getRotation().getDegrees()
-                        + (DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0));
+        drive.setCurrentPosition(
+                shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
+        drive.resetGyro(initialPosition.getRotation().getDegrees() * (shouldFlipAuton ? -1 : 1));
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
