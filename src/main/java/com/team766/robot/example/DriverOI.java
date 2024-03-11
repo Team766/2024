@@ -12,8 +12,8 @@ public class DriverOI extends OIFragment {
     private double joystickY;
 
     // add any conditions (joystick inputs, etc)
-    Condition button1;
-    Condition moveJoystick;
+    private Condition button1;
+    private Condition moveJoystick;
 
     // add any mechanisms to the constructor arguments as well
     public DriverOI(JoystickReader joystick) {
