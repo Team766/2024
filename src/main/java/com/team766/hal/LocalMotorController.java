@@ -10,8 +10,10 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public class LocalMotorController implements MotorController {
+
     private BasicMotorController motor;
     private ControlInputReader sensor;
+    // TODO: add support for multiple slots
     private PIDController pidController;
 
     private boolean inverted = false;
@@ -181,7 +183,18 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(
+            final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
+        if (slot != 0) {
+            throw new UnsupportedOperationException(
+                    "Selecting PID slots not supported on LocalMotorController");
+        }
+
+        if (arbitraryFeedForward != 0.0) {
+            throw new UnsupportedOperationException(
+                    "Arbitrary feed forward not supported on LocalMotorController");
+        }
+
         if (this.controlMode != mode || this.leader != null) {
             pidController.reset();
             this.leader = null;
@@ -218,22 +231,38 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setP(final double value) {
+    public void setP(final double value, int slot) {
+        if (slot != 0) {
+            throw new UnsupportedOperationException(
+                    "Selecting PID slot not supported on LocalMotorController");
+        }
         pidController.setP(value);
     }
 
     @Override
-    public void setI(final double value) {
+    public void setI(final double value, int slot) {
+        if (slot != 0) {
+            throw new UnsupportedOperationException(
+                    "Selecting PID slot not supported on LocalMotorController");
+        }
         pidController.setI(value);
     }
 
     @Override
-    public void setD(final double value) {
+    public void setD(final double value, int slot) {
+        if (slot != 0) {
+            throw new UnsupportedOperationException(
+                    "Selecting PID slot not supported on LocalMotorController");
+        }
         pidController.setD(value);
     }
 
     @Override
-    public void setFF(final double value) {
+    public void setFF(final double value, int slot) {
+        if (slot != 0) {
+            throw new UnsupportedOperationException(
+                    "Selecting PID slot not supported on LocalMotorController");
+        }
         pidController.setFF(value);
     }
 
@@ -250,7 +279,11 @@ public class LocalMotorController implements MotorController {
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput) {
+    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+        if (slot != 0) {
+            throw new UnsupportedOperationException(
+                    "Selecting PID slot not supported on LocalMotorController");
+        }
         pidController.setMaxoutputLow(minOutput);
         pidController.setMaxoutputHigh(maxOutput);
     }
@@ -266,10 +299,10 @@ public class LocalMotorController implements MotorController {
     public void restoreFactoryDefault() {
         this.motor.restoreFactoryDefault();
 
-        this.setP(0.0);
-        this.setI(0.0);
-        this.setD(0.0);
-        this.setFF(0.0);
+        this.setP(0.0, 0);
+        this.setI(0.0, 0);
+        this.setD(0.0, 0);
+        this.setFF(0.0, 0);
         this.pidController.setMaxoutputLow(null);
         this.pidController.setMaxoutputHigh(null);
 

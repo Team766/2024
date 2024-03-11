@@ -3,6 +3,7 @@ package com.team766.hal;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+// TODO: add support for live refreshes of PID values, via PIDSlotHelper?
 public class MotorControllerWithSensorScale implements MotorController {
     private MotorController delegate;
     private double scale;
@@ -10,6 +11,11 @@ public class MotorControllerWithSensorScale implements MotorController {
     public MotorControllerWithSensorScale(final MotorController delegate_, final double scale_) {
         this.delegate = delegate_;
         this.scale = scale_;
+    }
+
+    @Override
+    public int numPIDSlots() {
+        return delegate.numPIDSlots();
     }
 
     @Override
@@ -23,16 +29,17 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void set(final ControlMode mode, final double value) {
+    public void set(
+            final ControlMode mode, final double value, int slot, double arbitraryFeedForward) {
         switch (mode) {
             case PercentOutput:
                 delegate.set(mode, value);
                 return;
             case Position:
-                delegate.set(mode, value / scale);
+                delegate.set(mode, value / scale, slot, arbitraryFeedForward);
                 return;
             case Velocity:
-                delegate.set(mode, value / scale);
+                delegate.set(mode, value / scale, slot, arbitraryFeedForward);
                 return;
             case Voltage:
                 delegate.set(mode, value);
@@ -78,23 +85,23 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void setP(final double value) {
-        delegate.setP(value * scale);
+    public void setP(final double value, int slot) {
+        delegate.setP(value * scale, slot);
     }
 
     @Override
-    public void setI(final double value) {
-        delegate.setI(value * scale);
+    public void setI(final double value, int slot) {
+        delegate.setI(value * scale, slot);
     }
 
     @Override
-    public void setD(final double value) {
-        delegate.setD(value * scale);
+    public void setD(final double value, int slot) {
+        delegate.setD(value * scale, slot);
     }
 
     @Override
-    public void setFF(final double value) {
-        delegate.setFF(value * scale);
+    public void setFF(final double value, int slot) {
+        delegate.setFF(value * scale, slot);
     }
 
     @Override
@@ -108,8 +115,8 @@ public class MotorControllerWithSensorScale implements MotorController {
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput) {
-        delegate.setOutputRange(minOutput, maxOutput);
+    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+        delegate.setOutputRange(minOutput, maxOutput, slot);
     }
 
     @Override

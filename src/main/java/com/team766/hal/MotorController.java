@@ -2,6 +2,7 @@ package com.team766.hal;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team766.library.ValueProvider;
 
 /**
  * Interface for motor controlling devices.
@@ -25,7 +26,7 @@ public interface MotorController extends BasicMotorController {
     }
 
     /**
-     * Common interface for setting the power outputu by a motor controller.
+     * Common interface for setting the power output by a motor controller.
      *
      * @param power The power to set. Value should be between -1.0 and 1.0.
      */
@@ -44,7 +45,26 @@ public interface MotorController extends BasicMotorController {
      *
      * @param value The setpoint value, as described above.
      */
-    void set(ControlMode mode, double value);
+    default void set(ControlMode mode, double value) {
+        set(mode, value, 0, 0.0);
+    }
+
+    /**
+     * Sets the appropriate output on the motor controller, depending on the mode.
+     * @param mode The output mode to apply.
+     * In PercentOutput, the output is between -1.0 and 1.0, with 0.0 as stopped.
+     * In Current mode, output value is in amperes.
+     * In Velocity mode, output value is in position change / 100ms.
+     * In Position mode, output value is in encoder ticks or an analog value,
+     * depending on the sensor.
+     * In Follower mode, the output value is the integer device ID of the talon to
+     * duplicate.
+     *
+     * @param value The setpoint value, as described above.
+     * @param slot The PID slot to use, if the mode uses PID.
+     * @param arbitraryFeedForward An arbitrary feed forward value to use when calculating PID.
+     */
+    void set(ControlMode mode, double value, int slot, double arbitraryFeedForward);
 
     /**
      * Common interface for inverting direction of a motor controller.
@@ -92,13 +112,33 @@ public interface MotorController extends BasicMotorController {
 
     void setNeutralMode(NeutralMode neutralMode);
 
-    void setP(double value);
+    default int numPIDSlots() {
+        return 1;
+    }
 
-    void setI(double value);
+    default void setP(ValueProvider<Double> value, int slot) {
+        setP(value.get(), slot);
+    }
 
-    void setD(double value);
+    void setP(double value, int slot);
 
-    void setFF(double value);
+    default void setI(ValueProvider<Double> value, int slot) {
+        setI(value.get(), slot);
+    }
+
+    void setI(double value, int slot);
+
+    default void setD(ValueProvider<Double> value, int slot) {
+        setD(value.get(), slot);
+    }
+
+    void setD(double value, int slot);
+
+    default void setFF(ValueProvider<Double> value, int slot) {
+        setFF(value.get(), slot);
+    }
+
+    void setFF(double value, int slot);
 
     void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice);
 
@@ -112,7 +152,12 @@ public interface MotorController extends BasicMotorController {
      */
     void setSensorInverted(boolean inverted);
 
-    void setOutputRange(double minOutput, double maxOutput);
+    default void setOutputRange(
+            ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
+        setOutputRange(minOutput.get(), maxOutput.get(), slot);
+    }
+
+    void setOutputRange(double minOutput, double maxOutput, int slot);
 
     void setCurrentLimit(double ampsLimit);
 

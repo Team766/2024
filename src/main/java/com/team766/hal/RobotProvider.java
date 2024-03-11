@@ -147,8 +147,13 @@ public abstract class RobotProvider {
             if (sensorInvertedConfig.valueOr(false)) {
                 motor.setSensorInverted(true);
             }
-            // check for, apply any PID settings that are in a sub-config
-            configurePID(configName + ".pid.", motor);
+            // check for, apply any PID settings that are in slot-specific sub-configs
+            configurePID(configName + ".pid.", motor, 0);
+            // TODO: simplify this just to support 2 slots in the config, if the motor supports > 1
+            // slot?
+            for (int slot = 1; slot < motor.numPIDSlots(); ++slot) {
+                configurePID(configName + ".pid" + slot + ".", motor, slot);
+            }
 
             return motor;
         } catch (IllegalArgumentException ex) {
@@ -162,7 +167,7 @@ public abstract class RobotProvider {
         }
     }
 
-    private void configurePID(final String configName, MotorController motor) {
+    private void configurePID(final String configName, MotorController motor, int slot) {
         ValueProvider<Double> pValue =
                 ConfigFileReader.getInstance().getDouble(configName + PIDController.P_GAIN_KEY);
         ValueProvider<Double> iValue =
@@ -179,23 +184,31 @@ public abstract class RobotProvider {
                         .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY);
 
         if (pValue.hasValue()) {
-            motor.setP(pValue.get());
+            motor.setP(pValue, slot);
         }
 
         if (iValue.hasValue()) {
-            motor.setI(iValue.get());
+            motor.setI(iValue, slot);
         }
 
         if (dValue.hasValue()) {
-            motor.setD(dValue.get());
+            motor.setD(dValue, slot);
         }
 
         if (ffValue.hasValue()) {
-            motor.setFF(ffValue.get());
+            motor.setFF(ffValue, slot);
         }
 
         if (outputMaxLowValue.hasValue() || outputMaxHighValue.hasValue()) {
-            motor.setOutputRange(outputMaxLowValue.valueOr(-1.0), outputMaxHighValue.valueOr(1.0));
+            if (!outputMaxLowValue.hasValue() || !outputMaxHighValue.hasValue()) {
+                Logger.get(Category.HAL)
+                        .logRaw(
+                                Severity.WARNING,
+                                "Both outputMaxLow and outputMaxHigh must be set within "
+                                        + configName
+                                        + ". Ignoring.");
+            }
+            motor.setOutputRange(outputMaxLowValue, outputMaxHighValue, slot);
         }
     }
 

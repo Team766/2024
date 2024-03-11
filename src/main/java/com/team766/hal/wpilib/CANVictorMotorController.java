@@ -6,22 +6,29 @@ import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.team766.hal.MotorController;
+import com.team766.hal.PIDSlotHelper;
+import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public class CANVictorMotorController extends BaseCTREMotorController implements MotorController {
+    private static final int NUM_PID_SLOTS = 2;
 
-    private WPI_VictorSPX m_device;
-    private double m_feedForward = 0.0;
+    private final WPI_VictorSPX m_device;
+    private final PIDSlotHelper pidSlotHelper;
 
     public CANVictorMotorController(final int deviceNumber) {
         m_device = new WPI_VictorSPX(deviceNumber);
+        pidSlotHelper = new PIDSlotHelper(NUM_PID_SLOTS);
     }
 
     @Override
-    public void set(final ControlMode mode, double value) {
+    public void set(final ControlMode mode, double value, int slot, double arbitraryrFeedForward) {
+        pidSlotHelper.refreshPIDForSlot(this, slot);
+        m_device.selectProfileSlot(slot, 0 /* primary closed loop */);
+
         com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
         boolean useFourTermSet = true;
         switch (mode) {
@@ -56,7 +63,7 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
             ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
         }
         if (useFourTermSet) {
-            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, m_feedForward);
+            m_device.set(ctre_mode, value, DemandType.ArbitraryFeedForward, arbitraryrFeedForward);
         } else {
             m_device.set(ctre_mode, value);
         }
@@ -110,8 +117,8 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
-    public void setFF(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(0, value, TIMEOUT_MS));
+    public void setFF(final double value, int slot) {
+        errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(slot, value, TIMEOUT_MS));
     }
 
     @Override
@@ -140,18 +147,23 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
-    public void setP(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(0, value, TIMEOUT_MS));
+    public int numPIDSlots() {
+        return NUM_PID_SLOTS;
     }
 
     @Override
-    public void setI(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(0, value, TIMEOUT_MS));
+    public void setP(final double value, int slot) {
+        errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(slot, value, TIMEOUT_MS));
     }
 
     @Override
-    public void setD(final double value) {
-        errorCodeToException(ExceptionTarget.LOG, m_device.config_kD(0, value, TIMEOUT_MS));
+    public void setI(final double value, int slot) {
+        errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(slot, value, TIMEOUT_MS));
+    }
+
+    @Override
+    public void setD(final double value, int slot) {
+        errorCodeToException(ExceptionTarget.LOG, m_device.config_kD(slot, value, TIMEOUT_MS));
     }
 
     @Override
@@ -166,7 +178,20 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput) {
+    public void setOutputRange(
+            ValueProvider<Double> minOutput, ValueProvider<Double> maxOutput, int slot) {
+        pidSlotHelper.setOutputRange(minOutput, maxOutput, slot);
+        setOutputRange(minOutput.get(), maxOutput.get(), slot);
+    }
+
+    @Override
+    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+        if (slot != 0) {
+            Logger.get(Category.HAL)
+                    .logRaw(
+                            Severity.WARNING,
+                            "Ignoring slot for setOutputRange - unsupported on Talon");
+        }
         errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
         errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
     }
