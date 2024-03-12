@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import com.team766.logging.Category;
+import com.team766.logging.Severity;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -55,6 +56,7 @@ public abstract class OIFragment extends LoggingBase {
 
     private final String name;
     private final List<Condition> conditions = new LinkedList<Condition>();
+    private boolean conditionsEvaluated = false;
 
     /**
      * Creates a new OIFragment.
@@ -74,12 +76,6 @@ public abstract class OIFragment extends LoggingBase {
     }
 
     /**
-     * Called at the beginning of {@link #runOI(Context)}, before evaluating any of the registered conditions
-     * and before calling {@link #handleOI(Context)}.  Subclasses should override this if needed.
-     */
-    protected void handlePre() {}
-
-    /**
      * OIFragments must override this method to implement their OI logic.  Typically called via the overall
      * OI's loop, once per iteration through the loop.  Can use any {@link Condition}s
      * they have set up to simplify checking if the {@link Condition} is {@link Condition#isTriggering()},
@@ -91,9 +87,15 @@ public abstract class OIFragment extends LoggingBase {
     protected abstract void handleOI(Context context);
 
     /**
-     * Called after {@link #handleOI}, at the end of {@link #runOI}.  Subclasses should override this if needed.
+     * Subclasses should call this once per call to {@link #handleOI}.  Evaluates each of the
+     * conditions for this fragment.
      */
-    protected void handlePost() {}
+    protected void evaluateConditions() {
+        for (Condition condition : conditions) {
+            condition.evaluate();
+        }
+        conditionsEvaluated = true;
+    }
 
     /**
      * Called by a Robot's OI class, once per its loop.
@@ -101,11 +103,12 @@ public abstract class OIFragment extends LoggingBase {
      * @param context The {@link Context} running the OI.
      */
     public final void runOI(Context context) {
-        handlePre();
-        for (Condition condition : conditions) {
-            condition.evaluate();
-        }
+        // reset for the next call
+        conditionsEvaluated = false;
+
         handleOI(context);
-        handlePost();
+        if (!conditionsEvaluated) {
+            log(Severity.WARNING, "Fragment did not call evaluateCondition()!");
+        }
     }
 }

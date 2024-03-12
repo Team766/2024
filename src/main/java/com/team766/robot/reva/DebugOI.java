@@ -67,6 +67,8 @@ public class DebugOI extends OIFragment {
 
     @Override
     protected void handleOI(Context context) {
+        evaluateConditions();
+
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down

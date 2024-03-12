@@ -25,13 +25,12 @@ public class DriverOI extends OIFragment {
     }
 
     @Override
-    protected void handlePre() {
+    protected void handleOI(Context context) {
         joystickX = joystick.getAxis(InputConstants.AXIS_X);
         joystickY = joystick.getAxis(InputConstants.AXIS_Y);
-    }
 
-    @Override
-    protected void handleOI(Context context) {
+        evaluateConditions();
+
         if (button1.isNewlyTriggering()) {
             // handle button press
         } else if (button1.isFinishedTriggering()) {

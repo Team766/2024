@@ -52,6 +52,8 @@ public class DriverOI extends OIFragment {
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
+        evaluateConditions();
+
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
         }

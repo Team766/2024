@@ -43,6 +43,8 @@ public class BoxOpOI extends OIFragment {
 
     @Override
     protected void handleOI(Context context) {
+        evaluateConditions();
+
         // shoulder positions
         if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
             context.takeOwnership(shoulder);
