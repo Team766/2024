@@ -112,7 +112,7 @@ public abstract class OIFragment extends LoggingBase {
         conditionsEvaluated = false;
 
         handleOI(context);
-        if (!conditionsEvaluated) {
+        if (conditions.size() > 0 && !conditionsEvaluated) {
             log(Severity.WARNING, "Fragment did not call evaluateCondition()!");
             throw new IllegalStateException("Fragment did not call evaluateCondition!");
         }
