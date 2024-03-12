@@ -69,7 +69,7 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
   </tr>
   <tr>
     <td>B</td>
-  <td>Intake piece from floor, using proximity sensor to stop</td>
+  <td>Move shoulder to floor, run intake using proximity sensor to stop</td>
   </tr>
  <tr>
     <td>X</td>
@@ -153,7 +153,7 @@ TODO: put together page with instructions on how to flash the firmware.
 
   <tr>
     <td>9</td>
-    <td>Rest relative encoders on shoulder.</td>
+    <td>Reset relative encoders on shoulder.</td>
   </tr>
 
 </table>
