@@ -48,11 +48,11 @@ public class OI extends Procedure {
             // of mechanisms when appropriate.
 
             // Driver OI: take input from left, right joysticks.  control drive.
-            driverOI.runOI(context);
+            driverOI.run(context);
             // Debug OI: allow for finer-grain testing of each mechanism.
-            debugOI.runOI(context);
+            debugOI.run(context);
 
-            boxOpOI.runOI(context);
+            boxOpOI.run(context);
         }
     }
 }

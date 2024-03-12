@@ -33,7 +33,7 @@ public class OI extends Procedure {
             RobotProvider.instance.refreshDriverStationData();
 
             // call each of the OI fragment's runOI methods.
-            driverOI.runOI(context);
+            driverOI.run(context);
         }
     }
 }

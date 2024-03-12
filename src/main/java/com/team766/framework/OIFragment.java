@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import com.team766.logging.Category;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.function.BooleanSupplier;
  * {@link #handleOI} method.
  *
  * The overall OI for a robot will contain a set of fragments, typically one per set of controls (eg, driver, boxop, debug),
- * and it will call {@link #runOI(Context)} once per its own loop.  During each call to {@link #runOI}, the fragment
+ * and it will call {@link #run(Context)} once per its own loop.  During each call to {@link #runOI}, the fragment
  * will evaluate any {@link Condition}s that were created for this fragment.  This simplifies OI logic that checks if a
  * specific condition is currently triggering (eg pressing or holding down a joystick button) or if a condition that had been triggering
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
@@ -91,6 +92,10 @@ public abstract class OIFragment extends LoggingBase {
      * conditions for this fragment.
      */
     protected void evaluateConditions() {
+        if (conditionsEvaluated) {
+            log(Severity.WARNING, "evaluateConditions() called multiple times in this loop!");
+            throw new IllegalStateException("evaluateConditions() called multiple times in this loop!");
+        }
         for (Condition condition : conditions) {
             condition.evaluate();
         }
@@ -102,13 +107,14 @@ public abstract class OIFragment extends LoggingBase {
      * Calls {@link #handlePre()}, evaluates all conditions once per call, and calls {@link #handlePost()}.
      * @param context The {@link Context} running the OI.
      */
-    public final void runOI(Context context) {
+    public final void run(Context context) {
         // reset for the next call
         conditionsEvaluated = false;
 
         handleOI(context);
         if (!conditionsEvaluated) {
             log(Severity.WARNING, "Fragment did not call evaluateCondition()!");
+            throw new IllegalStateException("Fragment did not call evaluateCondition!");
         }
     }
 }
