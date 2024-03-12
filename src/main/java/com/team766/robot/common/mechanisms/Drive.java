@@ -3,6 +3,7 @@ package com.team766.robot.common.mechanisms;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
@@ -11,7 +12,9 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
+import com.team766.robot.common.constants.ControlConstants;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -48,6 +51,8 @@ public class Drive extends Mechanism {
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
                     .publish();
+    
+    private PIDController rotationPID = ControlConstants.ROTATION_PID_CONTROLLER;
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -183,6 +188,18 @@ public class Drive extends Mechanism {
     }
 
     /**
+     * Allows for control of the robot's position while moving to a specific angle for rotation
+     * @param x the x value for the position joystick, positive being forward
+     * @param y the y value for the position joystick, positive being left
+     * @param setpoint rotational setpoint as a Rotation2d
+     */
+    public void controlRobotOrientedWithRotationSetpoint(double x, double y, Rotation2d setpoint) {
+        if (setpoint != null) {rotationPID.setSetpoint(setpoint.getDegrees());}
+        rotationPID.calculate(getHeading());
+        controlRobotOriented(x, y, rotationPID.getOutput());
+    }
+
+    /**
      * Uses controlRobotOriented() to control the robot relative to the field
      * @param x the x value for the position joystick, positive being forward, in meters/sec
      * @param y the y value for the position joystick, positive being left, in meters/sec
@@ -269,6 +286,10 @@ public class Drive extends Mechanism {
         gyro.setAngle(angle);
     }
 
+    /**
+     * Gets current heading in degrees
+     * @return current heading in degrees
+     */
     public double getHeading() {
         return gyro.getAngle();
     }
