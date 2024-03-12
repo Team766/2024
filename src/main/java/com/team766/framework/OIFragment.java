@@ -1,7 +1,6 @@
 package com.team766.framework;
 
 import com.team766.logging.Category;
-import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +93,8 @@ public abstract class OIFragment extends LoggingBase {
     protected void evaluateConditions() {
         if (conditionsEvaluated) {
             log(Severity.WARNING, "evaluateConditions() called multiple times in this loop!");
-            throw new IllegalStateException("evaluateConditions() called multiple times in this loop!");
+            throw new IllegalStateException(
+                    "evaluateConditions() called multiple times in this loop!");
         }
         for (Condition condition : conditions) {
             condition.evaluate();
