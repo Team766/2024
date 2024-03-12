@@ -13,13 +13,13 @@ We use the same basic driver controls that we use on any of our swerve-drive bas
 
 TODO: consider this customization.
 
-<table>
+<table style="table-layout: fixed">
   <tr>
-    <td>
-    <img align="left" src="images/thrustmaster.jpeg" alt="left"/>
+    <td style="width: 50%">
+    <img src="images/thrustmaster.jpeg" alt="left"/>
   </td>
-  <td>
-      <img align="right" src="images/thrustmaster.jpeg" alt="right"/>
+  <td style="width: 50%">
+      <img src="images/thrustmaster.jpeg" alt="right"/>
   </td>
   </tr>
   <tr>
