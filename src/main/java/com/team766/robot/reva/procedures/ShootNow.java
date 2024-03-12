@@ -90,7 +90,7 @@ public class ShootNow extends VisionPIDProcedure {
 
         log("eee: " + toUse.getRotation().getZ());
 
-        while (Math.abs(anglePID.getOutput()) > 0.04) {
+        while (Math.abs(anglePID.getOutput()) > 0.075) {
             context.yield();
 
             SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
