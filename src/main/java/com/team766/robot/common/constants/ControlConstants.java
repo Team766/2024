@@ -26,6 +26,8 @@ public class ControlConstants {
      */
     public static final double MAX_ROTATIONAL_VELOCITY = 2.0;
 
+
+    // FIXME: tune values
     public static final double DEFAULT_ROTATION_P = 4.00;
     public static final double DEFAULT_ROTATION_I = 0;
     public static final double DEFAULT_ROTATION_D = 0;
