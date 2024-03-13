@@ -43,7 +43,6 @@ public class Shoulder extends Mechanism {
 
     private ValueProvider<Double> ffGain;
     private double targetRotations = 0.0;
-    private double targetAngle = 0.0;
 
     public Shoulder() {
         // TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
