@@ -34,7 +34,7 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private double curSetpoint;
+    private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
     private static final double CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
 
@@ -57,7 +57,7 @@ public class Shoulder extends Mechanism {
 
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
         leftMotor.setSensorPosition(0);
-        curSetpoint = -1;
+        targetAngle = -1;
     }
 
     public void stop() {
@@ -101,17 +101,16 @@ public class Shoulder extends Mechanism {
 
     public void rotate(double angle) {
         checkContextOwnership();
-        double targetAngle =
+        targetAngle =
                 com.team766.math.Math.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
-        curSetpoint = targetAngle;
         // actual rotation will happen in run()
     }
 
     public boolean isFinished() {
-        return Math.abs(getAngle() - curSetpoint) < 1;
+        return Math.abs(getAngle() - targetAngle) < 1;
     }
 
     @Override
