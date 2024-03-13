@@ -3,6 +3,7 @@ package com.team766.robot.reva.procedures;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Context;
+import com.team766.framework.Procedure;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
@@ -12,7 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
-public class ShootNow extends VisionPIDProcedure {
+public class ShootNow extends Procedure {
 
     int tagId;
     double angle;
@@ -52,7 +53,7 @@ public class ShootNow extends VisionPIDProcedure {
         double x = toUse.getX();
         double y = toUse.getY();
 
-        anglePID.setSetpoint(0);
+        // anglePID.setSetpoint(0);
 
         /*
          * Should we calculate these before angleing the robot or after?
@@ -84,37 +85,37 @@ public class ShootNow extends VisionPIDProcedure {
 
         // anglePID.calculate(toUse.getRotation().getZ() + toAdd);
 
-        angle = Math.atan2(y, x);
+        // angle = Math.atan2(y, x);
 
-        anglePID.calculate(angle);
+        // anglePID.calculate(angle);
 
         log("eee: " + toUse.getRotation().getZ());
 
         while (Math.abs(anglePID.getOutput()) > 0.075) {
             context.yield();
 
-            SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
-            SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
-            try {
-                toUse = getTransform3dOfRobotToTag();
+        //     SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
+        //     SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
+        //     try {
+        //         toUse = getTransform3dOfRobotToTag();
 
-                y = toUse.getY();
-                x = toUse.getX();
+        //         y = toUse.getY();
+        //         x = toUse.getX();
 
-                angle = Math.atan2(y, x);
+        //         angle = Math.atan2(y, x);
 
-                anglePID.calculate(angle);
-            } catch (AprilTagGeneralCheckedException e) {
-                continue;
-            }
+        //         anglePID.calculate(angle);
+        //     } catch (AprilTagGeneralCheckedException e) {
+        //         continue;
+        //     }
 
             Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
         }
 
         Robot.drive.stopDrive();
 
-        SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
-        SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
+        // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
+        // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
         context.waitFor(() -> Robot.shoulder.isFinished());
 

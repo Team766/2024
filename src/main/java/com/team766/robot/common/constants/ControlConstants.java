@@ -28,12 +28,12 @@ public class ControlConstants {
 
 
     // FIXME: tune values
-    public static final double DEFAULT_ROTATION_P = 4.00;
+    public static final double DEFAULT_ROTATION_P = 1.80;
     public static final double DEFAULT_ROTATION_I = 0;
     public static final double DEFAULT_ROTATION_D = 0;
     public static final double DEFAULT_ROTATION_FF = 0;
-    public static final double DEFAULT_ROTATION_THRESHOLD = 0;
-    public static final double DEFAULT_ROTATION_MAX_OUTPUT = 0;
+    public static final double DEFAULT_ROTATION_MAX_OUTPUT = 1.0;
+    public static final double DEFAULT_ROTATION_THRESHOLD = 0.075;
 
 
 
