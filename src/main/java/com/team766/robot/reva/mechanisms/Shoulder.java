@@ -36,19 +36,26 @@ public class Shoulder extends Mechanism {
 
     private double curSetpoint;
     private static final double NUDGE_AMOUNT = 1; // degrees
+    private static final double CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
 
     private MotorController leftMotor;
     private MotorController rightMotor;
 
     private ValueProvider<Double> ffGain;
     private double targetRotations = 0.0;
+    private double targetAngle = 0.0;
 
     public Shoulder() {
         // TODO: Initialize and use CANCoders to get offset for relative encoder on boot.
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
         rightMotor.follow(leftMotor);
+
         leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
+        leftMotor.setCurrentLimit(CURRENT_LIMIT);
+        rightMotor.setCurrentLimit(CURRENT_LIMIT);
+
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
         leftMotor.setSensorPosition(0);
         curSetpoint = -1;
@@ -100,7 +107,7 @@ public class Shoulder extends Mechanism {
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
-        curSetpoint = angle;
+        curSetpoint = targetAngle;
         // actual rotation will happen in run()
     }
 
@@ -111,8 +118,13 @@ public class Shoulder extends Mechanism {
     @Override
     public void run() {
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber(
+                "[SHOULDER] Left Motor Current", MotorUtil.getCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Right Motor Current", MotorUtil.getCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

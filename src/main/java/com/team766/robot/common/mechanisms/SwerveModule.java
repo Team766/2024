@@ -7,6 +7,7 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -166,5 +167,13 @@ public class SwerveModule {
                 drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS,
                 Rotation2d.fromDegrees(
                         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset));
+    }
+
+    public void dashboardCurrentUsage() {
+        // TODO: also dashboard stator current?
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " steer current", MotorUtil.getCurrentUsage(steer));
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " drive current", MotorUtil.getCurrentUsage(drive));
     }
 }
