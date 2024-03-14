@@ -36,7 +36,8 @@ public class Shoulder extends Mechanism {
 
     private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
-    private static final double CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
+    private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
+    private static final double STATOR_CURRENT_LIMIT = 50.0; // TUNE THIS!
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -52,8 +53,10 @@ public class Shoulder extends Mechanism {
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
-        leftMotor.setCurrentLimit(CURRENT_LIMIT);
-        rightMotor.setCurrentLimit(CURRENT_LIMIT);
+        leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
 
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
         leftMotor.setSensorPosition(0);
@@ -120,9 +123,14 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
         SmartDashboard.putNumber(
-                "[SHOULDER] Left Motor Current", MotorUtil.getCurrentUsage(leftMotor));
+                "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
         SmartDashboard.putNumber(
-                "[SHOULDER] Right Motor Current", MotorUtil.getCurrentUsage(rightMotor));
+                "[SHOULDER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Right Motor Stator Current",
+                MotorUtil.getStatorCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

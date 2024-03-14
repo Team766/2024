@@ -78,6 +78,9 @@ public class SwerveModule {
         // Current limit for motors to avoid breaker problems
         drive.setCurrentLimit(driveMotorCurrentLimit);
         steer.setCurrentLimit(steerMotorCurrentLimit);
+        // TODO: tune these values!
+        MotorUtil.setTalonFXStatorCurrentLimit(drive, 80.0);
+        MotorUtil.setTalonFXStatorCurrentLimit(steer, 60.0);
     }
 
     private double computeEncoderOffset() {
@@ -170,10 +173,17 @@ public class SwerveModule {
     }
 
     public void dashboardCurrentUsage() {
-        // TODO: also dashboard stator current?
         SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " steer current", MotorUtil.getCurrentUsage(steer));
+                "[" + modulePlacement + "]" + " steer supply current",
+                MotorUtil.getCurrentUsage(steer));
         SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " drive current", MotorUtil.getCurrentUsage(drive));
+                "[" + modulePlacement + "]" + " steer stator current",
+                MotorUtil.getStatorCurrentUsage(steer));
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " drive supply current",
+                MotorUtil.getCurrentUsage(drive));
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " drive stator current",
+                MotorUtil.getStatorCurrentUsage(drive));
     }
 }

@@ -1,6 +1,7 @@
 package com.team766.robot.reva.mechanisms;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.team766.hal.MotorController;
@@ -30,6 +31,27 @@ public final class MotorUtil {
             return getSparkMaxCurrentUsage((CANSparkMax) motor);
         } else {
             return -1;
+        }
+    }
+
+    public static double getStatorCurrentUsage(MotorController motor) {
+        if (motor instanceof TalonFX) {
+            StatusSignal<Double> current = ((TalonFX) motor).getStatorCurrent();
+            if (current.getStatus().isOK()) {
+                return current.getValueAsDouble();
+            }
+        }
+        return -1;
+    }
+
+    public static void setTalonFXStatorCurrentLimit(MotorController motor, double ampsLimit) {
+        if (motor instanceof TalonFX) {
+            TalonFX talonFX = (TalonFX) motor;
+            CurrentLimitsConfigs config = new CurrentLimitsConfigs();
+            // TODO: check for errors, log warnings
+            talonFX.getConfigurator().refresh(config);
+            config.withStatorCurrentLimit(ampsLimit).withSupplyCurrentLimitEnable(true);
+            talonFX.getConfigurator().apply(config);
         }
     }
 }
