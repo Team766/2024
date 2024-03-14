@@ -53,6 +53,10 @@ public class SwerveModule {
                     * DRIVE_GEAR_RATIO // Motor radians/sec
                     / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
+    // TUNE THESE!
+    private static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
+    private static final double STEER_STATOR_CURRENT_LIMIT = 60.0;
+
     /**
      * Creates a new SwerveModule.
      *
@@ -79,8 +83,8 @@ public class SwerveModule {
         drive.setCurrentLimit(driveMotorCurrentLimit);
         steer.setCurrentLimit(steerMotorCurrentLimit);
         // TODO: tune these values!
-        MotorUtil.setTalonFXStatorCurrentLimit(drive, 80.0);
-        MotorUtil.setTalonFXStatorCurrentLimit(steer, 60.0);
+        MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
     }
 
     private double computeEncoderOffset() {
