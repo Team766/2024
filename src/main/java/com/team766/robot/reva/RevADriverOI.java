@@ -123,7 +123,7 @@ public class RevADriverOI extends OIFragment {
 
 				drive.controlFieldOrientedWithRotationSetpoint(
 					(drivingCoefficient * leftJoystickX),
-                    (drivingCoefficient * leftJoystickY),// new Rotation2d(0));
+                    (drivingCoefficient * leftJoystickY),
 					visionSpeakerHelper.getHeadingToTarget());
 
 			} else {

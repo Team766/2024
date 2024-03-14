@@ -240,41 +240,6 @@ public class Drive extends Mechanism {
         controlFieldOriented(x, y, (Math.abs(rotationPID.getOutput()) < 0.12 ? 0 : rotationPID.getOutput()));
     }
 
-    // TODO: Probably should be in a seperate class at some point
-    /**
-     * Intended to be temporary and used with photonvision and origin of blue alliance corner
-     * Relative target accounts for robot orientation
-     * @param x the x value for the position joystick, positive being forward
-     * @param y the y value for the position joystick, positive being left
-     * @param relativeTarget the relative transform from the robot to the target (fwd +X, left +Y)
-     */
-    public void controlFieldOrientedWithRotationLock(double x, double y, Translation2d relativeTarget) {
-        boolean targetTranslationFlip = (DriverStation.getAlliance().get() == Alliance.Blue);
-        if (relativeTarget != null) {
-
-            // Calculates the absolute position of the target according to odometry
-            // Rotates the direction of the relative translation to correct for robot orientation:
-            // Shooter camera is on back of the robot, red alliance's gyro is 180 - absolute rotation
-            // Sticks around even when there is no new valid relativeTarget
-
-            rotationLockTarget = getCurrentPosition().getTranslation().plus(
-                relativeTarget.rotateBy(Rotation2d.fromDegrees(
-                    targetTranslationFlip ? (-getHeading() - 180) : (getHeading()))));
-        }
-
-        // Calculates the required heading to face the last valid updating of the rotationLockTarget
-        // Undoes the rotation to find a new relative translation between the robot and target, even if the target is not currently seen
-        // Calculated the heading the robot needs to face from this translation
-
-        Rotation2d requiredHeading = rotationLockTarget.minus(
-            getCurrentPosition().getTranslation()).rotateBy(Rotation2d.fromDegrees(
-                    targetTranslationFlip ? (getHeading() + 180) : (-getHeading()))).getAngle().plus(
-                        Rotation2d.fromDegrees(getHeading()));
-
-        controlFieldOrientedWithRotationSetpoint(x, y, requiredHeading);
-
-    }
-
     /**
      * Overloads controlFieldOriented to work with a chassisSpeeds input
      * @param chassisSpeeds
