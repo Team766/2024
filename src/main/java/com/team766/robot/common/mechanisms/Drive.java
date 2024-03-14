@@ -232,9 +232,12 @@ public class Drive extends Mechanism {
      * @param setpoint rotational setpoint as a Rotation2d
      */
     public void controlFieldOrientedWithRotationSetpoint(double x, double y, Rotation2d setpoint) {
-        if (setpoint != null) {rotationPID.setSetpoint(setpoint.getDegrees());}
+        if (setpoint != null) {
+            rotationPID.setSetpoint(setpoint.getDegrees());
+            SmartDashboard.putNumber("Rotation Setpoint", setpoint.getDegrees());
+        }
         rotationPID.calculate(getHeading());
-        controlFieldOriented(x, y, rotationPID.getOutput());
+        controlFieldOriented(x, y, (Math.abs(rotationPID.getOutput()) < 0.12 ? 0 : rotationPID.getOutput()));
     }
 
     // TODO: Probably should be in a seperate class at some point

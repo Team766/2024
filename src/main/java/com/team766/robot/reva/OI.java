@@ -20,7 +20,7 @@ public class OI extends Procedure {
     private final JoystickReader rightJoystick;
     private final JoystickReader macropad;
     private final JoystickReader gamepad;
-    private final DriverOI driverOI;
+    private final RevADriverOI driverOI;
     private final DebugOI debugOI;
     private final BoxOpOI boxOpOI;
 
@@ -32,7 +32,7 @@ public class OI extends Procedure {
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
         gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
-        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+        driverOI = new RevADriverOI(Robot.drive, Robot.shoulder, leftJoystick, rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
         boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter, Robot.climber);
     }
