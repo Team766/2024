@@ -39,7 +39,6 @@ public class Shoulder extends Mechanism {
     private static final double NUDGE_AMOUNT = 30; // degrees
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
-    private final double RELATIVE_ENCODER_OFFSET;
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -59,10 +58,7 @@ public class Shoulder extends Mechanism {
                 (REVThroughBoreDutyCycleEncoder)
                         RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
 
-        RELATIVE_ENCODER_OFFSET = getAbsoluteEncoderPosition();
-
-        rotate(Position.BOTTOM);
-        leftMotor.setSensorPosition(0.0);
+        leftMotor.setSensorPosition(absoluteEncoder.getAbsolutePosition());
     }
 
     public void stop() {
