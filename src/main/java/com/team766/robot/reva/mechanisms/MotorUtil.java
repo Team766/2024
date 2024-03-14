@@ -1,10 +1,14 @@
 package com.team766.robot.reva.mechanisms;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.team766.hal.MotorController;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 
 // throaway class.  this is ugly - quick-and-dirty utility class to help us understand
 // current draw by motor.
@@ -48,10 +52,23 @@ public final class MotorUtil {
         if (motor instanceof TalonFX) {
             TalonFX talonFX = (TalonFX) motor;
             CurrentLimitsConfigs config = new CurrentLimitsConfigs();
-            // TODO: check for errors, log warnings
-            talonFX.getConfigurator().refresh(config);
+            StatusCode status = talonFX.getConfigurator().refresh(config);
+            if (!status.isOK()) {
+                Logger.get(Category.MECHANISMS)
+                        .logRaw(
+                                Severity.WARNING,
+                                "Unable to get current limit configs: " + status.toString());
+                ;
+            }
             config.withStatorCurrentLimit(ampsLimit).withSupplyCurrentLimitEnable(true);
-            talonFX.getConfigurator().apply(config);
+            status = talonFX.getConfigurator().apply(config);
+            if (!status.isOK()) {
+                Logger.get(Category.MECHANISMS)
+                        .logRaw(
+                                Severity.WARNING,
+                                "Unable to set stator current limit: " + status.toString());
+                ;
+            }
         }
     }
 }
