@@ -237,7 +237,7 @@ public class Drive extends Mechanism {
             SmartDashboard.putNumber("Rotation Setpoint", setpoint.getDegrees());
         }
         rotationPID.calculate(getHeading());
-        controlFieldOriented(x, y, (Math.abs(rotationPID.getOutput()) < 0.12 ? 0 : rotationPID.getOutput()));
+        controlFieldOriented(x, y, (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD ? 0 : rotationPID.getOutput()));
     }
 
     /**

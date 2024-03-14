@@ -33,7 +33,7 @@ public class ControlConstants {
     public static final double DEFAULT_ROTATION_D = 0.008;
     public static final double DEFAULT_ROTATION_FF = 0;
     public static final double DEFAULT_ROTATION_MAX_OUTPUT = 3.0;
-    public static final double DEFAULT_ROTATION_THRESHOLD = 5.0;
+    public static final double DEFAULT_ROTATION_THRESHOLD = 0.20;
 
 
 
