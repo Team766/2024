@@ -71,6 +71,7 @@ public abstract class OIFragment extends LoggingBase {
      * Creates a new OIFragment, using the name of the sub-class.
      */
     public OIFragment() {
+        loggerCategory = Category.OPERATOR_INTERFACE;
         this.name = this.getClass().getSimpleName();
     }
 
