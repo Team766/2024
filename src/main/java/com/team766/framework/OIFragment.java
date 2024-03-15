@@ -89,8 +89,8 @@ public abstract class OIFragment extends LoggingBase {
      * they have set up to simplify checking if the {@link Condition} is {@link Condition#isTriggering()},
      * or, if it had been triggering in a previous iteration of the loop, if it is now
      * {@link Condition#isFinishedTriggering()}.
-     * 
-     * When implementing handleOI, you must call {@link #evaluateConditions()} in order to use any 
+     *
+     * When implementing handleOI, you must call {@link #evaluateConditions()} in order to use any
      * Conditions; omitting this call will result in calls to {@link #run} throwing an IllegalStateException.
      *
      * @param context The {@link Context} running the OI.
