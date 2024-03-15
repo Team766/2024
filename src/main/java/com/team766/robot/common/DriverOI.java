@@ -14,40 +14,28 @@ public class DriverOI extends OIFragment {
     protected final Drive drive;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
-    protected double rightJoystickY = 0;
-    protected double leftJoystickX = 0;
-    protected double leftJoystickY = 0;
     protected boolean isCross = false;
 
-    private final OICondition movingJoysticks;
+    private final InlineCondition movingJoysticks = new InlineCondition();
 
     public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
-
-        movingJoysticks =
-                new OICondition(
-                        () ->
-                                !isCross
-                                        && Math.abs(leftJoystickX)
-                                                        + Math.abs(leftJoystickY)
-                                                        + Math.abs(rightJoystickY)
-                                                > 0);
     }
 
     public void handleOI(Context context) {
 
         // Negative because forward is negative in driver station
-        leftJoystickX =
+        final double leftJoystickX =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
                         * ControlConstants.MAX_POSITIONAL_VELOCITY; // For fwd/rv
         // Negative because left is negative in driver station
-        leftJoystickY =
+        final double leftJoystickY =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_POSITIONAL_VELOCITY; // For left/right
         // Negative because left is negative in driver station
-        rightJoystickY =
+        final double rightJoystickY =
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
@@ -68,6 +56,13 @@ public class DriverOI extends OIFragment {
             }
             isCross = !isCross;
         }
+
+        movingJoysticks.update(
+                !isCross
+                        && Math.abs(leftJoystickX)
+                                        + Math.abs(leftJoystickY)
+                                        + Math.abs(rightJoystickY)
+                                > 0);
 
         // Moves the robot if there are joystick inputs
         if (movingJoysticks.isTriggering()) {
