@@ -37,7 +37,7 @@ public class Shoulder extends Mechanism {
     private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
     private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
-    private static final double STATOR_CURRENT_LIMIT = 50.0; // TUNE THIS!
+    private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
 
     private MotorController leftMotor;
     private MotorController rightMotor;

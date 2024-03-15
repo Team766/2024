@@ -55,7 +55,7 @@ public class SwerveModule {
 
     // TUNE THESE!
     private static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
-    private static final double STEER_STATOR_CURRENT_LIMIT = 60.0;
+    private static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
 
     /**
      * Creates a new SwerveModule.

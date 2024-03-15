@@ -37,7 +37,7 @@ public class Climber extends Mechanism {
     private static final double NUDGE_INCREMENT = 10; // in cm
     private static final double PIDLESS_NUDGE_INCREMENT = 0.2;
     private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
-    private static final double STATOR_CURRENT_LIMIT = 50.0; // TUNE THIS!
+    private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
 
     private double pidlessPower = 0.0;
 
