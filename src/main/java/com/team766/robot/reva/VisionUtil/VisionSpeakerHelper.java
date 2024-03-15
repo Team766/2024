@@ -9,6 +9,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
+import com.pathplanner.lib.util.GeometryUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,18 +23,20 @@ public class VisionSpeakerHelper {
     double angle;
 	GrayScaleCamera camera;
 	Drive drive;
-	Translation2d absTargetPos = new Translation2d(0, 0);
+	Translation2d absTargetPos;
 	boolean targetTranslationFlip;
 
 
     public VisionSpeakerHelper(Drive drive) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
+		absTargetPos = new Translation2d(0, 5.5);
         if (alliance.isPresent()) {
             if (alliance.get().equals(Alliance.Blue)) {
                 tagId = 7;
             } else if (alliance.get().equals(Alliance.Red)) {
                 tagId = 4;
+				GeometryUtil.flipFieldPosition(absTargetPos);
             }
         } else {
             tagId = -1;
