@@ -19,7 +19,7 @@ public class DriverOI extends OIFragment {
     protected double leftJoystickY = 0;
     protected boolean isCross = false;
 
-    private final OICondition movingJoysticks;
+    private final Condition movingJoysticks;
 
     public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         this.drive = drive;
@@ -27,7 +27,7 @@ public class DriverOI extends OIFragment {
         this.rightJoystick = rightJoystick;
 
         movingJoysticks =
-                new OICondition(
+                new Condition(
                         () ->
                                 !isCross
                                         && Math.abs(leftJoystickX)
@@ -50,6 +50,8 @@ public class DriverOI extends OIFragment {
         rightJoystickY =
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
+
+        evaluateConditions();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();

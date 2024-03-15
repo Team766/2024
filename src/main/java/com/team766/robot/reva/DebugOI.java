@@ -39,11 +39,11 @@ public class DebugOI extends OIFragment {
     private final Climber climber;
     private final Intake intake;
     private final Shooter shooter;
-    private final OICondition controlShoulder;
-    private final OICondition controlClimber;
-    private final OICondition controlShooter;
-    private final OICondition intakeIn;
-    private final OICondition intakeOut;
+    private final Condition controlShoulder;
+    private final Condition controlClimber;
+    private final Condition controlShooter;
+    private final Condition intakeIn;
+    private final Condition intakeOut;
 
     public DebugOI(
             JoystickReader macropad,
@@ -57,16 +57,17 @@ public class DebugOI extends OIFragment {
         this.intake = intake;
         this.shooter = shooter;
 
-        controlShoulder =
-                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
-        controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
-        controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
-        intakeIn = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_IN));
-        intakeOut = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_OUT));
+        controlShoulder = new Condition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
+        controlClimber = new Condition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
+        controlShooter = new Condition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
+        intakeIn = new Condition(() -> macropad.getButton(InputConstants.INTAKE_IN));
+        intakeOut = new Condition(() -> macropad.getButton(InputConstants.INTAKE_OUT));
     }
 
     @Override
     protected void handleOI(Context context) {
+        evaluateConditions();
+
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
