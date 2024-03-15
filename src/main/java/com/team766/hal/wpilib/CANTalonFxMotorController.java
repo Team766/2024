@@ -27,7 +27,8 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public class CANTalonFxMotorController extends TalonFX implements MotorController {
+public class CANTalonFxMotorController extends TalonFX
+        implements MotorController, PIDSlotHelper.MotorCallbacks {
 
     private static final int NUM_PID_SLOTS = 2;
 
@@ -194,7 +195,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setFF(final double value, int slot) {
+    public void setFF_Impl(final double value, int slot) {
         refreshConfig();
         switch (slot) {
             case 0:
@@ -215,7 +216,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setP(final double value, int slot) {
+    public void setP_Impl(final double value, int slot) {
         refreshConfig();
         switch (slot) {
             case 0:
@@ -236,7 +237,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setI(final double value, int slot) {
+    public void setI_Impl(final double value, int slot) {
         refreshConfig();
         switch (slot) {
             case 0:
@@ -257,7 +258,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setD(final double value, int slot) {
+    public void setD_Impl(final double value, int slot) {
         refreshConfig();
         switch (slot) {
             case 0:
@@ -313,7 +314,7 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+    public void setOutputRange_Impl(final double minOutput, final double maxOutput, int slot) {
         if (slot != 0) {
             Logger.get(Category.HAL)
                     .logRaw(

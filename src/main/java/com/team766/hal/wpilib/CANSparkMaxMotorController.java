@@ -14,7 +14,8 @@ import com.team766.logging.LoggerExceptionUtils;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class CANSparkMaxMotorController extends CANSparkMax implements MotorController {
+public class CANSparkMaxMotorController extends CANSparkMax
+        implements MotorController, PIDSlotHelper.MotorCallbacks {
 
     private static final int NUM_PID_SLOTS = 2; // should be 4, only exposing 2 at this time.
 
@@ -155,7 +156,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setP(final double value, int slot) {
+    public void setP_Impl(final double value, int slot) {
         revErrorToException(ExceptionTarget.LOG, getPIDController().setP(value, slot));
     }
 
@@ -165,7 +166,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setI(final double value, int slot) {
+    public void setI_Impl(final double value, int slot) {
         revErrorToException(ExceptionTarget.LOG, getPIDController().setI(value, slot));
     }
 
@@ -175,7 +176,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setD(final double value, int slot) {
+    public void setD_Impl(final double value, int slot) {
         revErrorToException(ExceptionTarget.LOG, getPIDController().setD(value, slot));
     }
 
@@ -185,7 +186,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setFF(final double value, int slot) {
+    public void setFF_Impl(final double value, int slot) {
         revErrorToException(ExceptionTarget.LOG, getPIDController().setFF(value, slot));
     }
 
@@ -282,7 +283,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     }
 
     @Override
-    public void setOutputRange(final double minOutput, final double maxOutput, int slot) {
+    public void setOutputRange_Impl(final double minOutput, final double maxOutput, int slot) {
         revErrorToException(
                 ExceptionTarget.LOG, getPIDController().setOutputRange(minOutput, maxOutput, slot));
     }

@@ -18,16 +18,16 @@ public class PIDSlotHelper {
             this.slot = slot;
             this.pGain =
                     new ObserveValue<Double>(
-                            ObserveValue.whenPresent((p) -> motor.setP(p, this.slot)));
+                            ObserveValue.whenPresent((p) -> motor.setP_Impl(p, this.slot)));
             this.iGain =
                     new ObserveValue<Double>(
-                            ObserveValue.whenPresent((i) -> motor.setI(i, this.slot)));
+                            ObserveValue.whenPresent((i) -> motor.setI_Impl(i, this.slot)));
             this.dGain =
                     new ObserveValue<Double>(
-                            ObserveValue.whenPresent((d) -> motor.setD(d, this.slot)));
+                            ObserveValue.whenPresent((d) -> motor.setD_Impl(d, this.slot)));
             this.ffGain =
                     new ObserveValue<Double>(
-                            ObserveValue.whenPresent((ff) -> motor.setFF(ff, this.slot)));
+                            ObserveValue.whenPresent((ff) -> motor.setFF_Impl(ff, this.slot)));
             this.outputMin =
                     new ObserveValue<Double>(ObserveValue.whenPresent((__) -> updateOutputRange()));
             this.outputMax =
@@ -35,17 +35,39 @@ public class PIDSlotHelper {
         }
 
         private void updateOutputRange() {
-            motor.setOutputRange(
+            motor.setOutputRange_Impl(
                     outputMin.getValueProvider().valueOr(-1.0),
                     outputMax.getValueProvider().valueOr(1.0),
                     slot);
         }
     }
 
-    private final MotorController motor;
+    /**
+     * The methods of this interface match the semantics of the similarly-named methods in
+     * {@link MotorController}, but it's important that these set_Impl methods remain separate from
+     * the MotorController methods, otherwise PIDSlotHelper will not work properly.
+     * All of the MotorController methods should call PIDSlotHelper (rather than updating the motor
+     * device object directly) otherwise PIDSlotHelper's ObserveValues will not be updated, and they
+     * will stay subscribed to the old ValueProvider.
+     */
+    public static interface MotorCallbacks {
+        int numPIDSlots();
+
+        void setP_Impl(double value, int slot);
+
+        void setI_Impl(double value, int slot);
+
+        void setD_Impl(double value, int slot);
+
+        void setFF_Impl(double value, int slot);
+
+        void setOutputRange_Impl(double minOutput, double maxOutput, int slot);
+    }
+
+    private final MotorCallbacks motor;
     private final Slot[] slots;
 
-    public PIDSlotHelper(MotorController motor) {
+    public PIDSlotHelper(MotorCallbacks motor) {
         this.motor = motor;
         final int size = motor.numPIDSlots();
         this.slots = new Slot[size];
