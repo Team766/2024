@@ -26,7 +26,6 @@ public class ControlConstants {
      */
     public static final double MAX_ROTATIONAL_VELOCITY = 2.0;
 
-
     // FIXME: tune values
     public static final double DEFAULT_ROTATION_P = 0.20;
     public static final double DEFAULT_ROTATION_I = 0;
@@ -35,7 +34,13 @@ public class ControlConstants {
     public static final double DEFAULT_ROTATION_MAX_OUTPUT = 3.0;
     public static final double DEFAULT_ROTATION_THRESHOLD = 0.20;
 
-
-
-    public static final PIDController ROTATION_PID_CONTROLLER = new PIDController(DEFAULT_ROTATION_P, DEFAULT_ROTATION_I, DEFAULT_ROTATION_D, DEFAULT_ROTATION_FF, -DEFAULT_ROTATION_MAX_OUTPUT, DEFAULT_ROTATION_MAX_OUTPUT, DEFAULT_ROTATION_THRESHOLD);
+    public static final PIDController ROTATION_PID_CONTROLLER =
+            new PIDController(
+                    DEFAULT_ROTATION_P,
+                    DEFAULT_ROTATION_I,
+                    DEFAULT_ROTATION_D,
+                    DEFAULT_ROTATION_FF,
+                    -DEFAULT_ROTATION_MAX_OUTPUT,
+                    DEFAULT_ROTATION_MAX_OUTPUT,
+                    DEFAULT_ROTATION_THRESHOLD);
 }

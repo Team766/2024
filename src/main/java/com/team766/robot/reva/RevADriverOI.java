@@ -1,29 +1,24 @@
 package com.team766.robot.reva;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Context;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.Severity;
 import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.ShootVelocityAndIntake;
-import edu.wpi.first.math.geometry.Rotation2d;
-import com.team766.robot.common.mechanisms.Drive;
 
 public class RevADriverOI extends OIFragment {
 
     protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
-	protected VisionSpeakerHelper visionSpeakerHelper;
+    protected VisionSpeakerHelper visionSpeakerHelper;
     protected final Drive drive;
-	protected final Shoulder shoulder;
+    protected final Shoulder shoulder;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
     protected double rightJoystickY = 0;
@@ -33,10 +28,14 @@ public class RevADriverOI extends OIFragment {
 
     private final OICondition movingJoysticks;
 
-    public RevADriverOI(Drive drive, Shoulder shoulder, JoystickReader leftJoystick, JoystickReader rightJoystick) {
+    public RevADriverOI(
+            Drive drive,
+            Shoulder shoulder,
+            JoystickReader leftJoystick,
+            JoystickReader rightJoystick) {
         super("DriverOI");
         this.drive = drive;
-		this.shoulder = shoulder;
+        this.shoulder = shoulder;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
         visionSpeakerHelper = new VisionSpeakerHelper(drive);
@@ -49,7 +48,6 @@ public class RevADriverOI extends OIFragment {
                                                         + Math.abs(leftJoystickY)
                                                         + Math.abs(rightJoystickY)
                                                 > 0);
-		
     }
 
     public void handleOI(Context context) {
@@ -88,55 +86,53 @@ public class RevADriverOI extends OIFragment {
         visionSpeakerHelper.updateTarget();
 
         if (leftJoystick.getButtonPressed(2)) {
-				drive.stopDrive();
-				drive.setCross();
+            drive.stopDrive();
+            drive.setCross();
 
-				try {
-					new ShootVelocityAndIntake(visionSpeakerHelper.getShooterPower()).run(context);
-				} catch (AprilTagGeneralCheckedException e) {
-                    LoggerExceptionUtils.logException(e);
-					// log("Could not see april tag");
-			}
+            try {
+                new ShootVelocityAndIntake(visionSpeakerHelper.getShooterPower()).run(context);
+            } catch (AprilTagGeneralCheckedException e) {
+                LoggerExceptionUtils.logException(e);
+                // log("Could not see april tag");
+            }
         }
 
         // Moves the robot if there are joystick inputs
-		if (movingJoysticks.isTriggering() || leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
-			
-			context.takeOwnership(drive);
+        if (movingJoysticks.isTriggering()
+                || leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
 
-			double drivingCoefficient = 1;
+            context.takeOwnership(drive);
+
+            double drivingCoefficient = 1;
 
             // If a button is pressed, drive is just fine adjustment
             if (rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)) {
                 drivingCoefficient = FINE_DRIVING_COEFFICIENT;
             }
-			
-			if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
-				
-				try {
-					context.takeOwnership(shoulder);
-					shoulder.rotate(visionSpeakerHelper.getArmAngle());
-					context.releaseOwnership(shoulder);
-				} catch (AprilTagGeneralCheckedException e) {
-					log("Could not see april tag");
-				}
 
-				drive.controlFieldOrientedWithRotationSetpoint(
-					(drivingCoefficient * leftJoystickX),
-                    (drivingCoefficient * leftJoystickY),
-					visionSpeakerHelper.getHeadingToTarget());
+            if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
 
-			} else {
-            
-				drive.controlFieldOriented(
-						(drivingCoefficient * leftJoystickX),
-						(drivingCoefficient * leftJoystickY),
-						(drivingCoefficient * rightJoystickY));
+                try {
+                    context.takeOwnership(shoulder);
+                    shoulder.rotate(visionSpeakerHelper.getArmAngle());
+                    context.releaseOwnership(shoulder);
+                } catch (AprilTagGeneralCheckedException e) {
+                    log("Could not see april tag");
+                }
 
-			}
-		}
+                drive.controlFieldOrientedWithRotationSetpoint(
+                        (drivingCoefficient * leftJoystickX),
+                        (drivingCoefficient * leftJoystickY),
+                        visionSpeakerHelper.getHeadingToTarget());
 
-		else if (movingJoysticks.isFinishedTriggering()) {
+            } else {
+
+                drive.controlFieldOriented(
+                        (drivingCoefficient * leftJoystickX),
+                        (drivingCoefficient * leftJoystickY),
+                        (drivingCoefficient * rightJoystickY));
+            }
+        } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
         }

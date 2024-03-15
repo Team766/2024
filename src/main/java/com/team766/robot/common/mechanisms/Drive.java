@@ -21,8 +21,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -51,7 +49,7 @@ public class Drive extends Mechanism {
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
                     .publish();
-    
+
     private PIDController rotationPID = ControlConstants.ROTATION_PID_CONTROLLER;
 
     private Translation2d rotationLockTarget;
@@ -190,18 +188,6 @@ public class Drive extends Mechanism {
     }
 
     /**
-     * Allows for control of the robot's position while moving to a specific angle for rotation
-     * @param x the x value for the position joystick, positive being forward
-     * @param y the y value for the position joystick, positive being left
-     * @param setpoint rotational setpoint as a Rotation2d
-     */
-    public void controlRobotOrientedWithRotationSetpoint(double x, double y, Rotation2d setpoint) {
-        if (setpoint != null) {rotationPID.setSetpoint(setpoint.getDegrees());}
-        rotationPID.calculate(getHeading());
-        controlRobotOriented(x, y, rotationPID.getOutput());
-    }
-
-    /**
      * Uses controlRobotOriented() to control the robot relative to the field
      * @param x the x value for the position joystick, positive being forward, in meters/sec
      * @param y the y value for the position joystick, positive being left, in meters/sec
@@ -237,7 +223,12 @@ public class Drive extends Mechanism {
             SmartDashboard.putNumber("Rotation Setpoint", setpoint.getDegrees());
         }
         rotationPID.calculate(getHeading());
-        controlFieldOriented(x, y, (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD ? 0 : rotationPID.getOutput()));
+        controlFieldOriented(
+                x,
+                y,
+                (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
+                        ? 0
+                        : rotationPID.getOutput()));
     }
 
     /**
@@ -263,7 +254,6 @@ public class Drive extends Mechanism {
 
         controlRobotOriented(vx, vy, vang);
     }
-
 
     /*
      * Stops each drive motor
