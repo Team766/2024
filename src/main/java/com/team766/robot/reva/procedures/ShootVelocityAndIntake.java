@@ -18,12 +18,11 @@ public class ShootVelocityAndIntake extends Procedure {
 
     public void run(Context context) {
         context.takeOwnership(Robot.shooter);
-        context.takeOwnership(Robot.intake);
 
         Robot.shooter.shoot(speed);
         context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
-        log("SUIIII");
 
+        context.takeOwnership(Robot.intake);
         new IntakeIn().run(context);
         context.waitForSeconds(1.5);
 
