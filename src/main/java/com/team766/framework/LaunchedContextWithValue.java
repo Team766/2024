@@ -7,6 +7,8 @@ package com.team766.framework;
 public interface LaunchedContextWithValue<T> extends LaunchedContext {
     /**
      * Return the most recent value that the Procedure passed to Context.yield(T).
+     * Return null if a value has never been yielded, or a value has not been yielded since the last
+     * call to getAndClearLastYieldedValue.
      */
     T lastYieldedValue();
 
