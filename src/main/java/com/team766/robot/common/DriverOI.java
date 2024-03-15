@@ -22,7 +22,6 @@ public class DriverOI extends OIFragment {
     private final Condition movingJoysticks;
 
     public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
-        super("DriverOI");
         this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
