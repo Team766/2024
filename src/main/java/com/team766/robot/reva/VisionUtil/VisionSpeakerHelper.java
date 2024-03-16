@@ -93,6 +93,7 @@ public class VisionSpeakerHelper {
     public void update() {
         updateTarget();
         updateRelativeTranslation2d();
+        SmartDashboard.putString("translation", relativeTranslation2d.toString());
     }
 
     public Rotation2d getHeadingToTarget() {
