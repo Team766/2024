@@ -378,7 +378,7 @@ public class Context implements Runnable, LaunchedContext {
      *
      * @return True if the predicate succeeded, false if the wait timed out.
      */
-    public boolean waitForConditionOrTimedout(
+    public boolean waitForConditionOrTimeout(
             double timeoutSeconds, final BooleanSupplier predicate) {
         TimedPredicate timedPredicate = new TimedPredicate(predicate, timeoutSeconds);
         waitFor(timedPredicate);
