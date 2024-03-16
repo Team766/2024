@@ -1,12 +1,12 @@
 package com.team766.framework;
 
+import com.team766.hal.Clock;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import java.lang.StackWalker.StackFrame;
-import java.time.Clock;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -91,26 +91,27 @@ public class Context implements Runnable, LaunchedContext {
     /* package */ static class TimedPredicate implements BooleanSupplier {
         private final Clock clock;
         private final BooleanSupplier predicate;
-        private final long deadlineMillis;
-        private boolean succeeded = true;
+        private final double deadlineSeconds;
+        private boolean succeeded = false;
 
         // package visible for testing
         /* package */ TimedPredicate(
                 Clock clock, BooleanSupplier predicate, double timeoutSeconds) {
             this.clock = clock;
-            this.deadlineMillis = clock.millis() + (long) (timeoutSeconds * 1000);
+            this.deadlineSeconds = clock.getTime() + timeoutSeconds;
             this.predicate = predicate;
         }
 
         public TimedPredicate(BooleanSupplier predicate, double timeoutSeconds) {
-            this(Clock.systemDefaultZone(), predicate, timeoutSeconds);
+            this(RobotProvider.instance.getClock(), predicate, timeoutSeconds);
         }
 
         public boolean getAsBoolean() {
             if (predicate.getAsBoolean()) {
+                succeeded = true;
                 return true;
             }
-            if (clock.millis() >= deadlineMillis) {
+            if (clock.getTime() >= deadlineSeconds) {
                 succeeded = false;
                 return true;
             } else {
@@ -379,7 +380,7 @@ public class Context implements Runnable, LaunchedContext {
      * @return True if the predicate succeeded, false if the wait timed out.
      */
     public boolean waitForConditionOrTimeout(
-            double timeoutSeconds, final BooleanSupplier predicate) {
+            final BooleanSupplier predicate, double timeoutSeconds) {
         TimedPredicate timedPredicate = new TimedPredicate(predicate, timeoutSeconds);
         waitFor(timedPredicate);
         return timedPredicate.succeeded();
