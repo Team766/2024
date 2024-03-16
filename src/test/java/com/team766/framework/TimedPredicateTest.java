@@ -10,7 +10,7 @@ public class TimedPredicateTest {
 
     @Test
     public void testTimedPredicateTimedOut() {
-        TestClock testClock = new TestClock(171041124.0);
+        TestClock testClock = new TestClock(1710411240.0);
         Context.TimedPredicate predicate =
                 new Context.TimedPredicate(testClock, () -> false, 1.766);
         assertFalse(predicate.getAsBoolean());
@@ -23,7 +23,7 @@ public class TimedPredicateTest {
 
     @Test
     public void testTimedPredicateCondition() {
-        TestClock testClock = new TestClock(171041124.0);
+        TestClock testClock = new TestClock(1710411240.0);
         Context.TimedPredicate predicate =
                 new Context.TimedPredicate(
                         testClock,
