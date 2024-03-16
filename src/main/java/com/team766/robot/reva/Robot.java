@@ -1,8 +1,10 @@
 package com.team766.robot.reva;
 
+import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.mechanisms.Climber;
@@ -32,7 +34,12 @@ public class Robot implements RobotConfigurator {
         intake = new Intake();
         shooter = new Shooter();
         noteCamera = new NoteCamera();
-        forwardApriltagCamera = new ForwardApriltagCamera();
+        try{ 
+            forwardApriltagCamera = new ForwardApriltagCamera();
+        } catch (AprilTagGeneralCheckedException e){
+            LoggerExceptionUtils.logException(e);
+        }
+        
     }
 
     @Override
