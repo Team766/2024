@@ -191,7 +191,7 @@ public class Drive extends Mechanism {
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
 
-        double yawRad = Math.toRadians(getHeading() + (alliance.get() == Alliance.Blue ? 0 : 180));
+        double yawRad = Math.toRadians(getHeading() + (alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -252,7 +252,7 @@ public class Drive extends Mechanism {
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
     public void resetGyro() {
-        resetGyro(alliance.get() == Alliance.Blue ? 0 : 180);
+        resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
 
     /**
