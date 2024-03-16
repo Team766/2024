@@ -58,8 +58,12 @@ public class Climber extends Mechanism {
         return pidlessPower != 0.0;
     }
 
-    public void goNoPID() {
+    public void goNoPIDUp() {
         leftMotor.set(PIDLESS_NUDGE_INCREMENT);
+    }
+
+    public void goNoPIDDown() {
+        leftMotor.set(-PIDLESS_NUDGE_INCREMENT);
     }
 
     public void stop() {

@@ -21,7 +21,7 @@ public class Shoulder extends Mechanism {
         SHOOT_LOW(10),
         SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
-        TOP(90);
+        TOP(105); // angle needed to be upped so it works with the climber
 
         private final double angle;
 
