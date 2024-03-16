@@ -16,29 +16,33 @@ public class LightsOI {
     }
 
     public void handleOI(Context context) {
-        // Pick animation/colors.
-        if (macropad.getButtonPressed(InputConstants.RAINBOW_ANIMATION)) {
-            lights.rainbow();
-        } else if (macropad.getButtonPressed(InputConstants.RANDOM_COLOR)) {
-            lights.randColor();
-        } else if (macropad.getButtonPressed(InputConstants.FADE)) {
-            lights.fade(255, 0, 0);
-        } else if (macropad.getButtonPressed(InputConstants.CLEAR)) {
-            lights.clear();
-        }
+        // // Pick animation/colors.
+        // if (macropad.getButtonPressed(InputConstants.RAINBOW_ANIMATION)) {
+        //     lights.rainbow();
+        // } else if (macropad.getButtonPressed(InputConstants.RANDOM_COLOR)) {
+        //     lights.randColor();
+        // } else if (macropad.getButtonPressed(InputConstants.FADE)) {
+        //     lights.fade(255, 0, 0);
+        // } else if (macropad.getButtonPressed(InputConstants.CLEAR)) {
+        //     lights.clear();
+        // }
 
-        if (macropad.getButtonPressed(InputConstants.SET_WHITE_OR_CLEAR)) {
-            lights.setColor(255, 255, 255);
-        } else if (macropad.getButtonReleased(InputConstants.SET_WHITE_OR_CLEAR)) {
-            lights.clear();
-        }
+        // if (macropad.getButtonPressed(InputConstants.SET_WHITE_OR_CLEAR)) {
+        //     lights.setColor(255, 255, 255);
+        // } else if (macropad.getButtonReleased(InputConstants.SET_WHITE_OR_CLEAR)) {
+        //     lights.clear();
+        // }
 
-        // Brightness adjusting
-        if (macropad.getButton(InputConstants.DECREASE_BRIGHTNESS)) {
-            lights.changeBrightness(-0.01);
-        }
-        if (macropad.getButton(InputConstants.INCREASE_BRIGHTNESS)) {
-            lights.changeBrightness(0.01);
-        }
+        // // Brightness adjusting
+        // if (macropad.getButton(InputConstants.DECREASE_BRIGHTNESS)) {
+        //     lights.changeBrightness(-0.01);
+        // }
+        // if (macropad.getButton(InputConstants.INCREASE_BRIGHTNESS)) {
+        //     lights.changeBrightness(0.01);
+        // }
+
+
+        lights.setCanShoot(true);
+        lights.setIntakeAnimation(Lights.IntakeAnimation.STUCK);
     }
 }

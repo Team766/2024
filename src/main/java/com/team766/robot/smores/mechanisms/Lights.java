@@ -64,9 +64,9 @@ public class Lights extends Mechanism {
 
     public Lights(double brightness) {
         candle = new CANdle(CANID);
-        // this.clear();
-        currentIntakeAnimation.playAnimation(candle);
+        this.clear();
         setBrightness(brightness);
+        currentIntakeAnimation.playAnimation(candle);
         setCanShoot(false);
     }
 
