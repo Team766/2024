@@ -64,11 +64,10 @@ public class VisionSpeakerHelper {
                                             Rotation2d.fromDegrees(
                                                     targetTranslationFlip
                                                             ? (drive.getHeading() + 180)
-                                                            : (-drive.getHeading()))));
+                                                            : (drive.getHeading()))));
             // Logger.get(Category.CAMERA).logRaw(Severity.INFO, "target pos:" + absTargetPos);
             SmartDashboard.putString("target pos", absTargetPos.toString());
         } catch (AprilTagGeneralCheckedException e) {
-            // LoggerExceptionUtils.logException(e);
             return;
         }
     }
@@ -86,7 +85,7 @@ public class VisionSpeakerHelper {
                                     Rotation2d.fromDegrees(
                                             targetTranslationFlip
                                                     ? (-drive.getHeading() - 180)
-                                                    : (drive.getHeading())));
+                                                    : (-drive.getHeading())));
         }
     }
 
