@@ -87,7 +87,7 @@ public class Context implements Runnable, LaunchedContext {
         DONE,
     }
 
-    private static class TimedPredicate implements BooleanSupplier {
+    /* package */ static class TimedPredicate implements BooleanSupplier {
         private final Clock clock;
         private final BooleanSupplier predicate;
         private final long deadlineMillis;
@@ -97,7 +97,7 @@ public class Context implements Runnable, LaunchedContext {
         /* package */ TimedPredicate(
                 Clock clock, double timeoutSeconds, BooleanSupplier predicate) {
             this.clock = clock;
-            this.deadlineMillis = clock.millis() + ((long) timeoutSeconds) * 1000;
+            this.deadlineMillis = clock.millis() + (long) (timeoutSeconds * 1000);
             this.predicate = predicate;
         }
 
@@ -110,7 +110,7 @@ public class Context implements Runnable, LaunchedContext {
             if (predicate.getAsBoolean()) {
                 return true;
             }
-            if (System.currentTimeMillis() >= deadlineMillis) {
+            if (clock.millis() >= deadlineMillis) {
                 succeeded = false;
                 return true;
             } else {
