@@ -3,6 +3,7 @@ package com.team766.robot.reva.mechanisms;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.CANSparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
@@ -17,7 +18,7 @@ public class Shooter extends Mechanism {
     private static final double CURRENT_LIMIT = 40.0; // needs tuning
     private static final double MAX_SPEED = 5600.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
-    private static final double SPEED_TOLERANCE = 200.0; // rpm
+    private static final double SPEED_TOLERANCE = 400.0; // rpm
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
@@ -31,6 +32,11 @@ public class Shooter extends Mechanism {
     public Shooter() {
         shooterMotorTop = RobotProvider.instance.getMotor(SHOOTER_MOTOR_TOP);
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
+        CANSparkMax canTop = (CANSparkMax) shooterMotorTop;
+        CANSparkMax canBottom = (CANSparkMax) shooterMotorBottom;
+        canTop.enableVoltageCompensation(12.0);
+        canBottom.enableVoltageCompensation(12.0);
+
         shooterMotorTop.setNeutralMode(NeutralMode.Coast);
         shooterMotorBottom.setNeutralMode(NeutralMode.Coast);
         shooterMotorTop.setCurrentLimit(CURRENT_LIMIT);

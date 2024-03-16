@@ -9,7 +9,7 @@ import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
-import com.team766.robot.reva.procedures.AutoIntake;
+import com.team766.robot.reva.procedures.IntakeUntilIn;
 
 public class BoxOpOI extends OIFragment {
     private final JoystickReader gamepad;
@@ -118,7 +118,7 @@ public class BoxOpOI extends OIFragment {
             intake.out();
         } else if (intakeIn.isNewlyTriggering()) {
             context.takeOwnership(intake);
-            new AutoIntake().run(context);
+            context.startAsync(new IntakeUntilIn());
         } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
             intake.stop();
             context.releaseOwnership(intake);
