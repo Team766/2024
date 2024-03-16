@@ -9,6 +9,7 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.ShootVelocityAndIntake;
 
@@ -19,6 +20,7 @@ public class RevADriverOI extends OIFragment {
     protected VisionSpeakerHelper visionSpeakerHelper;
     protected final Drive drive;
     protected final Shoulder shoulder;
+	protected final Intake intake;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
     protected double rightJoystickY = 0;
@@ -31,11 +33,13 @@ public class RevADriverOI extends OIFragment {
     public RevADriverOI(
             Drive drive,
             Shoulder shoulder,
+			Intake intake,
             JoystickReader leftJoystick,
             JoystickReader rightJoystick) {
         super("DriverOI");
         this.drive = drive;
         this.shoulder = shoulder;
+		this.intake = intake;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
         visionSpeakerHelper = new VisionSpeakerHelper(drive);
@@ -74,26 +78,36 @@ public class RevADriverOI extends OIFragment {
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
-        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
-            if (!isCross) {
-                context.takeOwnership(drive);
-                drive.stopDrive();
-                drive.setCross();
-            }
-            isCross = !isCross;
-        }
+        // if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
+        //     if (!isCross) {
+        //         context.takeOwnership(drive);
+        //         drive.stopDrive();
+        //         drive.setCross();
+        //     }
+        //     isCross = !isCross;
+        // }
 
         visionSpeakerHelper.update();
 
+		if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
+			context.takeOwnership(intake);
+			intake.in();
+			context.releaseOwnership(intake);
+		} else if (rightJoystick.getButtonReleased(InputConstants.BUTTON_CROSS_WHEELS)) {
+			context.takeOwnership(intake);
+			intake.stop();
+			context.releaseOwnership(intake);
+		}
+		
         if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             drive.stopDrive();
             drive.setCross();
 
-            try {
-                new ShootVelocityAndIntake(visionSpeakerHelper.getShooterPower()).run(context);
-            } catch (AprilTagGeneralCheckedException e) {
-                LoggerExceptionUtils.logException(e);
-            }
+            // try {
+            //     new ShootVelocityAndIntake(visionSpeakerHelper.getShooterPower()).run(context);
+            // } catch (AprilTagGeneralCheckedException e) {
+            //     LoggerExceptionUtils.logException(e);
+            // }
         }
 
         // Moves the robot if there are joystick inputs

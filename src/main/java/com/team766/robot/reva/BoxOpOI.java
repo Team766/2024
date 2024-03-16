@@ -53,7 +53,7 @@ public class BoxOpOI extends OIFragment {
         // shoulder positions
         if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
             context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            shoulder.rotate(ShoulderPosition.BOTTOM);
             context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
             context.takeOwnership(shoulder);
@@ -112,6 +112,7 @@ public class BoxOpOI extends OIFragment {
             context.takeOwnership(intake);
             context.startAsync(new IntakeUntilIn());
         } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
+            context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
         }
