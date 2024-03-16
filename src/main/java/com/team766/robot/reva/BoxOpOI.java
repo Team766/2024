@@ -5,6 +5,7 @@ import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
+import com.team766.robot.reva.mechanisms.Climber.ClimberPosition;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -29,7 +30,6 @@ public class BoxOpOI extends OIFragment {
             Intake intake,
             Shooter shooter,
             Climber climber) {
-        super("BoxOpOI");
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
@@ -49,7 +49,9 @@ public class BoxOpOI extends OIFragment {
             shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
             context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-            new AutoIntake().run(context);
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
             context.takeOwnership(shoulder);
             shoulder.rotate(ShoulderPosition.TOP);
@@ -74,16 +76,28 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(shoulder);
         }
 
+        // climber
         if (gamepad.getPOV() == 90) {
             context.takeOwnership(climber);
-            // climber down method
+            climber.setHeight(ClimberPosition.BOTTOM);
             context.releaseOwnership(climber);
         }
 
         if (gamepad.getPOV() == 360) {
             context.takeOwnership(climber);
-            // climber up method
+            climber.setHeight(ClimberPosition.TOP);
             context.releaseOwnership(climber);
+        }
+
+        if (gamepad.getButton(9) || gamepad.getButton(10)) {
+            context.takeOwnership(climber);
+            if (gamepad.getAxis(1) < 0) {
+                climber.nudgeUp();
+            } else if (gamepad.getAxis(1) > 0) {
+                climber.nudgeDown();
+            } else {
+                context.releaseOwnership(climber);
+            }
         }
 
         // shooter
@@ -101,7 +115,7 @@ public class BoxOpOI extends OIFragment {
             intake.out();
         } else if (intakeIn.isNewlyTriggering()) {
             context.takeOwnership(intake);
-            intake.in();
+            new AutoIntake().run(context);
         } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
             intake.stop();
             context.releaseOwnership(intake);
