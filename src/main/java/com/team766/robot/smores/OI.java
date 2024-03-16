@@ -16,12 +16,16 @@ public class OI extends Procedure {
     private JoystickReader joystick1;
     private JoystickReader macropad;
 
+    private LightsOI lightsOI;
+
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
         joystick0 = RobotProvider.instance.getJoystick(0);
         joystick1 = RobotProvider.instance.getJoystick(1);
         macropad = RobotProvider.instance.getJoystick(2);
+
+        lightsOI = new LightsOI(macropad, Robot.lights);
     }
 
     public void run(final Context context) {
@@ -32,32 +36,7 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            // Pick animation/colors.
-            if (macropad.getButtonPressed(1)) {
-                Robot.lights.rainbow();
-            } else if (macropad.getButtonPressed(2)) {
-                Robot.lights.randColor();
-            } else if (macropad.getButton(3)) {
-                Robot.lights.randColor();
-            } else if (macropad.getButtonPressed(5)) {
-                Robot.lights.fade(255, 0, 0);
-            } else if (macropad.getButtonPressed(16)) {
-                Robot.lights.clear();
-            }
-
-            if (macropad.getButtonPressed(4)) {
-                Robot.lights.setColor(255, 255, 255);
-            } else if (macropad.getButtonReleased(4)) {
-                Robot.lights.clear();
-            }
-
-            // Brightness adjusting
-            if (macropad.getButton(11)) {
-                Robot.lights.changeBrightness(-0.01);
-            }
-            if (macropad.getButton(12)) {
-                Robot.lights.changeBrightness(0.01);
-            }
+            lightsOI.handleOI(context);
 
             // forward is 2, backward is 6.
             // left is 5, right is 7.
