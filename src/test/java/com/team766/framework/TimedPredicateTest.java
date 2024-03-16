@@ -43,7 +43,7 @@ public class TimedPredicateTest {
     public void testTimedPredicateTimedOut() {
         TestClock testClock = new TestClock(Instant.ofEpochMilli(1710411240000L));
         Context.TimedPredicate predicate =
-                new Context.TimedPredicate(testClock, 1.766, () -> false);
+                new Context.TimedPredicate(testClock, () -> false, 1.766);
         assertFalse(predicate.getAsBoolean());
         testClock.tick(Duration.ofSeconds(1));
         assertFalse(predicate.getAsBoolean());
@@ -58,14 +58,14 @@ public class TimedPredicateTest {
         Context.TimedPredicate predicate =
                 new Context.TimedPredicate(
                         testClock,
-                        1.766,
                         new BooleanSupplier() {
                             private int counter = 0;
 
                             public boolean getAsBoolean() {
                                 return (counter++) >= 2;
                             }
-                        });
+                        },
+                        1.766);
         assertFalse(predicate.getAsBoolean()); // 0
         testClock.tick(Duration.ofSeconds(1));
         assertFalse(predicate.getAsBoolean()); // 1

@@ -87,23 +87,23 @@ public class Context implements Runnable, LaunchedContext {
         DONE,
     }
 
+    // package visible for testing
     /* package */ static class TimedPredicate implements BooleanSupplier {
         private final Clock clock;
         private final BooleanSupplier predicate;
         private final long deadlineMillis;
         private boolean succeeded = true;
 
-        // used for testing
+        // package visible for testing
         /* package */ TimedPredicate(
-                Clock clock, double timeoutSeconds, BooleanSupplier predicate) {
+                Clock clock, BooleanSupplier predicate, double timeoutSeconds) {
             this.clock = clock;
             this.deadlineMillis = clock.millis() + (long) (timeoutSeconds * 1000);
             this.predicate = predicate;
         }
 
-        // used within this class
-        public TimedPredicate(double timeoutSeconds, BooleanSupplier predicate) {
-            this(Clock.systemDefaultZone(), timeoutSeconds, predicate);
+        public TimedPredicate(BooleanSupplier predicate, double timeoutSeconds) {
+            this(Clock.systemDefaultZone(), predicate, timeoutSeconds);
         }
 
         public boolean getAsBoolean() {
@@ -378,9 +378,9 @@ public class Context implements Runnable, LaunchedContext {
      *
      * @return True if the predicate succeeded, false if the wait timed out.
      */
-    public boolean waitForTimeoutOrCondition(
+    public boolean waitForConditionOrTimedout(
             double timeoutSeconds, final BooleanSupplier predicate) {
-        TimedPredicate timedPredicate = new TimedPredicate(timeoutSeconds, predicate);
+        TimedPredicate timedPredicate = new TimedPredicate(predicate, timeoutSeconds);
         waitFor(timedPredicate);
         return timedPredicate.succeeded();
     }
