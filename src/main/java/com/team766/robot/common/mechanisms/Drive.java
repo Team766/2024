@@ -191,7 +191,12 @@ public class Drive extends Mechanism {
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
 
-        double yawRad = Math.toRadians(getHeading() + (alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180));
+        double yawRad =
+                Math.toRadians(
+                        getHeading()
+                                + (alliance.isPresent() && alliance.get() == Alliance.Blue
+                                        ? 0
+                                        : 180));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)

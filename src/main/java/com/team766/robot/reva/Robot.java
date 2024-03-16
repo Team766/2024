@@ -34,12 +34,11 @@ public class Robot implements RobotConfigurator {
         intake = new Intake();
         shooter = new Shooter();
         noteCamera = new NoteCamera();
-        try{ 
+        try {
             forwardApriltagCamera = new ForwardApriltagCamera();
-        } catch (AprilTagGeneralCheckedException e){
+        } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
         }
-        
     }
 
     @Override

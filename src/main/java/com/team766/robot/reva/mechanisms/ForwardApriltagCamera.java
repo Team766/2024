@@ -1,6 +1,5 @@
 package com.team766.robot.reva.mechanisms;
 
-import java.util.Optional;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Mechanism;
@@ -8,6 +7,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Optional;
 
 public class ForwardApriltagCamera extends Mechanism {
 
@@ -19,13 +19,13 @@ public class ForwardApriltagCamera extends Mechanism {
 
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
-        if(alliance.isPresent()){
+        if (alliance.isPresent()) {
             if (alliance.get().equals(Alliance.Blue)) {
                 tagId = 7;
-            } else{
+            } else {
                 tagId = 4;
             }
-        }else{
+        } else {
             throw new AprilTagGeneralCheckedException("Couldn't find alliance correctly");
         }
     }
