@@ -32,6 +32,7 @@ public class Intake extends Mechanism {
 
     private static final double DEFAULT_POWER = 1.0;
     private static final double NUDGE_INCREMENT = 0.05;
+    private static final double CURRENT_LIMIT = 30.0; // a little lower than max efficiency
     private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
 
@@ -49,6 +50,7 @@ public class Intake extends Mechanism {
     public Intake() {
         intakeMotor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
         intakeMotor.setNeutralMode(NeutralMode.Brake);
+        intakeMotor.setCurrentLimit(CURRENT_LIMIT);
         sensor = new TimeOfFlight(0); // needs calibration
 
         sensor.setRangingMode(RangingMode.Short, 24);
@@ -98,6 +100,7 @@ public class Intake extends Mechanism {
     public void run() {
         SmartDashboard.putString("[INTAKE]", state.toString());
         SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
+        SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
         SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
     }
 
