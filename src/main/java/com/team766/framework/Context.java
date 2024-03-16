@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import com.team766.hal.Clock;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -84,6 +85,43 @@ public class Context implements Runnable, LaunchedContext {
          * The Context's execution has come to an end.
          */
         DONE,
+    }
+
+    // package visible for testing
+    /* package */ static class TimedPredicate implements BooleanSupplier {
+        private final Clock clock;
+        private final BooleanSupplier predicate;
+        private final double deadlineSeconds;
+        private boolean succeeded = false;
+
+        // package visible for testing
+        /* package */ TimedPredicate(
+                Clock clock, BooleanSupplier predicate, double timeoutSeconds) {
+            this.clock = clock;
+            this.deadlineSeconds = clock.getTime() + timeoutSeconds;
+            this.predicate = predicate;
+        }
+
+        public TimedPredicate(BooleanSupplier predicate, double timeoutSeconds) {
+            this(RobotProvider.instance.getClock(), predicate, timeoutSeconds);
+        }
+
+        public boolean getAsBoolean() {
+            if (predicate.getAsBoolean()) {
+                succeeded = true;
+                return true;
+            }
+            if (clock.getTime() >= deadlineSeconds) {
+                succeeded = false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean succeeded() {
+            return succeeded;
+        }
     }
 
     private static Context c_currentContext = null;
@@ -330,6 +368,22 @@ public class Context implements Runnable, LaunchedContext {
             }
             m_ownedMechanisms.clear();
         }
+    }
+
+    /**
+     * Pauses the execution of this Context until the given predicate returns true or until
+     * the timeout has elapsed.  Yields to other Contexts in the meantime.
+     *
+     * Note that the predicate will be evaluated repeatedly (possibly on a different thread) while
+     * the Context is paused to determine whether it should continue waiting.
+     *
+     * @return True if the predicate succeeded, false if the wait timed out.
+     */
+    public boolean waitForConditionOrTimeout(
+            final BooleanSupplier predicate, double timeoutSeconds) {
+        TimedPredicate timedPredicate = new TimedPredicate(predicate, timeoutSeconds);
+        waitFor(timedPredicate);
+        return timedPredicate.succeeded();
     }
 
     /**
