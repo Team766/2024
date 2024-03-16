@@ -5,7 +5,6 @@ import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
-import com.team766.robot.reva.mechanisms.Climber.ClimberPosition;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -79,12 +78,12 @@ public class BoxOpOI extends OIFragment {
         // climber
         if (gamepad.getPOV() == 90) {
             context.takeOwnership(climber);
-            //setHeight(ClimberPosition.BOTTOM);
+            // setHeight(ClimberPosition.BOTTOM);
             climber.goNoPIDUp();
             context.releaseOwnership(climber);
         } else if (gamepad.getPOV() == 270) {
             context.takeOwnership(climber);
-            //climber.setHeight(ClimberPosition.TOP);
+            // climber.setHeight(ClimberPosition.TOP);
             climber.goNoPIDDown();
             context.releaseOwnership(climber);
         } else {

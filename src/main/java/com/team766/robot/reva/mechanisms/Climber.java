@@ -62,7 +62,7 @@ public class Climber extends Mechanism {
         leftMotor.set(PIDLESS_NUDGE_INCREMENT);
     }
 
-    public void goNoPIDDown(){
+    public void goNoPIDDown() {
         leftMotor.set(-PIDLESS_NUDGE_INCREMENT);
     }
 
