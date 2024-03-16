@@ -6,6 +6,7 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import java.lang.StackWalker.StackFrame;
+import java.time.Clock;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -87,13 +88,22 @@ public class Context implements Runnable, LaunchedContext {
     }
 
     private static class TimedPredicate implements BooleanSupplier {
+        private final Clock clock;
         private final BooleanSupplier predicate;
         private final long deadlineMillis;
         private boolean succeeded = true;
 
-        private TimedPredicate(double timeoutSeconds, BooleanSupplier predicate) {
+        // used for testing
+        /* package */ TimedPredicate(
+                Clock clock, double timeoutSeconds, BooleanSupplier predicate) {
+            this.clock = clock;
+            this.deadlineMillis = clock.millis() + ((long) timeoutSeconds) * 1000;
             this.predicate = predicate;
-            this.deadlineMillis = System.currentTimeMillis() + ((long) timeoutSeconds) * 1000;
+        }
+
+        // used within this class
+        public TimedPredicate(double timeoutSeconds, BooleanSupplier predicate) {
+            this(Clock.systemDefaultZone(), timeoutSeconds, predicate);
         }
 
         public boolean getAsBoolean() {
