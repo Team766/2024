@@ -22,6 +22,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -230,6 +232,10 @@ public class Drive extends Mechanism {
                 (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
                         ? 0
                         : rotationPID.getOutput()));
+    }
+
+    public boolean isAtRotationTarget() {
+        return rotationPID.getOutput() < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
     }
 
     /**
