@@ -21,8 +21,8 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import java.util.Optional;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Drive extends Mechanism {
 

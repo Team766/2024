@@ -6,13 +6,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class AltThreePieceAuton extends PathSequenceAuto {
-	public AltThreePieceAuton() {
+    public AltThreePieceAuton() {
         super(Robot.drive, new Pose2d(2.00, 6.75, Rotation2d.fromDegrees(33)));
         addProcedure(new ShootNow());
         addProcedure(new AutoIntake());
         addPath("3 Piece 1");
-		addProcedure(new ShootNow());
-		addProcedure(new AutoIntake());
+        addProcedure(new ShootNow());
+        addProcedure(new AutoIntake());
         addPath("Alternate 3 Piece 2");
         addProcedure(new ShootNow());
     }

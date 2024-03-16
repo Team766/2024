@@ -3,7 +3,6 @@ package com.team766.robot.reva;
 import com.team766.framework.AutonomousMode;
 import com.team766.robot.reva.procedures.AltThreePieceAuton;
 import com.team766.robot.reva.procedures.ShootNow;
-import com.team766.robot.reva.procedures.ThreePieceAuton;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES =

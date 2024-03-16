@@ -20,11 +20,12 @@ public class ForwardApriltagCamera extends Mechanism {
 
     public void run() {
         try {
-            Transform3d toUse = GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(7));
+            Transform3d toUse =
+                    GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(7));
 
             SmartDashboard.putNumber("x value SUIIII", toUse.getX());
             SmartDashboard.putNumber("y value SUIIII", toUse.getY());
-        } catch (AprilTagGeneralCheckedException e){
+        } catch (AprilTagGeneralCheckedException e) {
             return;
         }
     }
