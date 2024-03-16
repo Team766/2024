@@ -1,16 +1,18 @@
-package com.team766.hal;
+package com.team766.hal.mock;
+
+import com.team766.hal.Clock;
 
 /**
  * Clock implementation for usage in unit tests.
  */
-public class TestClock implements Clock {
+public class MockClock implements Clock {
     private double time;
 
     /**
      * Create a new clock for the specified time, in seconds.
      * @param timeInSeconds time in seconds.
      */
-    public TestClock(double timeInSeconds) {
+    public MockClock(double timeInSeconds) {
         this.time = timeInSeconds;
     }
 
