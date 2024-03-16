@@ -91,9 +91,9 @@ public class Context implements Runnable, LaunchedContext {
         private final long deadlineMillis;
         private boolean succeeded = true;
 
-        private TimedPredicate(BooleanSupplier predicate, long timeoutMillis) {
+        private TimedPredicate(double timeoutSeconds, BooleanSupplier predicate) {
             this.predicate = predicate;
-            this.deadlineMillis = System.currentTimeMillis() + timeoutMillis;
+            this.deadlineMillis = System.currentTimeMillis() + ((long) timeoutSeconds) * 1000;
         }
 
         public boolean getAsBoolean() {
@@ -368,8 +368,9 @@ public class Context implements Runnable, LaunchedContext {
      *
      * @return True if the predicate succeeded, false if the wait timed out.
      */
-    public boolean waitFor(final BooleanSupplier predicate, long timeoutMillis) {
-        TimedPredicate timedPredicate = new TimedPredicate(predicate, timeoutMillis);
+    public boolean waitForTimeoutOrCondition(
+            double timeoutSeconds, final BooleanSupplier predicate) {
+        TimedPredicate timedPredicate = new TimedPredicate(timeoutSeconds, predicate);
         waitFor(timedPredicate);
         return timedPredicate.succeeded();
     }
