@@ -79,13 +79,14 @@ public class VisionSpeakerHelper {
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
             relativeTranslation2d = new Translation2d(transform3d.getX(), transform3d.getY());
         } catch (AprilTagGeneralCheckedException e) {
-            relativeTranslation2d = absTargetPos
-                    .minus(drive.getCurrentPosition().getTranslation())
-                    .rotateBy(
-                            Rotation2d.fromDegrees(
-                                    targetTranslationFlip
-                                            ? (-drive.getHeading() - 180)
-                                            : (drive.getHeading())));
+            relativeTranslation2d =
+                    absTargetPos
+                            .minus(drive.getCurrentPosition().getTranslation())
+                            .rotateBy(
+                                    Rotation2d.fromDegrees(
+                                            targetTranslationFlip
+                                                    ? (-drive.getHeading() - 180)
+                                                    : (drive.getHeading())));
         }
     }
 
