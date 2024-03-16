@@ -79,13 +79,17 @@ public class BoxOpOI extends OIFragment {
         // climber
         if (gamepad.getPOV() == 90) {
             context.takeOwnership(climber);
-            climber.setHeight(ClimberPosition.BOTTOM);
+            //setHeight(ClimberPosition.BOTTOM);
+            climber.goNoPIDUp();
             context.releaseOwnership(climber);
-        }
-
-        if (gamepad.getPOV() == 360) {
+        } else if (gamepad.getPOV() == 270) {
             context.takeOwnership(climber);
-            climber.setHeight(ClimberPosition.TOP);
+            //climber.setHeight(ClimberPosition.TOP);
+            climber.goNoPIDDown();
+            context.releaseOwnership(climber);
+        } else {
+            context.takeOwnership(climber);
+            climber.stop();
             context.releaseOwnership(climber);
         }
 
