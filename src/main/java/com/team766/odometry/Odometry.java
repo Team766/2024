@@ -123,9 +123,9 @@ public class Odometry {
         for (int i = 0; i < motorCount; i++) {
             prevEncoderValues[i] = currEncoderValues[i];
             currEncoderValues[i] = motorList[i].getSensorPosition();
-            Optional<Alliance> alliance = DriverStation.getAlliance();
-            currEncoderValues[i] *=
-                    ((alliance.isPresent() && (alliance.get() == Alliance.Blue)) ? 1 : -1);
+            // Optional<Alliance> alliance = DriverStation.getAlliance();
+            // currEncoderValues[i] *=
+            //         ((alliance.isPresent() && (alliance.get() == Alliance.Blue)) ? 1 : -1);
         }
     }
 

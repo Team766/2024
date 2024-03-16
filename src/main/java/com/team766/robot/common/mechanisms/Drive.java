@@ -18,6 +18,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -32,6 +34,8 @@ public class Drive extends Mechanism {
     private final SwerveModule swerveBL;
 
     private final GyroReader gyro;
+    private Alliance alliance = DriverStation.getAlliance().get();
+
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
@@ -186,7 +190,7 @@ public class Drive extends Mechanism {
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
 
-        double yawRad = Math.toRadians(getHeading());
+        double yawRad = Math.toRadians(getHeading() + (alliance == Alliance.Blue ? 0 : 180));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -242,9 +246,12 @@ public class Drive extends Mechanism {
         swerveBL.steer(config.backLeftLocation());
     }
 
+    /**
+     * Resets gyro to zero degrees relative to the driver
+     * Sets to 180 degrees if the driver is on red (facing backwards)
+     */
     public void resetGyro() {
-        checkContextOwnership();
-        gyro.reset();
+        resetGyro(alliance == Alliance.Blue ? 0 : 180);
     }
 
     /**

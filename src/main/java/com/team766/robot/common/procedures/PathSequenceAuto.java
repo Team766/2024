@@ -91,7 +91,7 @@ public class PathSequenceAuto extends Procedure {
         context.takeOwnership(drive);
         drive.setCurrentPosition(
                 shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
-        drive.resetGyro(initialPosition.getRotation().getDegrees() * (shouldFlipAuton ? -1 : 1));
+        drive.resetGyro(drive.getCurrentPosition().getRotation().getDegrees());
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
