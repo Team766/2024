@@ -120,11 +120,11 @@ public class Climber extends Mechanism {
     }
 
     public void setHeightLeft(double height) {
-        targetHeightLeft = setHeight(leftMotor, height);
+        leftTargetRotations = setHeight(leftMotor, height);
     }
 
     public void setHeightRight(double height) {
-        targetHeightRight = setHeight(rightMotor, height);
+        rightTargetRotations = setHeight(rightMotor, height);
     }
 
     // TODO: remove
