@@ -314,6 +314,11 @@ public class Drive extends Mechanism {
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
 
+        swerveFR.dashboardCurrentUsage();
+        swerveFL.dashboardCurrentUsage();
+        swerveBR.dashboardCurrentUsage();
+        swerveBL.dashboardCurrentUsage();
+
         SwerveModuleState[] states =
                 new SwerveModuleState[] {
                     swerveFR.getModuleState(),

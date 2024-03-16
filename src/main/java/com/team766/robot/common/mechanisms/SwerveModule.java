@@ -7,6 +7,7 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,6 +53,10 @@ public class SwerveModule {
                     * DRIVE_GEAR_RATIO // Motor radians/sec
                     / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
+    // TUNE THESE!
+    private static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
+    private static final double STEER_STATOR_CURRENT_LIMIT = 80.0;
+
     /**
      * Creates a new SwerveModule.
      *
@@ -77,6 +82,9 @@ public class SwerveModule {
         // Current limit for motors to avoid breaker problems
         drive.setCurrentLimit(driveMotorCurrentLimit);
         steer.setCurrentLimit(steerMotorCurrentLimit);
+        // TODO: tune these values!
+        MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
     }
 
     private double computeEncoderOffset() {
@@ -166,5 +174,20 @@ public class SwerveModule {
                 drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS,
                 Rotation2d.fromDegrees(
                         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset));
+    }
+
+    public void dashboardCurrentUsage() {
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " steer supply current",
+                MotorUtil.getCurrentUsage(steer));
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " steer stator current",
+                MotorUtil.getStatorCurrentUsage(steer));
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " drive supply current",
+                MotorUtil.getCurrentUsage(drive));
+        SmartDashboard.putNumber(
+                "[" + modulePlacement + "]" + " drive stator current",
+                MotorUtil.getStatorCurrentUsage(drive));
     }
 }

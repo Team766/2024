@@ -34,8 +34,10 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private double curSetpoint;
+    private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
+    private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
+    private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -48,10 +50,17 @@ public class Shoulder extends Mechanism {
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
         rightMotor.follow(leftMotor);
+
         leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
+        leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
+
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
         leftMotor.setSensorPosition(0);
-        curSetpoint = -1;
+        targetAngle = -1;
     }
 
     public void stop() {
@@ -95,24 +104,33 @@ public class Shoulder extends Mechanism {
 
     public void rotate(double angle) {
         checkContextOwnership();
-        double targetAngle =
+        targetAngle =
                 com.team766.math.Math.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
-        curSetpoint = angle;
         // actual rotation will happen in run()
     }
 
     public boolean isFinished() {
-        return Math.abs(getAngle() - curSetpoint) < 1;
+        return Math.abs(getAngle() - targetAngle) < 1;
     }
 
     @Override
     public void run() {
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber(
+                "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Right Motor Stator Current",
+                MotorUtil.getStatorCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

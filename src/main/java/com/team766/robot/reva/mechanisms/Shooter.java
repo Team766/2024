@@ -14,6 +14,7 @@ public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED =
             4500.0; // motor shaft rps, does not take gearing into account
     private static final double NUDGE_INCREMENT = 100.0;
+    private static final double CURRENT_LIMIT = 40.0; // needs tuning
     private static final double MAX_SPEED = 5600.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
     private static final double SPEED_TOLERANCE = 200.0; // rpm
@@ -32,6 +33,8 @@ public class Shooter extends Mechanism {
         shooterMotorBottom = RobotProvider.instance.getMotor(SHOOTER_MOTOR_BOTTOM);
         shooterMotorTop.setNeutralMode(NeutralMode.Coast);
         shooterMotorBottom.setNeutralMode(NeutralMode.Coast);
+        shooterMotorTop.setCurrentLimit(CURRENT_LIMIT);
+        shooterMotorBottom.setCurrentLimit(CURRENT_LIMIT);
     }
 
     public boolean isCloseToExpectedSpeed() {
@@ -76,6 +79,11 @@ public class Shooter extends Mechanism {
             SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
             SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
             SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+            SmartDashboard.putNumber(
+                    "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
+            SmartDashboard.putNumber(
+                    "[SHOOTER] Bottom Motor Current",
+                    MotorUtil.getCurrentUsage(shooterMotorBottom));
         }
 
         // FIXME: problem with this - does not pay attention to changes in PID values

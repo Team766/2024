@@ -36,6 +36,9 @@ public class Climber extends Mechanism {
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
     private static final double NUDGE_INCREMENT = 10; // in cm
     private static final double PIDLESS_NUDGE_INCREMENT = 0.2;
+    private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
+    private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
+
     private double pidlessPower = 0.0;
 
     public Climber() {
@@ -45,6 +48,10 @@ public class Climber extends Mechanism {
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
+        leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
     }
 
     public boolean isRunningNoPID() {
@@ -101,5 +108,14 @@ public class Climber extends Mechanism {
         SmartDashboard.putNumber("[CLIMBER] Rotations", leftMotor.getSensorPosition());
         SmartDashboard.putNumber("[CLIMBER] Target Rotations", targetRotations);
         SmartDashboard.putNumber("[CLIMBER] Height", getHeight());
+        SmartDashboard.putNumber(
+                "[CLIMBER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[CLIMBER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        SmartDashboard.putNumber(
+                "[CLIMBER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[CLIMBER] Right Motor Stator Current",
+                MotorUtil.getStatorCurrentUsage(rightMotor));
     }
 }
