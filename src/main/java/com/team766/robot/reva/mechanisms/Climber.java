@@ -30,7 +30,9 @@ public class Climber extends Mechanism {
     private MotorController leftMotor;
     private MotorController rightMotor;
 
-    private double targetRotations = 0;
+    // Are these only for dubugging?
+    private double leftTargetRotations = 0;
+    private double rightTargetRotations = 0;
 
     private static final double GEAR_RATIO_AND_CIRCUMFERENCE =
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
@@ -44,7 +46,6 @@ public class Climber extends Mechanism {
     public Climber() {
         leftMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
         rightMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
-        rightMotor.follow(leftMotor);
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
@@ -59,16 +60,35 @@ public class Climber extends Mechanism {
     }
 
     public void goNoPIDUp() {
+        goNoPIDUpLeft();
+        goNoPIDUpRight();
+    }
+
+    public void goNoPIDUpLeft() {
         leftMotor.set(PIDLESS_NUDGE_INCREMENT);
     }
 
+    public void goNoPIDUpRight() {
+        rightMotor.set(PIDLESS_NUDGE_INCREMENT);
+    }
+
     public void goNoPIDDown() {
+        goNoPIDDownLeft();
+        goNoPIDDownRight();
+    }
+
+    public void goNoPIDDownLeft() {
         leftMotor.set(-PIDLESS_NUDGE_INCREMENT);
+    }
+
+    public void goNoPIDDownRight() {
+        rightMotor.set(-PIDLESS_NUDGE_INCREMENT);
     }
 
     public void stop() {
         pidlessPower = 0.0;
         leftMotor.stopMotor();
+        rightMotor.stopMotor();
     }
 
     private double heightToRotations(double height) {
@@ -84,21 +104,44 @@ public class Climber extends Mechanism {
     }
 
     public void setHeight(double height) {
+        setHeightLeft(height);
+        setHeightRight(height);
+    }
+
+    private double setHeight(MotorController motor, double height) {
         double targetHeight =
                 com.team766.math.Math.clamp(
                         height,
                         ClimberPosition.BOTTOM.getHeight(),
                         ClimberPosition.TOP.getHeight());
-        targetRotations = heightToRotations(targetHeight);
-        leftMotor.set(MotorController.ControlMode.Position, targetRotations);
+        double targetRotations = heightToRotations(targetHeight);
+        motor.set(MotorController.ControlMode.Position, targetRotations);
+        return targetRotations;
     }
 
+    public void setHeightLeft(double height) {
+        targetHeightLeft = setHeight(leftMotor, height);
+    }
+
+    public void setHeightRight(double height) {
+        targetHeightRight = setHeight(rightMotor, height);
+    }
+
+    // TODO: remove
     public double getHeight() {
+        return getHeightLeft();
+    }
+
+    public double getHeightLeft() {
         return rotationsToHeight(leftMotor.getSensorPosition());
     }
 
+    public double getHeightRight() {
+        return rotationsToHeight(rightMotor.getSensorPosition());
+    }
+
     public void nudgeUp() {
-        pidlessPower = Math.min(1.0, pidlessPower + PIDLESS_NUDGE_INCREMENT);
+        pidlessPower = Math.min(1, pidlessPower + PIDLESS_NUDGE_INCREMENT);
         // setHeight(getHeight() + NUDGE_AMOUNT);
     }
 
@@ -109,8 +152,10 @@ public class Climber extends Mechanism {
 
     @Override
     public void run() {
-        SmartDashboard.putNumber("[CLIMBER] Rotations", leftMotor.getSensorPosition());
-        SmartDashboard.putNumber("[CLIMBER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
+        SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
+        SmartDashboard.putNumber("[CLIMBER] Left Target Rotations", leftTargetRotations);
+        SmartDashboard.putNumber("[CLIMBER] Right Target Rotations", rightTargetRotations);
         SmartDashboard.putNumber("[CLIMBER] Height", getHeight());
         SmartDashboard.putNumber(
                 "[CLIMBER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
