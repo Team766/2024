@@ -12,6 +12,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
+import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,9 +51,7 @@ public class Drive extends Mechanism {
                     .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
                     .publish();
 
-    private PIDController rotationPID = ControlConstants.ROTATION_PID_CONTROLLER;
-
-    private Translation2d rotationLockTarget;
+    private PIDController rotationPID;
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -113,6 +112,8 @@ public class Drive extends Mechanism {
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
+
+        rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBR, driveBL};
         CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBR, encoderBL};
@@ -215,14 +216,14 @@ public class Drive extends Mechanism {
      * Allows for field oriented control of the robot's position while moving to a specific angle for rotation
      * @param x the x value for the position joystick, positive being forward
      * @param y the y value for the position joystick, positive being left
-     * @param setpoint rotational setpoint as a Rotation2d
+     * @param target rotational target as a Rotation2d, can input a null value
      */
-    public void controlFieldOrientedWithRotationSetpoint(double x, double y, Rotation2d setpoint) {
-        if (setpoint != null) {
-            rotationPID.setSetpoint(setpoint.getDegrees());
-            SmartDashboard.putNumber("Rotation Setpoint", setpoint.getDegrees());
+    public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
+        if (target != null) {
+            rotationPID.setSetpoint(target.getDegrees());
+            SmartDashboard.putNumber("Rotation Target", target.getDegrees());
         }
-        rotationPID.calculate(getHeading());
+
         controlFieldOriented(
                 x,
                 y,
@@ -355,6 +356,9 @@ public class Drive extends Mechanism {
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
+
+        rotationPID.calculate(getHeading());
+
 
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();

@@ -83,7 +83,7 @@ public class RevADriverOI extends OIFragment {
             isCross = !isCross;
         }
 
-        visionSpeakerHelper.updateTarget();
+        visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(2)) {
             drive.stopDrive();
@@ -120,7 +120,7 @@ public class RevADriverOI extends OIFragment {
                     log("Could not see april tag");
                 }
 
-                drive.controlFieldOrientedWithRotationSetpoint(
+                drive.controlFieldOrientedWithRotationTarget(
                         (drivingCoefficient * leftJoystickX),
                         (drivingCoefficient * leftJoystickY),
                         visionSpeakerHelper.getHeadingToTarget());

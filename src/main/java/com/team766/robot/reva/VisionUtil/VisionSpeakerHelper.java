@@ -21,6 +21,7 @@ public class VisionSpeakerHelper {
     Drive drive;
     Translation2d absTargetPos;
     boolean targetTranslationFlip;
+    Translation2d relativeTranslation2d;
 
     public VisionSpeakerHelper(Drive drive) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -42,7 +43,7 @@ public class VisionSpeakerHelper {
         targetTranslationFlip = (DriverStation.getAlliance().get() == Alliance.Blue);
     }
 
-    public void updateTarget() {
+    private void updateTarget() {
         try {
 
             // Calculates the absolute position of the target according to odometry
@@ -72,13 +73,13 @@ public class VisionSpeakerHelper {
         }
     }
 
-    public Translation2d getTranslation2d() {
+    private void updateRelativeTranslation2d() {
         try {
             Transform3d transform3d =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
-            return new Translation2d(transform3d.getX(), transform3d.getY());
+            relativeTranslation2d = new Translation2d(transform3d.getX(), transform3d.getY());
         } catch (AprilTagGeneralCheckedException e) {
-            return absTargetPos
+            relativeTranslation2d = absTargetPos
                     .minus(drive.getCurrentPosition().getTranslation())
                     .rotateBy(
                             Rotation2d.fromDegrees(
@@ -86,6 +87,11 @@ public class VisionSpeakerHelper {
                                             ? (-drive.getHeading() - 180)
                                             : (drive.getHeading())));
         }
+    }
+
+    public void update() {
+        updateTarget();
+        updateRelativeTranslation2d();
     }
 
     public Rotation2d getHeadingToTarget() {
@@ -96,19 +102,19 @@ public class VisionSpeakerHelper {
         // Calculated the heading the robot needs to face from this translation
 
         Rotation2d val =
-                getTranslation2d().getAngle().plus(Rotation2d.fromDegrees(drive.getHeading()));
+                relativeTranslation2d.getAngle().plus(Rotation2d.fromDegrees(drive.getHeading()));
         SmartDashboard.putNumber("output heading", val.getDegrees());
         return val;
     }
 
     public double getShooterPower() throws AprilTagGeneralCheckedException {
-        double val = VisionPIDProcedure.getBestPowerToUse(getTranslation2d().getNorm());
+        double val = VisionPIDProcedure.getBestPowerToUse(relativeTranslation2d.getNorm());
         SmartDashboard.putNumber("shooter power", val);
         return val;
     }
 
     public double getArmAngle() throws AprilTagGeneralCheckedException {
-        double val = VisionPIDProcedure.getBestArmAngleToUse(getTranslation2d().getNorm());
+        double val = VisionPIDProcedure.getBestArmAngleToUse(relativeTranslation2d.getNorm());
         SmartDashboard.putNumber("arm angle", val);
         return val;
     }
