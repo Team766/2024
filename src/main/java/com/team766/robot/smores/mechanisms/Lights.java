@@ -10,19 +10,45 @@ import com.team766.framework.Mechanism;
 
 public class Lights extends Mechanism {
 
-    private static final int intakeLEDs = 50;
-    private static final int intakeOffset = 8;
-    public enum Intake { // which animation to use for the note
-        NOT_VISIBLE (),
-        VISIBLE (),
-        STUCK (new StrobeAnimation(25, 0, 0, 0, 0.)),
-        READY ();
+    private static final int INTAKE_NUM_LEDS = 40;
+    private static final int INTAKE_OFFSET = 8;
+    private static final int INTAKE_SLOT = 1;
 
-        Intake(Animation animation) {
+    public enum IntakeAnimation { // which animation to use for the note
+        NOT_VISIBLE(0, 0, 0),
+        VISIBLE(0, 0, 25),
+        STUCK(new StrobeAnimation(25, 0, 0, 0, 0.00001, INTAKE_NUM_LEDS, INTAKE_OFFSET)),
+        READY(0, 25, 0);
 
+        private Animation animation;
+        private int r;
+        private int g;
+        private int b;
+        private boolean isColor;
+
+        IntakeAnimation(Animation animation) {
+            this.animation = animation;
+            isColor = false;
         }
-    } 
 
+        IntakeAnimation(int r, int g, int b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            isColor = true;
+        }
+
+        private void playAnimation(CANdle candle) {
+            if (isColor) {
+                candle.clearAnimation(INTAKE_SLOT);
+                candle.setLEDs(r, g, b, 0, INTAKE_OFFSET, INTAKE_NUM_LEDS);
+            } else {
+                candle.animate(animation, INTAKE_SLOT);
+            }
+        }
+    }
+
+    private IntakeAnimation currentIntakeAnimation = IntakeAnimation.NOT_VISIBLE;
     private CANdle candle;
     private static final int CANID = 5;
     private static final int LED_COUNT = 87;
@@ -38,8 +64,37 @@ public class Lights extends Mechanism {
 
     public Lights(double brightness) {
         candle = new CANdle(CANID);
-        this.clear();
+        // this.clear();
+        currentIntakeAnimation.playAnimation(candle);
         setBrightness(brightness);
+        setCanShoot(false);
+    }
+
+    public void setIntakeAnimation(IntakeAnimation animation) {
+        if (animation == currentIntakeAnimation) {
+            return;
+        }
+        currentIntakeAnimation = animation;
+        animation.playAnimation(candle);
+    }
+
+    public IntakeAnimation getIntakeAnimation() {
+        return currentIntakeAnimation;
+    }
+
+    private static final int SHOOTER_NUM_LEDS = 39;
+    private static final int SHOOTER_OFFSET = 48;
+    private static final int SHOOTER_SLOT = 2;
+    private static final Animation canShootAnimation =
+            new RainbowAnimation(0.1, 0.1, SHOOTER_NUM_LEDS, false, SHOOTER_OFFSET);
+
+    public void setCanShoot(boolean canShoot) {
+        if (canShoot) {
+            candle.animate(canShootAnimation, SHOOTER_SLOT);
+        } else {
+            candle.clearAnimation(SHOOTER_SLOT);
+            candle.setLEDs(0, 0, 0, 0, SHOOTER_OFFSET, SHOOTER_NUM_LEDS);
+        }
     }
 
     public void setBrightness(double value) {
@@ -124,6 +179,4 @@ public class Lights extends Mechanism {
                         LED_COUNT));
         lastRun = () -> fade(r, g, b);
     }
-
 }
-
