@@ -63,6 +63,13 @@ public abstract class OIFragment extends LoggingBase {
         this.name = name;
     }
 
+    /**
+     * Creates a new OIFragment, using the name of the sub-class.
+     */
+    public OIFragment() {
+        this.name = this.getClass().getSimpleName();
+    }
+
     public final String getName() {
         return name;
     }

@@ -30,7 +30,6 @@ public class BoxOpOI extends OIFragment {
             Intake intake,
             Shooter shooter,
             Climber climber) {
-        super("BoxOpOI");
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
