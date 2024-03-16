@@ -85,7 +85,7 @@ public class RevADriverOI extends OIFragment {
 
         visionSpeakerHelper.update();
 
-        if (leftJoystick.getButtonPressed(2)) {
+        if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             drive.stopDrive();
             drive.setCross();
 
@@ -93,7 +93,6 @@ public class RevADriverOI extends OIFragment {
                 new ShootVelocityAndIntake(visionSpeakerHelper.getShooterPower()).run(context);
             } catch (AprilTagGeneralCheckedException e) {
                 LoggerExceptionUtils.logException(e);
-                // log("Could not see april tag");
             }
         }
 
@@ -117,7 +116,7 @@ public class RevADriverOI extends OIFragment {
                     shoulder.rotate(visionSpeakerHelper.getArmAngle());
                     context.releaseOwnership(shoulder);
                 } catch (AprilTagGeneralCheckedException e) {
-                    log("Could not see april tag");
+                    LoggerExceptionUtils.logException(e);
                 }
 
                 drive.controlFieldOrientedWithRotationTarget(

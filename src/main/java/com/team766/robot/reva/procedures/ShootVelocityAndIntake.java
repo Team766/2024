@@ -9,7 +9,7 @@ public class ShootVelocityAndIntake extends Procedure {
     double speed;
 
     public ShootVelocityAndIntake() {
-        this(2000);
+        this(5600);
     }
 
     public ShootVelocityAndIntake(double speed) {
