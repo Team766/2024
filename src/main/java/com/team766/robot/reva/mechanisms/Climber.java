@@ -25,6 +25,10 @@ public class Climber extends Mechanism {
         public double getHeight() {
             return height;
         }
+
+        public double getRotations() {
+            return heightToRotations(height);
+        }
     }
 
     private MotorController leftMotor;
@@ -48,6 +52,13 @@ public class Climber extends Mechanism {
         rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setSoftLimits(leftMotor, ClimberPosition.BOTTOM.getRotations(), ClimberPosition.TOP.getRotations());
+        MotorUtil.setSoftLimits(rightMotor, ClimberPosition.BOTTOM.getRotations(), ClimberPosition.TOP.getRotations());
+    }
+
+    public void enableSoftLimits(boolean enabled) {
+        MotorUtil.enableSoftLimits(leftMotor, enabled);
+        MotorUtil.enableSoftLimits(rightMotor, enabled);
     }
 
     public void setPower(double power) {
