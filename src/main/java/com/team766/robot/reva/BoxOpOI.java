@@ -22,6 +22,7 @@ public class BoxOpOI extends OIFragment {
     private final OICondition shooterShoot;
     private final OICondition intakeOut;
     private final OICondition intakeIn;
+    private final OICondition climberClimb;
 
     public BoxOpOI(
             JoystickReader gamepad,
@@ -38,6 +39,13 @@ public class BoxOpOI extends OIFragment {
         shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
+        climberClimb =
+                new OICondition(
+                        () ->
+                                Math.abs(gamepad.getAxis(InputConstants.XBOX_LS_Y))
+                                                > InputConstants.XBOX_DEADZONE
+                                        || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
+                                                > InputConstants.XBOX_DEADZONE);
     }
 
     @Override
@@ -76,31 +84,15 @@ public class BoxOpOI extends OIFragment {
         }
 
         // climber
-        if (gamepad.getPOV() == 90) {
-            context.takeOwnership(climber);
-            // setHeight(ClimberPosition.BOTTOM);
-            climber.goNoPIDUp();
-            context.releaseOwnership(climber);
-        } else if (gamepad.getPOV() == 270) {
-            context.takeOwnership(climber);
-            // climber.setHeight(ClimberPosition.TOP);
-            climber.goNoPIDDown();
-            context.releaseOwnership(climber);
-        } else {
-            context.takeOwnership(climber);
+        if (climberClimb.isTriggering()) {
+            if (climberClimb.isNewlyTriggering()) {
+                context.takeOwnership(climber);
+            }
+            climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
+            climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
+        } else if (climberClimb.isFinishedTriggering()) {
             climber.stop();
             context.releaseOwnership(climber);
-        }
-
-        if (gamepad.getButton(9) || gamepad.getButton(10)) {
-            context.takeOwnership(climber);
-            if (gamepad.getAxis(1) < 0) {
-                climber.nudgeUp();
-            } else if (gamepad.getAxis(1) > 0) {
-                climber.nudgeDown();
-            } else {
-                context.releaseOwnership(climber);
-            }
         }
 
         // shooter
