@@ -28,7 +28,7 @@ public final class InputConstants {
 
     // Joystick buttons
     public static final int BUTTON_FINE_DRIVING = 1;
-    public static final int BUTTON_CROSS_WHEELS = 3;
+    public static final int BUTTON_CROSS_WHEELS = 2;
     public static final int BUTTON_RESET_GYRO = 9;
     public static final int BUTTON_RESET_POS = 15;
     public static final int BUTTON_TARGET_SHOOTER = 1;
