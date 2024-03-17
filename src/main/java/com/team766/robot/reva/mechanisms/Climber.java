@@ -51,21 +51,25 @@ public class Climber extends Mechanism {
         rightMotor.setNeutralMode(NeutralMode.Brake);
         leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
         rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        leftMotor.setSensorPosition(0.0);
+        rightMotor.setSensorPosition(0.0);
         MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
-        MotorUtil.setSoftLimits(
-                leftMotor,
-                ClimberPosition.BOTTOM.getRotations(),
-                ClimberPosition.TOP.getRotations());
-        MotorUtil.setSoftLimits(
-                rightMotor,
-                ClimberPosition.BOTTOM.getRotations(),
-                ClimberPosition.TOP.getRotations());
+        MotorUtil.setSoftLimits(leftMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
+        MotorUtil.setSoftLimits(rightMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
     }
 
     public void enableSoftLimits(boolean enabled) {
         MotorUtil.enableSoftLimits(leftMotor, enabled);
         MotorUtil.enableSoftLimits(rightMotor, enabled);
+    }
+
+    public void resetLeftPosition() {
+        leftMotor.setSensorPosition(0);
+    }
+
+    public void resetRightPosition() {
+        rightMotor.setSensorPosition(0);
     }
 
     public void setPower(double power) {
@@ -74,36 +78,15 @@ public class Climber extends Mechanism {
     }
 
     public void setLeftPower(double power) {
-        power = com.team766.math.Math.clamp(power, 1, -1);
+        power = com.team766.math.Math.clamp(power, -1, 1);
         leftPower = power;
         leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
-        power = com.team766.math.Math.clamp(power, 1, -1);
+        power = com.team766.math.Math.clamp(power, -1, 1);
         rightPower = power;
         rightMotor.set(power);
-    }
-
-    private void nudge(double increment) {
-        nudgeLeft(increment);
-        nudgeRight(increment);
-    }
-
-    private void nudgeLeft(double increment) {
-        setLeftPower(leftPower + increment);
-    }
-
-    private void nudgeRight(double increment) {
-        setLeftPower(rightPower + increment);
-    }
-
-    public void nudgeUp() {
-        nudge(NUDGE_INCREMENT);
-    }
-
-    public void nudgeDown() {
-        nudge(-NUDGE_INCREMENT);
     }
 
     public void stop() {
