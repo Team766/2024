@@ -13,6 +13,7 @@ import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.NoRotateShootNow;
 
 public class RevADriverOI extends OIFragment {
@@ -107,11 +108,12 @@ public class RevADriverOI extends OIFragment {
         }
 
         if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            context.releaseOwnership(drive);
-            context.releaseOwnership(shooter);
-            context.releaseOwnership(intake);
-            context.releaseOwnership(shoulder);
-            visionContext = context.startAsync(new NoRotateShootNow());
+            // Boxop must have rotated arm or at least started the rotation process before this
+            if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
+                visionContext = context.startAsync(new NoRotateShootNow(true));
+            } else {
+                visionContext = context.startAsync(new NoRotateShootNow(false));
+            }
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
             visionContext.stop();
@@ -121,17 +123,14 @@ public class RevADriverOI extends OIFragment {
             context.takeOwnership(shoulder);
         }
 
-        if (leftJoystick.getButtonPressed(InputConstants.BUTTON_SHOOT_AMP)) {
-            context.takeOwnership(shooter);
-            shooter.shoot(4000);
-        } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_SHOOT_AMP)) {
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
-
         if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             drive.stopDrive();
             drive.setCross();
+
+            context.releaseOwnership(drive);
+            context.releaseOwnership(shooter);
+            context.releaseOwnership(intake);
+            context.releaseOwnership(shoulder);
         }
 
         // Moves the robot if there are joystick inputs

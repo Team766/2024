@@ -6,6 +6,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
@@ -17,16 +18,22 @@ public class BoxOpOI extends OIFragment {
     private final Intake intake;
 
     private final Climber climber;
+    private final Shooter shooter;
 
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
 
-    public BoxOpOI(JoystickReader gamepad, Shoulder shoulder, Intake intake, Climber climber) {
+    public BoxOpOI(
+            JoystickReader gamepad,
+            Shoulder shoulder,
+            Intake intake,
+            Shooter shooter,
+            Climber climber) {
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
-
+        this.shooter = shooter;
         this.climber = climber;
 
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
@@ -53,7 +60,10 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
             context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.TOP);
+            context.takeOwnership(shooter);
+            shoulder.rotate(ShoulderPosition.AMP);
+            shooter.shoot(3000);
+            context.releaseOwnership(shooter);
             context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
             context.takeOwnership(shoulder);

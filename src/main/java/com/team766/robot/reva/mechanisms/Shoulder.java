@@ -23,6 +23,7 @@ public class Shoulder extends Mechanism {
         SHOOT_LOW(10),
         SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
+        AMP(90),
         TOP(105); // angle needed to be upped so it works with the climber
 
         private final double angle;
@@ -92,6 +93,10 @@ public class Shoulder extends Mechanism {
 
     public double getAbsoluteEncoderPosition() {
         return absoluteEncoder.getPosition();
+    }
+
+    public double getTargetAngle() {
+        return targetAngle;
     }
 
     public double getRotations() {

@@ -40,7 +40,7 @@ public class OI extends Procedure {
                         leftJoystick,
                         rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
-        boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.climber);
+        boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter, Robot.climber);
     }
 
     public void run(Context context) {
