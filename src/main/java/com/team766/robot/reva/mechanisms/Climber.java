@@ -38,6 +38,7 @@ public class Climber extends Mechanism {
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
     private static final double SUPPLY_CURRENT_LIMIT = 30; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80; // TUNE THIS!
+    private static final double NUDGE_INCREMENT = 0.1;
 
     private double leftPower = 0;
     private double rightPower = 0;
@@ -52,8 +53,14 @@ public class Climber extends Mechanism {
         rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
-        MotorUtil.setSoftLimits(leftMotor, ClimberPosition.BOTTOM.getRotations(), ClimberPosition.TOP.getRotations());
-        MotorUtil.setSoftLimits(rightMotor, ClimberPosition.BOTTOM.getRotations(), ClimberPosition.TOP.getRotations());
+        MotorUtil.setSoftLimits(
+                leftMotor,
+                ClimberPosition.BOTTOM.getRotations(),
+                ClimberPosition.TOP.getRotations());
+        MotorUtil.setSoftLimits(
+                rightMotor,
+                ClimberPosition.BOTTOM.getRotations(),
+                ClimberPosition.TOP.getRotations());
     }
 
     public void enableSoftLimits(boolean enabled) {
@@ -67,13 +74,28 @@ public class Climber extends Mechanism {
     }
 
     public void setLeftPower(double power) {
-        leftMotor.set(power);
+        power = Math.max(Math.min(power, 1), -1);
         leftPower = power;
+        leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
-        rightMotor.set(power);
+        power = Math.max(Math.min(power, 1), -1);
         rightPower = power;
+        rightMotor.set(power);
+    }
+
+    public void nudge(double increment) {
+        // use average of left and right power
+        setPower((leftPower + rightPower) / 2 + increment);
+    }
+
+    public void nudgeUp() {
+        nudge(NUDGE_INCREMENT);
+    }
+
+    public void nudgeDown() {
+        nudge(-NUDGE_INCREMENT);
     }
 
     public void stop() {
@@ -82,13 +104,13 @@ public class Climber extends Mechanism {
     }
 
     public void stopLeft() {
-        leftMotor.stopMotor();
         leftPower = 0;
+        leftMotor.stopMotor();
     }
 
     public void stopRight() {
-        rightMotor.stopMotor();
         rightPower = 0;
+        rightMotor.stopMotor();
     }
 
     private static double heightToRotations(double height) {

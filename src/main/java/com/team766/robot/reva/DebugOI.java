@@ -92,7 +92,6 @@ public class DebugOI extends OIFragment {
         if (controlClimber.isTriggering()) {
             if (controlClimber.isNewlyTriggering()) {
                 context.takeOwnership(climber);
-                climber.goNoPIDUp();
             }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
