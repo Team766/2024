@@ -32,6 +32,8 @@ public final class InputConstants {
     public static final int BUTTON_RESET_GYRO = 9;
     public static final int BUTTON_RESET_POS = 15;
     public static final int BUTTON_TARGET_SHOOTER = 1;
+    public static final int BUTTON_START_SHOOTING_PROCEDURE = 3;
+    public static final int BUTTON_SHOOT_AMP = 3;
 
     // Joystick axes
     public static final int AXIS_LEFT_RIGHT = 0;

@@ -365,7 +365,6 @@ public class Drive extends Mechanism {
 
         rotationPID.calculate(getHeading());
 
-
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();
         swerveBR.dashboardCurrentUsage();

@@ -9,20 +9,20 @@ import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 
 public class NoRotateShootNow extends Procedure {
 
-	VisionSpeakerHelper visionSpeakerHelper;
+    VisionSpeakerHelper visionSpeakerHelper;
 
     public NoRotateShootNow() {
         visionSpeakerHelper = new VisionSpeakerHelper(Robot.drive);
     }
 
-	public void run(Context context) {
-		context.takeOwnership(Robot.drive);
+    public void run(Context context) {
+        context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
 
         Robot.drive.stopDrive();
-		
-		context.releaseOwnership(Robot.drive);
+
+        context.releaseOwnership(Robot.drive);
 
         double power;
         double armAngle;
@@ -30,7 +30,7 @@ public class NoRotateShootNow extends Procedure {
         try {
             power = visionSpeakerHelper.getShooterPower();
             armAngle = visionSpeakerHelper.getArmAngle();
-        } catch(AprilTagGeneralCheckedException e) {
+        } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;
         }
@@ -42,5 +42,5 @@ public class NoRotateShootNow extends Procedure {
 
         context.releaseOwnership(Robot.shooter);
         new ShootVelocityAndIntake(power).run(context);
-	}
+    }
 }

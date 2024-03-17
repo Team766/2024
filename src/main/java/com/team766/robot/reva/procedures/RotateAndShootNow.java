@@ -29,13 +29,14 @@ public class RotateAndShootNow extends Procedure {
         try {
             power = visionSpeakerHelper.getShooterPower();
             armAngle = visionSpeakerHelper.getArmAngle();
-        } catch(AprilTagGeneralCheckedException e) {
+        } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;
         }
 
         Robot.shoulder.rotate(armAngle);
-        Robot.drive.controlFieldOrientedWithRotationTarget(0, 0, visionSpeakerHelper.getHeadingToTarget());
+        Robot.drive.controlFieldOrientedWithRotationTarget(
+                0, 0, visionSpeakerHelper.getHeadingToTarget());
         Robot.shooter.shoot(power);
 
         context.waitFor(Robot.shoulder::isFinished);

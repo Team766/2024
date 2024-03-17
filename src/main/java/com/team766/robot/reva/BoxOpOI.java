@@ -6,7 +6,6 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
@@ -16,27 +15,20 @@ public class BoxOpOI extends OIFragment {
 
     private final Shoulder shoulder;
     private final Intake intake;
-    private final Shooter shooter;
+
     private final Climber climber;
 
-    private final OICondition shooterShoot;
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
 
-    public BoxOpOI(
-            JoystickReader gamepad,
-            Shoulder shoulder,
-            Intake intake,
-            Shooter shooter,
-            Climber climber) {
+    public BoxOpOI(JoystickReader gamepad, Shoulder shoulder, Intake intake, Climber climber) {
         this.gamepad = gamepad;
         this.shoulder = shoulder;
         this.intake = intake;
-        this.shooter = shooter;
+
         this.climber = climber;
 
-        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
         climberClimb =
@@ -95,13 +87,15 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(climber);
         }
 
-        // shooter
-        if (shooterShoot.isNewlyTriggering()) {
-            context.takeOwnership(shooter);
-            shooter.shoot();
-        } else if (shooterShoot.isFinishedTriggering()) {
-            shooter.stop();
-            context.releaseOwnership(shooter);
+        if (gamepad.getButton(9) || gamepad.getButton(10)) {
+            context.takeOwnership(climber);
+            if (gamepad.getAxis(1) < 0) {
+                climber.nudgeUp();
+            } else if (gamepad.getAxis(1) > 0) {
+                climber.nudgeDown();
+            } else {
+                context.releaseOwnership(climber);
+            }
         }
 
         // intake
