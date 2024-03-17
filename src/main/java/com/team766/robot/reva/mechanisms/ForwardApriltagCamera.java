@@ -35,6 +35,10 @@ public class ForwardApriltagCamera extends Mechanism {
     }
 
     public void run() {
+        camera.updateLatestResult();
+
+        double seconds = camera.getLatestTimeStamp();
+
         try {
             Transform3d toUse =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));

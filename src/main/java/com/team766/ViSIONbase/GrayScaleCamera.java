@@ -3,10 +3,12 @@ package com.team766.ViSIONbase;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.*;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class GrayScaleCamera extends PhotonCamera {
 
+    private PhotonPipelineResult latestResult = null;
     /**
      * This is the constructor for the CameraPlus class
      * @param cameraName the name of the camera
@@ -40,9 +42,11 @@ public class GrayScaleCamera extends PhotonCamera {
      * @return PhotonTrackedTarget the best tracked target picked up by the camera
      */
     public PhotonTrackedTarget getBestTrackedTarget() throws AprilTagGeneralCheckedException {
-        var result = getLatestResult(); // getting the result from the camera
+        if(latestResult == null){
+            updateLatestResult();
+        }
         boolean hasTargets =
-                result.hasTargets(); // checking to see if there are any targets in the camera's
+                latestResult.hasTargets(); // checking to see if there are any targets in the camera's
         // view. IF THERE ISN'T AND YOU USE result.getTargets() YOU
         // WILL GET AN ERROR
 
@@ -50,7 +54,7 @@ public class GrayScaleCamera extends PhotonCamera {
             // List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
 
             PhotonTrackedTarget bestTrackedTarget =
-                    result.getBestTarget(); // getting the best target that is currently being
+                    latestResult.getBestTarget(); // getting the best target that is currently being
             // picked up by the camera so that it can know where
             // it is
             return bestTrackedTarget;
@@ -63,10 +67,12 @@ public class GrayScaleCamera extends PhotonCamera {
 
     public PhotonTrackedTarget getTrackedTargetWithID(int ID)
             throws AprilTagGeneralCheckedException {
-        var result = getLatestResult();
-        boolean hasTargets = result.hasTargets();
+        if(latestResult == null){
+            updateLatestResult();
+        }
+        boolean hasTargets = latestResult.hasTargets();
         if (hasTargets) {
-            List<PhotonTrackedTarget> targets = result.getTargets(); // getting targets
+            List<PhotonTrackedTarget> targets = latestResult.getTargets(); // getting targets
 
             for (PhotonTrackedTarget target : targets) {
                 if (target.getFiducialId() == ID) {
@@ -89,5 +95,33 @@ public class GrayScaleCamera extends PhotonCamera {
      */
     public static Transform3d getBestTargetTransform3d(PhotonTrackedTarget target) {
         return target.getBestCameraToTarget();
+    }
+
+    /*
+     * This method is called to update the latest result. It must be called in the camera mechanism's run function
+     * 
+     * @return the time in seconds between the last result called and the new one
+     */
+    public double updateLatestResult(){
+        if(latestResult == null){
+            latestResult = getLatestResult();
+            return 0;
+        }
+
+        double previousTimestamp = latestResult.getTimestampSeconds();
+
+        latestResult = getLatestResult();
+
+        double newTimestamp = latestResult.getTimestampSeconds();
+
+        return newTimestamp - previousTimestamp;
+    }
+
+    public double getLatestTimeStamp(){
+        if(latestResult == null){
+            updateLatestResult();
+        }
+
+        return latestResult.getTimestampSeconds();
     }
 }
