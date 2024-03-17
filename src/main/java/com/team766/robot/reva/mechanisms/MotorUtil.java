@@ -73,14 +73,7 @@ public final class MotorUtil {
         }
     }
 
-    // TODO: add the appropriate support for SparkMax as well.
-    public static void setSoftLimits(
-            MotorController motor, double forwardLimit, double reverseLimit) {
-        if (!(motor instanceof TalonFX)) {
-            return;
-        }
-
-        TalonFX talonFX = (TalonFX) motor;
+    private static SoftwareLimitSwitchConfigs getLimitSwitchConfigs(TalonFX talonFX) {
         SoftwareLimitSwitchConfigs limitSwitchConfigs = new SoftwareLimitSwitchConfigs();
         StatusCode status = talonFX.getConfigurator().refresh(limitSwitchConfigs);
         if (!status.isOK()) {
@@ -90,17 +83,45 @@ public final class MotorUtil {
                             "Unable to get limit switch configs: " + status.toString());
             ;
         }
-        limitSwitchConfigs.ForwardSoftLimitThreshold = forwardLimit;
-        limitSwitchConfigs.ReverseSoftLimitThreshold = reverseLimit;
-        limitSwitchConfigs.ForwardSoftLimitEnable = true;
-        limitSwitchConfigs.ReverseSoftLimitEnable = true;
-        status = talonFX.getConfigurator().apply(limitSwitchConfigs);
+        return limitSwitchConfigs;
+    }
+
+    private static void applyLimitSwitchConfigs(
+            TalonFX talonFX, SoftwareLimitSwitchConfigs limitSwitchConfigs) {
+        StatusCode status = talonFX.getConfigurator().apply(limitSwitchConfigs);
         if (!status.isOK()) {
             Logger.get(Category.MECHANISMS)
                     .logRaw(
                             Severity.WARNING,
                             "Unable to set limit switch configs: " + status.toString());
-            ;
         }
+    }
+
+    // TODO: add the appropriate support for SparkMax as well.
+    public static void setSoftLimits(
+            MotorController motor, double forwardLimit, double reverseLimit) {
+        if (!(motor instanceof TalonFX)) {
+            return;
+        }
+        TalonFX talonFX = (TalonFX) motor;
+
+        SoftwareLimitSwitchConfigs limitSwitchConfigs = getLimitSwitchConfigs(talonFX);
+        limitSwitchConfigs.ForwardSoftLimitThreshold = forwardLimit;
+        limitSwitchConfigs.ReverseSoftLimitThreshold = reverseLimit;
+        limitSwitchConfigs.ForwardSoftLimitEnable = true;
+        limitSwitchConfigs.ReverseSoftLimitEnable = true;
+        applyLimitSwitchConfigs(talonFX, limitSwitchConfigs);
+    }
+
+    public static void enableSoftLimits(MotorController motor, boolean enable) {
+        if (!(motor instanceof TalonFX)) {
+            return;
+        }
+        TalonFX talonFX = (TalonFX) motor;
+
+        SoftwareLimitSwitchConfigs limitSwitchConfigs = getLimitSwitchConfigs(talonFX);
+        limitSwitchConfigs.ForwardSoftLimitEnable = enable;
+        limitSwitchConfigs.ReverseSoftLimitEnable = enable;
+        applyLimitSwitchConfigs(talonFX, limitSwitchConfigs);
     }
 }
