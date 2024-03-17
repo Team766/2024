@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 2.8438902294471258,
+        "y": 6.943637169681748
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 6.5
+        "x": 2.8264906066849176,
+        "y": 6.373606524990827
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3 Piece 1"
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 5.0
+        "x": 1.9935059360859464,
+        "y": 5.974899810910733
       },
       "prevControl": {
-        "x": 4.0,
-        "y": 6.0
-      },
-      "nextControl": {
-        "x": 6.0,
-        "y": 4.0
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.951171342157499,
-        "y": 5.848411085711061
-      },
-      "prevControl": {
-        "x": 3.701171342157499,
-        "y": 7.348411085711062
+        "x": 2.09992274151215,
+        "y": 6.33013716027432
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3 Piece 2"
     }
   ],
   "rotationTargets": [],
@@ -55,11 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 15.318588677171732,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "gatorade",
-  "previewStartingState": null,
+  "folder": "RevA",
+  "previewStartingState": {
+    "rotation": 36.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

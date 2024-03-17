@@ -12,7 +12,7 @@ public abstract class VisionPIDProcedure extends Procedure {
 
     protected PIDController yawPID = new PIDController(0.02, 0.001, 0, 0, -0.25, 0.25, 3);
 
-    protected PIDController anglePID = new PIDController(1.8, 0, 0, 0, -0.80, 0.80, 0.05);
+    protected PIDController anglePID = new PIDController(1.8, 0, 0, 0, -0.8, 0.8, 0.05);
 
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
@@ -22,13 +22,14 @@ public abstract class VisionPIDProcedure extends Procedure {
             new AnywhereScoringPosition(1.7201, 5600, 22.205946);
     private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(1.9506, 5600, 23.516);
     private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(2.1839, 5600, 26.7537);
-    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.4616, 5600, 30.8987);
-    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.6942, 5600, 32.699);
-    private static AnywhereScoringPosition a7 =
+    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.29161, 5600, 30.109);
+    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.4616, 5600, 30.8987);
+    private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(2.6942, 5600, 32.699);
+    private static AnywhereScoringPosition a8 =
             new AnywhereScoringPosition(2.8657, 5600, 34.103733);
-    private static AnywhereScoringPosition a8 = new AnywhereScoringPosition(3.2926, 5600, 34.6842);
-    private static AnywhereScoringPosition a9 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a9 = new AnywhereScoringPosition(3.2926, 5600, 34.6842);
     private static AnywhereScoringPosition a10 = new AnywhereScoringPosition(0, 0, 0);
+    private static AnywhereScoringPosition a11 = new AnywhereScoringPosition(0, 0, 0);
 
     protected static ArrayList<AnywhereScoringPosition> scoringPositions =
             new ArrayList<AnywhereScoringPosition>() {
@@ -41,7 +42,7 @@ public abstract class VisionPIDProcedure extends Procedure {
                     add(a6);
                     add(a7);
                     add(a8);
-                    // add(a9);
+                    add(a9);
                     // add(a10);
                 }
             };
