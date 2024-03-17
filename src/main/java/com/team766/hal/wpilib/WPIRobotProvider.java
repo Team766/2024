@@ -194,7 +194,7 @@ public class WPIRobotProvider extends RobotProvider {
                         ConfigFileReader.getInstance().getDouble(configPrefix + ".offset");
                 REVThroughBoreDutyCycleEncoder encoder = new REVThroughBoreDutyCycleEncoder(index1);
                 if (offset.hasValue()) {
-                    encoder.setPositionOffset(index1);
+                    encoder.setPositionOffset(offset.get());
                 }
                 return encoder;
             } else {

@@ -39,6 +39,7 @@ public class Shoulder extends Mechanism {
     private static final double NUDGE_AMOUNT = 30; // degrees
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
+    private int initializedEncoder = 0;
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -57,8 +58,7 @@ public class Shoulder extends Mechanism {
         absoluteEncoder =
                 (REVThroughBoreDutyCycleEncoder)
                         RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
-
-        leftMotor.setSensorPosition(absoluteEncoder.getAbsolutePosition());
+        leftMotor.setSensorPosition(0.0);
     }
 
     public void stop() {
@@ -100,6 +100,10 @@ public class Shoulder extends Mechanism {
         return rotations * (15. / 54.) * (1. / 4.) * (1. / 3.) * (1. / 3.) * (360. / 1.);
     }
 
+    private double absoluteEncoderToMotorRotations(double rotations) {
+        return ((1.25 - rotations) % 1.0 - .25) * (4./1.) * (3./1.) * (3./1.);
+    }
+
     public void rotate(Position position) {
         rotate(position.getAngle());
     }
@@ -116,6 +120,14 @@ public class Shoulder extends Mechanism {
 
     @Override
     public void run() {
+        if (initializedEncoder < 350 && absoluteEncoder.isConnected()) {
+            double absPos = absoluteEncoder.getPosition();
+            log("abs pos: " + absPos);
+            double convertedPos = absoluteEncoderToMotorRotations(absPos);
+            log("converted pos: " + convertedPos);
+            leftMotor.setSensorPosition(convertedPos);
+            initializedEncoder++;
+        }
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
