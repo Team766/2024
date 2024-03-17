@@ -20,7 +20,7 @@ public class ShootVelocityAndIntake extends Procedure {
         context.takeOwnership(Robot.shooter);
 
         Robot.shooter.shoot(speed);
-        context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
+        context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 5.0);
 
         context.takeOwnership(Robot.intake);
         new IntakeIn().run(context);

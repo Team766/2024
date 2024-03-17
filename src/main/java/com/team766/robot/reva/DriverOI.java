@@ -15,8 +15,10 @@ import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.NoRotateShootNow;
+import com.team766.robot.reva.procedures.RotateAndShootNow;
+import com.team766.robot.reva.procedures.ShootVelocityAndIntake;
 
-public class RevADriverOI extends OIFragment {
+public class DriverOI extends OIFragment {
 
     protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
@@ -31,12 +33,13 @@ public class RevADriverOI extends OIFragment {
     protected double leftJoystickX = 0;
     protected double leftJoystickY = 0;
     protected boolean isCross = false;
+    private boolean isRotatingToSpeaker = false;
 
     private final OICondition movingJoysticks;
 
     private LaunchedContext visionContext;
 
-    public RevADriverOI(
+    public DriverOI(
             Drive drive,
             Shoulder shoulder,
             Intake intake,
@@ -97,22 +100,27 @@ public class RevADriverOI extends OIFragment {
 
         visionSpeakerHelper.update();
 
-        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
-            context.takeOwnership(intake);
-            intake.in();
+        if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
+            isRotatingToSpeaker = true;
+        } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
+            isRotatingToSpeaker = false;
+            drive.stopDrive();
+            drive.setCross();
+
+            context.releaseOwnership(drive);
+            context.releaseOwnership(shooter);
             context.releaseOwnership(intake);
-        } else if (rightJoystick.getButtonReleased(InputConstants.BUTTON_CROSS_WHEELS)) {
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
+            context.releaseOwnership(shoulder);
         }
 
         if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
             // Boxop must have rotated arm or at least started the rotation process before this
-            if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
+            if (isRotatingToSpeaker) {
+                visionContext = context.startAsync(new RotateAndShootNow());
+            } else if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
                 visionContext = context.startAsync(new NoRotateShootNow(true));
             } else {
-                visionContext = context.startAsync(new NoRotateShootNow(false));
+                visionContext = context.startAsync(new ShootVelocityAndIntake());
             }
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
@@ -123,19 +131,8 @@ public class RevADriverOI extends OIFragment {
             context.takeOwnership(shoulder);
         }
 
-        if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            drive.stopDrive();
-            drive.setCross();
-
-            context.releaseOwnership(drive);
-            context.releaseOwnership(shooter);
-            context.releaseOwnership(intake);
-            context.releaseOwnership(shoulder);
-        }
-
         // Moves the robot if there are joystick inputs
-        if (movingJoysticks.isTriggering()
-                || leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
+        if (movingJoysticks.isTriggering() || isRotatingToSpeaker) {
 
             context.takeOwnership(drive);
 
@@ -146,7 +143,7 @@ public class RevADriverOI extends OIFragment {
                 drivingCoefficient = FINE_DRIVING_COEFFICIENT;
             }
 
-            if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
+            if (isRotatingToSpeaker) {
 
                 try {
                     context.takeOwnership(shoulder);
