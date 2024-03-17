@@ -91,6 +91,7 @@ public class BoxOpOI extends OIFragment {
             climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
             climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
         } else if (climberClimb.isFinishedTriggering()) {
+            climber.stop();
             context.releaseOwnership(climber);
         }
 

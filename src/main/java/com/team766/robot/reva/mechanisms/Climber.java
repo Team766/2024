@@ -74,20 +74,28 @@ public class Climber extends Mechanism {
     }
 
     public void setLeftPower(double power) {
-        power = Math.max(Math.min(power, 1), -1);
+        power = com.team766.math.Math.clamp(power, 1, -1);
         leftPower = power;
         leftMotor.set(power);
     }
 
     public void setRightPower(double power) {
-        power = Math.max(Math.min(power, 1), -1);
+        power = com.team766.math.Math.clamp(power, 1, -1);
         rightPower = power;
         rightMotor.set(power);
     }
 
-    public void nudge(double increment) {
-        // use average of left and right power
-        setPower((leftPower + rightPower) / 2 + increment);
+    private void nudge(double increment) {
+        nudgeLeft(increment);
+        nudgeRight(increment);
+    }
+
+    private void nudgeLeft(double increment) {
+        setLeftPower(leftPower + increment);
+    }
+
+    private void nudgeRight(double increment) {
+        setLeftPower(rightPower + increment);
     }
 
     public void nudgeUp() {
