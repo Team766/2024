@@ -140,11 +140,11 @@ TODO: put together page with instructions on how to flash the firmware.
   </tr>
   <tr>
     <td>3</td>
-    <td>Hold to control left climber (with up/down or dials).
+    <td>Hold to control left climber (with up/down or dials).  Bypasses soft limits.
   </tr>
   <tr>
     <td>4</td>
-    <td>Hold to control right climber (with up/down or dials).
+    <td>Hold to control right climber (with up/down or dials).  Bypasses soft limits.
   </tr>
   <tr>
     <td>5</td>
