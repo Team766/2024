@@ -140,8 +140,6 @@ public class Shoulder extends Mechanism {
         if (encoderInitialized && absoluteEncoder.isConnected()) {
             double absPos = absoluteEncoder.getPosition();
             double convertedPos = absoluteEncoderToMotorRotations(absPos);
-            // TODO: only set the sensor position after this has settled?
-            // can try in the next round of testing.
             leftMotor.setSensorPosition(convertedPos);
             encoderInitialized = true;
         }
