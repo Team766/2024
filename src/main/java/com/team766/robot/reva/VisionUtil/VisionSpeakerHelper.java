@@ -24,6 +24,7 @@ public class VisionSpeakerHelper {
     Translation2d absTargetPos;
     Translation2d relativeTranslation2d;
 
+    // TODO: make this static
     public VisionSpeakerHelper(Drive drive) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
@@ -44,7 +45,12 @@ public class VisionSpeakerHelper {
     }
 
     // TODO: reformat the code to be more efficient
-    public void updateCurrentPosition(Context context) {
+    /**
+     * Updates current robot position based on known speaker tag locations and vision
+     * @param context context
+     * @return whether or not it was successfully reset or not, depending on if it sees the tag
+     */
+    public boolean updateCurrentPosition(Context context) {
         try {
 
             // re-calculates the absolute position of the robot according to odometry
@@ -66,8 +72,12 @@ public class VisionSpeakerHelper {
                                             Rotation2d.fromDegrees(drive.getHeading() + 180))),
                             Rotation2d.fromDegrees(drive.getHeading())));
 
+            context.releaseOwnership(drive);
+
+            return true;
+
         } catch (AprilTagGeneralCheckedException e) {
-            return;
+            return false;
         }
     }
 

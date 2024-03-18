@@ -98,7 +98,7 @@ public class DriverOI extends OIFragment {
         //     isCross = !isCross;
         // }
 
-        visionSpeakerHelper.update();
+        visionSpeakerHelper.update(context);
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
             isRotatingToSpeaker = true;

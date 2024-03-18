@@ -10,6 +10,7 @@ import com.team766.framework.RunnableWithContext;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -22,6 +23,7 @@ public class PathSequenceAuto extends Procedure {
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
     private final boolean shouldFlipAuton;
+    private VisionSpeakerHelper visionSpeakerHelper;
 
     /**
      * Sequencer for using path following with other procedures
@@ -34,6 +36,7 @@ public class PathSequenceAuto extends Procedure {
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
         shouldFlipAuton = (DriverStation.getAlliance().get() == Alliance.Red);
+        visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
     private PPHolonomicDriveController createDriveController(Drive drive) {
@@ -89,9 +92,17 @@ public class PathSequenceAuto extends Procedure {
     @Override
     public final void run(Context context) {
         context.takeOwnership(drive);
-        drive.setCurrentPosition(
-                shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
-        drive.resetGyro(drive.getCurrentPosition().getRotation().getDegrees());
+        if (!visionSpeakerHelper.updateCurrentPosition(context)) {
+            drive.setCurrentPosition(
+                    shouldFlipAuton
+                            ? GeometryUtil.flipFieldPose(initialPosition)
+                            : initialPosition);
+        }
+        drive.resetGyro(
+                (shouldFlipAuton
+                                ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
+                                : initialPosition.getRotation())
+                        .getDegrees());
 
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
