@@ -8,10 +8,16 @@ public class ControlConstants {
     // Value below which the joystick movement does not register
     public static final double JOYSTICK_DEADZONE = 0.05;
 
+    // Exponent giving joystick curved power mapping for translational movement
+    public static final double TRANSLATIONAL_CURVE_POWER = 1.0;
+
+    // Exponent giving joystick curved power mapping for rotational movement
+    public static final double ROTATIONAL_CURVE_POWER = 1.0;
+
     /**
      * Positional velocity of robot that max joystick power controls in m/s
      */
-    public static final double MAX_POSITIONAL_VELOCITY = 2.0;
+    public static final double MAX_POSITIONAL_VELOCITY = 4.0;
 
     /**
      * Rotational velocity of robot that max joystick power controls in rad/s
