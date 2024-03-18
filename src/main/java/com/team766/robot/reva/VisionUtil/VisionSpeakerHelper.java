@@ -1,10 +1,12 @@
 package com.team766.robot.reva.VisionUtil;
 
-import com.pathplanner.lib.util.GeometryUtil;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
+import com.team766.framework.Context;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
+import com.team766.robot.reva.constants.VisionConstants;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,19 +22,18 @@ public class VisionSpeakerHelper {
     GrayScaleCamera camera;
     Drive drive;
     Translation2d absTargetPos;
-    boolean targetTranslationFlip;
     Translation2d relativeTranslation2d;
 
     public VisionSpeakerHelper(Drive drive) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
-        absTargetPos = new Translation2d(0, 5.5);
         if (alliance.isPresent()) {
             if (alliance.get().equals(Alliance.Blue)) {
-                tagId = 7;
+                tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
+                absTargetPos = VisionConstants.MAIN_BLUE_SPEAKER_TAG_POS;
             } else if (alliance.get().equals(Alliance.Red)) {
-                tagId = 4;
-                GeometryUtil.flipFieldPosition(absTargetPos);
+                tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
+                absTargetPos = VisionConstants.MAIN_RED_SPEAKER_TAG_POS;
             }
         } else {
             tagId = -1;
@@ -40,33 +41,31 @@ public class VisionSpeakerHelper {
 
         camera = Robot.forwardApriltagCamera.getCamera();
         this.drive = drive;
-        targetTranslationFlip = (DriverStation.getAlliance().get() == Alliance.Blue);
     }
 
-    private void updateTarget() {
+    // TODO: reformat the code to be more efficient
+    public void updateCurrentPosition(Context context) {
         try {
 
-            // Calculates the absolute position of the target according to odometry
+            // re-calculates the absolute position of the robot according to odometry
             // Rotates the direction of the relative translation to correct for robot orientation:
-            // Shooter camera is on back of the robot, red alliance's gyro is 180 - absolute
-            // rotation
+            // Shooter camera is on back of the robot
             // Sticks around even when there is no new valid relativeTarget
 
             Transform3d transform3d =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
             Translation2d relativeTarget =
                     new Translation2d(transform3d.getX(), transform3d.getY());
-            absTargetPos =
-                    drive.getCurrentPosition()
-                            .getTranslation()
-                            .plus(
+
+            context.takeOwnership(drive);
+
+            drive.setCurrentPosition(
+                    new Pose2d(
+                            absTargetPos.minus(
                                     relativeTarget.rotateBy(
-                                            Rotation2d.fromDegrees(
-                                                    targetTranslationFlip
-                                                            ? (drive.getHeading() + 180)
-                                                            : (drive.getHeading()))));
-            // Logger.get(Category.CAMERA).logRaw(Severity.INFO, "target pos:" + absTargetPos);
-            SmartDashboard.putString("target pos", absTargetPos.toString());
+                                            Rotation2d.fromDegrees(drive.getHeading() + 180))),
+                            Rotation2d.fromDegrees(drive.getHeading())));
+
         } catch (AprilTagGeneralCheckedException e) {
             return;
         }
@@ -81,16 +80,12 @@ public class VisionSpeakerHelper {
             relativeTranslation2d =
                     absTargetPos
                             .minus(drive.getCurrentPosition().getTranslation())
-                            .rotateBy(
-                                    Rotation2d.fromDegrees(
-                                            targetTranslationFlip
-                                                    ? (-drive.getHeading() - 180)
-                                                    : (-drive.getHeading())));
+                            .rotateBy(Rotation2d.fromDegrees(-drive.getHeading() - 180));
         }
     }
 
-    public void update() {
-        updateTarget();
+    public void update(Context context) {
+        updateCurrentPosition(context);
         updateRelativeTranslation2d();
         SmartDashboard.putString("translation", relativeTranslation2d.toString());
     }

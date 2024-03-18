@@ -1,7 +1,5 @@
 package com.team766.robot.common.constants;
 
-import com.team766.controllers.PIDController;
-
 public class ControlConstants {
 
     // Amount to reduce driving power to when holding the fine driving button

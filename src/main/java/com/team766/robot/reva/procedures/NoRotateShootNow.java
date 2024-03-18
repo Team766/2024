@@ -6,7 +6,6 @@ import com.team766.framework.Procedure;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 
 public class NoRotateShootNow extends Procedure {
 
