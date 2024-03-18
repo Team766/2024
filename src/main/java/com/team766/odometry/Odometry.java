@@ -12,10 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /*
@@ -123,9 +120,9 @@ public class Odometry {
         for (int i = 0; i < motorCount; i++) {
             prevEncoderValues[i] = currEncoderValues[i];
             currEncoderValues[i] = motorList[i].getSensorPosition();
-            Optional<Alliance> alliance = DriverStation.getAlliance();
-            currEncoderValues[i] *=
-                    ((alliance.isPresent() && (alliance.get() == Alliance.Blue)) ? 1 : -1);
+            // Optional<Alliance> alliance = DriverStation.getAlliance();
+            // currEncoderValues[i] *=
+            //         ((alliance.isPresent() && (alliance.get() == Alliance.Blue)) ? 1 : -1);
         }
     }
 

@@ -29,6 +29,7 @@ public class Math {
     /**
      * Performs simple linear interpolation (as described in
      * https://en.wikipedia.org/wiki/Linear_interpolation) of data in an array of type T.
+     * NOTE: the data array must be sorted by x, from lowest to highest.
      *
      * The x values (eg measured data and target data point) should be available via a getter in T.
      * The y values (what this interpolates from measured data) should be available via a getter in T.
@@ -38,7 +39,7 @@ public class Math {
      *   public record Data(double x, double y);
      *   ...
      *   Data[] data = new Data[] { new Data(0.0, 1.0), new Data(1.0, 32.0), ... };
-     *   Math.interpolate(data, 0.5, Data::x, Data::y);
+     *   double interpolatedY = Math.interpolate(data, 0.5, Data::x, Data::y);
      * </pre>
      *
      * @param <T> The class containing the x and y data.

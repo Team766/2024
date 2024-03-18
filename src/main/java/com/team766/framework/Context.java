@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import com.team766.hal.Clock;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -52,7 +53,7 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-public final class Context implements Runnable, LaunchedContext {
+public class Context implements Runnable, LaunchedContext {
     /**
      * Represents the baton-passing state (see class comments). Instead of
      * passing a baton directly from one Context's thread to the next, each
@@ -84,6 +85,43 @@ public final class Context implements Runnable, LaunchedContext {
          * The Context's execution has come to an end.
          */
         DONE,
+    }
+
+    // package visible for testing
+    /* package */ static class TimedPredicate implements BooleanSupplier {
+        private final Clock clock;
+        private final BooleanSupplier predicate;
+        private final double deadlineSeconds;
+        private boolean succeeded = false;
+
+        // package visible for testing
+        /* package */ TimedPredicate(
+                Clock clock, BooleanSupplier predicate, double timeoutSeconds) {
+            this.clock = clock;
+            this.deadlineSeconds = clock.getTime() + timeoutSeconds;
+            this.predicate = predicate;
+        }
+
+        public TimedPredicate(BooleanSupplier predicate, double timeoutSeconds) {
+            this(RobotProvider.instance.getClock(), predicate, timeoutSeconds);
+        }
+
+        public boolean getAsBoolean() {
+            if (predicate.getAsBoolean()) {
+                succeeded = true;
+                return true;
+            }
+            if (clock.getTime() >= deadlineSeconds) {
+                succeeded = false;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public boolean succeeded() {
+            return succeeded;
+        }
     }
 
     private static Context c_currentContext = null;
@@ -161,7 +199,7 @@ public final class Context implements Runnable, LaunchedContext {
      * {@link Scheduler#startAsync}.
      */
 
-    private Context(final RunnableWithContext func, final Context parentContext) {
+    Context(final RunnableWithContext func, final Context parentContext) {
         m_func = func;
         m_parentContext = parentContext;
         Logger.get(Category.FRAMEWORK)
@@ -181,7 +219,7 @@ public final class Context implements Runnable, LaunchedContext {
         this(func, null);
     }
 
-    private Context(final Runnable func, final Context parentContext) {
+    Context(final Runnable func, final Context parentContext) {
         this((context) -> func.run());
     }
 
@@ -333,6 +371,22 @@ public final class Context implements Runnable, LaunchedContext {
     }
 
     /**
+     * Pauses the execution of this Context until the given predicate returns true or until
+     * the timeout has elapsed.  Yields to other Contexts in the meantime.
+     *
+     * Note that the predicate will be evaluated repeatedly (possibly on a different thread) while
+     * the Context is paused to determine whether it should continue waiting.
+     *
+     * @return True if the predicate succeeded, false if the wait timed out.
+     */
+    public boolean waitForConditionOrTimeout(
+            final BooleanSupplier predicate, double timeoutSeconds) {
+        TimedPredicate timedPredicate = new TimedPredicate(predicate, timeoutSeconds);
+        waitFor(timedPredicate);
+        return timedPredicate.succeeded();
+    }
+
+    /**
      * Pauses the execution of this Context until the given predicate returns true. Yields to other
      * Contexts in the meantime.
      *
@@ -387,6 +441,13 @@ public final class Context implements Runnable, LaunchedContext {
      */
     public LaunchedContext startAsync(final RunnableWithContext func) {
         return new Context(func, this);
+    }
+
+    /**
+     * Start running a new Context so the given procedure can run in parallel.
+     */
+    public <T> LaunchedContextWithValue<T> startAsync(final RunnableWithContextWithValue<T> func) {
+        return new ContextWithValue<T>(func, this);
     }
 
     /**

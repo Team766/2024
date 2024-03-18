@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends Mechanism {
 
-    public enum Position {
+    public enum ClimberPosition {
         // A very rough measurement, and was being very safe.
         // TODO: Needs to be measured more accurately.
         TOP(43.18),
@@ -18,86 +18,124 @@ public class Climber extends Mechanism {
 
         private final double height;
 
-        private Position(double height) {
+        private ClimberPosition(double height) {
             this.height = height;
         }
 
         public double getHeight() {
             return height;
         }
+
+        public double getRotations() {
+            return heightToRotations(height);
+        }
     }
 
     private MotorController leftMotor;
     private MotorController rightMotor;
 
-    private double targetRotations = 0;
-
     private static final double GEAR_RATIO_AND_CIRCUMFERENCE =
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
-    private static final double NUDGE_INCREMENT = 10; // in cm
-    private static final double PIDLESS_NUDGE_INCREMENT = 0.1;
-    private double pidlessPower = 0.0;
+    private static final double SUPPLY_CURRENT_LIMIT = 30; // max efficiency from spec sheet
+    private static final double STATOR_CURRENT_LIMIT = 80; // TUNE THIS!
+    private static final double NUDGE_INCREMENT = 0.1;
+
+    private double leftPower = 0;
+    private double rightPower = 0;
 
     public Climber() {
         leftMotor = RobotProvider.instance.getMotor(CLIMBER_LEFT_MOTOR);
         rightMotor = RobotProvider.instance.getMotor(CLIMBER_RIGHT_MOTOR);
-        rightMotor.follow(leftMotor);
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
+        leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        leftMotor.setSensorPosition(0.0);
+        rightMotor.setSensorPosition(0.0);
+        MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setSoftLimits(leftMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
+        MotorUtil.setSoftLimits(rightMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
     }
 
-    public boolean isRunningNoPID() {
-        return pidlessPower != 0.0;
+    public void enableSoftLimits(boolean enabled) {
+        MotorUtil.enableSoftLimits(leftMotor, enabled);
+        MotorUtil.enableSoftLimits(rightMotor, enabled);
     }
 
-    public void goNoPID() {
-        leftMotor.set(pidlessPower);
+    public void resetLeftPosition() {
+        leftMotor.setSensorPosition(0);
+    }
+
+    public void resetRightPosition() {
+        rightMotor.setSensorPosition(0);
+    }
+
+    public void setPower(double power) {
+        setLeftPower(power);
+        setRightPower(power);
+    }
+
+    public void setLeftPower(double power) {
+        power = com.team766.math.Math.clamp(power, -1, 1);
+        leftPower = power;
+        leftMotor.set(power);
+    }
+
+    public void setRightPower(double power) {
+        power = com.team766.math.Math.clamp(power, -1, 1);
+        rightPower = power;
+        rightMotor.set(power);
     }
 
     public void stop() {
-        pidlessPower = 0.0;
+        stopLeft();
+        stopRight();
+    }
+
+    public void stopLeft() {
+        leftPower = 0;
         leftMotor.stopMotor();
     }
 
-    private double heightToRotations(double height) {
+    public void stopRight() {
+        rightPower = 0;
+        rightMotor.stopMotor();
+    }
+
+    private static double heightToRotations(double height) {
         return height * GEAR_RATIO_AND_CIRCUMFERENCE;
     }
 
-    private double rotationsToHeight(double rotations) {
+    private static double rotationsToHeight(double rotations) {
         return rotations / GEAR_RATIO_AND_CIRCUMFERENCE;
     }
 
-    public void setHeight(Position position) {
-        setHeight(position.getHeight());
-    }
-
-    public void setHeight(double height) {
-        double targetHeight =
-                com.team766.math.Math.clamp(
-                        height, Position.BOTTOM.getHeight(), Position.TOP.getHeight());
-        targetRotations = heightToRotations(targetHeight);
-        leftMotor.set(MotorController.ControlMode.Position, targetRotations);
-    }
-
-    public double getHeight() {
+    public double getHeightLeft() {
         return rotationsToHeight(leftMotor.getSensorPosition());
     }
 
-    public void nudgeUp() {
-        pidlessPower = Math.min(1.0, pidlessPower + PIDLESS_NUDGE_INCREMENT);
-        // setHeight(getHeight() + NUDGE_AMOUNT);
-    }
-
-    public void nudgeDown() {
-        pidlessPower = Math.max(-1, pidlessPower - PIDLESS_NUDGE_INCREMENT);
-        // setHeight(getHeight() - NUDGE_AMOUNT);
+    public double getHeightRight() {
+        return rotationsToHeight(rightMotor.getSensorPosition());
     }
 
     @Override
     public void run() {
-        SmartDashboard.putNumber("[CLIMBER] Rotations", leftMotor.getSensorPosition());
-        SmartDashboard.putNumber("[CLIMBER] Target Rotations", targetRotations);
-        SmartDashboard.putNumber("[CLIMBER] Height", getHeight());
+        SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
+        SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
+        SmartDashboard.putNumber("[CLIMBER] Left Height", getHeightLeft());
+        SmartDashboard.putNumber("[CLIMBER] Right Height", getHeightRight());
+        SmartDashboard.putNumber("[CLIMBER] Left Power", leftPower);
+        SmartDashboard.putNumber("[CLIMBER] Right Power", rightPower);
+        SmartDashboard.putNumber(
+                "[CLIMBER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[CLIMBER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        SmartDashboard.putNumber(
+                "[CLIMBER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[CLIMBER] Right Motor Stator Current",
+                MotorUtil.getStatorCurrentUsage(rightMotor));
     }
 }

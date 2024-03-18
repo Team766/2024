@@ -9,7 +9,7 @@ public class TestPathAuto extends PathSequenceAuto {
 
     public TestPathAuto() {
         super(Robot.drive, new Pose2d(2.00, 7.00, new Rotation2d()));
-        add("RotationTest");
-        add(new SetCross());
+        addPath("RotationTest");
+        addProcedure(new SetCross());
     }
 }

@@ -16,18 +16,18 @@ import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends Mechanism {
-    enum Position {
+    public enum ShoulderPosition {
         // TODO: Find actual values.
         BOTTOM(0),
         INTAKE_FLOOR(0),
-        SHOOT_LOW(35),
-        SHOOT_MEDIUM(45),
+        SHOOT_LOW(10),
+        SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
-        TOP(90);
+        TOP(105); // angle needed to be upped so it works with the climber
 
         private final double angle;
 
-        Position(double angle) {
+        ShoulderPosition(double angle) {
             this.angle = angle;
         }
 
@@ -36,11 +36,14 @@ public class Shoulder extends Mechanism {
         }
     }
 
-    private static final double NUDGE_AMOUNT = 30; // degrees
+    private double targetAngle;
+    private static final double NUDGE_AMOUNT = 1; // degrees
     private static final double ENCODER_INITIALIZATION_LOOPS = 350;
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
     private int encoderInitializationCount = 0;
+    private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
+    private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -53,13 +56,21 @@ public class Shoulder extends Mechanism {
         leftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT);
         rightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT);
         rightMotor.follow(leftMotor);
+
         leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
+        leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
+        MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
+
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
 
         absoluteEncoder =
                 (REVThroughBoreDutyCycleEncoder)
                         RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
         leftMotor.setSensorPosition(0.0);
+        targetAngle = -1;
     }
 
     public void stop() {
@@ -105,18 +116,22 @@ public class Shoulder extends Mechanism {
         return ((1.25 - rotations) % 1.0 - .25) * (4. / 1.) * (3. / 1.) * (3. / 1.);
     }
 
-    public void rotate(Position position) {
+    public void rotate(ShoulderPosition position) {
         rotate(position.getAngle());
     }
 
     public void rotate(double angle) {
         checkContextOwnership();
-        double targetAngle =
+        targetAngle =
                 com.team766.math.Math.clamp(
-                        angle, Position.BOTTOM.getAngle(), Position.TOP.getAngle());
+                        angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
         // actual rotation will happen in run()
+    }
+
+    public boolean isFinished() {
+        return Math.abs(getAngle() - targetAngle) < 1;
     }
 
     @Override
@@ -133,10 +148,20 @@ public class Shoulder extends Mechanism {
             encoderInitializationCount++;
         }
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
         SmartDashboard.putNumber(
                 "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
+        SmartDashboard.putNumber(
+                "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
+        SmartDashboard.putNumber(
+                "[SHOULDER] Right Motor Stator Current",
+                MotorUtil.getStatorCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

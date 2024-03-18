@@ -1,12 +1,13 @@
 package com.team766.robot.common;
 
 import com.team766.framework.Context;
+import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
 import com.team766.robot.common.mechanisms.Drive;
 
-public class DriverOI {
+public class DriverOI extends OIFragment {
 
     protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
@@ -18,10 +19,21 @@ public class DriverOI {
     protected double leftJoystickY = 0;
     protected boolean isCross = false;
 
+    private final OICondition movingJoysticks;
+
     public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
+
+        movingJoysticks =
+                new OICondition(
+                        () ->
+                                !isCross
+                                        && Math.abs(leftJoystickX)
+                                                        + Math.abs(leftJoystickY)
+                                                        + Math.abs(rightJoystickY)
+                                                > 0);
     }
 
     public void handleOI(Context context) {
@@ -58,9 +70,7 @@ public class DriverOI {
         }
 
         // Moves the robot if there are joystick inputs
-        if (!isCross
-                && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                        > 0) {
+        if (movingJoysticks.isTriggering()) {
             double drivingCoefficient = 1;
             // If a button is pressed, drive is just fine adjustment
             if (rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)) {
@@ -71,7 +81,7 @@ public class DriverOI {
                     (drivingCoefficient * leftJoystickX),
                     (drivingCoefficient * leftJoystickY),
                     (drivingCoefficient * rightJoystickY));
-        } else {
+        } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
         }

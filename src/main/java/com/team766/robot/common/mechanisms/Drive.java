@@ -18,7 +18,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Drive extends Mechanism {
@@ -32,6 +35,8 @@ public class Drive extends Mechanism {
     private final SwerveModule swerveBL;
 
     private final GyroReader gyro;
+    private Optional<Alliance> alliance = DriverStation.getAlliance();
+
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
@@ -186,7 +191,12 @@ public class Drive extends Mechanism {
     public void controlFieldOriented(double x, double y, double turn) {
         checkContextOwnership();
 
-        double yawRad = Math.toRadians(getHeading());
+        double yawRad =
+                Math.toRadians(
+                        getHeading()
+                                + (alliance.isPresent() && alliance.get() == Alliance.Blue
+                                        ? 0
+                                        : 180));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -242,9 +252,21 @@ public class Drive extends Mechanism {
         swerveBL.steer(config.backLeftLocation());
     }
 
+    /**
+     * Resets gyro to zero degrees relative to the driver
+     * Sets to 180 degrees if the driver is on red (facing backwards)
+     */
     public void resetGyro() {
+        resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
+    }
+
+    /**
+     * Sets gyro to value in degrees
+     * @param angle in degrees
+     */
+    public void resetGyro(double angle) {
         checkContextOwnership();
-        gyro.reset();
+        gyro.setAngle(angle);
     }
 
     public double getHeading() {
@@ -304,6 +326,11 @@ public class Drive extends Mechanism {
         SmartDashboard.putNumber("Yaw", getHeading());
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
+
+        swerveFR.dashboardCurrentUsage();
+        swerveFL.dashboardCurrentUsage();
+        swerveBR.dashboardCurrentUsage();
+        swerveBL.dashboardCurrentUsage();
 
         SwerveModuleState[] states =
                 new SwerveModuleState[] {
