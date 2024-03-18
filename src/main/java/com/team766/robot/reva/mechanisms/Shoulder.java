@@ -38,10 +38,9 @@ public class Shoulder extends Mechanism {
 
     private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
-    private static final double ENCODER_INITIALIZATION_LOOPS = 350;
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
-    private int encoderInitializationCount = 0;
+    private boolean encoderInitialized = false;
     private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
 
@@ -138,15 +137,15 @@ public class Shoulder extends Mechanism {
     public void run() {
         // encoder takes some time to settle.
         // this threshold was determined very scientifically around 3:20am.
-        if (encoderInitializationCount < ENCODER_INITIALIZATION_LOOPS
-                && absoluteEncoder.isConnected()) {
+        if (encoderInitialized && absoluteEncoder.isConnected()) {
             double absPos = absoluteEncoder.getPosition();
             double convertedPos = absoluteEncoderToMotorRotations(absPos);
             // TODO: only set the sensor position after this has settled?
             // can try in the next round of testing.
             leftMotor.setSensorPosition(convertedPos);
-            encoderInitializationCount++;
+            encoderInitialized = true;
         }
+
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
         SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
