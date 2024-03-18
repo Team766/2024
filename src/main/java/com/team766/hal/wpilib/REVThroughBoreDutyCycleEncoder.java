@@ -8,7 +8,7 @@ public class REVThroughBoreDutyCycleEncoder extends DutyCycleEncoder implements 
     public REVThroughBoreDutyCycleEncoder(int channel) {
         super(channel);
         setDutyCycleRange(1. / 1025., 1024. / 1025.);
-        setConnectedFrequencyThreshold(976 /* 975.6 on spec sheet*/);
+        setConnectedFrequencyThreshold(975 /* 975.6 on spec sheet */);
     }
 
     @Override
