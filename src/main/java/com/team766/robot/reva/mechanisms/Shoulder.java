@@ -37,9 +37,10 @@ public class Shoulder extends Mechanism {
     }
 
     private static final double NUDGE_AMOUNT = 30; // degrees
+    private static final double ENCODER_INITIALIZATION_LOOPS = 350;
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
-    private int initializedEncoder = 0;
+    private int encoderInitializationCount = 0;
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -101,7 +102,7 @@ public class Shoulder extends Mechanism {
     }
 
     private double absoluteEncoderToMotorRotations(double rotations) {
-        return ((1.25 - rotations) % 1.0 - .25) * (4./1.) * (3./1.) * (3./1.);
+        return ((1.25 - rotations) % 1.0 - .25) * (4. / 1.) * (3. / 1.) * (3. / 1.);
     }
 
     public void rotate(Position position) {
@@ -120,13 +121,16 @@ public class Shoulder extends Mechanism {
 
     @Override
     public void run() {
-        if (initializedEncoder < 350 && absoluteEncoder.isConnected()) {
+        // encoder takes some time to settle.
+        // this threshold was determined very scientifically around 3:20am.
+        if (encoderInitializationCount < ENCODER_INITIALIZATION_LOOPS
+                && absoluteEncoder.isConnected()) {
             double absPos = absoluteEncoder.getPosition();
-            log("abs pos: " + absPos);
             double convertedPos = absoluteEncoderToMotorRotations(absPos);
-            log("converted pos: " + convertedPos);
+            // TODO: only set the sensor position after this has settled?
+            // can try in the next round of testing.
             leftMotor.setSensorPosition(convertedPos);
-            initializedEncoder++;
+            encoderInitializationCount++;
         }
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
