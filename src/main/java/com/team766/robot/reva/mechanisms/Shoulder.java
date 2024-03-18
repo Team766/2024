@@ -151,6 +151,8 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber(
                 "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
         SmartDashboard.putNumber(
+                "[SHOULDER] Absolute Encoder Frequency", absoluteEncoder.getFrequency());
+        SmartDashboard.putNumber(
                 "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
         SmartDashboard.putNumber(
                 "[SHOULDER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
