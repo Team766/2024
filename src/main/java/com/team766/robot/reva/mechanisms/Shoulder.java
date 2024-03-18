@@ -1,5 +1,6 @@
 package com.team766.robot.reva.mechanisms;
 
+import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_ENCODER;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
 
@@ -10,6 +11,7 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -36,6 +38,10 @@ public class Shoulder extends Mechanism {
 
     private double targetAngle;
     private static final double NUDGE_AMOUNT = 1; // degrees
+    private static final double ENCODER_INITIALIZATION_LOOPS = 350;
+
+    private final REVThroughBoreDutyCycleEncoder absoluteEncoder;
+    private int encoderInitializationCount = 0;
     private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
 
@@ -59,7 +65,11 @@ public class Shoulder extends Mechanism {
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
 
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
-        leftMotor.setSensorPosition(0);
+
+        absoluteEncoder =
+                (REVThroughBoreDutyCycleEncoder)
+                        RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
+        leftMotor.setSensorPosition(0.0);
         targetAngle = -1;
     }
 
@@ -80,6 +90,10 @@ public class Shoulder extends Mechanism {
         rotate(getAngle() - NUDGE_AMOUNT);
     }
 
+    public double getAbsoluteEncoderPosition() {
+        return absoluteEncoder.getPosition();
+    }
+
     public double getRotations() {
         return leftMotor.getSensorPosition();
     }
@@ -96,6 +110,10 @@ public class Shoulder extends Mechanism {
     private double rotationsToDegrees(double rotations) {
         // angle * sprocket ratio * net gear ratio * (degrees / rotations)
         return rotations * (15. / 54.) * (1. / 4.) * (1. / 3.) * (1. / 3.) * (360. / 1.);
+    }
+
+    private double absoluteEncoderToMotorRotations(double rotations) {
+        return ((1.25 - rotations) % 1.0 - .25) * (4. / 1.) * (3. / 1.) * (3. / 1.);
     }
 
     public void rotate(ShoulderPosition position) {
@@ -118,10 +136,23 @@ public class Shoulder extends Mechanism {
 
     @Override
     public void run() {
+        // encoder takes some time to settle.
+        // this threshold was determined very scientifically around 3:20am.
+        if (encoderInitializationCount < ENCODER_INITIALIZATION_LOOPS
+                && absoluteEncoder.isConnected()) {
+            double absPos = absoluteEncoder.getPosition();
+            double convertedPos = absoluteEncoderToMotorRotations(absPos);
+            // TODO: only set the sensor position after this has settled?
+            // can try in the next round of testing.
+            leftMotor.setSensorPosition(convertedPos);
+            encoderInitializationCount++;
+        }
         SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
         SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber(
+                "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
         SmartDashboard.putNumber(
                 "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
         SmartDashboard.putNumber(

@@ -100,8 +100,8 @@ public class Shooter extends Mechanism {
                 shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
                 shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
             } else {
-                shooterMotorTop.set(ControlMode.Velocity, 0.0);
-                shooterMotorBottom.set(ControlMode.Velocity, 0.0);
+                shooterMotorTop.stopMotor();
+                shooterMotorBottom.stopMotor();
             }
             speedUpdated = false;
         }

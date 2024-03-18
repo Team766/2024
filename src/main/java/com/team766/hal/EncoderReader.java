@@ -3,7 +3,8 @@ package com.team766.hal;
 public interface EncoderReader extends ControlInputReader {
 
     enum Type {
-        CANcoder
+        CANcoder,
+        REVThroughBoreDutyCycle
     };
 
     /**
