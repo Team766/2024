@@ -27,10 +27,12 @@ import com.team766.robot.reva.mechanisms.Shoulder;
  *      └───┴───┴───┴───┘
  *
  * 1 + 8/12 = Control Shoulder + Nudge Up/Down
- * 2 + 8/12 = Control Climber + Nudge Up/Down
- * 4 + 8/12 = Control Shooter + Nudge Up/Down
- *  3        = Intake In
- * 7        = Intake Out
+ * 2 + 8/12 = Control Shooter + Nudge Up/Down
+ * 3 + 8/12 = Control Left Climber + Nudge Up/Down (BYPASSES SOFT LIMITS)
+ * 4 + 8/12 = Control Right Climber + Nudge Up/Down (BYPASSES SOFT LIMITS)
+ * 5        = Intake In
+ * 6        = Intake Out
+ * 16       = Resets climber relative encoders to 0.
  */
 public class DebugOI extends OIFragment {
     private final JoystickReader macropad;
@@ -40,7 +42,8 @@ public class DebugOI extends OIFragment {
     private final Intake intake;
     private final Shooter shooter;
     private final OICondition controlShoulder;
-    private final OICondition controlClimber;
+    private final OICondition controlLeftClimber;
+    private final OICondition controlRightClimber;
     private final OICondition controlShooter;
     private final OICondition intakeIn;
     private final OICondition intakeOut;
@@ -59,8 +62,11 @@ public class DebugOI extends OIFragment {
 
         controlShoulder =
                 new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
-        controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
         controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
+        controlLeftClimber =
+                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_LEFT_CLIMBER));
+        controlRightClimber =
+                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_RIGHT_CLIMBER));
         intakeIn = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_IN));
         intakeOut = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_OUT));
     }
@@ -79,8 +85,6 @@ public class DebugOI extends OIFragment {
                 shoulder.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shoulder.nudgeDown();
-            } else if (macropad.getButtonPressed(InputConstants.MACROPAD_RESET_SHOULDER)) {
-                shoulder.reset();
             }
         } else if (controlShoulder.isFinishedTriggering()) {
             context.releaseOwnership(shoulder);
@@ -88,28 +92,49 @@ public class DebugOI extends OIFragment {
 
         // fine-grained control of the climber
         // used for testing and tuning
-        // press down the climber control button and nudge the climber up and down
-        if (controlClimber.isTriggering()) {
-            if (controlClimber.isNewlyTriggering()) {
+        // press down the climber control buttons and nudge the climber up and down
+        // NOTE: this bypasses the soft limits - use with care
+        if (controlLeftClimber.isTriggering()) {
+            if (controlLeftClimber.isNewlyTriggering()) {
                 context.takeOwnership(climber);
                 climber.enableSoftLimits(false);
             }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 climber.setLeftPower(0.25);
-                climber.setRightPower(0.25);
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 climber.setLeftPower(-0.25);
-                climber.setRightPower(-0.25);
+            } else if (macropad.getButtonReleased(InputConstants.NUDGE_UP)
+                    || macropad.getButtonReleased(InputConstants.NUDGE_DOWN)) {
+                climber.stopLeft();
             }
-
-        } else if (controlClimber.isFinishedTriggering()) {
-            climber.stop();
+        } else if (controlLeftClimber.isFinishedTriggering()) {
+            climber.stopLeft();
             climber.enableSoftLimits(true);
             context.releaseOwnership(climber);
         }
 
-        if (macropad.getButtonPressed(16)) {
+        if (controlRightClimber.isTriggering()) {
+            if (controlRightClimber.isNewlyTriggering()) {
+                context.takeOwnership(climber);
+                climber.enableSoftLimits(false);
+            }
+
+            if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
+                climber.setRightPower(0.25);
+            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
+                climber.setRightPower(-0.25);
+            } else if (macropad.getButtonReleased(InputConstants.NUDGE_UP)
+                    || macropad.getButtonReleased(InputConstants.NUDGE_DOWN)) {
+                climber.stopRight();
+            }
+        } else if (controlRightClimber.isFinishedTriggering()) {
+            climber.stopRight();
+            climber.enableSoftLimits(true);
+            context.releaseOwnership(climber);
+        }
+
+        if (macropad.getButtonPressed(InputConstants.RESET_CLIMBER_ENCODERS)) {
             climber.resetLeftPosition();
             climber.resetRightPosition();
         }

@@ -35,12 +35,16 @@ TODO: consider this customization.
     <td><strong>Y-axis:</strong>Rotate counterclockwise/clockwise</td>
   </tr>
   <tr>
-    <td><strong>Button 9</strong>: Reset gyro</td>
+    <td><strong>Button 1 (Trigger)</strong>: Target lock (hold to auto-aim at speaker, release to stop)</td>
     <td><strong>Button 1 (Trigger)</strong>: Fine driving<br>(slow down to 25%)</td>
   </tr>
   <tr>
     <td><strong>Button 15</strong>: Reset position (odometry)</td>
-    <td><strong>Button 3</strong>: Cross wheels</td>
+    <td><strong>Button 3</strong>: Shoot note</td>
+  </tr>
+    <tr>
+    <td><strong>Button 9</strong>: Reset gyro</td>
+    <td></td>
   </tr>
   <tr>
     <td colspan="2"><strong>NOTE: X-axis is up/down, Y-axis is sideways</strong></td>
@@ -87,12 +91,10 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
     <td>DPAD DOWN</td>
   <td>Nudge shoulder down.</td>
 </tr>
-
  <tr>
     <td>RT</td>
   <td>Hold to spin shooter</td>
 </tr>
-
  <tr>
     <td>LB</td>
   <td>Hold to run intake (in)</td>
@@ -100,6 +102,14 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
 <tr>
     <td>RB</td>
   <td>Hold to run intake (out)</td>
+</tr>
+ <tr>
+    <td>Left Stick</td>
+  <td>Control left climber (within soft limits)</td>
+</tr>
+<tr>
+    <td>Right Stick</td>
+  <td>Control right climber (within soft limits)</td>
 </tr>
 </table>
 
@@ -124,36 +134,36 @@ TODO: put together page with instructions on how to flash the firmware.
     <td>1</td>
     <td>Hold to control shoulder (with up/down or dials)</td>
   </tr>
-  <tr>
+    <tr>
     <td>2</td>
-    <td>Hold to control climber (with up/down or dials)<br>Work in progress.</td>
-  </tr>
-  <tr>
-    <td>3</td>
-    <td>Hold to run intake (in)</td>
-  </tr>
-  <tr>
-    <td>4</td>
     <td>Hold to run shooter.  Can speed up and slow down (with up/down or dials).</td>
   </tr>
   <tr>
-    <td>7</td>
+    <td>3</td>
+    <td>Hold to control left climber (with up/down or dials).  Bypasses soft limits.
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Hold to control right climber (with up/down or dials).  Bypasses soft limits.
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>Hold to run intake (in)</td>
+  </tr>
+  <tr>
+    <td>6</td>
     <td>Hold to run intake (out).</td>
   </tr>
-
   <tr>
     <td>8</td>
     <td>Moves mechanism being controlled (via another button) up.</td>
   </tr>
-
   <tr>
     <td>12</td>
     <td>Moves mechanism being controlled (via another button) down.</td>
   </tr>
-
   <tr>
-    <td>9</td>
-    <td>Reset relative encoders on shoulder.</td>
+    <td>16</td>
+    <td>Reset relative encoders on climber.</td>
   </tr>
-
 </table>
