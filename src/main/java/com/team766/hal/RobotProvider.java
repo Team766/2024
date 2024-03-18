@@ -201,11 +201,18 @@ public abstract class RobotProvider {
 
     public EncoderReader getEncoder(final String configName) {
         try {
-            // check for a single port encoder
+            // check for an encoder on the CAN bus
             final ValueProvider<Integer> deviceId =
                     ConfigFileReader.getInstance().getInt(configName + ".deviceId");
             if (deviceId.hasValue()) {
                 return getEncoder(deviceId.get(), configName);
+            }
+            // check for a single port encoder
+            final ValueProvider<Integer> port =
+                    ConfigFileReader.getInstance().getInt(configName + ".port");
+            if (port.hasValue()) {
+                // TODO: should we check the type here?
+                return getEncoder(port.get(), configName);
             }
             // or a dual-port encoder
             final ValueProvider<Integer[]> ports =
