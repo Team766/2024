@@ -5,14 +5,23 @@ import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
+import com.team766.robot.reva.mechanisms.Climber.ClimberPosition;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class BoxOpOI extends OIFragment {
+    // allows soft limits to be overridden when true 
+    private boolean climberOverride;
+    // allows climber to move
+    private boolean canClimb;
+
     private final JoystickReader gamepad;
+    // private final XboxController xboxController;
 
     private final Shoulder shoulder;
     private final Intake intake;
@@ -26,11 +35,13 @@ public class BoxOpOI extends OIFragment {
 
     public BoxOpOI(
             JoystickReader gamepad,
+            // XboxController xboxController,
             Shoulder shoulder,
             Intake intake,
             Shooter shooter,
             Climber climber) {
         this.gamepad = gamepad;
+        /// this.xboxController = xboxController;
         this.shoulder = shoulder;
         this.intake = intake;
         this.shooter = shooter;
@@ -50,50 +61,66 @@ public class BoxOpOI extends OIFragment {
 
     @Override
     protected void handleOI(Context context) {
+        // climber override
+        if(gamepad.getButtonPressed(InputConstants.XBOX_A) && gamepad.getButtonPressed(InputConstants.XBOX_B) && gamepad.getButtonPressed(InputConstants.XBOX_X) && gamepad.getButtonPressed(InputConstants.XBOX_Y)){
+            context.takeOwnership(climber);
+            climber.enableSoftLimits(false);
+            climberOverride = true;
+            context.releaseOwnership(climber);
+        } else {
+            context.takeOwnership(climber);
+            climber.enableSoftLimits(true);
+            context.releaseOwnership(climber);
+            climberOverride = false;
+        }
+
+        // climber condition
+        if(gamepad.getButtonPressed(InputConstants.XBOX_A) && gamepad.getButtonPressed(InputConstants.XBOX_B)){
+            canClimb = true;
+        } else {
+            canClimb = false;
+        }
+
         // shoulder positions
-        if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            context.releaseOwnership(shoulder);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            context.releaseOwnership(shoulder);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.TOP);
-            context.releaseOwnership(shoulder);
-        } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-            context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_LOW);
-            context.releaseOwnership(shoulder);
+        if(!climberOverride && !canClimb){
+            if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
+                context.takeOwnership(shoulder);
+                shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
+                context.takeOwnership(shoulder);
+                shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
+                context.takeOwnership(shoulder);
+                shoulder.rotate(ShoulderPosition.TOP);
+            } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
+                context.takeOwnership(shoulder);
+                shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+            } else if (gamepad.getPOV() == 0) {
+                context.takeOwnership(shoulder);
+                shoulder.nudgeUp();
+            } else if (gamepad.getPOV() == 180) {
+                context.takeOwnership(shoulder);
+                shoulder.nudgeDown();
+            } else {
+                context.releaseOwnership(shoulder);
+            }
         }
-
-        // dpad
-        // shoulder up 5
-        if (gamepad.getPOV() == 0) {
-            context.takeOwnership(shoulder);
-            shoulder.nudgeUp();
-            context.releaseOwnership(shoulder);
-        }
-
-        if (gamepad.getPOV() == 180) {
-            context.takeOwnership(shoulder);
-            shoulder.nudgeDown();
-            context.releaseOwnership(shoulder);
-        }
+        
 
         // climber
-        if (climberClimb.isTriggering()) {
-            if (climberClimb.isNewlyTriggering()) {
-                context.takeOwnership(climber);
+  
+            if (climberClimb.isTriggering() && canClimb) {
+                if (climberClimb.isNewlyTriggering()) {
+                    context.takeOwnership(climber);
+                }
+                climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
+                climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
+            } else if (climberClimb.isFinishedTriggering()) {
+                climber.stop();
+                context.releaseOwnership(climber);
             }
-            climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
-            climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
-        } else if (climberClimb.isFinishedTriggering()) {
-            climber.stop();
-            context.releaseOwnership(climber);
-        }
+       
+        
 
         // shooter
         if (shooterShoot.isNewlyTriggering()) {
@@ -115,5 +142,13 @@ public class BoxOpOI extends OIFragment {
             intake.stop();
             context.releaseOwnership(intake);
         }
+
+        // rumble
+        if(Robot.intake.hasNoteInIntake()){
+            // xboxController.setRumble(RumbleType.kBothRumble, 0.5);
+        }
+
+
+
     }
 }
