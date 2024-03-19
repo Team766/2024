@@ -113,6 +113,7 @@ public class DriverOI extends OIFragment {
             context.releaseOwnership(shoulder);
         }
 
+        // TODO: update OI with new optimization OI
         if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
             // Boxop must have rotated arm or at least started the rotation process before this
             if (isRotatingToSpeaker) {
