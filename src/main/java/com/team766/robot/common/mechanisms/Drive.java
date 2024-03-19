@@ -322,7 +322,7 @@ public class Drive extends Mechanism {
     }
 
     public void setCurrentPosition(Pose2d P) {
-        log("setCurrentPosition(): " + P);
+        // log("setCurrentPosition(): " + P);
         swerveOdometry.setCurrentPosition(P);
     }
 

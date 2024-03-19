@@ -104,6 +104,7 @@ public class DriverOI extends OIFragment {
             isRotatingToSpeaker = true;
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             isRotatingToSpeaker = false;
+            context.takeOwnership(drive);
             drive.stopDrive();
             drive.setCross();
 
@@ -126,6 +127,7 @@ public class DriverOI extends OIFragment {
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
             visionContext.stop();
+            Robot.shooter.shoot(0);
             context.takeOwnership(drive);
             context.takeOwnership(shooter);
             context.takeOwnership(intake);
@@ -148,11 +150,11 @@ public class DriverOI extends OIFragment {
 
                 try {
                     context.takeOwnership(shoulder);
-                    context.takeOwnership(shooter);
+                    // context.takeOwnership(shooter);
                     shoulder.rotate(visionSpeakerHelper.getArmAngle());
-                    shooter.shoot(visionSpeakerHelper.getShooterPower());
+                    // shooter.shoot(visionSpeakerHelper.getShooterPower());
                     context.releaseOwnership(shoulder);
-                    context.releaseOwnership(shooter);
+                    // context.releaseOwnership(shooter);
                 } catch (AprilTagGeneralCheckedException e) {
                     LoggerExceptionUtils.logException(e);
                 }

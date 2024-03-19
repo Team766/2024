@@ -102,8 +102,8 @@ public class Odometry {
     public void setCurrentPosition(final Pose2d point) {
 
         currentPosition = point;
-        Logger.get(Category.PROCEDURES)
-                .logRaw(Severity.INFO, "Set Current Position to: " + point.toString());
+        // Logger.get(Category.PROCEDURES)
+        //         .logRaw(Severity.INFO, "Set Current Position to: " + point.toString());
         for (int i = 0; i < motorCount; i++) {
             prevPositions[i] =
                     currentPosition.plus(new Transform2d(wheelPositions[i], new Rotation2d()));

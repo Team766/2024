@@ -26,6 +26,8 @@ public class RotateAndShootNow extends Procedure {
         double power;
         double armAngle;
 
+        visionSpeakerHelper.update(context);
+
         try {
             power = visionSpeakerHelper.getShooterPower();
             armAngle = visionSpeakerHelper.getArmAngle();
