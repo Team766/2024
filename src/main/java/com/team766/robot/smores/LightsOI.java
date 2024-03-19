@@ -16,6 +16,8 @@ public class LightsOI {
     }
 
     public void handleOI(Context context) {
+        // TODO: add this
+
         // // Pick animation/colors.
         // if (macropad.getButtonPressed(InputConstants.RAINBOW_ANIMATION)) {
         //     lights.rainbow();
@@ -40,9 +42,5 @@ public class LightsOI {
         // if (macropad.getButton(InputConstants.INCREASE_BRIGHTNESS)) {
         //     lights.changeBrightness(0.01);
         // }
-
-
-        lights.setCanShoot(true);
-        lights.setIntakeAnimation(Lights.IntakeAnimation.STUCK);
     }
 }
