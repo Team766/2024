@@ -46,21 +46,21 @@ public class NoRotateShootNow extends Procedure {
             context.waitFor(Robot.shoulder::isFinished);
 
             context.releaseOwnership(Robot.shooter);
-            context.releaseOwnership(Robot.intake);
-            new ShootVelocityAndIntake(power).run(context);
             context.releaseOwnership(Robot.shoulder);
+            new ShootVelocityAndIntake(power).run(context);
+            
         } else {
-            context.takeOwnership(Robot.shooter);
+            // context.takeOwnership(Robot.shooter);
 
             // context.takeOwnership(Robot.shoulder);
 
-            Robot.shooter.shoot(3000);
+            // Robot.shooter.shoot(3000);
             // Robot.shoulder.rotate(ShoulderPosition.AMP);
 
             // context.waitFor(Robot.shoulder::isFinished);
 
             // context.releaseOwnership(Robot.shoulder);
-            context.releaseOwnership(Robot.shooter);
+            // context.releaseOwnership(Robot.shooter);
 
             new ShootVelocityAndIntake(3000).run(context);
         }

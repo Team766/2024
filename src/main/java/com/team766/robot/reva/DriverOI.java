@@ -109,9 +109,6 @@ public class DriverOI extends OIFragment {
             drive.setCross();
 
             context.releaseOwnership(drive);
-            context.releaseOwnership(shooter);
-            context.releaseOwnership(intake);
-            context.releaseOwnership(shoulder);
         }
 
         // TODO: update OI with new optimization OI
@@ -127,11 +124,8 @@ public class DriverOI extends OIFragment {
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
             visionContext.stop();
-            Robot.shooter.shoot(0);
-            context.takeOwnership(drive);
             context.takeOwnership(shooter);
-            context.takeOwnership(intake);
-            context.takeOwnership(shoulder);
+            Robot.shooter.shoot(0);
         }
 
         // Moves the robot if there are joystick inputs

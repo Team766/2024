@@ -221,6 +221,7 @@ public class Drive extends Mechanism {
      * @param target rotational target as a Rotation2d, can input a null value
      */
     public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
+        checkContextOwnership();
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
             SmartDashboard.putNumber("Rotation Target", target.getDegrees());
@@ -235,7 +236,9 @@ public class Drive extends Mechanism {
     }
 
     public boolean isAtRotationTarget() {
-        return rotationPID.getOutput() < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
+        boolean value = rotationPID.getOutput() < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
+        SmartDashboard.putBoolean("Is At Drive Rotation Target", value);
+        return value;
     }
 
     /**
