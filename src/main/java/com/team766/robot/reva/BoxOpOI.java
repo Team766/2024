@@ -97,17 +97,6 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(climber);
         }
 
-        if (gamepad.getButton(9) || gamepad.getButton(10)) {
-            context.takeOwnership(climber);
-            if (gamepad.getAxis(1) < 0) {
-                climber.nudgeUp();
-            } else if (gamepad.getAxis(1) > 0) {
-                climber.nudgeDown();
-            } else {
-                context.releaseOwnership(climber);
-            }
-        }
-
         // intake
         if (intakeOut.isNewlyTriggering()) {
             context.takeOwnership(intake);
