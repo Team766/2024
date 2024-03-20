@@ -16,9 +16,11 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
     private double lastY;
 
     private double timeLastSeen = -1;
+    private int tagId;
 
     public DriveToAndScoreAt(ScoringPosition score) {
         this.score = score;
+        tagId = score.tagId;
     }
 
     // button needs to be held down
@@ -26,11 +28,15 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
         context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.intake);
         context.takeOwnership(Robot.shooter);
+        context.takeOwnership(Robot.shoulder);
 
         yPID.setSetpoint(score.y_position);
         xPID.setSetpoint(score.x_position);
 
-        while (Math.abs(xPID.getOutput()) + Math.abs(yPID.getOutput()) != 0) {
+        Robot.shoulder.rotate(score.angle);
+
+
+        while (Math.abs(xPID.getOutput()) + Math.abs(yPID.getOutput()) > 0.05) {
             context.yield();
 
             Transform3d robotToTag;
@@ -49,7 +55,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
 
                 // TODO: Turn this into PID?
                 // If it is more that four degrees off...
-                if (Math.abs(robotToTag.getRotation().getZ()) > 4) {
+                if (Math.abs(robotToTag.getRotation().getZ()) > 3) {
                     if (robotToTag.getRotation().getZ() < 0) {
                         turnConstant = -0.02;
                     } else {
@@ -77,6 +83,20 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
 
         }
         Robot.shooter.shoot(score.speed);
+
+        context.waitFor(Robot.shoulder::isFinished);
+        context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
+
+        Robot.intake.runIntake();
+
+        context.waitForSeconds(1.5);
+
+        Robot.intake.stop();
+
+        context.releaseOwnership(Robot.drive);
+        context.releaseOwnership(Robot.shooter);
+        context.releaseOwnership(Robot.intake);
+        context.releaseOwnership(Robot.shoulder);
     }
 
     /**
@@ -92,16 +112,6 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
         GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
 
-        Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
-
-        int tagId = toUse.getTagIdOfBestTarget();
-
-        // this is the tag we will be using for testing in the time being. later we will need to set
-        // based on alliance color
-        if (tagId == 5) {
-            return robotToTag;
-        }
-
-        throw new AprilTagGeneralCheckedException("Could not find tag with the correct tagId");
+        return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
     }
 }
