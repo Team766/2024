@@ -223,7 +223,7 @@ public class Drive extends Mechanism {
     public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
         checkContextOwnership();
         if (target != null) {
-            rotationPID.setSetpoint(target.getDegrees());
+            rotationPID.setSetpoint(Math.IEEEremainder(target.getDegrees(), 360.0));
             SmartDashboard.putNumber("Rotation Target", target.getDegrees());
         }
 
