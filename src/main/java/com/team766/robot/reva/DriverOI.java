@@ -150,7 +150,7 @@ public class DriverOI extends OIFragment {
                     context.releaseOwnership(shoulder);
                     // context.releaseOwnership(shooter);
                 } catch (AprilTagGeneralCheckedException e) {
-                    LoggerExceptionUtils.logException(e);
+                    // LoggerExceptionUtils.logException(e);
                 }
 
                 drive.controlFieldOrientedWithRotationTarget(
@@ -165,6 +165,7 @@ public class DriverOI extends OIFragment {
                         (drivingCoefficient * leftJoystickY),
                         (drivingCoefficient * rightJoystickY));
             }
+
         } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
