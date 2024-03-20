@@ -43,7 +43,7 @@ public class NoRotateShootNow extends Procedure {
             Robot.shoulder.rotate(armAngle);
             Robot.shooter.shoot(power);
 
-            context.waitFor(Robot.shoulder::isFinished);
+            context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
 
             context.releaseOwnership(Robot.shooter);
             context.releaseOwnership(Robot.shoulder);
