@@ -23,13 +23,13 @@ public class RotateAndShootNow extends Procedure {
         context.takeOwnership(Robot.drive);
 
         Robot.drive.stopDrive();
-        context.releaseOwnership(Robot.drive);
+        // context.releaseOwnership(Robot.drive);
 
         double power;
         double armAngle;
         Rotation2d heading;
 
-        visionSpeakerHelper.update(context);
+        visionSpeakerHelper.update();
 
         try {
             power = visionSpeakerHelper.getShooterPower();
@@ -40,13 +40,14 @@ public class RotateAndShootNow extends Procedure {
             return;
         }
 
-        context.takeOwnership(Robot.drive);
+        // context.takeOwnership(Robot.drive);
         Robot.shoulder.rotate(armAngle);
         Robot.drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
         // Robot.shooter.shoot(power);
 
         context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
-        context.waitForConditionOrTimeout(Robot.drive::isAtRotationTarget, 1.0); /* FIXME: see if this ever happens */
+        context.waitForConditionOrTimeout(
+                Robot.drive::isAtRotationTarget, 1.0); /* FIXME: see if this ever happens */
         Robot.drive.stopDrive();
 
         context.releaseOwnership(Robot.shoulder);

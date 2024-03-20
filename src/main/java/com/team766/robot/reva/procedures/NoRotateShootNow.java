@@ -30,7 +30,7 @@ public class NoRotateShootNow extends Procedure {
             double power;
             double armAngle;
 
-            visionSpeakerHelper.update(context);
+            visionSpeakerHelper.update();
 
             try {
                 power = visionSpeakerHelper.getShooterPower();
@@ -48,7 +48,7 @@ public class NoRotateShootNow extends Procedure {
             context.releaseOwnership(Robot.shooter);
             context.releaseOwnership(Robot.shoulder);
             new ShootVelocityAndIntake(power).run(context);
-            
+
         } else {
             // context.takeOwnership(Robot.shooter);
 

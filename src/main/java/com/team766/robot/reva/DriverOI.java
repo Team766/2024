@@ -5,7 +5,6 @@ import com.team766.framework.Context;
 import com.team766.framework.LaunchedContext;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
-import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
@@ -98,7 +97,7 @@ public class DriverOI extends OIFragment {
         //     isCross = !isCross;
         // }
 
-        visionSpeakerHelper.update(context);
+        visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
             isRotatingToSpeaker = true;
@@ -125,7 +124,7 @@ public class DriverOI extends OIFragment {
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
             visionContext.stop();
             context.takeOwnership(shooter);
-            Robot.shooter.shoot(0);
+            Robot.shooter.stop();
         }
 
         // Moves the robot if there are joystick inputs

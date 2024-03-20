@@ -6,7 +6,6 @@ import com.team766.framework.Context;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -46,14 +45,13 @@ public class VisionSpeakerHelper {
 
     // TODO: reformat the code to be more efficient
     /**
-     * Updates current robot position based on known speaker tag locations and vision
-     * @param context context
+     * Updates current target position based on odometry robot position and vision
      * @return whether or not it was successfully reset or not, depending on if it sees the tag
      */
-    public boolean updateCurrentPosition(Context context) {
+    public boolean updateTarget() {
         try {
 
-            // re-calculates the absolute position of the robot according to odometry
+            // re-calculates the absolute position of the target according to odometry
             // Rotates the direction of the relative translation to correct for robot orientation:
             // Shooter camera is on back of the robot
             // Sticks around even when there is no new valid relativeTarget
@@ -63,16 +61,25 @@ public class VisionSpeakerHelper {
             Translation2d relativeTarget =
                     new Translation2d(transform3d.getX(), transform3d.getY());
 
-            context.takeOwnership(drive);
-
-            drive.setCurrentPosition(
-                    new Pose2d(
-                            absTargetPos.minus(
+            absTargetPos =
+                    drive.getCurrentPosition()
+                            .getTranslation()
+                            .plus(
                                     relativeTarget.rotateBy(
-                                            Rotation2d.fromDegrees(drive.getHeading() + 180))),
-                            Rotation2d.fromDegrees(drive.getHeading())));
+                                            Rotation2d.fromDegrees((drive.getHeading() + 180))));
 
-            context.releaseOwnership(drive);
+            SmartDashboard.putString("target pos", absTargetPos.toString());
+
+            // context.takeOwnership(drive);
+
+            // drive.setCurrentPosition(
+            //         new Pose2d(
+            //                 absTargetPos.minus(
+            //                         relativeTarget.rotateBy(
+            //                                 Rotation2d.fromDegrees(drive.getHeading() + 180))),
+            //                 Rotation2d.fromDegrees(drive.getHeading())));
+
+            // context.releaseOwnership(drive);
 
             return true;
 
@@ -94,8 +101,8 @@ public class VisionSpeakerHelper {
         }
     }
 
-    public void update(Context context) {
-        updateCurrentPosition(context);
+    public void update() {
+        updateTarget();
         updateRelativeTranslation2d();
         SmartDashboard.putString("translation", relativeTranslation2d.toString());
         SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());

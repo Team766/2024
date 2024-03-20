@@ -1,6 +1,5 @@
 package com.team766.robot.reva.VisionUtil;
 
-import com.google.protobuf.Any;
 import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.controllers.PIDController;

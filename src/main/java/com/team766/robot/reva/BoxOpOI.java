@@ -94,8 +94,8 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(shooter);
         } else if (shooterShoot.isFinishedTriggering()) {
             context.takeOwnership(shooter);
-            shooter.shoot(0);
-            context.takeOwnership(shooter);
+            shooter.stop();
+            context.releaseOwnership(shooter);
         }
 
         // climber
