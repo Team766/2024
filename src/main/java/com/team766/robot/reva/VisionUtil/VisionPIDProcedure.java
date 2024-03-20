@@ -1,5 +1,6 @@
 package com.team766.robot.reva.VisionUtil;
 
+import com.google.protobuf.Any;
 import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.controllers.PIDController;
@@ -17,6 +18,7 @@ public abstract class VisionPIDProcedure extends Procedure {
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
      */
+    private static AnywhereScoringPosition aa1 = new AnywhereScoringPosition(1.237, 5600, 17.343);
     private static AnywhereScoringPosition a1 = new AnywhereScoringPosition(1.453, 5600, 17.80599);
     private static AnywhereScoringPosition a2 =
             new AnywhereScoringPosition(1.7201, 5600, 22.205946);
@@ -34,6 +36,7 @@ public abstract class VisionPIDProcedure extends Procedure {
     protected static ArrayList<AnywhereScoringPosition> scoringPositions =
             new ArrayList<AnywhereScoringPosition>() {
                 {
+                    add(aa1);
                     add(a1);
                     add(a2);
                     add(a3);
