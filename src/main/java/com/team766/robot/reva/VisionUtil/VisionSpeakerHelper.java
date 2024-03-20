@@ -98,6 +98,7 @@ public class VisionSpeakerHelper {
         updateCurrentPosition(context);
         updateRelativeTranslation2d();
         SmartDashboard.putString("translation", relativeTranslation2d.toString());
+        SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
     }
 
     public Rotation2d getHeadingToTarget() {
@@ -122,7 +123,6 @@ public class VisionSpeakerHelper {
     public double getArmAngle() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestArmAngleToUse(relativeTranslation2d.getNorm());
         SmartDashboard.putNumber("arm angle", val);
-        SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
         return val;
     }
 }
