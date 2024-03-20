@@ -69,7 +69,7 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(shoulder);
         } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
             context.takeOwnership(shoulder);
-            shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+            shoulder.rotate(ShoulderPosition.TOP);
             context.releaseOwnership(shoulder);
         }
 
