@@ -23,6 +23,7 @@ public class BoxOpOI extends OIFragment {
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
+    private final OICondition shooterShoot;
 
     public BoxOpOI(
             JoystickReader gamepad,
@@ -38,6 +39,7 @@ public class BoxOpOI extends OIFragment {
 
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
+        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         climberClimb =
                 new OICondition(
                         () ->
@@ -83,6 +85,17 @@ public class BoxOpOI extends OIFragment {
             context.takeOwnership(shoulder);
             shoulder.nudgeDown();
             context.releaseOwnership(shoulder);
+        }
+
+        // shooter
+        if (shooterShoot.isNewlyTriggering()) {
+            context.takeOwnership(shooter);
+            shooter.shoot();
+            context.releaseOwnership(shooter);
+        } else if (shooterShoot.isFinishedTriggering()) {
+            context.takeOwnership(shooter);
+            shooter.shoot(0);
+            context.takeOwnership(shooter);
         }
 
         // climber
