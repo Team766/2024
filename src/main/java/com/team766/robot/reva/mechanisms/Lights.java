@@ -32,6 +32,14 @@ public class Lights extends Mechanism {
         animate(TOO_HIGH_ANIMATION, FRONT_SLOT);
     }
 
+    public void signalNoNoteInIntake() {
+        setAreaColor(0, 0, 255, FRONT_NUM_LEDS, FRONT_OFFSET, FRONT_SLOT);
+    }
+
+    public void signalNoteInIntake() {
+        setAreaColor(0, 255, 0, FRONT_NUM_LEDS, FRONT_OFFSET, FRONT_SLOT);
+    }
+
     private static final Animation CAN_SHOOT_ANIMATION =
             new RainbowAnimation(1, 0.1, FRONT_NUM_LEDS, false, FRONT_OFFSET);
 
@@ -39,8 +47,8 @@ public class Lights extends Mechanism {
         animate(CAN_SHOOT_ANIMATION, FRONT_SLOT);
     }
 
-    public void signalNothingFront() {
-        clearArea(FRONT_NUM_LEDS, FRONT_OFFSET);
+    public void turnOffFront() {
+        clearArea(FRONT_NUM_LEDS, FRONT_OFFSET, FRONT_SLOT);
     }
 
     private static final int BACK_NUM_LEDS = 39;
@@ -49,30 +57,29 @@ public class Lights extends Mechanism {
 
     public void signalPlayersGreen() {
         candle.clearAnimation(BACK_SLOT);
-        setAreaColor(0, 255, 0, BACK_NUM_LEDS, BACK_OFFSET);
+        setAreaColor(0, 255, 0, BACK_NUM_LEDS, BACK_OFFSET, BACK_SLOT);
     }
 
     public void signalPlayersRed() {
-        candle.clearAnimation(BACK_SLOT);
-        setAreaColor(255, 0, 0, BACK_NUM_LEDS, BACK_OFFSET);
+        setAreaColor(255, 0, 0, BACK_NUM_LEDS, BACK_OFFSET, BACK_SLOT);
     }
 
     public void signalPlayersNothing() {
-        candle.clearAnimation(BACK_SLOT);
-        setAreaColor(0, 0, 0, BACK_NUM_LEDS, BACK_OFFSET);
+        setAreaColor(0, 0, 0, BACK_NUM_LEDS, BACK_OFFSET, BACK_SLOT);
     }
 
     private void animate(Animation animation, int slot) {
-        checkContextOwnership();
+        // checkContextOwnership();
         candle.animate(animation, slot);
     }
 
-    private void clearArea(int count, int offset) {
-        setAreaColor(0, 0, 0, count, offset);
+    private void clearArea(int count, int offset, int slot) {
+        setAreaColor(0, 0, 0, count, offset, slot);
     }
 
-    private void setAreaColor(int r, int g, int b, int count, int offset) {
-        checkContextOwnership();
+    private void setAreaColor(int r, int g, int b, int count, int offset, int slot) {
+        // checkContextOwnership();
+        candle.clearAnimation(slot);
         candle.setLEDs(r, g, b, 0, r, count);
     }
 
@@ -97,7 +104,7 @@ public class Lights extends Mechanism {
         for (int i = 0; i < 10; i++) {
             candle.clearAnimation(0);
         }
-        checkContextOwnership();
+        // checkContextOwnership();
         candle.setLEDs(r, g, b);
     }
 }
