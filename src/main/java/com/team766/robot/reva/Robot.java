@@ -7,6 +7,7 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
@@ -24,10 +25,12 @@ public class Robot implements RobotConfigurator {
     // not yet initialized, until we have the camera on the robot and test it.
     public static ForwardApriltagCamera forwardApriltagCamera;
     public static NoteCamera noteCamera;
+    public static Lights lights;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
+        lights = new Lights();
         drive = new Drive(config);
         climber = new Climber();
         shoulder = new Shoulder();
@@ -39,6 +42,7 @@ public class Robot implements RobotConfigurator {
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
         }
+
     }
 
     @Override
