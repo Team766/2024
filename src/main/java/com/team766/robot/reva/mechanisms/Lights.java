@@ -1,74 +1,103 @@
 package com.team766.robot.reva.mechanisms;
 
-import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.StrobeAnimation;
 import com.team766.framework.Mechanism;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.Optional;
 
 public class Lights extends Mechanism {
 
-    CANdle m_candle = new CANdle(2);
+    private CANdle candle;
+    private static final int CANID = 2;
+    private double brightness;
 
     public Lights() {
-        // Show that robot lights mechanism is ready
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        this(0.1);
+    }
 
-        if (alliance.isPresent()) {
-            if (alliance.get().equals(Alliance.Blue)) {
-                // Blue
-                m_candle.setLEDs(0, 0, 100);
-            } else {
-                // Red
-                m_candle.setLEDs(100, 0, 0);
-            }
-        } else {
-            // Purple
-            m_candle.setLEDs(100, 0, 100);
+    public Lights(double brightness) {
+        candle = new CANdle(CANID);
+        setBrightness(brightness);
+    }
+
+    private static final int FRONT_NUM_LEDS = 40;
+    private static final int FRONT_OFFSET = 8;
+    private static final int FRONT_SLOT = 1;
+
+    private static final Animation TOO_HIGH_ANIMATION =
+            new StrobeAnimation(255, 0, 0, 0, 0.00001, FRONT_NUM_LEDS, FRONT_OFFSET);
+
+    public void signalTooHigh() {
+        animate(TOO_HIGH_ANIMATION, FRONT_SLOT);
+    }
+
+    private static final Animation CAN_SHOOT_ANIMATION =
+            new RainbowAnimation(1, 0.1, FRONT_NUM_LEDS, false, FRONT_OFFSET);
+
+    public void signalCanShoot() {
+        animate(CAN_SHOOT_ANIMATION, FRONT_SLOT);
+    }
+
+    public void signalNothingFront() {
+        clearArea(FRONT_NUM_LEDS, FRONT_OFFSET);
+    }
+
+    private static final int BACK_NUM_LEDS = 39;
+    private static final int BACK_OFFSET = 48;
+    private static final int BACK_SLOT = 2;
+
+    public void signalPlayersGreen() {
+        candle.clearAnimation(BACK_SLOT);
+        setAreaColor(0, 255, 0, BACK_NUM_LEDS, BACK_OFFSET);
+    }
+
+    public void signalPlayersRed() {
+        candle.clearAnimation(BACK_SLOT);
+        setAreaColor(255, 0, 0, BACK_NUM_LEDS, BACK_OFFSET);
+    }
+
+    public void signalPlayersNothing() {
+        candle.clearAnimation(BACK_SLOT);
+        setAreaColor(0, 0, 0, BACK_NUM_LEDS, BACK_OFFSET);
+    }
+
+    private void animate(Animation animation, int slot) {
+        checkContextOwnership();
+        candle.animate(animation, slot);
+    }
+
+    private void clearArea(int count, int offset) {
+        setAreaColor(0, 0, 0, count, offset);
+    }
+
+    private void setAreaColor(int r, int g, int b, int count, int offset) {
+        checkContextOwnership();
+        candle.setLEDs(r, g, b, 0, r, count);
+    }
+
+    public void setBrightness(double value) {
+        brightness = com.team766.math.Math.clamp(value, 0, 1);
+        candle.configBrightnessScalar(brightness);
+    }
+
+    public double getBrightness() {
+        return brightness;
+    }
+
+    public void changeBrightness(double change) {
+        setBrightness(brightness + change);
+    }
+
+    public void clear() {
+        setColor(0, 0, 0);
+    }
+
+    public void setColor(int r, int g, int b) {
+        for (int i = 0; i < 10; i++) {
+            candle.clearAnimation(0);
         }
-    }
-
-    // Lime green
-    public boolean signalCameraConnected() {
-        ErrorCode e = m_candle.setLEDs(92, 250, 40);
-        return handleErrorCode(e);
-    }
-
-    // Orange
-    public boolean signalCameraNotConnected() {
-        ErrorCode e = m_candle.setLEDs(250, 87, 0);
-        return handleErrorCode(e);
-    }
-
-    // Forest green
-    public boolean signalNoteInIntake() {
-        ErrorCode e = m_candle.setLEDs(0, 112, 50);
-        return handleErrorCode(e);
-    }
-
-    // Off
-    public boolean turnLightsOff() {
-        ErrorCode e = m_candle.setLEDs(0, 0, 0);
-        return handleErrorCode(e);
-    }
-
-    // Blue
-    public boolean signalNoNoteInIntakeYet() {
-        ErrorCode e = m_candle.setLEDs(0, 0, 100);
-        return handleErrorCode(e);
-    }
-
-    public boolean isDoingShootingProcedure() {
-        ErrorCode e = m_candle.setLEDs(0, 227, 197);
-        return handleErrorCode(e);
-    }
-
-    private boolean handleErrorCode(ErrorCode e) {
-        if (e.equals(ErrorCode.OK)) {
-            return true;
-        }
-
-        return false;
+        checkContextOwnership();
+        candle.setLEDs(r, g, b);
     }
 }

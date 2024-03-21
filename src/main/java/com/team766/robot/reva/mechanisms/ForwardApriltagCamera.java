@@ -3,7 +3,6 @@ package com.team766.robot.reva.mechanisms;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Mechanism;
-import com.team766.robot.reva.Robot;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -30,11 +29,11 @@ public class ForwardApriltagCamera extends Mechanism {
             throw new AprilTagGeneralCheckedException("Couldn't find alliance correctly");
         }
 
-        if (camera.isConnected()) {
-            Robot.lights.signalCameraConnected();
-        } else {
-            Robot.lights.signalCameraNotConnected();
-        }
+        // if (camera.isConnected()) {
+        //     Robot.lights.signalCameraConnected();
+        // } else {
+        //     Robot.lights.signalCameraNotConnected();
+        // }
     }
 
     public GrayScaleCamera getCamera() {
