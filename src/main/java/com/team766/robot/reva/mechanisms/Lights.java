@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public class Lights extends Mechanism {
 
-
     CANdle m_candle = new CANdle(2);
 
     public Lights() {
