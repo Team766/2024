@@ -55,6 +55,10 @@ public class Drive extends Mechanism {
 
     private PIDController rotationPID;
 
+    private boolean movingToTarget = false;
+    private double x;
+    private double y;
+
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
 
@@ -196,7 +200,7 @@ public class Drive extends Mechanism {
      * @param y the y value for the position joystick, positive being left, in meters/sec
      * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
-    public void controlFieldOriented(double x, double y, double turn) {
+    private void controlFieldOrientedBase(double x, double y, double turn) {
         checkContextOwnership();
 
         double yawRad =
@@ -215,11 +219,23 @@ public class Drive extends Mechanism {
     }
 
     /**
+     * Uses controlRobotOriented() to control the robot relative to the field
+     * Sets robot to manual control mode rather than a rotation setpoint
+     * @param x the x value for the position joystick, positive being forward, in meters/sec
+     * @param y the y value for the position joystick, positive being left, in meters/sec
+     * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
+     */
+    public void controlFieldOriented(double x, double y, double turn) {
+        movingToTarget = false;
+        controlFieldOrientedBase(x, y, turn);
+    }
+
+    /**
      * Allows for field oriented control of the robot's position while moving to a specific angle for rotation
      * @param x the x value for the position joystick, positive being forward
      * @param y the y value for the position joystick, positive being left
      * @param target rotational target as a Rotation2d, can input a null value
-     */
+     */ 
     public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
         checkContextOwnership();
         if (target != null) {
@@ -227,17 +243,21 @@ public class Drive extends Mechanism {
             SmartDashboard.putNumber("Rotation Target", target.getDegrees());
         }
 
-        controlFieldOriented(
-                x,
-                y,
-                (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
-                        ? 0
-                        : rotationPID.getOutput()));
+        movingToTarget = true;
+        this.x = x;
+        this.y = y;
+
+        // controlFieldOriented(
+        //         x,
+        //         y,
+        //         (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
+        //                 ? 0
+        //                 : rotationPID.getOutput()));
     }
 
     public boolean isAtRotationTarget() {
-        boolean value = rotationPID.getOutput() < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
-        SmartDashboard.putBoolean("Is At Drive Rotation Target", value);
+        boolean value = Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
+        // SmartDashboard.putBoolean("Is At Drive Rotation Target", value);
         return value;
     }
 
@@ -246,11 +266,13 @@ public class Drive extends Mechanism {
      * @param chassisSpeeds
      */
     public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
+        movingToTarget = false;
+
         double vx = chassisSpeeds.vxMetersPerSecond;
         double vy = chassisSpeeds.vyMetersPerSecond;
         double vang = chassisSpeeds.omegaRadiansPerSecond;
 
-        controlFieldOriented(vx, vy, vang);
+        controlFieldOrientedBase(vx, vy, vang);
     }
 
     /**
@@ -258,6 +280,8 @@ public class Drive extends Mechanism {
      * @param chassisSpeeds
      */
     public void controlRobotOriented(ChassisSpeeds chassisSpeeds) {
+        movingToTarget = false;
+
         double vx = chassisSpeeds.vxMetersPerSecond;
         double vy = chassisSpeeds.vyMetersPerSecond;
         double vang = chassisSpeeds.omegaRadiansPerSecond;
@@ -366,7 +390,20 @@ public class Drive extends Mechanism {
         SmartDashboard.putNumber("Pitch", getPitch());
         SmartDashboard.putNumber("Roll", getRoll());
 
-        rotationPID.calculate(getHeading());
+        if (movingToTarget) {
+            rotationPID.calculate(getHeading());
+            controlFieldOrientedBase(
+                x,
+                y,
+                (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
+                        ? 0
+                        : rotationPID.getOutput()));
+        }
+
+        SmartDashboard.putBoolean("movingToTarget", movingToTarget);
+        
+
+        SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
 
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();

@@ -114,10 +114,12 @@ public class VisionSpeakerHelper {
         // if the target is not currently seen
         // Calculated the heading the robot needs to face from this translation
 
-        Rotation2d val =
-                relativeTranslation2d.getAngle().plus(Rotation2d.fromDegrees(drive.getHeading()));
-        SmartDashboard.putNumber("output heading", val.getDegrees());
-        return val;
+        double val =
+                relativeTranslation2d.getAngle().getDegrees() + drive.getHeading();
+        SmartDashboard.putNumber("relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
+        SmartDashboard.putNumber("heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
+        SmartDashboard.putNumber("output heading", val);
+        return Rotation2d.fromDegrees(val);
     }
 
     public double getShooterPower() throws AprilTagGeneralCheckedException {

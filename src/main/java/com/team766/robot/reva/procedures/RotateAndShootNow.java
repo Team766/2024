@@ -25,14 +25,14 @@ public class RotateAndShootNow extends Procedure {
         Robot.drive.stopDrive();
         // context.releaseOwnership(Robot.drive);
 
-        double power;
+        // double power;
         double armAngle;
         Rotation2d heading;
 
         visionSpeakerHelper.update();
 
         try {
-            power = visionSpeakerHelper.getShooterPower();
+            // power = visionSpeakerHelper.getShooterPower();
             armAngle = visionSpeakerHelper.getArmAngle();
             heading = visionSpeakerHelper.getHeadingToTarget();
         } catch (AprilTagGeneralCheckedException e) {
@@ -47,12 +47,12 @@ public class RotateAndShootNow extends Procedure {
 
         context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
         context.waitForConditionOrTimeout(
-                Robot.drive::isAtRotationTarget, 1.0); /* FIXME: see if this ever happens */
+                Robot.drive::isAtRotationTarget, 3.0);
         Robot.drive.stopDrive();
 
         context.releaseOwnership(Robot.shoulder);
         context.releaseOwnership(Robot.drive);
         context.releaseOwnership(Robot.shooter);
-        new ShootVelocityAndIntake(power).run(context);
+        new ShootVelocityAndIntake().run(context);
     }
 }
