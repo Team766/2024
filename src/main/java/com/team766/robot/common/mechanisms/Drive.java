@@ -235,7 +235,7 @@ public class Drive extends Mechanism {
      * @param x the x value for the position joystick, positive being forward
      * @param y the y value for the position joystick, positive being left
      * @param target rotational target as a Rotation2d, can input a null value
-     */ 
+     */
     public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
         checkContextOwnership();
         if (target != null) {
@@ -256,7 +256,8 @@ public class Drive extends Mechanism {
     }
 
     public boolean isAtRotationTarget() {
-        boolean value = Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
+        boolean value =
+                Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
         // SmartDashboard.putBoolean("Is At Drive Rotation Target", value);
         return value;
     }
@@ -393,15 +394,14 @@ public class Drive extends Mechanism {
         if (movingToTarget) {
             rotationPID.calculate(getHeading());
             controlFieldOrientedBase(
-                x,
-                y,
-                (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
-                        ? 0
-                        : rotationPID.getOutput()));
+                    x,
+                    y,
+                    (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
+                            ? 0
+                            : rotationPID.getOutput()));
         }
 
         SmartDashboard.putBoolean("movingToTarget", movingToTarget);
-        
 
         SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
 
