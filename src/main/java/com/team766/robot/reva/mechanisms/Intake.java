@@ -117,6 +117,7 @@ public class Intake extends Mechanism {
     }
 
     public void setIntakePowerForSensorDistance() {
+        checkContextOwnership();
         intakePower =
                 com.team766.math.Math.interpolate(
                         positions,

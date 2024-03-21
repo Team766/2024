@@ -5,7 +5,6 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.common.DriverOI;
 import com.team766.robot.reva.constants.InputConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +31,14 @@ public class OI extends Procedure {
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
         gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
-        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+        driverOI =
+                new DriverOI(
+                        Robot.drive,
+                        Robot.shoulder,
+                        Robot.intake,
+                        Robot.shooter,
+                        leftJoystick,
+                        rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
         boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter, Robot.climber);
     }
