@@ -50,7 +50,6 @@ TODO: consider this customization.
     <td colspan="2"><strong>NOTE: X-axis is up/down, Y-axis is sideways</strong></td>
   </tr>
 </table>
-<div style="page-break-after: always;"></div>
 
 ## BoxOp Controls
 Code: [`src/main/java/com/team766/robot/reva/BoxOpOI.java`](../src/main/java/com/team766/robot/reva/BoxOpOI.java).
@@ -77,7 +76,7 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
   </tr>
  <tr>
     <td>X</td>
-  <td>Move shoulder to medium shooting position</td>
+  <td>Move shoulder to climber balancing position</td>
  </tr>
  <tr>
     <td>Y</td>
@@ -112,14 +111,12 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
   <td>Hold buttons + move stick to control right climber</td>
 </tr>
 <tr>
-    <td>A+B+C+D*</td>
+    <td>A+B+X+Y</td>
   <td>Hold to override climber soft limits</td>
 </tr>
 </table>
 
 The face buttons are also mapped to the buttons on the back of the Xbox Elite Controller
-
-<div style="page-break-after: always;"></div>
 
 ## Debug Controls
 Code: [`src/main/java/com/team766/robot/reva/DebugOI.java`](../src/main/java/com/team766/robot/reva/DebugOI.java).
