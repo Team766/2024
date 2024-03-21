@@ -7,10 +7,10 @@ import com.team766.hal.RobotConfigurator;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -42,7 +42,6 @@ public class Robot implements RobotConfigurator {
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
         }
-
     }
 
     @Override

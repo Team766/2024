@@ -30,7 +30,7 @@ public class ForwardApriltagCamera extends Mechanism {
             throw new AprilTagGeneralCheckedException("Couldn't find alliance correctly");
         }
 
-        if (camera.isConnected()){
+        if (camera.isConnected()) {
             Robot.lights.signalCameraConnected();
         } else {
             Robot.lights.signalCameraNotConnected();
