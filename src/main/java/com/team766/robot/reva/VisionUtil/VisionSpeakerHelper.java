@@ -2,7 +2,6 @@ package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.framework.Context;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;

@@ -93,10 +93,8 @@ public class PathSequenceAuto extends Procedure {
     public final void run(Context context) {
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
-            drive.setCurrentPosition(
-                    shouldFlipAuton
-                            ? GeometryUtil.flipFieldPose(initialPosition)
-                            : initialPosition);
+        drive.setCurrentPosition(
+                shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
         context.takeOwnership(drive);
         drive.resetGyro(
