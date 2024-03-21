@@ -26,6 +26,19 @@ public final class InputConstants {
     public static final int MACROPAD_PRESET_3 = 15;
     public static final int MACROPAD_PRESET_4 = 16;
 
+    // Joystick buttons
+    public static final int BUTTON_FINE_DRIVING = 1;
+    public static final int BUTTON_CROSS_WHEELS = 2;
+    public static final int BUTTON_RESET_GYRO = 9;
+    public static final int BUTTON_RESET_POS = 15;
+    public static final int BUTTON_TARGET_SHOOTER = 1;
+    public static final int BUTTON_START_SHOOTING_PROCEDURE = 3;
+
+    // Joystick axes
+    public static final int AXIS_LEFT_RIGHT = 0;
+    public static final int AXIS_FORWARD_BACKWARD = 1;
+    public static final int AXIS_TWIST = 3;
+
     // Xbox buttons
     // TODO: change
     public static final int XBOX_A = 1;

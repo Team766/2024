@@ -17,6 +17,8 @@ public final class ConfigConstants {
     public static final String DRIVE_STEER_BACK_RIGHT = "drive.SteerBackRight";
     public static final String DRIVE_STEER_BACK_LEFT = "drive.SteerBackLeft";
 
+    public static final String DRIVE_TARGET_ROTATION_PID = "drive.setpointPid";
+
     // pathplanner config values
     public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS =
             "followpath.maxSpeedMetersPerSecond";
