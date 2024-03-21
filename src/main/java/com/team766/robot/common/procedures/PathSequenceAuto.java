@@ -102,7 +102,6 @@ public class PathSequenceAuto extends Procedure {
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
-
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
             context.yield();
