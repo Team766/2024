@@ -41,6 +41,8 @@ public class NoRotateShootNow extends Procedure {
             }
 
             Robot.shoulder.rotate(armAngle);
+
+            // start shooting now while waiting for shoulder, stopped in ShootVelocityAndIntake
             Robot.shooter.shoot(power);
 
             context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
