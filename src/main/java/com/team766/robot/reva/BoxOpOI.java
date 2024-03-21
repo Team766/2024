@@ -83,22 +83,20 @@ public class BoxOpOI extends OIFragment {
             // shoulder positions
             if (!climberOverride) {
                 if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-
-                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+                    // intake
+                    shoulder.rotate(ShoulderPosition.SHOOT_LOW);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-
+                    // shoot closer to speaker
                     shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-
+                    // other shoot pos
                     shoulder.rotate(ShoulderPosition.TOP);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-
-                    shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+                    // amp shot
+                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
                 } else if (gamepad.getPOV() == 0) {
-
                     shoulder.nudgeUp();
                 } else if (gamepad.getPOV() == 180) {
-
                     shoulder.nudgeDown();
                 }
             }
@@ -110,7 +108,9 @@ public class BoxOpOI extends OIFragment {
         if (climberCondition.isTriggering()) {
             if (climberCondition.isNewlyTriggering()) {
                 context.takeOwnership(climber);
+                context.takeOwnership(shoulder);
                 canClimb = true;
+                shoulder.rotate(105);
             }
             if (gamepad.getButtonPressed(InputConstants.XBOX_A)
                     && gamepad.getButtonPressed(InputConstants.XBOX_B)
@@ -128,6 +128,8 @@ public class BoxOpOI extends OIFragment {
 
         } else if (climberCondition.isFinishedTriggering()) {
             canClimb = false;
+            shoulder.rotate(85);
+            context.releaseOwnership(shoulder);
         }
 
         // climber
