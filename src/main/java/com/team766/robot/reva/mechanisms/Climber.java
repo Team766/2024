@@ -1,7 +1,7 @@
 package com.team766.robot.reva.mechanisms;
 
 import static com.team766.robot.reva.constants.ConfigConstants.*;
-
+import javax.naming.InitialContext;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -39,7 +39,7 @@ public class Climber extends Mechanism {
     private static final double SUPPLY_CURRENT_LIMIT = 30; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80; // TUNE THIS!
     private static final double POSITION_LOCATION_THRESHOLD = 1;
-    private static final double INTITAL_POSITION = -10.0; // TODO: set
+    private static final double INITITAL_POSITION = -72.0; // TODO: set
     private static final double NUDGE_INCREMENT = 0.1;
 
     private double leftPower = 0;
@@ -53,8 +53,8 @@ public class Climber extends Mechanism {
         rightMotor.setNeutralMode(NeutralMode.Brake);
         leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
         rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
-        leftMotor.setSensorPosition(0.0);
-        rightMotor.setSensorPosition(0.0);
+        leftMotor.setSensorPosition(INITITAL_POSITION);
+        rightMotor.setSensorPosition(INITITAL_POSITION);
         MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setSoftLimits(leftMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
