@@ -70,7 +70,7 @@ public class BoxOpOI extends OIFragment {
                 new OICondition(
                         () ->
                                 (gamepad.getButton(InputConstants.XBOX_X)
-                                        && gamepad.getButton(InputConstants.XBOX_Y)));    
+                                        && gamepad.getButton(InputConstants.XBOX_Y)));
     }
 
     @Override
