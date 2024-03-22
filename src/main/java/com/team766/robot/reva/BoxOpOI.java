@@ -12,11 +12,6 @@ import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 
 public class BoxOpOI extends OIFragment {
-    // allows soft limits to be overridden when true
-    private boolean climberOverride;
-    // allows climber to move
-    private boolean canClimb;
-
     private final JoystickReader gamepad;
     // private final XboxController xboxController;
 
@@ -29,8 +24,9 @@ public class BoxOpOI extends OIFragment {
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
-    private final OICondition usingArms;
-    private final OICondition climberCondition;
+    private final OICondition moveShoulder;
+    private final OICondition enableClimberControls;
+    private final OICondition climberOverrideSoftLimits;
 
     public BoxOpOI(
             JoystickReader gamepad,
@@ -56,7 +52,8 @@ public class BoxOpOI extends OIFragment {
                                                 > InputConstants.XBOX_DEADZONE
                                         || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
                                                 > InputConstants.XBOX_DEADZONE);
-        usingArms =
+
+        moveShoulder =
                 new OICondition(
                         () ->
                                 (gamepad.getButton(InputConstants.XBOX_A)
@@ -65,23 +62,29 @@ public class BoxOpOI extends OIFragment {
                                         || gamepad.getButton(InputConstants.XBOX_Y)
                                         || gamepad.getPOV() == 0
                                         || gamepad.getPOV() == 180));
-        climberCondition =
+        enableClimberControls =
                 new OICondition(
                         () ->
                                 ((gamepad.getButton(InputConstants.XBOX_A)
                                         && gamepad.getButton(InputConstants.XBOX_B))));
+
+        climberOverrideSoftLimits =
+                new OICondition(
+                        () ->
+                                (gamepad.getButton(InputConstants.XBOX_X)
+                                        && gamepad.getButton(InputConstants.XBOX_Y)));
     }
 
     @Override
     protected void handleOI(Context context) {
-        // climber override
-        if (usingArms.isTriggering()) {
-            if (usingArms.isNewlyTriggering()) {
-                context.takeOwnership(shoulder);
-            }
+        // shoulder positions
 
-            // shoulder positions
-            if (!climberOverride) {
+        if (!enableClimberControls.isTriggering()) {
+            if (moveShoulder.isTriggering()) {
+                if (moveShoulder.isNewlyTriggering()) {
+                    context.takeOwnership(shoulder);
+                }
+
                 if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
                     // intake
                     shoulder.rotate(ShoulderPosition.SHOOT_LOW);
@@ -93,62 +96,58 @@ public class BoxOpOI extends OIFragment {
                     shoulder.rotate(ShoulderPosition.TOP);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
                     // amp shot
-                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+                    shoulder.rotate(ShoulderPosition.AMP);
                 } else if (gamepad.getPOV() == 0) {
                     shoulder.nudgeUp();
                 } else if (gamepad.getPOV() == 180) {
                     shoulder.nudgeDown();
                 }
+            } else if (moveShoulder.isFinishedTriggering()) {
+                context.releaseOwnership(shoulder);
             }
-        } else if (usingArms.isFinishedTriggering()) {
-            context.releaseOwnership(shoulder);
-        }
-
-        // climber condition
-        if (climberCondition.isTriggering()) {
-            if (climberCondition.isNewlyTriggering()) {
-                context.takeOwnership(climber);
-                context.takeOwnership(shoulder);
-                canClimb = true;
-                shoulder.rotate(105);
-            }
-            if (gamepad.getButtonPressed(InputConstants.XBOX_A)
-                    && gamepad.getButtonPressed(InputConstants.XBOX_B)
-                    && gamepad.getButtonPressed(InputConstants.XBOX_X)
-                    && gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-
-                climber.enableSoftLimits(false);
-                climberOverride = true;
-                context.releaseOwnership(climber);
-            } else if (climberOverride) {
-                climber.enableSoftLimits(true);
-                context.releaseOwnership(climber);
-                climberOverride = false;
-            }
-
-        } else if (climberCondition.isFinishedTriggering()) {
-            canClimb = false;
-            shoulder.rotate(85);
-            context.releaseOwnership(shoulder);
         }
 
         // climber
-        if (climberClimb.isTriggering() && canClimb) {
-            if (climberClimb.isNewlyTriggering()) {
+        if (enableClimberControls.isTriggering()) {
+            if (enableClimberControls.isNewlyTriggering()) {
                 context.takeOwnership(climber);
+                // move the shoulder out of the way
+                // NOTE: this happens asynchronously.
+                // the boxop needs to wait for the shoulder to be fully out of the way before moving
+                // the climbers.
+                context.takeOwnership(shoulder);
+                shoulder.rotate(ShoulderPosition.TOP);
+                context.releaseOwnership(shoulder);
             }
-            climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
-            climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
-        } else if (climberClimb.isFinishedTriggering()) {
-            climber.stop();
+
+            // check to see if we should also disable the climber's soft limits
+            if (climberOverrideSoftLimits.isNewlyTriggering()) {
+                climber.enableSoftLimits(false);
+            } else if (climberOverrideSoftLimits.isFinishedTriggering()) {
+                climber.enableSoftLimits(true);
+            }
+
+            // if the sticks are being moving, move the corresponding climber(s)
+            if (climberClimb.isTriggering()) {
+                climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
+                climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
+            }
+        } else if (enableClimberControls.isFinishedTriggering()) {
             context.releaseOwnership(climber);
+
+            // restore the shoulder
+            context.takeOwnership(shoulder);
+            shoulder.rotate(85);
+            context.releaseOwnership(shoulder);
         }
 
         // shooter
         if (shooterShoot.isNewlyTriggering()) {
             context.takeOwnership(shooter);
-            shooter.shoot();
+            shooter.shoot(5600);
+            context.releaseOwnership(shooter);
         } else if (shooterShoot.isFinishedTriggering()) {
+            context.takeOwnership(shooter);
             shooter.stop();
             context.releaseOwnership(shooter);
         }
@@ -161,13 +160,14 @@ public class BoxOpOI extends OIFragment {
             context.takeOwnership(intake);
             context.startAsync(new IntakeUntilIn());
         } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
+            context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
         }
 
         // rumble
-        if (Robot.intake.hasNoteInIntake()) {
-            // xboxController.setRumble(RumbleType.kBothRumble, 0.5);
-        }
+        // if (intake.hasNoteInIntake()) {
+        //   ((GenericHID) gamepad).setRumble(RumbleType.kBothRumble, 0.5);
+        // }
     }
 }
