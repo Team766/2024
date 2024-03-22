@@ -13,9 +13,9 @@ import com.team766.robot.reva.procedures.IntakeUntilIn;
 
 public class BoxOpOI extends OIFragment {
     // allows soft limits to be overridden when true
-    private boolean climberOverride;
+    private boolean climberOverride = false;
     // allows climber to move
-    private boolean canClimb;
+    private boolean canClimb = false;
 
     private final JoystickReader gamepad;
     // private final XboxController xboxController;
@@ -29,7 +29,7 @@ public class BoxOpOI extends OIFragment {
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
-    private final OICondition usingArms;
+    private final OICondition usingShoulder;
     private final OICondition climberCondition;
 
     public BoxOpOI(
@@ -56,7 +56,7 @@ public class BoxOpOI extends OIFragment {
                                                 > InputConstants.XBOX_DEADZONE
                                         || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
                                                 > InputConstants.XBOX_DEADZONE);
-        usingArms =
+        usingShoulder =
                 new OICondition(
                         () ->
                                 (gamepad.getButton(InputConstants.XBOX_A)
@@ -74,14 +74,14 @@ public class BoxOpOI extends OIFragment {
 
     @Override
     protected void handleOI(Context context) {
-        // climber override
-        if (usingArms.isTriggering()) {
-            if (usingArms.isNewlyTriggering()) {
-                context.takeOwnership(shoulder);
-            }
+        // shoulder positions
+        // only allow shoulder movement if the boxop isn't also attempting to move the climber
+        if (!canClimb) {
+            if (usingShoulder.isTriggering()) {
+                if (usingShoulder.isNewlyTriggering()) {
+                    context.takeOwnership(shoulder);
+                }
 
-            // shoulder positions
-            if (!climberOverride) {
                 if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
                     // intake
                     shoulder.rotate(ShoulderPosition.SHOOT_LOW);
@@ -99,28 +99,29 @@ public class BoxOpOI extends OIFragment {
                 } else if (gamepad.getPOV() == 180) {
                     shoulder.nudgeDown();
                 }
+            } else if (usingShoulder.isFinishedTriggering()) {
+                context.releaseOwnership(shoulder);
             }
-        } else if (usingArms.isFinishedTriggering()) {
-            context.releaseOwnership(shoulder);
         }
 
         // climber condition
         if (climberCondition.isTriggering()) {
             if (climberCondition.isNewlyTriggering()) {
-                context.takeOwnership(climber);
+                // if the boxop starts moving the climbers, move the shoulder out of the way
                 context.takeOwnership(shoulder);
                 canClimb = true;
-                shoulder.rotate(105);
+                shoulder.rotate(ShoulderPosition.TOP);
             }
             if (gamepad.getButtonPressed(InputConstants.XBOX_A)
                     && gamepad.getButtonPressed(InputConstants.XBOX_B)
                     && gamepad.getButtonPressed(InputConstants.XBOX_X)
                     && gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-
+                context.takeOwnership(climber);
                 climber.enableSoftLimits(false);
                 climberOverride = true;
                 context.releaseOwnership(climber);
             } else if (climberOverride) {
+                context.takeOwnership(climber);
                 climber.enableSoftLimits(true);
                 context.releaseOwnership(climber);
                 climberOverride = false;
@@ -166,8 +167,8 @@ public class BoxOpOI extends OIFragment {
         }
 
         // rumble
-        if (Robot.intake.hasNoteInIntake()) {
-            // xboxController.setRumble(RumbleType.kBothRumble, 0.5);
-        }
+        // if (Robot.intake.hasNoteInIntake()) {
+        //     // xboxController.setRumble(RumbleType.kBothRumble, 0.5);
+        // }
     }
 }
