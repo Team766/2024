@@ -87,10 +87,10 @@ public class BoxOpOI extends OIFragment {
 
                 if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
                     // intake
-                    shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+                    shoulder.rotate(ShoulderPosition.INTAKE_FLOOR);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
                     // shoot closer to speaker
-                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+                    shoulder.rotate(ShoulderPosition.SHOOT_LOW);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
                     // other shoot pos
                     shoulder.rotate(ShoulderPosition.TOP);
@@ -121,7 +121,7 @@ public class BoxOpOI extends OIFragment {
             }
 
             // check to see if we should also disable the climber's soft limits
-            if (climberOverrideSoftLimits.isNewlyTriggering()) {
+            if (climberOverrideSoftLimits.isTriggering()) {
                 climber.enableSoftLimits(false);
             } else if (climberOverrideSoftLimits.isFinishedTriggering()) {
                 climber.enableSoftLimits(true);
