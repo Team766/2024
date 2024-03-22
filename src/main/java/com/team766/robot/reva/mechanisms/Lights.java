@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class Lights extends Mechanism {
 
-    CANdle m_candle = new CANdle(2);
+    CANdle m_candle = new CANdle(58);
 
     public Lights() {
         // Show that robot lights mechanism is ready
@@ -35,15 +35,15 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
-    // Orange
+    // Purple
     public boolean signalCameraNotConnected() {
-        ErrorCode e = m_candle.setLEDs(250, 87, 0);
+        ErrorCode e = m_candle.setLEDs(100, 0, 100);
         return handleErrorCode(e);
     }
 
-    // Forest green
+    // Coral orange
     public boolean signalNoteInIntake() {
-        ErrorCode e = m_candle.setLEDs(0, 112, 50);
+        ErrorCode e = m_candle.setLEDs(255, 127, 80);
         return handleErrorCode(e);
     }
 
