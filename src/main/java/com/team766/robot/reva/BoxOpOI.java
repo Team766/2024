@@ -5,44 +5,55 @@ import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
+import com.team766.robot.reva.mechanisms.Climber.ClimberPosition;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class BoxOpOI extends OIFragment {
+    // allows soft limits to be overridden when true 
+    private boolean climberOverride;
+    // allows climber to move
+    private boolean canClimb;
+
     private final JoystickReader gamepad;
     // private final XboxController xboxController;
 
     private final Shoulder shoulder;
     private final Intake intake;
-    private final Shooter shooter;
-    private final Climber climber;
 
-    private final OICondition shooterShoot;
+    private final Climber climber;
+    private final Shooter shooter;
+
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
+    private final OICondition shooterShoot;
     private final OICondition moveShoulder;
     private final OICondition enableClimberControls;
     private final OICondition climberOverrideSoftLimits;
 
     public BoxOpOI(
             JoystickReader gamepad,
+            // XboxController xboxController,
             Shoulder shoulder,
             Intake intake,
             Shooter shooter,
             Climber climber) {
         this.gamepad = gamepad;
+        /// this.xboxController = xboxController;
         this.shoulder = shoulder;
         this.intake = intake;
         this.shooter = shooter;
         this.climber = climber;
 
-        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
+        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         climberClimb =
                 new OICondition(
                         () ->
@@ -76,34 +87,47 @@ public class BoxOpOI extends OIFragment {
     @Override
     protected void handleOI(Context context) {
         // shoulder positions
-        // only move if not also trying to use climber
-        if (!enableClimberControls.isTriggering()) {
-            if (moveShoulder.isTriggering()) {
-                if (moveShoulder.isNewlyTriggering()) {
-                    context.takeOwnership(shoulder);
-                }
+        if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            context.releaseOwnership(shoulder);
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+            context.releaseOwnership(shoulder);
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.TOP);
+            context.releaseOwnership(shoulder);
+        } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
+            context.takeOwnership(shoulder);
+            shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+            context.releaseOwnership(shoulder);
+        }
 
-                // shoulder positions
-                if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-                    // intake
-                    shoulder.rotate(ShoulderPosition.SHOOT_LOW);
-                } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-                    // shoot closer to speaker
-                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-                } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-                    // other shoot pos
-                    shoulder.rotate(ShoulderPosition.TOP);
-                } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-                    // amp shot
-                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-                } else if (gamepad.getPOV() == 0) {
-                    shoulder.nudgeUp();
-                } else if (gamepad.getPOV() == 180) {
-                    shoulder.nudgeDown();
-                }
-            } else if (moveShoulder.isFinishedTriggering()) {
-                context.releaseOwnership(shoulder);
-            }
+        // dpad
+        // shoulder up 5
+        if (gamepad.getPOV() == 0) {
+            context.takeOwnership(shoulder);
+            shoulder.nudgeUp();
+            context.releaseOwnership(shoulder);
+        }
+
+        if (gamepad.getPOV() == 180) {
+            context.takeOwnership(shoulder);
+            shoulder.nudgeDown();
+            context.releaseOwnership(shoulder);
+        }
+
+        // shooter
+        if (shooterShoot.isNewlyTriggering()) {
+            context.takeOwnership(shooter);
+            shooter.shoot(5600);
+            context.releaseOwnership(shooter);
+        } else if (shooterShoot.isFinishedTriggering()) {
+            context.takeOwnership(shooter);
+            shooter.stop();
+            context.releaseOwnership(shooter);
         }
 
         // climber
@@ -140,15 +164,6 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(shoulder);
         }
 
-        // shooter
-        if (shooterShoot.isNewlyTriggering()) {
-            context.takeOwnership(shooter);
-            shooter.shoot();
-        } else if (shooterShoot.isFinishedTriggering()) {
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
-
         // intake
         if (intakeOut.isNewlyTriggering()) {
             context.takeOwnership(intake);
@@ -157,6 +172,7 @@ public class BoxOpOI extends OIFragment {
             context.takeOwnership(intake);
             context.startAsync(new IntakeUntilIn());
         } else if (intakeOut.isFinishedTriggering() || intakeIn.isFinishedTriggering()) {
+            context.takeOwnership(intake);
             intake.stop();
             context.releaseOwnership(intake);
         }
@@ -165,5 +181,8 @@ public class BoxOpOI extends OIFragment {
         // if (intake.hasNoteInIntake()) {
         //   ((GenericHID) gamepad).setRumble(RumbleType.kBothRumble, 0.5);
         // }
+
+
+
     }
 }

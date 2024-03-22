@@ -2,7 +2,7 @@ package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
 import com.team766.robot.reva.procedures.AltThreePieceAuton;
-import com.team766.robot.reva.procedures.ShootNow;
+import com.team766.robot.reva.procedures.RotateAndShootNow;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES =
@@ -15,6 +15,6 @@ public class AutonomousModes {
                 //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
                 new AutonomousMode("AltThreePiece", () -> new AltThreePieceAuton()),
-                new AutonomousMode("ShootNow", () -> new ShootNow())
+                new AutonomousMode("ShootNow", () -> new RotateAndShootNow())
             };
 }

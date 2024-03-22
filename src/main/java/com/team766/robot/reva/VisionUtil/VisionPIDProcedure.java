@@ -17,11 +17,12 @@ public abstract class VisionPIDProcedure extends Procedure {
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
      */
+    private static AnywhereScoringPosition aa1 = new AnywhereScoringPosition(1.237, 5600, 17.343);
     private static AnywhereScoringPosition a1 = new AnywhereScoringPosition(1.453, 5600, 17.80599);
     private static AnywhereScoringPosition a2 =
             new AnywhereScoringPosition(1.7201, 5600, 22.205946);
     private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(1.9506, 5600, 23.516);
-    private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(2.1839, 5600, 26.7537);
+    private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(2.072, 5600, 27.32);
     private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.29161, 5600, 30.109);
     private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.4616, 5600, 30.8987);
     private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(2.6942, 5600, 32.699);
@@ -34,6 +35,7 @@ public abstract class VisionPIDProcedure extends Procedure {
     protected static ArrayList<AnywhereScoringPosition> scoringPositions =
             new ArrayList<AnywhereScoringPosition>() {
                 {
+                    add(aa1);
                     add(a1);
                     add(a2);
                     add(a3);
