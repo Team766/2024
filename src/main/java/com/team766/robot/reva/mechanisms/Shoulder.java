@@ -119,7 +119,7 @@ public class Shoulder extends Mechanism {
     }
 
     private double absoluteEncoderToMotorRotations(double rotations) {
-        return ((1.10 - rotations) % 1.0 - .10) * (4. / 1.) * (3. / 1.) * (3. / 1.);
+        return ((1.05 - rotations) % 1.0 - 0.05) * (4. / 1.) * (3. / 1.) * (3. / 1.);
     }
 
     public void rotate(ShoulderPosition position) {

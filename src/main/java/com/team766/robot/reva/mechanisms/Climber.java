@@ -39,7 +39,7 @@ public class Climber extends Mechanism {
     private static final double SUPPLY_CURRENT_LIMIT = 30; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80; // TUNE THIS!
     private static final double POSITION_LOCATION_THRESHOLD = 1;
-    private static final double INITITAL_POSITION = -72.0; // TODO: set
+    private static final double INITITAL_POSITION = -63.0; // TODO: set
     private static final double NUDGE_INCREMENT = 0.1;
 
     private double leftPower = 0;
@@ -123,11 +123,11 @@ public class Climber extends Mechanism {
     }
 
     public boolean isLeftAtBottom() {
-        return getHeightLeft() < POSITION_LOCATION_THRESHOLD;
+        return Math.abs(getHeightLeft()) < POSITION_LOCATION_THRESHOLD;
     }
 
     public boolean isRightAtBottom() {
-        return getHeightRight() < POSITION_LOCATION_THRESHOLD;
+        return Math.abs(getHeightRight()) < POSITION_LOCATION_THRESHOLD;
     }
 
     @Override
