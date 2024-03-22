@@ -1,7 +1,7 @@
 package com.team766.robot.reva.mechanisms;
 
 import static com.team766.robot.reva.constants.ConfigConstants.*;
-import javax.naming.InitialContext;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
