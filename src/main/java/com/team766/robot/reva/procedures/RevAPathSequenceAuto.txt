@@ -1,9 +1,0 @@
-package com.team766.robot.reva.procedures;
-
-import com.team766.robot.common.procedures.PathSequenceAuto;
-
-public class RevAPathSequenceAuto extends PathSequenceAuto {
-	public void run() {
-		
-	}
-}
