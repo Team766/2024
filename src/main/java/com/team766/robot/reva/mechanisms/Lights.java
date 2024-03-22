@@ -21,11 +21,11 @@ public class Lights extends Mechanism {
                 m_candle.setLEDs(0, 0, 100);
             } else {
                 // Red
-                m_candle.setLEDs(100, 0, 0);
+                m_candle.setLEDs(100, 0, 100);
             }
         } else {
             // Purple
-            m_candle.setLEDs(100, 0, 100);
+            
         }
     }
 
@@ -41,9 +41,9 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
-    // Forest green
+    // Coral orange
     public boolean signalNoteInIntake() {
-        ErrorCode e = m_candle.setLEDs(0, 112, 50);
+        ErrorCode e = m_candle.setLEDs(255,127,80);
         return handleErrorCode(e);
     }
 
