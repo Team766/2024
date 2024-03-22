@@ -38,6 +38,8 @@ public class Climber extends Mechanism {
             (14. / 50.) * (30. / 42.) * (1.25 * Math.PI);
     private static final double SUPPLY_CURRENT_LIMIT = 30; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80; // TUNE THIS!
+    private static final double POSITION_LOCATION_THRESHOLD = 1;
+    private static final double INITITAL_POSITION = -63.0; // TODO: set
     private static final double NUDGE_INCREMENT = 0.1;
 
     private double leftPower = 0;
@@ -51,8 +53,8 @@ public class Climber extends Mechanism {
         rightMotor.setNeutralMode(NeutralMode.Brake);
         leftMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
         rightMotor.setCurrentLimit(SUPPLY_CURRENT_LIMIT);
-        leftMotor.setSensorPosition(0.0);
-        rightMotor.setSensorPosition(0.0);
+        leftMotor.setSensorPosition(INITITAL_POSITION);
+        rightMotor.setSensorPosition(INITITAL_POSITION);
         MotorUtil.setTalonFXStatorCurrentLimit(leftMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(rightMotor, STATOR_CURRENT_LIMIT);
         MotorUtil.setSoftLimits(leftMotor, 0.0 /* forward limit */, -115.0 /* reverse limit */);
@@ -118,6 +120,14 @@ public class Climber extends Mechanism {
 
     public double getHeightRight() {
         return rotationsToHeight(rightMotor.getSensorPosition());
+    }
+
+    public boolean isLeftAtBottom() {
+        return Math.abs(getHeightLeft()) < POSITION_LOCATION_THRESHOLD;
+    }
+
+    public boolean isRightAtBottom() {
+        return Math.abs(getHeightRight()) < POSITION_LOCATION_THRESHOLD;
     }
 
     @Override
