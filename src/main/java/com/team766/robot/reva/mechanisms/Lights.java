@@ -12,6 +12,19 @@ public class Lights extends Mechanism {
     private static final int CANID = 2;
     private double brightness;
 
+    private static final int FRONT_NUM_LEDS = 40;
+    private static final int FRONT_OFFSET = 8;
+    private static final int FRONT_SLOT = 1;
+
+    private static final int BACK_NUM_LEDS = 39;
+    private static final int BACK_OFFSET = 48;
+    private static final int BACK_SLOT = 2;
+
+    private static final Animation TOO_HIGH_ANIMATION =
+            new StrobeAnimation(255, 0, 0, 0, 0.00001, FRONT_NUM_LEDS, FRONT_OFFSET);
+    private static final Animation CAN_SHOOT_ANIMATION =
+            new RainbowAnimation(1, 0.1, FRONT_NUM_LEDS, false, FRONT_OFFSET);
+
     public Lights() {
         this(0.1);
     }
@@ -20,13 +33,6 @@ public class Lights extends Mechanism {
         candle = new CANdle(CANID);
         setBrightness(brightness);
     }
-
-    private static final int FRONT_NUM_LEDS = 40;
-    private static final int FRONT_OFFSET = 8;
-    private static final int FRONT_SLOT = 1;
-
-    private static final Animation TOO_HIGH_ANIMATION =
-            new StrobeAnimation(255, 0, 0, 0, 0.00001, FRONT_NUM_LEDS, FRONT_OFFSET);
 
     public void signalTooHigh() {
         animate(TOO_HIGH_ANIMATION, FRONT_SLOT);
@@ -40,9 +46,6 @@ public class Lights extends Mechanism {
         setAreaColor(0, 255, 0, FRONT_NUM_LEDS, FRONT_OFFSET, FRONT_SLOT);
     }
 
-    private static final Animation CAN_SHOOT_ANIMATION =
-            new RainbowAnimation(1, 0.1, FRONT_NUM_LEDS, false, FRONT_OFFSET);
-
     public void signalCanShoot() {
         animate(CAN_SHOOT_ANIMATION, FRONT_SLOT);
     }
@@ -50,10 +53,6 @@ public class Lights extends Mechanism {
     public void turnOffFront() {
         clearArea(FRONT_NUM_LEDS, FRONT_OFFSET, FRONT_SLOT);
     }
-
-    private static final int BACK_NUM_LEDS = 39;
-    private static final int BACK_OFFSET = 48;
-    private static final int BACK_SLOT = 2;
 
     public void signalPlayersGreen() {
         candle.clearAnimation(BACK_SLOT);
@@ -69,7 +68,7 @@ public class Lights extends Mechanism {
     }
 
     private void animate(Animation animation, int slot) {
-        // checkContextOwnership();
+        checkContextOwnership();
         candle.animate(animation, slot);
     }
 
@@ -78,12 +77,13 @@ public class Lights extends Mechanism {
     }
 
     private void setAreaColor(int r, int g, int b, int count, int offset, int slot) {
-        // checkContextOwnership();
+        checkContextOwnership();
         candle.clearAnimation(slot);
         candle.setLEDs(r, g, b, 0, r, count);
     }
 
     public void setBrightness(double value) {
+        checkContextOwnership();
         brightness = com.team766.math.Math.clamp(value, 0, 1);
         candle.configBrightnessScalar(brightness);
     }
@@ -98,13 +98,5 @@ public class Lights extends Mechanism {
 
     public void clear() {
         setColor(0, 0, 0);
-    }
-
-    public void setColor(int r, int g, int b) {
-        for (int i = 0; i < 10; i++) {
-            candle.clearAnimation(0);
-        }
-        // checkContextOwnership();
-        candle.setLEDs(r, g, b);
     }
 }

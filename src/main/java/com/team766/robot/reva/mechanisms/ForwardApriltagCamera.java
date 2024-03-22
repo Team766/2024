@@ -28,12 +28,6 @@ public class ForwardApriltagCamera extends Mechanism {
         } else {
             throw new AprilTagGeneralCheckedException("Couldn't find alliance correctly");
         }
-
-        // if (camera.isConnected()) {
-        //     Robot.lights.signalCameraConnected();
-        // } else {
-        //     Robot.lights.signalCameraNotConnected();
-        // }
     }
 
     public GrayScaleCamera getCamera() {
