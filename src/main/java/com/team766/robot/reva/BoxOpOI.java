@@ -143,7 +143,6 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(climber);
         }
 
-
         // shooter
         if (shooterShoot.isNewlyTriggering()) {
             context.takeOwnership(shooter);
