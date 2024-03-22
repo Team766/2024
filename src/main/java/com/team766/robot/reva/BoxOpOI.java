@@ -116,11 +116,13 @@ public class BoxOpOI extends OIFragment {
                     && gamepad.getButtonPressed(InputConstants.XBOX_B)
                     && gamepad.getButtonPressed(InputConstants.XBOX_X)
                     && gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
+                log("Disabling climber soft limits.");
                 context.takeOwnership(climber);
                 climber.enableSoftLimits(false);
                 climberOverride = true;
                 context.releaseOwnership(climber);
             } else if (climberOverride) {
+                log("Re-enabling climber soft limits.");
                 context.takeOwnership(climber);
                 climber.enableSoftLimits(true);
                 context.releaseOwnership(climber);
