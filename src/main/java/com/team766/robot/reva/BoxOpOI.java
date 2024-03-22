@@ -81,22 +81,30 @@ public class BoxOpOI extends OIFragment {
         // shoulder positions
 
         if (!enableClimberControls.isTriggering()) {
-            if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
-                // intake
-                shoulder.rotate(ShoulderPosition.SHOOT_LOW);
-            } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
-                // shoot closer to speaker
-                shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-                // other shoot pos
-                shoulder.rotate(ShoulderPosition.TOP);
-            } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-                // amp shot
-                shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
-            } else if (gamepad.getPOV() == 0) {
-                shoulder.nudgeUp();
-            } else if (gamepad.getPOV() == 180) {
-                shoulder.nudgeDown();
+            if (moveShoulder.isTriggering()) {
+                if (moveShoulder.isNewlyTriggering()) {
+                    context.takeOwnership(shoulder);
+                }
+
+                if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
+                    // intake
+                    shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+                } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
+                    // shoot closer to speaker
+                    shoulder.rotate(ShoulderPosition.SHOOT_MEDIUM);
+                } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
+                    // other shoot pos
+                    shoulder.rotate(ShoulderPosition.TOP);
+                } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
+                    // amp shot
+                    shoulder.rotate(ShoulderPosition.AMP);
+                } else if (gamepad.getPOV() == 0) {
+                    shoulder.nudgeUp();
+                } else if (gamepad.getPOV() == 180) {
+                    shoulder.nudgeDown();
+                }
+            } else if (moveShoulder.isFinishedTriggering()) {
+                context.releaseOwnership(shoulder);
             }
         }
 
