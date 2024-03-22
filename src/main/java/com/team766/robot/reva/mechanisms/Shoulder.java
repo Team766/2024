@@ -157,6 +157,7 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
         SmartDashboard.putNumber(
                 "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
         SmartDashboard.putNumber(
