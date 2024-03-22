@@ -17,14 +17,13 @@ public class BoxOpOI extends OIFragment {
 
     private final Shoulder shoulder;
     private final Intake intake;
-
-    private final Climber climber;
     private final Shooter shooter;
+    private final Climber climber;
 
+    private final OICondition shooterShoot;
     private final OICondition intakeOut;
     private final OICondition intakeIn;
     private final OICondition climberClimb;
-    private final OICondition shooterShoot;
     private final OICondition moveShoulder;
     private final OICondition enableClimberControls;
     private final OICondition climberOverrideSoftLimits;
@@ -43,9 +42,9 @@ public class BoxOpOI extends OIFragment {
         this.shooter = shooter;
         this.climber = climber;
 
+        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
-        shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
         climberClimb =
                 new OICondition(
                         () ->
