@@ -120,13 +120,6 @@ public class BoxOpOI extends OIFragment {
                 context.releaseOwnership(shoulder);
             }
 
-            // check to see if we should also disable the climber's soft limits
-            if (climberOverrideSoftLimits.isTriggering()) {
-                climber.enableSoftLimits(false);
-            } else if (climberOverrideSoftLimits.isFinishedTriggering()) {
-                climber.enableSoftLimits(true);
-            }
-
             // if the sticks are being moving, move the corresponding climber(s)
             if (climberClimb.isTriggering()) {
                 climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
@@ -140,6 +133,16 @@ public class BoxOpOI extends OIFragment {
             shoulder.rotate(85);
             context.releaseOwnership(shoulder);
         }
+
+        // check to see if we should also disable the climber's soft limits
+        if (climberOverrideSoftLimits.isNewlyTriggering()) {
+            context.takeOwnership(climber);
+            climber.enableSoftLimits(false);
+        } else if (climberOverrideSoftLimits.isFinishedTriggering()) {
+            climber.enableSoftLimits(true);
+            context.releaseOwnership(climber);
+        }
+
 
         // shooter
         if (shooterShoot.isNewlyTriggering()) {
