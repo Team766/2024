@@ -45,6 +45,7 @@ public class Shoulder extends Mechanism {
     private int encoderInitializationCount = 0;
     private static final double SUPPLY_CURRENT_LIMIT = 30.0; // max efficiency from spec sheet
     private static final double STATOR_CURRENT_LIMIT = 80.0; // TUNE THIS!
+    private static final double DEFAULT_POSITION = 77.0;
 
     private MotorController leftMotor;
     private MotorController rightMotor;
@@ -70,7 +71,7 @@ public class Shoulder extends Mechanism {
         absoluteEncoder =
                 (REVThroughBoreDutyCycleEncoder)
                         RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
-        leftMotor.setSensorPosition(0.0);
+        leftMotor.setSensorPosition(DEFAULT_POSITION);
         targetAngle = -1;
     }
 
@@ -118,7 +119,7 @@ public class Shoulder extends Mechanism {
     }
 
     private double absoluteEncoderToMotorRotations(double rotations) {
-        return ((1.10 - rotations) % 1.0 - .10) * (4. / 1.) * (3. / 1.) * (3. / 1.);
+        return ((1.05 - rotations) % 1.0 - 0.05) * (4. / 1.) * (3. / 1.) * (3. / 1.);
     }
 
     public void rotate(ShoulderPosition position) {
@@ -156,6 +157,7 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
         SmartDashboard.putNumber(
                 "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
         SmartDashboard.putNumber(

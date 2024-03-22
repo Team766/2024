@@ -55,7 +55,7 @@ public final class InputConstants {
     public static final int XBOX_LS_Y = 1;
     public static final int XBOX_RS_X = 4;
     public static final int XBOX_RS_Y = 5;
-    public static final double XBOX_DEADZONE = 0.05;
+    public static final double XBOX_DEADZONE = 0.15;
 
     public static final int POV_UP = 0;
     public static final int POV_DOWN = 180;
