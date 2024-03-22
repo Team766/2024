@@ -21,11 +21,11 @@ public class Lights extends Mechanism {
                 m_candle.setLEDs(0, 0, 100);
             } else {
                 // Red
-                m_candle.setLEDs(100, 0, 100);
+                m_candle.setLEDs(100, 0, 0);
             }
         } else {
             // Purple
-            
+            m_candle.setLEDs(100, 0, 100);
         }
     }
 
@@ -35,9 +35,9 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
-    // Orange
+    // Purple
     public boolean signalCameraNotConnected() {
-        ErrorCode e = m_candle.setLEDs(250, 87, 0);
+        ErrorCode e = m_candle.setLEDs(100, 0, 100);
         return handleErrorCode(e);
     }
 
