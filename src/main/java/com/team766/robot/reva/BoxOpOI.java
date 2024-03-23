@@ -103,7 +103,8 @@ public class BoxOpOI extends OIFragment {
                 } else if (gamepad.getPOV() == 180) {
                     shoulder.nudgeDown();
                 }
-            } else if (moveShoulder.isFinishedTriggering()) {
+            } else if (moveShoulder.isFinishedTriggering()
+                    && !enableClimberControls.isFinishedTriggering()) {
                 context.releaseOwnership(shoulder);
             }
         }
@@ -132,10 +133,14 @@ public class BoxOpOI extends OIFragment {
             context.releaseOwnership(climber);
             climber.stop();
 
-            // restore the shoulder
-            context.takeOwnership(shoulder);
-            shoulder.rotate(85);
-            context.releaseOwnership(shoulder);
+            // if a finger slips off of the enable climber controls, it may be disruptive to move
+            // the shoulder
+            // again suddenly, esp if they intend to continue climbing.
+            // it may be better for the boxop to move the shoulder again manually.
+            // // restore the shoulder
+            // context.takeOwnership(shoulder);
+            // shoulder.rotate(85);
+            // context.releaseOwnership(shoulder);
         }
 
         // check to see if we should also disable the climber's soft limits
