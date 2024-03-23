@@ -5,15 +5,14 @@ import com.team766.robot.reva.Robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class ThreePieceAutonTop extends PathSequenceAuto {
-    public ThreePieceAutonTop() {
-        super(Robot.drive, new Pose2d(0.75, 6.68, Rotation2d.fromDegrees(59.33)));
+public class MidfieldAutonSourceSide extends PathSequenceAuto {
+    public MidfieldAutonSourceSide() {
+        super(Robot.drive, new Pose2d(0.71, 4.39, Rotation2d.fromDegrees(-60)));
         addProcedure(new RotateAndShootNow());
         addProcedure(new AutoIntake());
-        addPath("3 Piece 1");
+        addPath("MidfieldSource 1");
+        addPath("MidfieldSource 2");
         addProcedure(new RotateAndShootNow());
-        addProcedure(new AutoIntake());
-        addPath("Alternate 3 Piece 2");
-        addProcedure(new RotateAndShootNow());
+
     }
 }
