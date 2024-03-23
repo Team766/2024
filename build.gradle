@@ -2,7 +2,7 @@ plugins {
     id "java"
     id 'java-library'
     id 'maven-publish'
-    id "edu.wpi.first.GradleRIO" version "2024.3.2"
+    id "edu.wpi.first.GradleRIO" version "2024.3.1"
     id 'com.diffplug.spotless' version '6.22.0'
     id 'com.google.protobuf' version '0.8.19'
 }
@@ -27,8 +27,7 @@ sourceSets {
     }
 }
 
-// Define my targets (RoboRIO) and artifacts (
-    able files)
+// Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
