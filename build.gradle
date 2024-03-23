@@ -27,7 +27,8 @@ sourceSets {
     }
 }
 
-// Define my targets (RoboRIO) and artifacts (deployable files)
+// Define my targets (RoboRIO) and artifacts (
+    able files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
