@@ -93,7 +93,8 @@ public class Shoulder extends Mechanism {
     }
 
     public double getAbsoluteEncoderPosition() {
-        return absoluteEncoder.getAbsolutePosition() - absoluteEncoder.getPositionOffset();
+        // return absoluteEncoder.getAbsolutePosition() - absoluteEncoder.getPositionOffset();
+        return absoluteEncoder.getAbsolutePosition() - 0.71;
     }
 
     public double getTargetAngle() {
