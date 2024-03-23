@@ -98,7 +98,8 @@ public class PathSequenceAuto extends Procedure {
         } else {
             log("Unable to get Alliance for auton " + this.getClass().getSimpleName());
             log("Cannot determine if we should flip auton.");
-            // TODO: should we punt on the entire auton?
+            log("Skipping auton");
+            return;
         }
 
         context.startAsync(new MoveClimbersToBottom());
