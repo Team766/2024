@@ -26,6 +26,7 @@ public class ReadLogs implements WebServer.Handler {
 	private HashMap<String, LogReader> logReaders = new HashMap<String, LogReader>();
 	private HashMap<String, String> readerDescriptions = new HashMap<String, String>();
 	private HashMap<String, Iterator<LogEntry>> readerStreams = new HashMap<String, Iterator<LogEntry>>();
+	private String logFilePathBase = Logger.logFilePathBase;
 
 	private static String makeLogEntriesTable(final LogReader reader,
 			final Iterator<LogEntry> entries) {
@@ -48,13 +49,16 @@ public class ReadLogs implements WebServer.Handler {
 		String r =
 				String.join("\n",
 						new String[] {
-								"<p>Free disk space: " + NumberFormat.getNumberInstance(Locale.US)
-										.format(new File(Logger.logFilePathBase).getUsableSpace())
+								"<form action=\"" + ENDPOINT + "\"><p>",
+								HtmlElements.buildForm("logFilePathBase", logFilePathBase == null ? "" : logFilePathBase),
+								"<input type=\"submit\" value=\"Change Log Directory\">", "</p></form>",
+								logFilePathBase == null ? "" : "<p>Free disk space: " + NumberFormat.getNumberInstance(Locale.US)
+										.format(new File(logFilePathBase).getUsableSpace())
 										+ "</p>",
 								"<form action=\"" + ENDPOINT + "\"><p>",
 								HtmlElements.buildDropDown("logFile", "",
-										Logger.logFilePathBase == null ? new String[0]
-												: new File(Logger.logFilePathBase).list()),
+										logFilePathBase == null ? new String[0]
+												: new File(logFilePathBase).list()),
 								HtmlElements.buildDropDown("category", "", Stream
 										.concat(Stream.of("", ALL_ERRORS_NAME),
 												Arrays.stream(Category.values())
@@ -74,7 +78,7 @@ public class ReadLogs implements WebServer.Handler {
 			final Function<Stream<LogEntry>, Stream<LogEntry>> filter) {
 		LogReader reader;
 		try {
-			reader = new LogReader(new File(Logger.logFilePathBase, logFile).getAbsolutePath());
+			reader = new LogReader(new File(logFilePathBase, logFile).getAbsolutePath());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -115,10 +119,14 @@ public class ReadLogs implements WebServer.Handler {
 	@Override
 	public String handle(final Map<String, Object> params) {
 		String id = (String) params.get("id");
+		String newLogFilePathBase = (String) params.get("logfilepathbase");
 		String logFile = (String) params.get("logFile");
 		String categoryName = (String) params.get("category");
 		if (!logReaders.containsKey(id)) {
 			id = null;
+		}
+		if (newLogFilePathBase != null) {
+			logFilePathBase = newLogFilePathBase.isEmpty() ? null : newLogFilePathBase;
 		}
 		if (logFile != null) {
 			if (categoryName == null || categoryName.equals("")) {
