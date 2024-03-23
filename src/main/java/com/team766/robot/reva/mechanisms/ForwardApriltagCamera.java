@@ -17,11 +17,18 @@ public class ForwardApriltagCamera extends Mechanism {
     private int tagId = -1;
 
     public ForwardApriltagCamera() throws AprilTagGeneralCheckedException {
-        camera = new GrayScaleCamera("Main_Test_Camera_2024");
+        try {
+            camera = new GrayScaleCamera("Main_Test_Camera_2024");
 
-        if (camera.isConnected()) {
-            Robot.lights.signalCameraConnected();
-        } else {
+            if (camera.isConnected()) {
+                // Robot.lights is initialized before this mechanism
+                Robot.lights.signalCameraConnected();
+            } else {
+                Robot.lights.signalCameraNotConnected();
+            }
+        } catch (Exception e) {
+            log("Unable to create GrayScaleCamera");
+            LoggerExceptionUtils.logException(e);
             Robot.lights.signalCameraNotConnected();
         }
     }
@@ -31,23 +38,23 @@ public class ForwardApriltagCamera extends Mechanism {
     }
 
     public void run() {
-        if (tagId == -1) {
-            Optional<Alliance> alliance = DriverStation.getAlliance();
-
-            if (alliance.isPresent()) {
-                if (alliance.get().equals(Alliance.Blue)) {
-                    tagId = 7;
-                } else {
-                    tagId = 4;
-                }
-                Robot.lights.signalCameraConnected();
-            } else {
-                LoggerExceptionUtils.logException(
-                        new AprilTagGeneralCheckedException("Couldn't find alliance correctly"));
-            }
-        }
-
         try {
+            if (tagId == -1) {
+                Optional<Alliance> alliance = DriverStation.getAlliance();
+
+                if (alliance.isPresent()) {
+                    if (alliance.get().equals(Alliance.Blue)) {
+                        tagId = 7;
+                    } else {
+                        tagId = 4;
+                    }
+                    Robot.lights.signalCameraConnected();
+                } else {
+                    LoggerExceptionUtils.logException(
+                            new AprilTagGeneralCheckedException(
+                                    "Couldn't find alliance correctly"));
+                }
+            }
             Transform3d toUse =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
 

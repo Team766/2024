@@ -13,6 +13,5 @@ public class MidfieldAutonSourceSide extends PathSequenceAuto {
         addPath("MidfieldSource 1");
         addPath("MidfieldSource 2");
         addProcedure(new RotateAndShootNow());
-
     }
 }
