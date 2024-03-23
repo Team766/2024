@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class FollowPath extends Procedure {
     private final Drive drive;
-    private final PathPlannerPath path;
+    private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
@@ -50,7 +50,7 @@ public class FollowPath extends Procedure {
         if (alliance.isPresent()) {
             boolean flip = (alliance.get() == Alliance.Red);
             if (flip) {
-                path.flipPath();
+                path = path.flipPath();
             }
         } else {
             log("Unable to get Alliance in FollowPath.");
