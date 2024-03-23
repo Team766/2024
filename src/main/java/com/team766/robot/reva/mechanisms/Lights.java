@@ -13,6 +13,8 @@ public class Lights extends Mechanism {
 
     public Lights() {
         // Show that robot lights mechanism is ready
+        // NOTE: this will always display purple unless we reboot in the middle of a match.
+        // the alliance won't be available when Lights is typically created.
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {

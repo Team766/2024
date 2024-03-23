@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class PathSequenceAuto extends Procedure {
 
@@ -23,7 +24,6 @@ public class PathSequenceAuto extends Procedure {
     private final Drive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
-    private final boolean shouldFlipAuton;
     private VisionSpeakerHelper visionSpeakerHelper;
 
     /**
@@ -36,7 +36,6 @@ public class PathSequenceAuto extends Procedure {
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
-        shouldFlipAuton = (DriverStation.getAlliance().get() == Alliance.Red);
         visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
@@ -79,7 +78,7 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void addPath(String pathName) {
-        pathItems.add(new FollowPath(pathName, controller, drive, shouldFlipAuton));
+        pathItems.add(new FollowPath(pathName, controller, drive));
     }
 
     protected void addProcedure(Procedure procedure) {
@@ -92,6 +91,15 @@ public class PathSequenceAuto extends Procedure {
 
     @Override
     public final void run(Context context) {
+        boolean shouldFlipAuton = false;
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            shouldFlipAuton = (alliance.get() == Alliance.Red);
+        } else {
+            log("Unable to get Alliance for auton " + this.getClass().getSimpleName());
+            log("Cannot determine if we should flip path.");
+        }
+
         context.startAsync(new MoveClimbersToBottom());
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
