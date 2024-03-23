@@ -32,6 +32,7 @@ public class Lights extends Mechanism {
     public Lights(double brightness) {
         candle = new CANdle(CANID);
         setBrightness(brightness);
+        clear();
     }
 
     public void signalTooHigh() {
@@ -98,5 +99,12 @@ public class Lights extends Mechanism {
 
     public void clear() {
         setColor(0, 0, 0);
+    }
+
+    private void setColor(int r, int g, int b) {
+        checkContextOwnership();
+        candle.clearAnimation(FRONT_SLOT);
+        candle.clearAnimation(BACK_SLOT);
+        candle.setLEDs(r, g, b);
     }
 }
