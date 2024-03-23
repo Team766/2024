@@ -51,7 +51,8 @@ public class ForwardApriltagCamera extends Mechanism {
                     Robot.lights.signalCameraConnected();
                 } else {
                     LoggerExceptionUtils.logException(
-                            new AprilTagGeneralCheckedException("Couldn't find alliance correctly"));
+                            new AprilTagGeneralCheckedException(
+                                    "Couldn't find alliance correctly"));
                 }
             }
             Transform3d toUse =
