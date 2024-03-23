@@ -14,6 +14,7 @@ import java.util.Optional;
 public class ForwardApriltagCamera extends Mechanism {
 
     private GrayScaleCamera camera;
+    private int tagId = -1;
 
     public ForwardApriltagCamera() throws AprilTagGeneralCheckedException {
         try {
@@ -38,17 +39,20 @@ public class ForwardApriltagCamera extends Mechanism {
 
     public void run() {
         try {
-            int tagId;
-            Optional<Alliance> alliance = DriverStation.getAlliance();
+            if (tagId == -1) {
+                Optional<Alliance> alliance = DriverStation.getAlliance();
 
-            if (alliance.isPresent()) {
-                if (alliance.get().equals(Alliance.Blue)) {
-                    tagId = 7;
+                if (alliance.isPresent()) {
+                    if (alliance.get().equals(Alliance.Blue)) {
+                        tagId = 7;
+                    } else {
+                        tagId = 4;
+                    }
+                    Robot.lights.signalCameraConnected();
                 } else {
-                    tagId = 4;
+                    LoggerExceptionUtils.logException(
+                            new AprilTagGeneralCheckedException("Couldn't find alliance correctly"));
                 }
-            } else {
-                throw new AprilTagGeneralCheckedException("Couldn't find alliance correctly");
             }
             Transform3d toUse =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
