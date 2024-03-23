@@ -1,7 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.robot.reva.procedures.AltThreePieceAuton;
+import com.team766.robot.reva.procedures.ThreePieceAutonTop;
 import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import com.team766.robot.reva.procedures.RotateAndShootNow;
 import com.team766.robot.reva.procedures.ShootOnePiece;
@@ -18,7 +18,7 @@ public class AutonomousModes {
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
                 new AutonomousMode("ClimbersDown", () -> new MoveClimbersToBottom()),
                 new AutonomousMode("ShootOnePiece", () -> new ShootOnePiece()),
-                new AutonomousMode("AltThreePiece", () -> new AltThreePieceAuton()),
+                new AutonomousMode("AltThreePiece", () -> new ThreePieceAutonTop()),
                 new AutonomousMode("ShootNow", () -> new RotateAndShootNow())
             };
 }
