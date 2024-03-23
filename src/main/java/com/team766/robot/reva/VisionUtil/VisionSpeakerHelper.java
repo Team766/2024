@@ -2,10 +2,6 @@ package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.Severity;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
@@ -90,8 +86,8 @@ public class VisionSpeakerHelper {
 
         } catch (Exception e) {
             if (!(e instanceof AprilTagGeneralCheckedException)) {
-                Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
-                LoggerExceptionUtils.logException(e);
+                // Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
+                // LoggerExceptionUtils.logException(e);
             }
             return false;
         }
@@ -104,8 +100,8 @@ public class VisionSpeakerHelper {
             relativeTranslation2d = new Translation2d(transform3d.getX(), transform3d.getY());
         } catch (Exception e) {
             if (!(e instanceof AprilTagGeneralCheckedException)) {
-                Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
-                LoggerExceptionUtils.logException(e);
+                // Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
+                // LoggerExceptionUtils.logException(e);
             }
             relativeTranslation2d =
                     absTargetPos
@@ -118,8 +114,8 @@ public class VisionSpeakerHelper {
         updateAlliance();
         updateTarget();
         updateRelativeTranslation2d();
-        SmartDashboard.putString("translation", relativeTranslation2d.toString());
-        SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
+        // SmartDashboard.putString("translation", relativeTranslation2d.toString());
+        // SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
     }
 
     public Rotation2d getHeadingToTarget() {
@@ -130,23 +126,23 @@ public class VisionSpeakerHelper {
         // Calculated the heading the robot needs to face from this translation
 
         double val = relativeTranslation2d.getAngle().getDegrees() + drive.getHeading();
-        SmartDashboard.putNumber(
-                "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
-        SmartDashboard.putNumber(
-                "heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
-        SmartDashboard.putNumber("output heading", val);
+        // SmartDashboard.putNumber(
+        //         "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
+        // SmartDashboard.putNumber(
+        //         "heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
+        // SmartDashboard.putNumber("output heading", val);
         return Rotation2d.fromDegrees(val);
     }
 
     public double getShooterPower() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestPowerToUse(relativeTranslation2d.getNorm());
-        SmartDashboard.putNumber("shooter power", val);
+        // SmartDashboard.putNumber("shooter power", val);
         return val;
     }
 
     public double getArmAngle() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestArmAngleToUse(relativeTranslation2d.getNorm());
-        SmartDashboard.putNumber("arm angle", val);
+        // SmartDashboard.putNumber("arm angle", val);
         return val;
     }
 }

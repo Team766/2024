@@ -8,7 +8,6 @@ import com.team766.robot.reva.Robot;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 public class ForwardApriltagCamera extends Mechanism {
@@ -50,16 +49,16 @@ public class ForwardApriltagCamera extends Mechanism {
                     }
                     Robot.lights.signalCameraConnected();
                 } else {
-                    LoggerExceptionUtils.logException(
-                            new AprilTagGeneralCheckedException(
-                                    "Couldn't find alliance correctly"));
+                    // LoggerExceptionUtils.logException(
+                    //         new AprilTagGeneralCheckedException(
+                    //                 "Couldn't find alliance correctly"));
                 }
             }
             Transform3d toUse =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
 
-            SmartDashboard.putNumber("x value SUIIII", toUse.getX());
-            SmartDashboard.putNumber("y value SUIIII", toUse.getY());
+            // SmartDashboard.putNumber("x value SUIIII", toUse.getX());
+            // SmartDashboard.putNumber("y value SUIIII", toUse.getY());
         } catch (Exception e) {
             return;
         }

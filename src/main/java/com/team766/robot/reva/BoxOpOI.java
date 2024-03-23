@@ -82,30 +82,42 @@ public class BoxOpOI extends OIFragment {
 
         if (!enableClimberControls.isTriggering()) {
             if (moveShoulder.isTriggering()) {
-                if (moveShoulder.isNewlyTriggering()) {
-                    context.takeOwnership(shoulder);
-                }
+                // if (moveShoulder.isNewlyTriggering()) {
+                //     context.takeOwnership(shoulder);
+                // }
 
                 if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
                     // intake
+                    context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.INTAKE_FLOOR);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
                     // shoot closer to speaker
+                    context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
                     // other shoot pos
+                    context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.TOP);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
                     // amp shot
+                    context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.AMP);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
+                    context.takeOwnership(shoulder);
                     shoulder.nudgeUp();
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 180) {
+                    context.takeOwnership(shoulder);
                     shoulder.nudgeDown();
+                    context.releaseOwnership(shoulder);
                 }
-            } else if (moveShoulder.isFinishedTriggering()) {
-                context.releaseOwnership(shoulder);
-            }
+            } /*else if (moveShoulder.isFinishedTriggering()) {
+                  context.releaseOwnership(shoulder);
+              } */
         }
 
         // climber

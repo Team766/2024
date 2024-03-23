@@ -160,15 +160,16 @@ public class Shoulder extends Mechanism {
         SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
         SmartDashboard.putNumber(
                 "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
-        SmartDashboard.putNumber(
-                "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
-        SmartDashboard.putNumber(
-                "[SHOULDER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
-        SmartDashboard.putNumber(
-                "[SHOULDER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
-        SmartDashboard.putNumber(
-                "[SHOULDER] Right Motor Stator Current",
-                MotorUtil.getStatorCurrentUsage(rightMotor));
+        // SmartDashboard.putNumber(
+        //         "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
+        // SmartDashboard.putNumber(
+        //         "[SHOULDER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        // SmartDashboard.putNumber(
+        //         "[SHOULDER] Left Motor Stator Current",
+        // MotorUtil.getStatorCurrentUsage(leftMotor));
+        // SmartDashboard.putNumber(
+        //         "[SHOULDER] Right Motor Stator Current",
+        //         MotorUtil.getStatorCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

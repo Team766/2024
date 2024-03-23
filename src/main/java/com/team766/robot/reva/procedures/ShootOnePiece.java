@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ShootOnePiece extends PathSequenceAuto {
     public ShootOnePiece() {
-        super(Robot.drive, new Pose2d(0.5, 6.5, Rotation2d.fromDegrees(45)));
+        super(Robot.drive, new Pose2d(0.75, 6.68, Rotation2d.fromDegrees(60)));
         addProcedure(new RotateAndShootNow());
     }
 }

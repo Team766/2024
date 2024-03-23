@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends Mechanism {
 
@@ -132,20 +131,21 @@ public class Climber extends Mechanism {
 
     @Override
     public void run() {
-        SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
-        SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
-        SmartDashboard.putNumber("[CLIMBER] Left Height", getHeightLeft());
-        SmartDashboard.putNumber("[CLIMBER] Right Height", getHeightRight());
-        SmartDashboard.putNumber("[CLIMBER] Left Power", leftPower);
-        SmartDashboard.putNumber("[CLIMBER] Right Power", rightPower);
-        SmartDashboard.putNumber(
-                "[CLIMBER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
-        SmartDashboard.putNumber(
-                "[CLIMBER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
-        SmartDashboard.putNumber(
-                "[CLIMBER] Left Motor Stator Current", MotorUtil.getStatorCurrentUsage(leftMotor));
-        SmartDashboard.putNumber(
-                "[CLIMBER] Right Motor Stator Current",
-                MotorUtil.getStatorCurrentUsage(rightMotor));
+        // SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());
+        // SmartDashboard.putNumber("[CLIMBER] Right Rotations", rightMotor.getSensorPosition());
+        // SmartDashboard.putNumber("[CLIMBER] Left Height", getHeightLeft());
+        // SmartDashboard.putNumber("[CLIMBER] Right Height", getHeightRight());
+        // SmartDashboard.putNumber("[CLIMBER] Left Power", leftPower);
+        // SmartDashboard.putNumber("[CLIMBER] Right Power", rightPower);
+        // SmartDashboard.putNumber(
+        //         "[CLIMBER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
+        // SmartDashboard.putNumber(
+        //         "[CLIMBER] Right Motor Supply Current", MotorUtil.getCurrentUsage(rightMotor));
+        // SmartDashboard.putNumber(
+        //         "[CLIMBER] Left Motor Stator Current",
+        // MotorUtil.getStatorCurrentUsage(leftMotor));
+        // SmartDashboard.putNumber(
+        //         "[CLIMBER] Right Motor Stator Current",
+        //         MotorUtil.getStatorCurrentUsage(rightMotor));
     }
 }

@@ -107,7 +107,7 @@ public class SwerveModule {
      * Can be used to turn the wheels without moving
      * @param vector the vector specifying the module's motion
      */
-    public boolean steer(Vector2D vector) {
+    public void steer(Vector2D vector) {
         boolean reversed = false;
         SmartDashboard.putString(
                 "[" + modulePlacement + "]" + "x, y",
@@ -126,18 +126,18 @@ public class SwerveModule {
                                                         - vectorTheta)
                                                 / 360))
                         + offset;
-        double degreeChange =
-                realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
+        // double degreeChange =
+        //         realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
         // checks if it would be more efficient to move the wheel in the opposite direction
-        if (degreeChange > 90) {
-            realAngleDegrees -= 180;
-            reversed = true;
-        } else if (degreeChange < -90) {
-            realAngleDegrees += 180;
-            reversed = true;
-        } else {
-            reversed = false;
-        }
+        // if (degreeChange > 90) {
+        //     realAngleDegrees -= 180;
+        //     reversed = true;
+        // } else if (degreeChange < -90) {
+        //     realAngleDegrees += 180;
+        //     reversed = true;
+        // } else {
+        //     reversed = false;
+        // }
         final double angleDegrees = realAngleDegrees;
 
         // Sets the degree of the steer wheel
@@ -155,7 +155,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(
                 "[" + modulePlacement + "]" + "CANCoder",
                 encoder.getAbsolutePosition().getValueAsDouble() * 360);
-        return reversed;
+        // return reversed;
     }
 
     /**
@@ -164,18 +164,18 @@ public class SwerveModule {
      */
     public void driveAndSteer(Vector2D vector) {
         // apply the steer
-        boolean reversed = steer(vector);
+        steer(vector);
 
         // sets the power to the magnitude of the vector and reverses power if necessary
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
-        if (reversed) {
-            power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
-            reversed = false;
-        } else {
+        //if (reversed) {
+        //    power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+        //    reversed = false;
+        //} else {
             power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
-        }
+        //}
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
 
