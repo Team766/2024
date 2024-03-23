@@ -31,7 +31,7 @@ public class Lights extends Mechanism {
 
     public Lights(double brightness) {
         candle = new CANdle(CANID);
-        setBrightness(brightness);
+        setBrightnessNoCheck(brightness);
         clear();
     }
 
@@ -83,10 +83,14 @@ public class Lights extends Mechanism {
         candle.setLEDs(r, g, b, 0, r, count);
     }
 
-    public void setBrightness(double value) {
-        checkContextOwnership();
+    private void setBrightnessNoCheck(double value) {
         brightness = com.team766.math.Math.clamp(value, 0, 1);
         candle.configBrightnessScalar(brightness);
+    }
+
+    public void setBrightness(double value) {
+        checkContextOwnership();
+        setBrightnessNoCheck(value);
     }
 
     public double getBrightness() {
