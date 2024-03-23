@@ -6,19 +6,25 @@ import com.team766.robot.reva.Robot;
 
 public class IntakeUntilIn extends Procedure {
     public void run(Context context) {
+        context.takeOwnership(Robot.lights);
+        Robot.lights.signalNoNoteInIntake();
+        context.releaseOwnership(Robot.lights);
+
         context.takeOwnership(Robot.intake);
-        Robot.lights.signalNoNoteInIntakeYet();
         while (!Robot.intake.hasNoteInIntake()) {
             Robot.intake.setIntakePowerForSensorDistance();
             context.yield();
         }
-
         context.releaseOwnership(Robot.intake);
 
+        context.takeOwnership(Robot.lights);
         Robot.lights.signalNoteInIntake();
+        context.releaseOwnership(Robot.lights);
 
-        context.waitForSeconds(2);
+        while (Robot.intake.hasNoteInIntake()) {
+            context.yield();
+        }
 
-        Robot.lights.turnLightsOff();
+        Robot.lights.turnOffFront();
     }
 }

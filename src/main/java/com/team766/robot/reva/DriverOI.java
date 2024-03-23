@@ -108,6 +108,10 @@ public class DriverOI extends OIFragment {
             drive.setCross();
 
             context.releaseOwnership(drive);
+
+            context.takeOwnership(Robot.lights);
+            Robot.lights.turnOffFront();
+            context.releaseOwnership(Robot.lights);
         }
 
         // TODO: update OI with new optimization OI
@@ -168,6 +172,12 @@ public class DriverOI extends OIFragment {
         } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
+        }
+
+        if (isRotatingToSpeaker && drive.isAtRotationTarget() && Robot.shoulder.isFinished()) {
+            context.takeOwnership(Robot.lights);
+            Robot.lights.signalCanShoot();
+            context.releaseOwnership(Robot.lights);
         }
     }
 
