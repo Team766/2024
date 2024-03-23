@@ -11,6 +11,7 @@ import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
+import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -91,6 +92,7 @@ public class PathSequenceAuto extends Procedure {
 
     @Override
     public final void run(Context context) {
+        context.startAsync(new MoveClimbersToBottom());
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
@@ -102,7 +104,6 @@ public class PathSequenceAuto extends Procedure {
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
-
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
             context.yield();
