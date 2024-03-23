@@ -2,6 +2,10 @@ package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.Severity;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
@@ -24,6 +28,11 @@ public class VisionSpeakerHelper {
 
     // TODO: make this static
     public VisionSpeakerHelper(Drive drive) {
+        camera = Robot.forwardApriltagCamera.getCamera();
+        this.drive = drive;
+    }
+
+    private void updateAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
@@ -37,9 +46,6 @@ public class VisionSpeakerHelper {
         } else {
             tagId = -1;
         }
-
-        camera = Robot.forwardApriltagCamera.getCamera();
-        this.drive = drive;
     }
 
     // TODO: reformat the code to be more efficient
@@ -47,7 +53,7 @@ public class VisionSpeakerHelper {
      * Updates current target position based on odometry robot position and vision
      * @return whether or not it was successfully reset or not, depending on if it sees the tag
      */
-    public boolean updateTarget() {
+    private boolean updateTarget() {
         try {
 
             // re-calculates the absolute position of the target according to odometry
@@ -82,7 +88,11 @@ public class VisionSpeakerHelper {
 
             return true;
 
-        } catch (AprilTagGeneralCheckedException e) {
+        } catch (Exception e) {
+            if (!(e instanceof AprilTagGeneralCheckedException)) {
+                Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
+                LoggerExceptionUtils.logException(e);
+            }
             return false;
         }
     }
@@ -92,7 +102,11 @@ public class VisionSpeakerHelper {
             Transform3d transform3d =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
             relativeTranslation2d = new Translation2d(transform3d.getX(), transform3d.getY());
-        } catch (AprilTagGeneralCheckedException e) {
+        } catch (Exception e) {
+            if (!(e instanceof AprilTagGeneralCheckedException)) {
+                Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
+                LoggerExceptionUtils.logException(e);
+            }
             relativeTranslation2d =
                     absTargetPos
                             .minus(drive.getCurrentPosition().getTranslation())
@@ -101,6 +115,7 @@ public class VisionSpeakerHelper {
     }
 
     public void update() {
+        updateAlliance();
         updateTarget();
         updateRelativeTranslation2d();
         SmartDashboard.putString("translation", relativeTranslation2d.toString());
