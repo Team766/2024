@@ -97,7 +97,8 @@ public class PathSequenceAuto extends Procedure {
             shouldFlipAuton = (alliance.get() == Alliance.Red);
         } else {
             log("Unable to get Alliance for auton " + this.getClass().getSimpleName());
-            log("Cannot determine if we should flip path.");
+            log("Cannot determine if we should flip auton.");
+            // TODO: should we punt on the entire auton?
         }
 
         context.startAsync(new MoveClimbersToBottom());
