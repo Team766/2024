@@ -60,7 +60,7 @@ public class ForwardApriltagCamera extends Mechanism {
 
             SmartDashboard.putNumber("x value SUIIII", toUse.getX());
             SmartDashboard.putNumber("y value SUIIII", toUse.getY());
-        } catch (AprilTagGeneralCheckedException e) {
+        } catch (Exception e) {
             return;
         }
     }
