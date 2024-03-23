@@ -93,7 +93,7 @@ public class Shoulder extends Mechanism {
     }
 
     public double getAbsoluteEncoderPosition() {
-        return absoluteEncoder.getPosition();
+        return absoluteEncoder.getAbsolutePosition();
     }
 
     public double getTargetAngle() {
@@ -146,7 +146,7 @@ public class Shoulder extends Mechanism {
         // this threshold was determined very scientifically around 3:20am.
         if (encoderInitializationCount < ENCODER_INITIALIZATION_LOOPS
                 && absoluteEncoder.isConnected()) {
-            double absPos = absoluteEncoder.getPosition();
+            double absPos = absoluteEncoder.getAbsolutePosition() - 0.071;
             double convertedPos = absoluteEncoderToMotorRotations(absPos);
             // TODO: only set the sensor position after this has settled?
             // can try in the next round of testing.
