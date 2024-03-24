@@ -164,8 +164,8 @@ public class Drive extends Mechanism {
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
-        SmartDashboard.putString(
-                "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
+        // SmartDashboard.putString(
+        //         "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
         // Calculate the necessary turn velocity (m/s) for each motor:
         double turnVelocity = config.wheelDistanceFromCenter() * turn;
@@ -240,7 +240,7 @@ public class Drive extends Mechanism {
         checkContextOwnership();
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
-            SmartDashboard.putNumber("Rotation Target", target.getDegrees());
+            // SmartDashboard.putNumber("Rotation Target", target.getDegrees());
         }
 
         movingToTarget = true;
@@ -385,11 +385,11 @@ public class Drive extends Mechanism {
     public void run() {
         swerveOdometry.run();
         // log(currentPosition.toString());
-        SmartDashboard.putString("pos", getCurrentPosition().toString());
+        // SmartDashboard.putString("pos", getCurrentPosition().toString());
 
-        SmartDashboard.putNumber("Yaw", getHeading());
-        SmartDashboard.putNumber("Pitch", getPitch());
-        SmartDashboard.putNumber("Roll", getRoll());
+        // SmartDashboard.putNumber("Yaw", getHeading());
+        // SmartDashboard.putNumber("Pitch", getPitch());
+        // SmartDashboard.putNumber("Roll", getRoll());
 
         if (movingToTarget) {
             rotationPID.calculate(getHeading());
@@ -401,9 +401,9 @@ public class Drive extends Mechanism {
                             : rotationPID.getOutput()));
         }
 
-        SmartDashboard.putBoolean("movingToTarget", movingToTarget);
+        // SmartDashboard.putBoolean("movingToTarget", movingToTarget);
 
-        SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
+        // SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
 
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();

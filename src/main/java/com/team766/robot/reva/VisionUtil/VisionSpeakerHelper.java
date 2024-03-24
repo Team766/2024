@@ -69,7 +69,7 @@ public class VisionSpeakerHelper {
                                     relativeTarget.rotateBy(
                                             Rotation2d.fromDegrees((drive.getHeading() + 180))));
 
-            SmartDashboard.putString("target pos", absTargetPos.toString());
+            // SmartDashboard.putString("target pos", absTargetPos.toString());
 
             // context.takeOwnership(drive);
 

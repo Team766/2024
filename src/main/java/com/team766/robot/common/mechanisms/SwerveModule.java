@@ -77,7 +77,7 @@ public class SwerveModule {
         this.steer = steer;
         this.encoder = encoder;
         this.offset = computeEncoderOffset();
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
         // Current limit for motors to avoid breaker problems
         drive.setCurrentLimit(driveMotorCurrentLimit);
@@ -109,9 +109,9 @@ public class SwerveModule {
      */
     public void steer(Vector2D vector) {
         boolean reversed = false;
-        SmartDashboard.putString(
-                "[" + modulePlacement + "]" + "x, y",
-                String.format("%.2f, %.2f", vector.getX(), vector.getY()));
+        // SmartDashboard.putString(
+        //         "[" + modulePlacement + "]" + "x, y",
+        //         String.format("%.2f, %.2f", vector.getX(), vector.getY()));
 
         // Calculates the angle of the vector from -180° to 180°
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
@@ -143,18 +143,18 @@ public class SwerveModule {
         // Sets the degree of the steer wheel
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
         // understands
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
+        // steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "RelativeAngle",
-                steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "CANCoder",
-                encoder.getAbsolutePosition().getValueAsDouble() * 360);
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "RelativeAngle",
+        //         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "CANCoder",
+        //         encoder.getAbsolutePosition().getValueAsDouble() * 360);
         // return reversed;
     }
 

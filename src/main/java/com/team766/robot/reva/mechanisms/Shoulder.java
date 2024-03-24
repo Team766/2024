@@ -132,7 +132,7 @@ public class Shoulder extends Mechanism {
                 com.team766.math.Math.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
-        SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
+        // SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
         // actual rotation will happen in run()
     }
 
@@ -153,13 +153,13 @@ public class Shoulder extends Mechanism {
             leftMotor.setSensorPosition(convertedPos);
             encoderInitializationCount++;
         }
-        SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
-        SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
-        SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
-        SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
-        SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
-        SmartDashboard.putNumber(
-                "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
+        // SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        // SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
+        // SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
+        // SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        // SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
+        // SmartDashboard.putNumber(
+        //         "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
         // SmartDashboard.putNumber(
