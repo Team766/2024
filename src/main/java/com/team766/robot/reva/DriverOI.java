@@ -16,7 +16,7 @@ import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.NoRotateShootNow;
 import com.team766.robot.reva.procedures.RotateAndShootNow;
 import com.team766.robot.reva.procedures.ShootNow;
-import com.team766.robot.reva.procedures.ShootVelocityAndIntake;
+import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 
 public class DriverOI extends OIFragment {
 
@@ -133,7 +133,7 @@ public class DriverOI extends OIFragment {
             } else if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
                 visionContext = context.startAsync(new NoRotateShootNow(true));
             } else {
-                visionContext = context.startAsync(new ShootVelocityAndIntake());
+                visionContext = context.startAsync(new DriverShootVelocityAndIntake());
             }
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
