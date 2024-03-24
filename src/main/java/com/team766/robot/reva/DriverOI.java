@@ -107,14 +107,14 @@ public class DriverOI extends OIFragment {
             context.releaseOwnership(intake);
 
             visionContext = context.startAsync(new ShootNow());
-            //isRotatingToSpeaker = true;
+            // isRotatingToSpeaker = true;
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
             context.takeOwnership(drive);
             context.takeOwnership(shooter);
             context.takeOwnership(shoulder);
             context.takeOwnership(intake);
-            
+
             // isRotatingToSpeaker = false;
             // context.takeOwnership(drive);
             // drive.stopDrive();
