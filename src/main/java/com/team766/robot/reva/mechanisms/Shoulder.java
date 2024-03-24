@@ -20,7 +20,7 @@ public class Shoulder extends Mechanism {
         // TODO: Find actual values.
         BOTTOM(0),
         INTAKE_FLOOR(0),
-        SHOOT_LOW(10),
+        SHOOT_LOW(15),
         SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
         AMP(90),

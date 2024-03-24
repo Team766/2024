@@ -108,6 +108,7 @@ public class DriverOI extends OIFragment {
             drive.setCross();
 
             context.releaseOwnership(drive);
+            // context.releaseOwnership(shoulder);
         }
 
         // TODO: update OI with new optimization OI
