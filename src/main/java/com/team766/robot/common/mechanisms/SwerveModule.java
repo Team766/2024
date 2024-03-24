@@ -170,12 +170,12 @@ public class SwerveModule {
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
-        //if (reversed) {
+        // if (reversed) {
         //    power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         //    reversed = false;
-        //} else {
-            power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
-        //}
+        // } else {
+        power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
+        // }
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
 

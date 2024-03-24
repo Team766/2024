@@ -9,7 +9,6 @@ import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
@@ -38,9 +37,8 @@ public class ShootNow extends VisionPIDProcedure {
         context.takeOwnership(Robot.shoulder);
         context.takeOwnership(Robot.intake);
 
-		Robot.lights.signalStartingShootingProcedure();
+        Robot.lights.signalStartingShootingProcedure();
         Robot.drive.stopDrive();
-		
 
         Transform3d toUse;
         try {
@@ -55,7 +53,6 @@ public class ShootNow extends VisionPIDProcedure {
         double y = toUse.getY();
 
         anglePID.setSetpoint(0);
-
 
         double distanceOfRobotToTag =
                 Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
@@ -104,9 +101,9 @@ public class ShootNow extends VisionPIDProcedure {
 
         context.releaseOwnership(Robot.shooter);
         context.releaseOwnership(Robot.intake);
-		Robot.lights.signalFinishingShootingProcedure();
+        Robot.lights.signalFinishingShootingProcedure();
         new ShootVelocityAndIntake(power).run(context);
-	}
+    }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
         GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();

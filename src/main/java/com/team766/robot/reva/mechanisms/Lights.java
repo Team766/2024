@@ -66,12 +66,12 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
-    public boolean signalFinishingShootingProcedure(){
+    public boolean signalFinishingShootingProcedure() {
         ErrorCode e = m_candle.setLEDs(0, 50, 100);
         return handleErrorCode(e);
     }
 
-    public boolean signalStartingShootingProcedure(){
+    public boolean signalStartingShootingProcedure() {
         ErrorCode e = m_candle.setLEDs(50, 50, 2);
         return handleErrorCode(e);
     }
