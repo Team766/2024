@@ -10,6 +10,7 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
+import com.team766.logging.ShuffleboardUtil;
 
 public class Intake extends Mechanism {
 
@@ -98,10 +99,10 @@ public class Intake extends Mechanism {
     }
 
     public void run() {
-        // SmartDashboard.putString("[INTAKE]", state.toString());
-        // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
-        // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
-        // SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
+        ShuffleboardUtil.putString("[INTAKE]", state.toString());
+        ShuffleboardUtil.putNumber("[INTAKE POWER]", intakePower);
+        ShuffleboardUtil.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
+        ShuffleboardUtil.putNumber("Prox Sensor", sensor.getRange());
     }
 
     // feel free to refactor these two functions later - I didn't want to mess up existing code

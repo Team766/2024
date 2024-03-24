@@ -4,6 +4,7 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Mechanism;
 import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.ShuffleboardUtil;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -59,9 +60,9 @@ public class ForwardApriltagCamera extends Mechanism {
             Transform3d toUse =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
 
-            // SmartDashboard.putNumber("x value SUIIII", toUse.getX());
-            // SmartDashboard.putNumber("y value SUIIII", toUse.getY());
-        } catch (Exception e) {
+            ShuffleboardUtil.putNumber("x value SUIIII", toUse.getX());
+            ShuffleboardUtil.putNumber("y value SUIIII", toUse.getY());
+        } catch (AprilTagGeneralCheckedException e) {
             return;
         }
     }

@@ -9,6 +9,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
+import com.team766.logging.ShuffleboardUtil;
 
 public class Shooter extends Mechanism {
     public static final double DEFAULT_SPEED =
@@ -88,14 +89,14 @@ public class Shooter extends Mechanism {
 
     public void run() {
         if (speedUpdated || rateLimiter.next()) {
-            // SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
-            // SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
-            // SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
-            // SmartDashboard.putNumber(
-            //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
-            // SmartDashboard.putNumber(
-            //         "[SHOOTER] Bottom Motor Current",
-            //         MotorUtil.getCurrentUsage(shooterMotorBottom));
+            ShuffleboardUtil.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+            ShuffleboardUtil.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
+            ShuffleboardUtil.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+            ShuffleboardUtil.putNumber(
+                    "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
+            ShuffleboardUtil.putNumber(
+                    "[SHOOTER] Bottom Motor Current",
+                    MotorUtil.getCurrentUsage(shooterMotorBottom));
         }
 
         // SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
