@@ -94,6 +94,8 @@ public class ShootNow extends VisionPIDProcedure {
             Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
         }
 
+        Robot.drive.stopDrive();
+
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
@@ -103,6 +105,7 @@ public class ShootNow extends VisionPIDProcedure {
         context.releaseOwnership(Robot.intake);
         Robot.lights.signalFinishingShootingProcedure();
         new ShootVelocityAndIntake(power).run(context);
+        context.releaseOwnership(Robot.drive);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
