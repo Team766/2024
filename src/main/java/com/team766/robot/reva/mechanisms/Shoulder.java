@@ -172,10 +172,10 @@ public class Shoulder extends Mechanism {
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
-        SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
+        // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
         double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getAngle()));
-        SmartDashboard.putNumber("[SHOULDER] FF", ff);
-        SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
+        // SmartDashboard.putNumber("[SHOULDER] FF", ff);
+        // SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
         PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
         positionRequest.FeedForward = ff;
         leftTalon.setControl(positionRequest);

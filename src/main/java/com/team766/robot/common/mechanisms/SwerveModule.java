@@ -168,7 +168,7 @@ public class SwerveModule {
 
         // sets the power to the magnitude of the vector and reverses power if necessary
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
         //if (reversed) {
         //    power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
@@ -176,11 +176,11 @@ public class SwerveModule {
         //} else {
             power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         //}
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
 
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
     }
 
     /**
@@ -198,17 +198,17 @@ public class SwerveModule {
     }
 
     public void dashboardCurrentUsage() {
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " steer supply current",
-                MotorUtil.getCurrentUsage(steer));
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " steer stator current",
-                MotorUtil.getStatorCurrentUsage(steer));
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " drive supply current",
-                MotorUtil.getCurrentUsage(drive));
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " drive stator current",
-                MotorUtil.getStatorCurrentUsage(drive));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " steer supply current",
+        //         MotorUtil.getCurrentUsage(steer));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " steer stator current",
+        //         MotorUtil.getStatorCurrentUsage(steer));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " drive supply current",
+        //         MotorUtil.getCurrentUsage(drive));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " drive stator current",
+        //         MotorUtil.getStatorCurrentUsage(drive));
     }
 }
