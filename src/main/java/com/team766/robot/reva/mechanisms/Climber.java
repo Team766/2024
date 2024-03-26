@@ -129,6 +129,11 @@ public class Climber extends Mechanism {
         return Math.abs(getHeightRight()) < POSITION_LOCATION_THRESHOLD;
     }
 
+    public boolean checkDevices() {
+        return (MotorUtil.checkMotor("[CLIMBER] left", leftMotor)
+                && MotorUtil.checkMotor("[CLIMBER] right", rightMotor));
+    }
+
     @Override
     public void run() {
         // SmartDashboard.putNumber("[CLIMBER] Left Rotations", leftMotor.getSensorPosition());

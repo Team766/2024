@@ -124,4 +124,26 @@ public final class MotorUtil {
         limitSwitchConfigs.ReverseSoftLimitEnable = enable;
         applyLimitSwitchConfigs(talonFX, limitSwitchConfigs);
     }
+
+    public static boolean checkMotor(String label, MotorController motor) {
+        if (motor instanceof TalonFX) {
+            TalonFX talonFX = (TalonFX) motor;
+            boolean check = talonFX.isAlive();
+            Logger.get(Category.MECHANISMS).logData(Severity.INFO, "{0}: {1}", label, check);
+            // TODO: also check for faults, sticky faults?
+            return check;
+        }
+
+        if (motor instanceof CANSparkMax) {
+            CANSparkMax sparkMax = (CANSparkMax) motor;
+            // CANSparkMax doesn't have an "isAlive()" method.  Use something else that depends on
+            // being able to communicate over the CAN bus.
+            boolean check = sparkMax.getMotorTemperature() <= 0;
+            Logger.get(Category.MECHANISMS).logData(Severity.INFO, "{0}: {1}", label, check);
+            // TODO: also check for faults?
+            return check;
+        }
+        Logger.get(Category.MECHANISMS).logData(Severity.INFO, "{0}: unknown", label);
+        return false;
+    }
 }

@@ -379,6 +379,14 @@ public class Drive extends Mechanism {
                 relativeLocation.getX() * halfDistance, relativeLocation.getY() * halfDistance);
     }
 
+    public boolean checkDevices() {
+        // TODO: also check pigeon.
+        return (swerveFR.checkDevices()
+                && swerveFL.checkDevices()
+                && swerveBR.checkDevices()
+                && swerveBL.checkDevices());
+    }
+
     // Odometry
     @Override
     public void run() {
