@@ -138,7 +138,7 @@ public final class MotorUtil {
             CANSparkMax sparkMax = (CANSparkMax) motor;
             // CANSparkMax doesn't have an "isAlive()" method.  Use something else that depends on
             // being able to communicate over the CAN bus.
-            boolean check = sparkMax.getMotorTemperature() <= 0;
+            boolean check = sparkMax.getMotorTemperature() > 0;
             Logger.get(Category.MECHANISMS).logData(Severity.INFO, "{0}: {1}", label, check);
             // TODO: also check for faults?
             return check;
