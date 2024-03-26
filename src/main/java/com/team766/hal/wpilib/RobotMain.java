@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class RobotMain extends LoggedRobot {
