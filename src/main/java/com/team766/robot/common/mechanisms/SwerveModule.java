@@ -153,8 +153,8 @@ public class SwerveModule {
         //         "[" + modulePlacement + "]" + "RelativeAngle",
         //         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
         SmartDashboard.putNumber(
-                 "[" + modulePlacement + "]" + "CANCoder",
-                 encoder.getAbsolutePosition().getValueAsDouble() * 360);
+                "[" + modulePlacement + "]" + "CANCoder",
+                encoder.getAbsolutePosition().getValueAsDouble() * 360);
         // return reversed;
     }
 
@@ -168,7 +168,8 @@ public class SwerveModule {
 
         // sets the power to the magnitude of the vector and reverses power if necessary
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
-        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive",
+        // vector.getNorm());
         double power;
         // if (reversed) {
         //    power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;

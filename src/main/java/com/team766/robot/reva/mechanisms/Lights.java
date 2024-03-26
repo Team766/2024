@@ -36,18 +36,19 @@ public class Lights extends Mechanism {
         ErrorCode e = m_candle.setLEDs(92, 250, 40);
         return handleErrorCode(e);
     }
-    
-    public boolean signalFinishedShootingProcedure(){
+
+    public boolean signalFinishedShootingProcedure() {
         ErrorCode e = m_candle.setLEDs(0, 150, 0);
         return handleErrorCode(e);
     }
+
     // Purple
     public boolean signalCameraNotConnected() {
         ErrorCode e = m_candle.setLEDs(100, 0, 100);
         return handleErrorCode(e);
     }
 
-    public boolean signalShooterOutOfRange(){
+    public boolean signalShooterOutOfRange() {
         ErrorCode e = m_candle.setLEDs(150, 0, 0);
         return handleErrorCode(e);
     }

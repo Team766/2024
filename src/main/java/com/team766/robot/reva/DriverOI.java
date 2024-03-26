@@ -114,7 +114,7 @@ public class DriverOI extends OIFragment {
             context.takeOwnership(shooter);
             context.takeOwnership(shoulder);
             context.takeOwnership(intake);
-          
+
             Robot.shooter.stop();
             Robot.intake.stop();
 

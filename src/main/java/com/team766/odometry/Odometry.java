@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /*
@@ -184,8 +183,10 @@ public class Odometry {
                             gyroPosition.plus(Rotation2d.fromDegrees(absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
-            // SmartDashboard.putNumber("curr rotation", currPositions[i].getRotation().getDegrees());
-            // SmartDashboard.putNumber("prev rotation", prevPositions[i].getRotation().getDegrees());
+            // SmartDashboard.putNumber("curr rotation",
+            // currPositions[i].getRotation().getDegrees());
+            // SmartDashboard.putNumber("prev rotation",
+            // prevPositions[i].getRotation().getDegrees());
             // SmartDashboard.putNumber("rotation change", rotationChange.getDegrees());
 
             double yaw = Math.toRadians(gyro.getAngle());

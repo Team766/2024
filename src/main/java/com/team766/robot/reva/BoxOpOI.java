@@ -28,6 +28,7 @@ public class BoxOpOI extends OIFragment {
     private final OICondition moveShoulder;
     private final OICondition enableClimberControls;
     private final OICondition climberOverrideSoftLimits;
+
     // private final OICondition shootoi;
 
     public BoxOpOI(
