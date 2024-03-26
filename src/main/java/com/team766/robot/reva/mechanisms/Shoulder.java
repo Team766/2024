@@ -20,7 +20,7 @@ public class Shoulder extends Mechanism {
         // TODO: Find actual values.
         BOTTOM(0),
         INTAKE_FLOOR(0),
-        SHOOT_LOW(10),
+        SHOOT_LOW(15),
         SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
         AMP(90),
@@ -132,7 +132,7 @@ public class Shoulder extends Mechanism {
                 com.team766.math.Math.clamp(
                         angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
-        SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
+        // SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
         // actual rotation will happen in run()
     }
 
@@ -153,13 +153,13 @@ public class Shoulder extends Mechanism {
             leftMotor.setSensorPosition(convertedPos);
             encoderInitializationCount++;
         }
-        SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
-        SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
-        SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
-        SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
-        SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
-        SmartDashboard.putNumber(
-                "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
+        // SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        // SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
+        // SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
+        // SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);
+        // SmartDashboard.putNumber("[SHOULDER] Encoder Frequency", absoluteEncoder.getFrequency());
+        // SmartDashboard.putNumber(
+        //         "[SHOULDER] Absolute Encoder Position", getAbsoluteEncoderPosition());
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Left Motor Supply Current", MotorUtil.getCurrentUsage(leftMotor));
         // SmartDashboard.putNumber(
@@ -172,10 +172,10 @@ public class Shoulder extends Mechanism {
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
 
         TalonFX leftTalon = (TalonFX) leftMotor;
-        SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
+        // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
         double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(getAngle()));
-        SmartDashboard.putNumber("[SHOULDER] FF", ff);
-        SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
+        // SmartDashboard.putNumber("[SHOULDER] FF", ff);
+        // SmartDashboard.putNumber("[SHOULDER VELOCITY]", Math.abs(leftMotor.getSensorVelocity()));
         PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
         positionRequest.FeedForward = ff;
         leftTalon.setControl(positionRequest);

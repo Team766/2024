@@ -17,7 +17,9 @@ public class Shooter extends Mechanism {
     private static final double CURRENT_LIMIT = 40.0; // needs tuning
     private static final double MAX_SPEED = 5600.0; // spec is 6000.0
     private static final double MIN_SPEED = 0.0;
-    private static final double SPEED_TOLERANCE = 600.0; // rpm
+
+    // TODO: Get the voltage of the battery and set the speed tolerance propotional to this
+    private static final double SPEED_TOLERANCE = 800.0; // rpm
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;

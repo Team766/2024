@@ -44,12 +44,13 @@ public class RotateAndShootNow extends Procedure {
         Robot.shoulder.rotate(armAngle);
         Robot.drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
         // Robot.shooter.shoot(power);
+        context.releaseOwnership(Robot.shoulder);
 
         context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
         context.waitForConditionOrTimeout(Robot.drive::isAtRotationTarget, 3.0);
         Robot.drive.stopDrive();
 
-        context.releaseOwnership(Robot.shoulder);
+        // context.releaseOwnership(Robot.shoulder);
         context.releaseOwnership(Robot.drive);
         context.releaseOwnership(Robot.shooter);
         new ShootVelocityAndIntake().run(context);

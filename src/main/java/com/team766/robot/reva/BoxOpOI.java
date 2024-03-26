@@ -28,6 +28,7 @@ public class BoxOpOI extends OIFragment {
     private final OICondition moveShoulder;
     private final OICondition enableClimberControls;
     private final OICondition climberOverrideSoftLimits;
+    // private final OICondition shootoi;
 
     public BoxOpOI(
             JoystickReader gamepad,
@@ -43,6 +44,7 @@ public class BoxOpOI extends OIFragment {
         this.shooter = shooter;
         this.climber = climber;
 
+        // shootoi = new OICondition(() -> gamepad.getPOV()==270);
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
         shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
@@ -99,12 +101,12 @@ public class BoxOpOI extends OIFragment {
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
                     // other shoot pos
                     context.takeOwnership(shoulder);
-                    shoulder.rotate(ShoulderPosition.TOP);
+                    shoulder.rotate(ShoulderPosition.AMP);
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
                     // amp shot
                     context.takeOwnership(shoulder);
-                    shoulder.rotate(ShoulderPosition.AMP);
+                    shoulder.rotate(ShoulderPosition.TOP);
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
                     context.takeOwnership(shoulder);
@@ -119,6 +121,18 @@ public class BoxOpOI extends OIFragment {
                   context.releaseOwnership(shoulder);
               } */
         }
+
+        // if(shootoi.isTriggering()){
+        //     if(shootoi.isNewlyTriggering()){
+        //         context.takeOwnership(shooter);
+        //     }
+
+        //     if(gamepad.getPOV()== 270){
+        //         shooter.shoot(3000);
+        //     }
+        // } else if (shootoi.isFinishedTriggering()){
+        //     context.releaseOwnership(shooter);
+        // }
 
         // climber
         if (enableClimberControls.isTriggering()) {

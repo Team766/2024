@@ -77,7 +77,7 @@ public class SwerveModule {
         this.steer = steer;
         this.encoder = encoder;
         this.offset = computeEncoderOffset();
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Offset", offset);
 
         // Current limit for motors to avoid breaker problems
         drive.setCurrentLimit(driveMotorCurrentLimit);
@@ -109,9 +109,9 @@ public class SwerveModule {
      */
     public void steer(Vector2D vector) {
         boolean reversed = false;
-        SmartDashboard.putString(
-                "[" + modulePlacement + "]" + "x, y",
-                String.format("%.2f, %.2f", vector.getX(), vector.getY()));
+        // SmartDashboard.putString(
+        //         "[" + modulePlacement + "]" + "x, y",
+        //         String.format("%.2f, %.2f", vector.getX(), vector.getY()));
 
         // Calculates the angle of the vector from -180° to 180°
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
@@ -143,18 +143,18 @@ public class SwerveModule {
         // Sets the degree of the steer wheel
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
         // understands
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
 
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "RelativeAngle",
+        //         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
         SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "RelativeAngle",
-                steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "CANCoder",
-                encoder.getAbsolutePosition().getValueAsDouble() * 360);
+                 "[" + modulePlacement + "]" + "CANCoder",
+                 encoder.getAbsolutePosition().getValueAsDouble() * 360);
         // return reversed;
     }
 
@@ -168,19 +168,20 @@ public class SwerveModule {
 
         // sets the power to the magnitude of the vector and reverses power if necessary
         // TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
-        SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
+        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "Desired drive", vector.getNorm());
         double power;
         // if (reversed) {
         //    power = -vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         //    reversed = false;
+
         // } else {
         power = vector.getNorm() * MOTOR_WHEEL_FACTOR_MPS;
         // }
         SmartDashboard.putNumber("[" + modulePlacement + "]" + "Input motor velocity", power);
         drive.set(ControlMode.Velocity, power);
 
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + "Read Vel", drive.getSensorVelocity());
     }
 
     /**
@@ -198,17 +199,17 @@ public class SwerveModule {
     }
 
     public void dashboardCurrentUsage() {
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " steer supply current",
-                MotorUtil.getCurrentUsage(steer));
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " steer stator current",
-                MotorUtil.getStatorCurrentUsage(steer));
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " drive supply current",
-                MotorUtil.getCurrentUsage(drive));
-        SmartDashboard.putNumber(
-                "[" + modulePlacement + "]" + " drive stator current",
-                MotorUtil.getStatorCurrentUsage(drive));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " steer supply current",
+        //         MotorUtil.getCurrentUsage(steer));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " steer stator current",
+        //         MotorUtil.getStatorCurrentUsage(steer));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " drive supply current",
+        //         MotorUtil.getCurrentUsage(drive));
+        // SmartDashboard.putNumber(
+        //         "[" + modulePlacement + "]" + " drive stator current",
+        //         MotorUtil.getStatorCurrentUsage(drive));
     }
 }
