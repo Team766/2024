@@ -146,15 +146,15 @@ public class SwerveModule {
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        // steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
+        steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
         // SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + "RelativeAngle",
         //         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
-        // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "CANCoder",
-        //         encoder.getAbsolutePosition().getValueAsDouble() * 360);
+        SmartDashboard.putNumber(
+                 "[" + modulePlacement + "]" + "CANCoder",
+                 encoder.getAbsolutePosition().getValueAsDouble() * 360);
         // return reversed;
     }
 
