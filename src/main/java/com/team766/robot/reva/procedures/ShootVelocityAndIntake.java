@@ -29,5 +29,6 @@ public class ShootVelocityAndIntake extends Procedure {
 
         new IntakeStop().run(context);
         Robot.shooter.stop();
+        Robot.lights.signalFinishedShootingProcedure();
     }
 }

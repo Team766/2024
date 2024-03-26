@@ -57,6 +57,9 @@ public class ShootNow extends VisionPIDProcedure {
         double distanceOfRobotToTag =
                 Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
 
+        if(distanceOfRobotToTag > VisionPIDProcedure.scoringPositions.get(VisionPIDProcedure.scoringPositions.size() - 1).distanceFromCenterApriltag()){
+            Robot.lights.signalShooterOutOfRange();
+        }
         double power;
         double armAngle;
         try {
@@ -66,6 +69,8 @@ public class ShootNow extends VisionPIDProcedure {
             LoggerExceptionUtils.logException(e);
             return;
         }
+
+        Robot.shooter.shoot(power);
 
         Robot.shoulder.rotate(armAngle);
 
