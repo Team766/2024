@@ -13,6 +13,8 @@ public class Lights extends Mechanism {
 
     public Lights() {
         // Show that robot lights mechanism is ready
+        // NOTE: this will always display purple unless we reboot in the middle of a match.
+        // the alliance won't be available when Lights is typically created.
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
@@ -35,9 +37,19 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
+    public boolean signalFinishedShootingProcedure() {
+        ErrorCode e = m_candle.setLEDs(0, 150, 0);
+        return handleErrorCode(e);
+    }
+
     // Purple
     public boolean signalCameraNotConnected() {
         ErrorCode e = m_candle.setLEDs(100, 0, 100);
+        return handleErrorCode(e);
+    }
+
+    public boolean signalShooterOutOfRange() {
+        ErrorCode e = m_candle.setLEDs(150, 0, 0);
         return handleErrorCode(e);
     }
 
@@ -61,6 +73,16 @@ public class Lights extends Mechanism {
 
     public boolean isDoingShootingProcedure() {
         ErrorCode e = m_candle.setLEDs(0, 227, 197);
+        return handleErrorCode(e);
+    }
+
+    public boolean signalFinishingShootingProcedure() {
+        ErrorCode e = m_candle.setLEDs(0, 50, 100);
+        return handleErrorCode(e);
+    }
+
+    public boolean signalStartingShootingProcedure() {
+        ErrorCode e = m_candle.setLEDs(50, 50, 2);
         return handleErrorCode(e);
     }
 

@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 public class VisionSpeakerHelper {
@@ -24,6 +23,11 @@ public class VisionSpeakerHelper {
 
     // TODO: make this static
     public VisionSpeakerHelper(Drive drive) {
+        camera = Robot.forwardApriltagCamera.getCamera();
+        this.drive = drive;
+    }
+
+    private void updateAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
@@ -37,9 +41,6 @@ public class VisionSpeakerHelper {
         } else {
             tagId = -1;
         }
-
-        camera = Robot.forwardApriltagCamera.getCamera();
-        this.drive = drive;
     }
 
     // TODO: reformat the code to be more efficient
@@ -47,7 +48,7 @@ public class VisionSpeakerHelper {
      * Updates current target position based on odometry robot position and vision
      * @return whether or not it was successfully reset or not, depending on if it sees the tag
      */
-    public boolean updateTarget() {
+    private boolean updateTarget() {
         try {
 
             // re-calculates the absolute position of the target according to odometry
@@ -67,7 +68,7 @@ public class VisionSpeakerHelper {
                                     relativeTarget.rotateBy(
                                             Rotation2d.fromDegrees((drive.getHeading() + 180))));
 
-            SmartDashboard.putString("target pos", absTargetPos.toString());
+            // SmartDashboard.putString("target pos", absTargetPos.toString());
 
             // context.takeOwnership(drive);
 
@@ -82,7 +83,11 @@ public class VisionSpeakerHelper {
 
             return true;
 
-        } catch (AprilTagGeneralCheckedException e) {
+        } catch (Exception e) {
+            if (!(e instanceof AprilTagGeneralCheckedException)) {
+                // Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
+                // LoggerExceptionUtils.logException(e);
+            }
             return false;
         }
     }
@@ -92,7 +97,11 @@ public class VisionSpeakerHelper {
             Transform3d transform3d =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
             relativeTranslation2d = new Translation2d(transform3d.getX(), transform3d.getY());
-        } catch (AprilTagGeneralCheckedException e) {
+        } catch (Exception e) {
+            if (!(e instanceof AprilTagGeneralCheckedException)) {
+                // Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
+                // LoggerExceptionUtils.logException(e);
+            }
             relativeTranslation2d =
                     absTargetPos
                             .minus(drive.getCurrentPosition().getTranslation())
@@ -101,10 +110,11 @@ public class VisionSpeakerHelper {
     }
 
     public void update() {
+        updateAlliance();
         updateTarget();
         updateRelativeTranslation2d();
-        SmartDashboard.putString("translation", relativeTranslation2d.toString());
-        SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
+        // SmartDashboard.putString("translation", relativeTranslation2d.toString());
+        // SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
     }
 
     public Rotation2d getHeadingToTarget() {
@@ -115,23 +125,23 @@ public class VisionSpeakerHelper {
         // Calculated the heading the robot needs to face from this translation
 
         double val = relativeTranslation2d.getAngle().getDegrees() + drive.getHeading();
-        SmartDashboard.putNumber(
-                "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
-        SmartDashboard.putNumber(
-                "heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
-        SmartDashboard.putNumber("output heading", val);
+        // SmartDashboard.putNumber(
+        //         "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
+        // SmartDashboard.putNumber(
+        //         "heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
+        // SmartDashboard.putNumber("output heading", val);
         return Rotation2d.fromDegrees(val);
     }
 
     public double getShooterPower() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestPowerToUse(relativeTranslation2d.getNorm());
-        SmartDashboard.putNumber("shooter power", val);
+        // SmartDashboard.putNumber("shooter power", val);
         return val;
     }
 
     public double getArmAngle() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestArmAngleToUse(relativeTranslation2d.getNorm());
-        SmartDashboard.putNumber("arm angle", val);
+        // SmartDashboard.putNumber("arm angle", val);
         return val;
     }
 }

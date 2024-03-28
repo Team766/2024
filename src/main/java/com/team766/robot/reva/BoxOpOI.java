@@ -29,6 +29,8 @@ public class BoxOpOI extends OIFragment {
     private final OICondition enableClimberControls;
     private final OICondition climberOverrideSoftLimits;
 
+    // private final OICondition shootoi;
+
     public BoxOpOI(
             JoystickReader gamepad,
             // XboxController xboxController,
@@ -43,6 +45,7 @@ public class BoxOpOI extends OIFragment {
         this.shooter = shooter;
         this.climber = climber;
 
+        // shootoi = new OICondition(() -> gamepad.getPOV()==270);
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
         shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
@@ -82,31 +85,55 @@ public class BoxOpOI extends OIFragment {
 
         if (!enableClimberControls.isTriggering()) {
             if (moveShoulder.isTriggering()) {
-                if (moveShoulder.isNewlyTriggering()) {
-                    context.takeOwnership(shoulder);
-                }
+                // if (moveShoulder.isNewlyTriggering()) {
+                //     context.takeOwnership(shoulder);
+                // }
 
                 if (gamepad.getButtonPressed(InputConstants.XBOX_A)) {
                     // intake
+                    context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.INTAKE_FLOOR);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_B)) {
                     // shoot closer to speaker
+                    context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.SHOOT_LOW);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
                     // other shoot pos
-                    shoulder.rotate(ShoulderPosition.TOP);
+                    context.takeOwnership(shoulder);
+                    shoulder.rotate(ShoulderPosition.AMP);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
                     // amp shot
-                    shoulder.rotate(ShoulderPosition.AMP);
+                    context.takeOwnership(shoulder);
+                    shoulder.rotate(ShoulderPosition.TOP);
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
+                    context.takeOwnership(shoulder);
                     shoulder.nudgeUp();
+                    context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 180) {
+                    context.takeOwnership(shoulder);
                     shoulder.nudgeDown();
+                    context.releaseOwnership(shoulder);
                 }
-            } else if (moveShoulder.isFinishedTriggering()) {
-                context.releaseOwnership(shoulder);
-            }
+            } /*else if (moveShoulder.isFinishedTriggering()) {
+                  context.releaseOwnership(shoulder);
+              } */
         }
+
+        // if(shootoi.isTriggering()){
+        //     if(shootoi.isNewlyTriggering()){
+        //         context.takeOwnership(shooter);
+        //     }
+
+        //     if(gamepad.getPOV()== 270){
+        //         shooter.shoot(3000);
+        //     }
+        // } else if (shootoi.isFinishedTriggering()){
+        //     context.releaseOwnership(shooter);
+        // }
 
         // climber
         if (enableClimberControls.isTriggering()) {

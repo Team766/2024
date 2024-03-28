@@ -15,6 +15,7 @@ import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.NoRotateShootNow;
 import com.team766.robot.reva.procedures.RotateAndShootNow;
+import com.team766.robot.reva.procedures.ShootNow;
 import com.team766.robot.reva.procedures.ShootVelocityAndIntake;
 
 public class DriverOI extends OIFragment {
@@ -100,14 +101,28 @@ public class DriverOI extends OIFragment {
         visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            isRotatingToSpeaker = true;
-        } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            isRotatingToSpeaker = false;
-            context.takeOwnership(drive);
-            drive.stopDrive();
-            drive.setCross();
-
             context.releaseOwnership(drive);
+            context.releaseOwnership(shooter);
+            context.releaseOwnership(shoulder);
+            context.releaseOwnership(intake);
+
+            visionContext = context.startAsync(new ShootNow());
+            // isRotatingToSpeaker = true;
+        } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
+            visionContext.stop();
+            context.takeOwnership(drive);
+            context.takeOwnership(shooter);
+            context.takeOwnership(shoulder);
+            context.takeOwnership(intake);
+
+            Robot.shooter.stop();
+            Robot.intake.stop();
+
+            // isRotatingToSpeaker = false;
+            // context.takeOwnership(drive);
+            // drive.stopDrive();
+            // drive.setCross();
+
         }
 
         // TODO: update OI with new optimization OI

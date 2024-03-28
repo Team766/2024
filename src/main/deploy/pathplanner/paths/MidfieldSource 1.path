@@ -3,54 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8139011185429776,
-        "y": 7.04708475620655
+        "x": 0.711931673863348,
+        "y": 4.38945568631878
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.196897430831899,
-        "y": 7.214845624135694
-      },
-      "isLocked": false,
-      "linkedName": "3 Piece 1"
-    },
-    {
-      "anchor": {
-        "x": 2.8438902294471258,
-        "y": 5.646385431659753
-      },
-      "prevControl": {
-        "x": 2.5489874081600017,
-        "y": 5.752742852707928
-      },
-      "nextControl": {
-        "x": 2.8457928338581193,
-        "y": 5.645699252743102
+        "x": 1.383093914335977,
+        "y": 3.4618717015211815
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.623633571341217,
-        "y": 5.646385431659753
+        "x": 2.9200803864570695,
+        "y": 2.2531026867609296
       },
       "prevControl": {
-        "x": 2.636163675105128,
-        "y": 5.638427925003999
+        "x": 2.0452891137263762,
+        "y": 2.8716503683007364
+      },
+      "nextControl": {
+        "x": 4.074795335647494,
+        "y": 1.436626486179335
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.114253779433485,
+        "y": 0.7819734898729062
+      },
+      "prevControl": {
+        "x": 6.706868714663355,
+        "y": 0.8558211977535082
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Alt 3 Piece 2"
+      "linkedName": "Midfield Source 1"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.85,
-      "rotationDegrees": -54.676493707084944,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -61,13 +55,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.603601095467792,
-    "rotateFast": true
+    "rotation": 0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "RevA",
   "previewStartingState": {
-    "rotation": 36.0,
+    "rotation": -60.51720636570292,
     "velocity": 0
   },
   "useDefaultConstraints": false

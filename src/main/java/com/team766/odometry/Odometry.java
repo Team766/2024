@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /*
@@ -175,21 +174,23 @@ public class Odometry {
                                     .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
                                     .getTranslation(),
                             currPositions[i].getRotation());
-            SmartDashboard.putNumber(
-                    "early curr rotation", currPositions[i].getRotation().getDegrees());
-            SmartDashboard.putString("prev rotation direct", prevPositions[i].toString());
+            // SmartDashboard.putNumber(
+            //         "early curr rotation", currPositions[i].getRotation().getDegrees());
+            // SmartDashboard.putString("prev rotation direct", prevPositions[i].toString());
             currPositions[i] =
                     new Pose2d(
                             currPositions[i].getTranslation(),
                             gyroPosition.plus(Rotation2d.fromDegrees(absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
-            SmartDashboard.putNumber("curr rotation", currPositions[i].getRotation().getDegrees());
-            SmartDashboard.putNumber("prev rotation", prevPositions[i].getRotation().getDegrees());
-            SmartDashboard.putNumber("rotation change", rotationChange.getDegrees());
+            // SmartDashboard.putNumber("curr rotation",
+            // currPositions[i].getRotation().getDegrees());
+            // SmartDashboard.putNumber("prev rotation",
+            // prevPositions[i].getRotation().getDegrees());
+            // SmartDashboard.putNumber("rotation change", rotationChange.getDegrees());
 
             double yaw = Math.toRadians(gyro.getAngle());
-            SmartDashboard.putNumber("odom yaw", yaw);
+            // SmartDashboard.putNumber("odom yaw", yaw);
             double roll = Math.toRadians(gyro.getRoll());
             double pitch = Math.toRadians(gyro.getPitch());
 
