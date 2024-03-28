@@ -12,7 +12,12 @@ public class ScoringPosition {
      * @param swerve_angle the angle the robot should be facing relative to the AprilTag (where 0 degrees is flush)
      */
     public ScoringPosition(
-            double speed, double angle, double x_position, double y_position, double swerve_angle, int tagId) {
+            double speed,
+            double angle,
+            double x_position,
+            double y_position,
+            double swerve_angle,
+            int tagId) {
         this.speed = speed;
         this.angle = angle;
         this.x_position = x_position;

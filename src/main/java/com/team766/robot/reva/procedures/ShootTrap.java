@@ -1,44 +1,39 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.robot.reva.Robot;
-import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
-import edu.wpi.first.math.geometry.Transform3d;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.ViSIONbase.ScoringPosition;
 import com.team766.framework.Context;
-import com.team766.logging.LoggerExceptionUtils;
+import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.ScoringPositions;
+import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 
 public class ShootTrap extends VisionPIDProcedure {
-	
-	int tagId;
 
+    int tagId;
 
-	public void run(Context context){
-		
-		while (true){
-			context.yield();
-			try{
-				tagId = getTagId();
-				break;
-			} catch (AprilTagGeneralCheckedException e){
-				continue;
-			}
-		}
+    public void run(Context context) {
 
-		for(int i = 0; i < ScoringPositions.trapScoringPositions.size(); i++){
-			if(ScoringPositions.trapScoringPositions.get(i).tagId == tagId){
-				new DriveToAndScoreAt(ScoringPositions.trapScoringPositions.get(i)).run(context);
-				break;
-			}
-		}
-		
-	}
+        while (true) {
+            context.yield();
+            try {
+                tagId = getTagId();
+                break;
+            } catch (AprilTagGeneralCheckedException e) {
+                continue;
+            }
+        }
 
-	private int getTagId() throws AprilTagGeneralCheckedException{
-		GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+        for (int i = 0; i < ScoringPositions.trapScoringPositions.size(); i++) {
+            if (ScoringPositions.trapScoringPositions.get(i).tagId == tagId) {
+                new DriveToAndScoreAt(ScoringPositions.trapScoringPositions.get(i)).run(context);
+                break;
+            }
+        }
+    }
 
-		return toUse.getTagIdOfBestTarget();
-	}
+    private int getTagId() throws AprilTagGeneralCheckedException {
+        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+
+        return toUse.getTagIdOfBestTarget();
+    }
 }

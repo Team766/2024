@@ -35,7 +35,6 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
 
         Robot.shoulder.rotate(score.angle);
 
-
         while (Math.abs(xPID.getOutput()) + Math.abs(yPID.getOutput()) > 0.05) {
             context.yield();
 
