@@ -9,7 +9,7 @@ public class ShootVelocityAndIntake extends Procedure {
     double speed;
 
     public ShootVelocityAndIntake() {
-        this(2000);
+        this(5600);
     }
 
     public ShootVelocityAndIntake(double speed) {
@@ -20,13 +20,14 @@ public class ShootVelocityAndIntake extends Procedure {
         context.takeOwnership(Robot.shooter);
 
         Robot.shooter.shoot(speed);
-        context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
+        context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1.5);
 
         context.takeOwnership(Robot.intake);
         new IntakeIn().run(context);
         context.waitForSeconds(1.5);
 
         new IntakeStop().run(context);
-        Robot.shooter.shoot(0);
+        Robot.shooter.stop();
+        Robot.lights.signalFinishedShootingProcedure();
     }
 }

@@ -96,11 +96,11 @@ public class DebugOI extends OIFragment {
             }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                climber.setLeftPower(0.25);
-                climber.setRightPower(0.25);
-            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 climber.setLeftPower(-0.25);
                 climber.setRightPower(-0.25);
+            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
+                climber.setLeftPower(0.25);
+                climber.setRightPower(0.25);
             }
 
         } else if (controlClimber.isFinishedTriggering()) {

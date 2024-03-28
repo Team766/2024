@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class RobotMain extends LoggedRobot {
@@ -103,12 +102,12 @@ public class RobotMain extends LoggedRobot {
 
             if (isReal()) {
                 // enable dual-logging
-                com.team766.logging.Logger.enableLoggingToDataLog(true);
+                com.team766.logging.Logger.enableLoggingToDataLog(false);
 
                 // set up AdvantageKit logging
                 DataLogManager.log("Initializing logging.");
                 Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
-                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
                 new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             } else {

@@ -9,7 +9,6 @@ import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
@@ -36,9 +35,10 @@ public class ShootNow extends VisionPIDProcedure {
         context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
-        context.takeOwnership(Robot.intake);
+        // context.takeOwnership(Robot.intake);
 
-        // Robot.drive.stopDrive();
+        Robot.lights.signalStartingShootingProcedure();
+        Robot.drive.stopDrive();
 
         Transform3d toUse;
         try {
@@ -54,14 +54,15 @@ public class ShootNow extends VisionPIDProcedure {
 
         anglePID.setSetpoint(0);
 
-        /*
-         * Should we calculate these before angleing the robot or after?
-         * 3/9 consensous: before
-         */
-
         double distanceOfRobotToTag =
                 Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
 
+        if (distanceOfRobotToTag
+                > VisionPIDProcedure.scoringPositions
+                        .get(VisionPIDProcedure.scoringPositions.size() - 1)
+                        .distanceFromCenterApriltag()) {
+            Robot.lights.signalShooterOutOfRange();
+        }
         double power;
         double armAngle;
         try {
@@ -72,29 +73,19 @@ public class ShootNow extends VisionPIDProcedure {
             return;
         }
 
+        Robot.shooter.shoot(power);
+
         Robot.shoulder.rotate(armAngle);
-
-        // double toAdd;
-
-        // if(toUse.getRotation().getZ() < 0){
-        //     toAdd = -3;
-        // } else{
-        //     toAdd = 3;
-        // }
-
-        // anglePID.calculate(toUse.getRotation().getZ() + toAdd);
 
         angle = Math.atan2(y, x);
 
         anglePID.calculate(angle);
 
-        log("eee: " + toUse.getRotation().getZ());
-
         while (Math.abs(anglePID.getOutput()) > 0.075) {
             context.yield();
 
-            SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
-            SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
+            // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
+            // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
             try {
                 toUse = getTransform3dOfRobotToTag();
 
@@ -113,18 +104,16 @@ public class ShootNow extends VisionPIDProcedure {
 
         Robot.drive.stopDrive();
 
-        SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
-        SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
+        // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
+        // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
         context.waitFor(() -> Robot.shoulder.isFinished());
 
-        log("Shoulder moved");
-
         context.releaseOwnership(Robot.shooter);
-        context.releaseOwnership(Robot.intake);
+        // context.releaseOwnership(Robot.intake);
+        Robot.lights.signalFinishingShootingProcedure();
         new ShootVelocityAndIntake(power).run(context);
-
-        log("Done with power");
+        context.releaseOwnership(Robot.drive);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {

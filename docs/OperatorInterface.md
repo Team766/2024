@@ -65,19 +65,19 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
   </tr>
   <tr>
     <td>A</td>
-  <td>Move shoulder to speaker shooting position</td>
+  <td>Move shoulder to floor</td>
   </tr>
   <tr>
     <td>B</td>
-  <td>Move shoulder to floor, run intake using proximity sensor to stop</td>
+  <td>Move shoulder to secondary amp shooting position</td>
   </tr>
  <tr>
     <td>X</td>
-  <td>Move shoulder to top (will hit climber).  DO NOT USE - NEEDS UPDATING.</td>
+  <td>Move shoulder to medium shooting position</td>
  </tr>
  <tr>
     <td>Y</td>
-  <td>Move shoulder to low position.  NEEDS UPDATING.</td>
+  <td>Move shoulder to amp shooting position.</td>
 </tr>
  <tr>
     <td>DPAD UP</td>
@@ -101,7 +101,21 @@ We use a wired Xbox Controller (the Logitech gamepad in Xbox mode also works for
     <td>RB</td>
   <td>Hold to run intake (out)</td>
 </tr>
+<tr>
+    <td>A+B+LEFT STICK</td>
+  <td>Hold buttons + move stick to control left climber</td>
+</tr>
+<tr>
+    <td>A+B+RIGHT STICK</td>
+  <td>Hold buttons + move stick to control right climber</td>
+</tr>
+<tr>
+    <td>A+B+C+D*</td>
+  <td>Hold to override climber soft limits</td>
+</tr>
 </table>
+
+The face buttons are also mapped to the buttons on the back of the Xbox Elite Controller
 
 <div style="page-break-after: always;"></div>
 
