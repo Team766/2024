@@ -128,6 +128,7 @@ public final class MotorUtil {
     public static boolean checkMotor(String label, MotorController motor) {
         if (motor instanceof TalonFX) {
             TalonFX talonFX = (TalonFX) motor;
+            // TODO: check that this correct detects missing CAN bus and missing power.
             boolean check = talonFX.isAlive();
             Logger.get(Category.MECHANISMS).logData(Severity.INFO, "{0}: {1}", label, check);
             // TODO: also check for faults, sticky faults?
@@ -138,7 +139,14 @@ public final class MotorUtil {
             CANSparkMax sparkMax = (CANSparkMax) motor;
             // CANSparkMax doesn't have an "isAlive()" method.  Use something else that depends on
             // being able to communicate over the CAN bus.
-            boolean check = sparkMax.getMotorTemperature() > 0;
+            // getMotorTemperature() still returns a value - in limited empirical tests, half of
+            // what it
+            // normally returns - when the CAN bus is disconnected.
+            // getBusVoltage() returns 0 if the CAN bus is disconnected.  It still does return the
+            // expected
+            // value if the fuse for the motor is removed.
+            // TODO: see if we want to use a combination of these things.
+            boolean check = sparkMax.getBusVoltage() > 0;
             Logger.get(Category.MECHANISMS).logData(Severity.INFO, "{0}: {1}", label, check);
             // TODO: also check for faults?
             return check;
