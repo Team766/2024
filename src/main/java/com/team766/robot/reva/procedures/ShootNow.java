@@ -6,6 +6,7 @@ import com.team766.framework.Context;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
+import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -13,29 +14,27 @@ import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
 
-    int tagId;
-    double angle;
+    private int tagId;
+    private double angle;
 
-    public ShootNow() {
+    // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
+    public void run(Context context) {
+
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
             if (alliance.get().equals(Alliance.Blue)) {
-                tagId = 7;
+                tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
             } else if (alliance.get().equals(Alliance.Red)) {
-                tagId = 4;
+                tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
             }
         } else {
             tagId = -1;
         }
-    }
 
-    // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
-    public void run(Context context) {
         context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
-        // context.takeOwnership(Robot.intake);
 
         Robot.lights.signalStartingShootingProcedure();
         Robot.drive.stopDrive();
@@ -110,7 +109,6 @@ public class ShootNow extends VisionPIDProcedure {
         context.waitFor(() -> Robot.shoulder.isFinished());
 
         context.releaseOwnership(Robot.shooter);
-        // context.releaseOwnership(Robot.intake);
         Robot.lights.signalFinishingShootingProcedure();
         new ShootVelocityAndIntake(power).run(context);
         context.releaseOwnership(Robot.drive);

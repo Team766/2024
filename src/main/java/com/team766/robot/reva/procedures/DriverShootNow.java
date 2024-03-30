@@ -6,6 +6,7 @@ import com.team766.framework.Context;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
+import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -13,29 +14,26 @@ import java.util.Optional;
 
 public class DriverShootNow extends VisionPIDProcedure {
 
-    int tagId;
-    double angle;
+    private int tagId;
+    private double angle;
 
-    public DriverShootNow() {
+    // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
+    public void run(Context context) {
+
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
             if (alliance.get().equals(Alliance.Blue)) {
-                tagId = 7;
+                tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
             } else if (alliance.get().equals(Alliance.Red)) {
-                tagId = 4;
+                tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
             }
         } else {
             tagId = -1;
         }
-    }
 
-    // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
-    public void run(Context context) {
         context.takeOwnership(Robot.drive);
-        // context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
-        // context.takeOwnership(Robot.intake);
 
         Robot.lights.signalStartingShootingProcedure();
         Robot.drive.stopDrive();
@@ -63,10 +61,10 @@ public class DriverShootNow extends VisionPIDProcedure {
                         .distanceFromCenterApriltag()) {
             Robot.lights.signalShooterOutOfRange();
         }
-        double power;
+        // double power;
         double armAngle;
         try {
-            power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
+            // power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
             armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
@@ -103,17 +101,15 @@ public class DriverShootNow extends VisionPIDProcedure {
         }
 
         Robot.drive.stopDrive();
+        context.releaseOwnership(Robot.drive);
 
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
         context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
-        // context.releaseOwnership(Robot.shooter);
-        // context.releaseOwnership(Robot.intake);
         Robot.lights.signalFinishingShootingProcedure();
-        new DriverShootVelocityAndIntake(power).run(context);
-        context.releaseOwnership(Robot.drive);
+        new DriverShootVelocityAndIntake().run(context);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {

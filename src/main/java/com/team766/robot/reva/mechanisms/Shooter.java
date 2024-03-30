@@ -9,7 +9,6 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED =
@@ -94,7 +93,7 @@ public class Shooter extends Mechanism {
             //         MotorUtil.getCurrentUsage(shooterMotorBottom));
         }
 
-        SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
+        // SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
 
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
