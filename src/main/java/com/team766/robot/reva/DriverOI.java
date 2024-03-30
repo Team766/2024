@@ -79,6 +79,11 @@ public class DriverOI extends OIFragment {
     @Override
     protected void handleOI(Context context) {
 
+    } 
+
+    @Override
+    protected void handleOI(Context context) {
+
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
         }
