@@ -93,6 +93,8 @@ public class Shooter extends Mechanism {
             //         MotorUtil.getCurrentUsage(shooterMotorBottom));
         }
 
+        // SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
+
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
         // until then, this is equivalent to the earlier approach

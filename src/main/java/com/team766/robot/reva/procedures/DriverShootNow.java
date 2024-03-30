@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
-public class ShootNow extends VisionPIDProcedure {
+public class DriverShootNow extends VisionPIDProcedure {
 
     private int tagId;
     private double angle;
@@ -33,7 +33,6 @@ public class ShootNow extends VisionPIDProcedure {
         }
 
         context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
 
         Robot.lights.signalStartingShootingProcedure();
@@ -62,17 +61,17 @@ public class ShootNow extends VisionPIDProcedure {
                         .distanceFromCenterApriltag()) {
             Robot.lights.signalShooterOutOfRange();
         }
-        double power;
+        // double power;
         double armAngle;
         try {
-            power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
+            // power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
             armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;
         }
 
-        Robot.shooter.shoot(power);
+        // Robot.shooter.shoot(power);
 
         Robot.shoulder.rotate(armAngle);
 
@@ -102,16 +101,15 @@ public class ShootNow extends VisionPIDProcedure {
         }
 
         Robot.drive.stopDrive();
+        context.releaseOwnership(Robot.drive);
 
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitFor(() -> Robot.shoulder.isFinished());
+        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
-        context.releaseOwnership(Robot.shooter);
         Robot.lights.signalFinishingShootingProcedure();
-        new ShootVelocityAndIntake(power).run(context);
-        context.releaseOwnership(Robot.drive);
+        new DriverShootVelocityAndIntake().run(context);
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
