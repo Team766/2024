@@ -2,6 +2,7 @@ package com.team766.logging;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -9,10 +10,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class Logger {
 
-    private static boolean alsoLogToDataLog = false;
+    private static AtomicReference<StringLogEntry> wpiLogEntryReference =
+            new AtomicReference<StringLogEntry>();
 
     private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
         public void uncaughtException(final Thread t, final Throwable e) {
@@ -73,7 +76,12 @@ public final class Logger {
     }
 
     public static void enableLoggingToDataLog(boolean enabled) {
-        alsoLogToDataLog = enabled;
+        if (enabled) {
+            wpiLogEntryReference.compareAndSet(
+                    null, new StringLogEntry(DataLogManager.getLog(), "/maroon/logs"));
+        } else {
+            wpiLogEntryReference.set(null);
+        }
     }
 
     public static Logger get(final Category category) {
@@ -99,7 +107,7 @@ public final class Logger {
     }
 
     public static boolean isLoggingToDataLog() {
-        return alsoLogToDataLog;
+        return wpiLogEntryReference.get() != null;
     }
 
     public Collection<LogEntry> recentEntries() {
@@ -125,8 +133,9 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.logStoredFormat(entry);
         }
-        if (alsoLogToDataLog && (severity.compareTo(Severity.INFO) >= 0)) {
-            DataLogManager.log(message);
+        StringLogEntry stringLogEntry = wpiLogEntryReference.get();
+        if (stringLogEntry != null && (severity.compareTo(Severity.INFO) >= 0)) {
+            stringLogEntry.append(message);
         }
     }
 
@@ -142,8 +151,9 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.log(entry);
         }
-        if (alsoLogToDataLog && (severity.compareTo(Severity.INFO) >= 0)) {
-            DataLogManager.log(message);
+        StringLogEntry stringLogEntry = wpiLogEntryReference.get();
+        if (stringLogEntry != null && (severity.compareTo(Severity.INFO) >= 0)) {
+            stringLogEntry.append(message);
         }
     }
 
