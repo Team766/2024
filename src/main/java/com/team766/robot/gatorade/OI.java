@@ -7,13 +7,13 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
+import com.team766.logging.ShuffleboardUtil;
 import com.team766.robot.common.DriverOI;
 import com.team766.robot.gatorade.constants.ControlConstants;
 import com.team766.robot.gatorade.constants.InputConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.ShuffleboardUtil.ShuffleboardUtil;
 
 /**
  * This class is the glue that binds the controls on the physical operator

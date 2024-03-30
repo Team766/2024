@@ -1,29 +1,30 @@
 package com.team766.logging;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class ShuffleboardUtil {
 
-    private static boolean ENABLE_LOGGING_IF_NOT_COMP = true;
-    private static MatchType matchType = null;
+    private static boolean ENABLE_LOGGING = false;
+
+    // private static MatchType matchType = null;
 
     private ShuffleboardUtil() {}
 
     private static boolean shouldLog() {
+        return ENABLE_LOGGING;
 
-        if (ENABLE_LOGGING_IF_NOT_COMP) {
-            return false;
-        }
+        // if (ENABLE_LOGGING_IF_NOT_COMP) {
+        //     return false;
+        // }
 
-        synchronized (matchType) {
-            if (matchType == MatchType.None) {
-                matchType = DriverStation.getMatchType();
-            }
-        }
+        // TODO: test this more carefully when we have time.
+        // synchronized (matchType) {
+        //     if (matchType == MatchType.None) {
+        //         matchType = DriverStation.getMatchType();
+        //     }
+        // }
 
-        return matchType != MatchType.None;
+        // return matchType != MatchType.None;
     }
 
     public static void putNumber(String key, double value) {

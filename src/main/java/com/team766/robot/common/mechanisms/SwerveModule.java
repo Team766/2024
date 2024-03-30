@@ -7,10 +7,10 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.logging.ShuffleboardUtil;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.ShuffleboardUtil.ShuffleboardUtil;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
