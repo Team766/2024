@@ -137,7 +137,7 @@ public class Shoulder extends Mechanism {
     }
 
     public boolean isFinished() {
-        return Math.abs(getAngle() - targetAngle) < 1;
+        return Math.abs(getAngle() - targetAngle) < 2.5;
     }
 
     @Override
@@ -170,7 +170,7 @@ public class Shoulder extends Mechanism {
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
-        // SmartDashboard.putBoolean("Shoulder at angle", isFinished());
+        SmartDashboard.putBoolean("Shoulder at angle", isFinished());
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

@@ -12,6 +12,7 @@ import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.DriverShootNow;
+import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 
 public class DriverOI extends OIFragment {
 
@@ -108,10 +109,24 @@ public class DriverOI extends OIFragment {
             context.takeOwnership(drive);
             context.takeOwnership(intake);
 
-            Robot.intake.stop();
+            intake.stop();
             drive.stopDrive();
 
             context.releaseOwnership(drive);
+            context.releaseOwnership(intake);
+        }
+
+        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+
+            visionContext = context.startAsync(new DriverShootVelocityAndIntake());
+
+        } else if (rightJoystick.getButtonReleased(
+            InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+
+            visionContext.stop();
+
+            context.takeOwnership(intake);
+            intake.stop();
             context.releaseOwnership(intake);
         }
 
