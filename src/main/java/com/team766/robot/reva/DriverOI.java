@@ -30,6 +30,7 @@ public class DriverOI extends OIFragment {
     protected boolean isCross = false;
 
     private final OICondition movingJoysticks;
+    private final OICondition isAtGoodSpeed;
 
     private LaunchedContext visionContext;
 
@@ -57,6 +58,11 @@ public class DriverOI extends OIFragment {
                                                         + Math.abs(leftJoystickY)
                                                         + Math.abs(rightJoystickY)
                                                 > 0);
+                new OICondition(
+                        () ->
+                                Robot.shooter.isCloseToExpectedSpeed() 
+                                    && Robot.shooter.isNotZero()
+                                        );
     }
 
     public void handleOI(Context context) {
@@ -95,14 +101,18 @@ public class DriverOI extends OIFragment {
         visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-
+            Robot.lights.signalStartSpinup();
             visionContext = context.startAsync(new DriverShootNow());
+            if(isAtGoodSpeed.isNewlyTriggering()) {
+                Robot.lights.signalAtSpeed();
+            }
 
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
             context.takeOwnership(drive);
             context.takeOwnership(intake);
 
+            Robot.lights.signalShotComplete();
             Robot.intake.stop();
             drive.stopDrive();
 

@@ -93,4 +93,16 @@ public class Lights extends Mechanism {
 
         return false;
     }
+    public boolean signalStartSpinup(){
+        ErrorCode e = m_candle.setLEDs(2, 245, 229);
+        return handleErrorCode(e);
+    }
+    public boolean signalAtSpeed(){
+        ErrorCode e = m_candle.setLEDs(172, 245, 2);
+        return handleErrorCode(e);
+    }
+    public boolean signalShotComplete(){
+        ErrorCode e = m_candle.setLEDs(0,0,0);
+        return handleErrorCode(e);
+    }
 }
