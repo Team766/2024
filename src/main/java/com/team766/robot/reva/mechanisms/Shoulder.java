@@ -170,7 +170,7 @@ public class Shoulder extends Mechanism {
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
-        // SmartDashboard.putBoolean("Shoulder at angle", isFinished());
+        SmartDashboard.putBoolean("Shoulder at angle", isFinished());
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

@@ -10,7 +10,7 @@ public class ThreePieceAutonAmpSide extends PathSequenceAuto {
         super(Robot.drive, new Pose2d(0.75, 6.68, Rotation2d.fromDegrees(60)));
         addProcedure(new ShootAtSubwoofer());
         addProcedure(new AutoIntake());
-        addPath("3 Piece 1 Stop 2");
+        addPath("3 Piece 1");
         addProcedure(new ShootNow());
         addProcedure(new AutoIntake());
         addPath("Alternate 3 Piece 2");
