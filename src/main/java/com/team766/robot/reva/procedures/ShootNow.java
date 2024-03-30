@@ -106,7 +106,7 @@ public class ShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitFor(() -> Robot.shoulder.isFinished());
+        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
         context.releaseOwnership(Robot.shooter);
         Robot.lights.signalFinishingShootingProcedure();

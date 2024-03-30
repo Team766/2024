@@ -21,6 +21,7 @@ public class AutonomousModes {
                 new AutonomousMode("ClimbersDown", () -> new MoveClimbersToBottom()),
                 new AutonomousMode("ShootOnePiece", () -> new ShootOnePiece()),
                 new AutonomousMode("AltThreePiece", () -> new ThreePieceAutonAmpSide()),
-                new AutonomousMode("ShootNow", () -> new RotateAndShootNow())
+                new AutonomousMode("ShootNow", () -> new RotateAndShootNow()),
+                new AutonomousMode("DoNothing", () -> new RotateAndShootNow())
             };
 }

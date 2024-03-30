@@ -13,6 +13,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends Mechanism {
     public enum ShoulderPosition {
@@ -152,7 +153,7 @@ public class Shoulder extends Mechanism {
             leftMotor.setSensorPosition(convertedPos);
             encoderInitializationCount++;
         }
-        // SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+        SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
         // SmartDashboard.putNumber("[SHOULDER] Target Angle", targetAngle);
         // SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
         // SmartDashboard.putNumber("[SHOULDER] Target Rotations", targetRotations);

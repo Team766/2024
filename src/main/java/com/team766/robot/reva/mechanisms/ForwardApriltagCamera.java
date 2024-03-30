@@ -37,21 +37,21 @@ public class ForwardApriltagCamera extends Mechanism {
     }
 
     public void run() {
-        if (tagId == -1) {
-            Optional<Alliance> alliance = DriverStation.getAlliance();
+        // if (tagId == -1) {
+        //     Optional<Alliance> alliance = DriverStation.getAlliance();
 
-            if (alliance.isPresent()) {
-                if (alliance.get().equals(Alliance.Blue)) {
-                    tagId = 7;
-                } else {
-                    tagId = 4;
-                }
-                Robot.lights.signalCameraConnected();
-            } else {
-                LoggerExceptionUtils.logException(
-                        new AprilTagGeneralCheckedException("Couldn't find alliance correctly"));
-            }
-        }
+        //     if (alliance.isPresent()) {
+        //         if (alliance.get().equals(Alliance.Blue)) {
+        //             tagId = 7;
+        //         } else {
+        //             tagId = 4;
+        //         }
+        //         Robot.lights.signalCameraConnected();
+        //     } else {
+        //         LoggerExceptionUtils.logException(
+        //                 new AprilTagGeneralCheckedException("Couldn't find alliance correctly"));
+        //     }
+        // }
 
         try {
             if (tagId == -1) {

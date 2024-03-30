@@ -102,7 +102,7 @@ public class PathSequenceAuto extends Procedure {
             return;
         }
 
-        context.startAsync(new MoveClimbersToBottom());
+        // context.startAsync(new MoveClimbersToBottom());
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
@@ -110,10 +110,10 @@ public class PathSequenceAuto extends Procedure {
         // }
         context.takeOwnership(drive);
         drive.resetGyro(
-                (shouldFlipAuton
+                ((shouldFlipAuton
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
-                        .getDegrees());
+                        .getDegrees()));
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
             context.yield();
