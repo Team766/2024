@@ -16,6 +16,7 @@ import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 import com.team766.robot.reva.procedures.NoRotateShootNow;
 import com.team766.robot.reva.procedures.RotateAndShootNow;
 import com.team766.robot.reva.procedures.ShootNow;
+import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 
 public class DriverOI extends OIFragment {
@@ -102,20 +103,20 @@ public class DriverOI extends OIFragment {
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
             context.releaseOwnership(drive);
-            context.releaseOwnership(shooter);
+            // context.releaseOwnership(shooter);
             context.releaseOwnership(shoulder);
             context.releaseOwnership(intake);
 
-            visionContext = context.startAsync(new ShootNow());
+            visionContext = context.startAsync(new DriverShootNow());
             // isRotatingToSpeaker = true;
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
             context.takeOwnership(drive);
-            context.takeOwnership(shooter);
+            // context.takeOwnership(shooter);
             context.takeOwnership(shoulder);
             context.takeOwnership(intake);
 
-            Robot.shooter.stop();
+            // Robot.shooter.stop();
             Robot.intake.stop();
 
             // isRotatingToSpeaker = false;
@@ -126,21 +127,21 @@ public class DriverOI extends OIFragment {
         }
 
         // TODO: update OI with new optimization OI
-        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            // Boxop must have rotated arm or at least started the rotation process before this
-            if (isRotatingToSpeaker) {
-                visionContext = context.startAsync(new RotateAndShootNow());
-            } else if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
-                visionContext = context.startAsync(new NoRotateShootNow(true));
-            } else {
-                visionContext = context.startAsync(new DriverShootVelocityAndIntake());
-            }
-        } else if (rightJoystick.getButtonReleased(
-                InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            visionContext.stop();
-            context.takeOwnership(shooter);
-            Robot.shooter.stop();
-        }
+        // if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+        //     // Boxop must have rotated arm or at least started the rotation process before this
+        //     if (isRotatingToSpeaker) {
+        //         visionContext = context.startAsync(new RotateAndShootNow());
+        //     } else if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
+        //         visionContext = context.startAsync(new NoRotateShootNow(true));
+        //     } else {
+        //         visionContext = context.startAsync(new DriverShootVelocityAndIntake());
+        //     }
+        // } else if (rightJoystick.getButtonReleased(
+        //         InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+        //     visionContext.stop();
+        //     context.takeOwnership(shooter);
+        //     Robot.shooter.stop();
+        // }
 
         // Moves the robot if there are joystick inputs
         if (movingJoysticks.isTriggering() || isRotatingToSpeaker) {
