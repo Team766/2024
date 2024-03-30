@@ -129,7 +129,7 @@ public class DriverOI extends OIFragment {
                     (drivingCoefficient
                             * curvedJoystickPower(
                                     rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)));
-        } else {
+        } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
             drive.setCross();
