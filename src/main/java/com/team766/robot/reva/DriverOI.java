@@ -102,10 +102,10 @@ public class DriverOI extends OIFragment {
         visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            context.releaseOwnership(drive);
+            // context.releaseOwnership(drive);
             // context.releaseOwnership(shooter);
-            context.releaseOwnership(shoulder);
-            context.releaseOwnership(intake);
+            // context.releaseOwnership(shoulder);
+            // context.releaseOwnership(intake);
 
             visionContext = context.startAsync(new DriverShootNow());
             // isRotatingToSpeaker = true;
@@ -155,31 +155,31 @@ public class DriverOI extends OIFragment {
                 drivingCoefficient = FINE_DRIVING_COEFFICIENT;
             }
 
-            if (isRotatingToSpeaker) {
+            // if (isRotatingToSpeaker) {
 
-                try {
-                    context.takeOwnership(shoulder);
-                    // context.takeOwnership(shooter);
-                    shoulder.rotate(visionSpeakerHelper.getArmAngle());
-                    // shooter.shoot(visionSpeakerHelper.getShooterPower());
-                    context.releaseOwnership(shoulder);
-                    // context.releaseOwnership(shooter);
-                } catch (AprilTagGeneralCheckedException e) {
-                    // LoggerExceptionUtils.logException(e);
-                }
+            //     try {
+            //         context.takeOwnership(shoulder);
+            //         // context.takeOwnership(shooter);
+            //         shoulder.rotate(visionSpeakerHelper.getArmAngle());
+            //         // shooter.shoot(visionSpeakerHelper.getShooterPower());
+            //         context.releaseOwnership(shoulder);
+            //         // context.releaseOwnership(shooter);
+            //     } catch (AprilTagGeneralCheckedException e) {
+            //         // LoggerExceptionUtils.logException(e);
+            //     }
 
-                drive.controlFieldOrientedWithRotationTarget(
-                        (drivingCoefficient * leftJoystickX),
-                        (drivingCoefficient * leftJoystickY),
-                        visionSpeakerHelper.getHeadingToTarget());
+            //     drive.controlFieldOrientedWithRotationTarget(
+            //             (drivingCoefficient * leftJoystickX),
+            //             (drivingCoefficient * leftJoystickY),
+            //             visionSpeakerHelper.getHeadingToTarget());
 
-            } else {
+            // } else {
 
                 drive.controlFieldOriented(
                         (drivingCoefficient * leftJoystickX),
                         (drivingCoefficient * leftJoystickY),
                         (drivingCoefficient * rightJoystickY));
-            }
+            // }
 
         } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);

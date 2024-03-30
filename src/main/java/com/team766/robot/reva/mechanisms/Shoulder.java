@@ -13,6 +13,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shoulder extends Mechanism {
     public enum ShoulderPosition {
@@ -169,6 +170,8 @@ public class Shoulder extends Mechanism {
         // SmartDashboard.putNumber(
         //         "[SHOULDER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
+        SmartDashboard.putBoolean("Shoulder at angle", isFinished());
+
 
         TalonFX leftTalon = (TalonFX) leftMotor;
         // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());

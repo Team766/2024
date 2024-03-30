@@ -33,7 +33,7 @@ public class DriverShootNow extends VisionPIDProcedure {
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
         context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.shooter);
+        // context.takeOwnership(Robot.shooter);
         context.takeOwnership(Robot.shoulder);
         // context.takeOwnership(Robot.intake);
 
@@ -73,7 +73,7 @@ public class DriverShootNow extends VisionPIDProcedure {
             return;
         }
 
-        Robot.shooter.shoot(power);
+        // Robot.shooter.shoot(power);
 
         Robot.shoulder.rotate(armAngle);
 
@@ -107,9 +107,9 @@ public class DriverShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitFor(() -> Robot.shoulder.isFinished());
+        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
-        context.releaseOwnership(Robot.shooter);
+        // context.releaseOwnership(Robot.shooter);
         // context.releaseOwnership(Robot.intake);
         Robot.lights.signalFinishingShootingProcedure();
         new DriverShootVelocityAndIntake(power).run(context);

@@ -25,7 +25,7 @@ public class DriverShootVelocityAndIntake extends Procedure {
 
         context.takeOwnership(Robot.intake);
         new IntakeIn().run(context);
-        context.waitForSeconds(1.5);
+        // context.waitForSeconds(1.5);
 
         // new IntakeStop().run(context);
         // Robot.shooter.stop();
