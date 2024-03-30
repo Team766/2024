@@ -111,9 +111,9 @@ public class DriverOI extends OIFragment {
             // isRotatingToSpeaker = true;
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
-            context.takeOwnership(drive);
+            // context.takeOwnership(drive);
             // context.takeOwnership(shooter);
-            context.takeOwnership(shoulder);
+            // context.takeOwnership(shoulder);
             context.takeOwnership(intake);
 
             // Robot.shooter.stop();
