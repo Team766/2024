@@ -8,13 +8,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class OldThreePieceAuton extends PathSequenceAuto {
     public OldThreePieceAuton() {
         super(Robot.drive, new Pose2d(2.00, 6.75, Rotation2d.fromDegrees(33)));
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
         addProcedure(new AutoIntake());
         addPath("3 Piece 1");
         addPath("3 Piece 2");
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
         addProcedure(new AutoIntake());
         addPath("3 Piece 3");
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
     }
 }

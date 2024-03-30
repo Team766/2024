@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class OneShotBackupSourceSide extends PathSequenceAuto {
     public OneShotBackupSourceSide() {
         super(Robot.drive, new Pose2d(0.72, 4.41, Rotation2d.fromDegrees(-60)));
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
         addPath("BackupSource");
     }
 }

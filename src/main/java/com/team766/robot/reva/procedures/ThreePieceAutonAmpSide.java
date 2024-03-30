@@ -8,12 +8,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class ThreePieceAutonAmpSide extends PathSequenceAuto {
     public ThreePieceAutonAmpSide() {
         super(Robot.drive, new Pose2d(0.75, 6.68, Rotation2d.fromDegrees(60)));
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
         addProcedure(new AutoIntake());
         addPath("3 Piece 1");
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
         addProcedure(new AutoIntake());
         addPath("Alternate 3 Piece 2");
-        addProcedure(new RotateAndShootNow());
+        addProcedure(new ShootNow());
     }
 }
