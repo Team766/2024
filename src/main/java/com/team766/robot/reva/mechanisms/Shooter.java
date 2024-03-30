@@ -9,6 +9,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED =
@@ -84,8 +85,8 @@ public class Shooter extends Mechanism {
     public void run() {
         if (speedUpdated || rateLimiter.next()) {
             // SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
-            // SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
-            // SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+            SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
+            SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
             // SmartDashboard.putNumber(
             //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
             // SmartDashboard.putNumber(
