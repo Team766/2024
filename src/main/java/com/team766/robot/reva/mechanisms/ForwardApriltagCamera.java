@@ -39,7 +39,6 @@ public class ForwardApriltagCamera extends Mechanism {
     }
 
     public void run() {
-
         try {
             if (tagId == -1) {
                 Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -62,7 +61,7 @@ public class ForwardApriltagCamera extends Mechanism {
 
             ShuffleboardUtil.putNumber("x value SUIIII", toUse.getX());
             ShuffleboardUtil.putNumber("y value SUIIII", toUse.getY());
-        } catch (AprilTagGeneralCheckedException e) {
+        } catch (Exception e) {
             return;
         }
     }
