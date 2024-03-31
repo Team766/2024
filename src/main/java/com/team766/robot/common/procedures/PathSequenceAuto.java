@@ -108,15 +108,21 @@ public class PathSequenceAuto extends Procedure {
         drive.setCurrentPosition(
                 shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
-        context.takeOwnership(drive);
+        // context.takeOwnership(drive);
         drive.resetGyro(
-                ((shouldFlipAuton
+                (shouldFlipAuton
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
-                        .getDegrees()));
+                        .getDegrees());
         for (RunnableWithContext pathItem : pathItems) {
             pathItem.run(context);
             context.yield();
         }
+
+        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
+        // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of current angle
+        context.takeOwnership(drive);
+        drive.resetGyro(180 + drive.getHeading());
+        context.releaseOwnership(drive);
     }
 }
