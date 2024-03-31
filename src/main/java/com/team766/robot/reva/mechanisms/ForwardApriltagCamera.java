@@ -4,9 +4,7 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Mechanism;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.ShuffleboardUtil;
 import com.team766.robot.reva.Robot;
-import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -39,15 +37,31 @@ public class ForwardApriltagCamera extends Mechanism {
     }
 
     public void run() {
+        if (tagId == -1) {
+            Optional<Alliance> alliance = DriverStation.getAlliance();
+
+            if (alliance.isPresent()) {
+                if (alliance.get().equals(Alliance.Blue)) {
+                    tagId = 7;
+                } else {
+                    tagId = 4;
+                }
+                Robot.lights.signalCameraConnected();
+            } else {
+                LoggerExceptionUtils.logException(
+                        new AprilTagGeneralCheckedException("Couldn't find alliance correctly"));
+            }
+        }
+
         try {
             if (tagId == -1) {
                 Optional<Alliance> alliance = DriverStation.getAlliance();
 
                 if (alliance.isPresent()) {
                     if (alliance.get().equals(Alliance.Blue)) {
-                        tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
+                        tagId = 7;
                     } else {
-                        tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
+                        tagId = 4;
                     }
                     Robot.lights.signalCameraConnected();
                 } else {
@@ -59,8 +73,8 @@ public class ForwardApriltagCamera extends Mechanism {
             Transform3d toUse =
                     GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
 
-            ShuffleboardUtil.putNumber("x value SUIIII", toUse.getX());
-            ShuffleboardUtil.putNumber("y value SUIIII", toUse.getY());
+            // SmartDashboard.putNumber("x value SUIIII", toUse.getX());
+            // SmartDashboard.putNumber("y value SUIIII", toUse.getY());
         } catch (Exception e) {
             return;
         }
