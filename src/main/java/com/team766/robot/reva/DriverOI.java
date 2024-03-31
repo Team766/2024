@@ -74,8 +74,7 @@ public class DriverOI extends OIFragment {
         rightJoystickY =
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
-
-    } 
+    }
 
     @Override
     protected void handleOI(Context context) {
@@ -121,7 +120,7 @@ public class DriverOI extends OIFragment {
             visionContext = context.startAsync(new DriverShootVelocityAndIntake());
 
         } else if (rightJoystick.getButtonReleased(
-            InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+                InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
 
             visionContext.stop();
 
