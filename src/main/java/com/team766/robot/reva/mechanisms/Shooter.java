@@ -49,9 +49,8 @@ public class Shooter extends Mechanism {
                 && (Math.abs(targetSpeed - getShooterSpeedBottom()) < SPEED_TOLERANCE));
     }
 
-public boolean isNotZero() {
-        return (!(((getShooterSpeedTop()) == 0)
-                || (getShooterSpeedBottom() == 0)));
+    public boolean isNotZero() {
+        return (!(((getShooterSpeedTop()) == 0) || (getShooterSpeedBottom() == 0)));
     }
 
     private double getShooterSpeedTop() {
