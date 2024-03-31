@@ -58,7 +58,9 @@ public class DriverOI extends OIFragment {
                                                         + Math.abs(leftJoystickY)
                                                         + Math.abs(rightJoystickY)
                                                 > 0);
-        new OICondition(() -> Robot.shooter.isCloseToExpectedSpeed() && Robot.shooter.isNotZero());
+        isAtGoodSpeed =
+                new OICondition(
+                        () -> Robot.shooter.isCloseToExpectedSpeed() && Robot.shooter.isNotZero());
     }
 
     public void handleOI(Context context) {
