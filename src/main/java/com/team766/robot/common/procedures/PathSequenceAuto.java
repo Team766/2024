@@ -103,7 +103,7 @@ public class PathSequenceAuto extends Procedure {
             return;
         }
 
-        // context.startAsync(new MoveClimbersToBottom());
+        context.startAsync(new MoveClimbersToBottom());
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
