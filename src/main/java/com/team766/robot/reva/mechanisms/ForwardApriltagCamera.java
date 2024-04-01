@@ -5,6 +5,7 @@ import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Mechanism;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
+import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -59,9 +60,9 @@ public class ForwardApriltagCamera extends Mechanism {
 
                 if (alliance.isPresent()) {
                     if (alliance.get().equals(Alliance.Blue)) {
-                        tagId = 7;
+                        tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
                     } else {
-                        tagId = 4;
+                        tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
                     }
                     Robot.lights.signalCameraConnected();
                 } else {
