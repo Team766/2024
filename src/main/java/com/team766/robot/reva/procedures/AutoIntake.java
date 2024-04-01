@@ -9,6 +9,7 @@ public class AutoIntake extends Procedure {
     public void run(Context context) {
         context.takeOwnership(Robot.shoulder);
         Robot.shoulder.rotate(ShoulderPosition.BOTTOM);
+        context.releaseOwnership(Robot.shoulder);
         context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 1.5);
         context.startAsync(new IntakeUntilIn());
     }

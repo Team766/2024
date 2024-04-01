@@ -10,7 +10,6 @@ public class DriverShootVelocityAndIntake extends Procedure {
 
         context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1);
 
-        context.takeOwnership(Robot.intake);
         new IntakeIn().run(context);
 
         // Does not stop intake here so driver can stop when button released
