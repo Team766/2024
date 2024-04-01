@@ -99,11 +99,7 @@ public class DriverOI extends OIFragment {
         visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            Robot.lights.signalStartSpinup();
             visionContext = context.startAsync(new DriverShootNow());
-            if(isAtGoodSpeed.isNewlyTriggering()) {
-                Robot.lights.signalAtSpeed();
-            }
 
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
@@ -117,6 +113,9 @@ public class DriverOI extends OIFragment {
             context.releaseOwnership(drive);
             context.releaseOwnership(intake);
         }
+        else if(isAtGoodSpeed.isNewlyTriggering()) {
+                Robot.lights.signalAtSpeed();
+            }
 
         // Moves the robot if there are joystick inputs
         if (movingJoysticks.isTriggering()) {
