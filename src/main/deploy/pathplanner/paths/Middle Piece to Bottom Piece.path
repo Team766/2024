@@ -3,53 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6682193623646513,
-        "y": 5.646385431659753
+        "x": 2.7642557785115573,
+        "y": 5.544778760853818
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7207519017022372,
-        "y": 5.204122117306238
+        "x": 2.2568162682621664,
+        "y": 4.97742041317416
       },
       "isLocked": false,
-      "linkedName": "Alt 3 Piece 2"
+      "linkedName": "Middle Piece"
     },
     {
       "anchor": {
-        "x": 2.26791208351892,
-        "y": 4.282931630251178
+        "x": 2.6321255373992227,
+        "y": 4.231077550118064
       },
       "prevControl": {
-        "x": 1.4151987346458874,
-        "y": 4.575610792998139
-      },
-      "nextControl": {
-        "x": 3.241256971385167,
-        "y": 3.9488477705095315
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.878971786560425,
-        "y": 4.75130160117236
-      },
-      "prevControl": {
-        "x": 2.4722472139697835,
-        "y": 4.470391778621396
+        "x": 2.237100654756865,
+        "y": 4.471703049887583
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Bottom Piece"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Don't Smash Stage",
-      "minWaypointRelativePos": 1.05,
-      "maxWaypointRelativePos": 1.5,
+      "minWaypointRelativePos": 0.55,
+      "maxWaypointRelativePos": 0.75,
       "constraints": {
         "maxVelocity": 1.0,
         "maxAcceleration": 3.0,
@@ -67,13 +51,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -26.692555230133284,
-    "rotateFast": false
+    "rotation": -31.5,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "RevA",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 1.6,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

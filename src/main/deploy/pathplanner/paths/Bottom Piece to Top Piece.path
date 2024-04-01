@@ -3,32 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0258418461699086,
-        "y": 6.203265338861505
+        "x": 2.6321255373992227,
+        "y": 4.231077550118064
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3983141750744656,
-        "y": 5.915219850489826
+        "x": 2.1686898512685917,
+        "y": 4.780086124987065
       },
       "isLocked": false,
-      "linkedName": "intake test 2"
+      "linkedName": "Bottom Piece"
     },
     {
       "anchor": {
-        "x": 2.2418759624486673,
-        "y": 5.555162990025228
+        "x": 2.8691879744870605,
+        "y": 6.9776644182918
       },
       "prevControl": {
-        "x": 1.2418759624486673,
-        "y": 5.555162990025228
+        "x": 2.1594852726731264,
+        "y": 6.5465932181858735
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "intake test 3"
+      "linkedName": "Top Piece"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.65,
+      "rotationDegrees": 65.51032725616209,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,13 +50,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 31.5,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "gatorade",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -167.38067770656923,
+    "rotation": -31.5,
     "velocity": 0
   },
   "useDefaultConstraints": true
