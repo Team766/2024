@@ -50,7 +50,7 @@ public class Shooter extends Mechanism {
     }
 
     public boolean isNotZero() {
-        return (!(((getShooterSpeedTop()) == 0) || (getShooterSpeedBottom() == 0)));
+        return ((getShooterSpeedTop() <= SPEED_TOLERANCE) || (getShooterSpeedBottom() <= SPEED_TOLERANCE));
     }
 
     private double getShooterSpeedTop() {
