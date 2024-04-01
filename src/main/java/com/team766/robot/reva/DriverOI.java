@@ -1,6 +1,5 @@
 package com.team766.robot.reva;
 
-import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.LaunchedContext;
 import com.team766.framework.OIFragment;
@@ -12,11 +11,7 @@ import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
-import com.team766.robot.reva.procedures.NoRotateShootNow;
-import com.team766.robot.reva.procedures.RotateAndShootNow;
-import com.team766.robot.reva.procedures.ShootNow;
-import com.team766.robot.reva.procedures.ShootVelocityAndIntake;
+import com.team766.robot.reva.procedures.DriverShootNow;
 
 public class DriverOI extends OIFragment {
 
@@ -33,7 +28,6 @@ public class DriverOI extends OIFragment {
     protected double leftJoystickX = 0;
     protected double leftJoystickY = 0;
     protected boolean isCross = false;
-    private boolean isRotatingToSpeaker = false;
 
     private final OICondition movingJoysticks;
 
@@ -101,88 +95,44 @@ public class DriverOI extends OIFragment {
         visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            context.releaseOwnership(drive);
-            context.releaseOwnership(shooter);
-            context.releaseOwnership(shoulder);
-            context.releaseOwnership(intake);
 
-            visionContext = context.startAsync(new ShootNow());
-            // isRotatingToSpeaker = true;
+            visionContext = context.startAsync(new DriverShootNow());
+
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
             context.takeOwnership(drive);
-            context.takeOwnership(shooter);
-            context.takeOwnership(shoulder);
             context.takeOwnership(intake);
 
-            Robot.shooter.stop();
             Robot.intake.stop();
+            drive.stopDrive();
 
-            // isRotatingToSpeaker = false;
-            // context.takeOwnership(drive);
-            // drive.stopDrive();
-            // drive.setCross();
-
-        }
-
-        // TODO: update OI with new optimization OI
-        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            // Boxop must have rotated arm or at least started the rotation process before this
-            if (isRotatingToSpeaker) {
-                visionContext = context.startAsync(new RotateAndShootNow());
-            } else if (shoulder.getTargetAngle() == ShoulderPosition.AMP.getAngle()) {
-                visionContext = context.startAsync(new NoRotateShootNow(true));
-            } else {
-                visionContext = context.startAsync(new ShootVelocityAndIntake());
-            }
-        } else if (rightJoystick.getButtonReleased(
-                InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            visionContext.stop();
-            context.takeOwnership(shooter);
-            Robot.shooter.stop();
+            context.releaseOwnership(drive);
+            context.releaseOwnership(intake);
         }
 
         // Moves the robot if there are joystick inputs
-        if (movingJoysticks.isTriggering() || isRotatingToSpeaker) {
-
-            context.takeOwnership(drive);
-
+        if (movingJoysticks.isTriggering()) {
             double drivingCoefficient = 1;
-
             // If a button is pressed, drive is just fine adjustment
             if (rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)) {
                 drivingCoefficient = FINE_DRIVING_COEFFICIENT;
             }
 
-            if (isRotatingToSpeaker) {
-
-                try {
-                    context.takeOwnership(shoulder);
-                    // context.takeOwnership(shooter);
-                    shoulder.rotate(visionSpeakerHelper.getArmAngle());
-                    // shooter.shoot(visionSpeakerHelper.getShooterPower());
-                    context.releaseOwnership(shoulder);
-                    // context.releaseOwnership(shooter);
-                } catch (AprilTagGeneralCheckedException e) {
-                    // LoggerExceptionUtils.logException(e);
-                }
-
-                drive.controlFieldOrientedWithRotationTarget(
-                        (drivingCoefficient * leftJoystickX),
-                        (drivingCoefficient * leftJoystickY),
-                        visionSpeakerHelper.getHeadingToTarget());
-
-            } else {
-
-                drive.controlFieldOriented(
-                        (drivingCoefficient * leftJoystickX),
-                        (drivingCoefficient * leftJoystickY),
-                        (drivingCoefficient * rightJoystickY));
-            }
-
+            context.takeOwnership(drive);
+            drive.controlFieldOriented(
+                    (drivingCoefficient
+                            * curvedJoystickPower(
+                                    leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
+                    (drivingCoefficient
+                            * curvedJoystickPower(
+                                    leftJoystickY, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
+                    (drivingCoefficient
+                            * curvedJoystickPower(
+                                    rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)));
         } else if (movingJoysticks.isFinishedTriggering()) {
             context.takeOwnership(drive);
             drive.stopDrive();
+            drive.setCross();
         }
     }
 
@@ -193,5 +143,9 @@ public class DriverOI extends OIFragment {
      */
     private double createJoystickDeadzone(double joystickValue) {
         return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
+    }
+
+    private double curvedJoystickPower(double value, double power) {
+        return Math.signum(value) * Math.pow(Math.abs(value), power);
     }
 }
