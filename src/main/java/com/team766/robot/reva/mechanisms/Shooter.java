@@ -10,6 +10,8 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Shooter extends Mechanism {
     private static final double DEFAULT_SPEED =
             5600.0; // motor shaft rps, does not take gearing into account
@@ -19,7 +21,7 @@ public class Shooter extends Mechanism {
     private static final double MIN_SPEED = 0.0;
 
     // TODO: Get the voltage of the battery and set the speed tolerance propotional to this
-    private static final double SPEED_TOLERANCE = 800.0; // rpm
+    private static final double SPEED_TOLERANCE = 300.0; // rpm
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;
@@ -83,9 +85,9 @@ public class Shooter extends Mechanism {
 
     public void run() {
         if (speedUpdated || rateLimiter.next()) {
-            // SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
-            // SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
-            // SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+            SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+            SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
+            SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
             // SmartDashboard.putNumber(
             //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
             // SmartDashboard.putNumber(

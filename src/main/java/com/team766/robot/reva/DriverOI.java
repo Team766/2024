@@ -13,6 +13,7 @@ import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
+import com.team766.robot.reva.procedures.IntakeIn;
 
 public class DriverOI extends OIFragment {
 
@@ -31,6 +32,7 @@ public class DriverOI extends OIFragment {
     protected boolean isCross = false;
 
     private final OICondition movingJoysticks;
+    private final OICondition shooterOverride;
 
     private LaunchedContext visionContext;
 
@@ -58,6 +60,9 @@ public class DriverOI extends OIFragment {
                                                         + Math.abs(leftJoystickY)
                                                         + Math.abs(rightJoystickY)
                                                 > 0);
+
+        shooterOverride = new OICondition(
+                        () -> leftJoystick.getPOV() == 90);
     }
 
     @Override
@@ -79,6 +84,8 @@ public class DriverOI extends OIFragment {
     @Override
     protected void handleOI(Context context) {
 
+        //Robot.forwardApriltagCamera.log();
+
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
         }
@@ -99,11 +106,23 @@ public class DriverOI extends OIFragment {
 
         visionSpeakerHelper.update();
 
-        if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
+        if (shooterOverride.isNewlyTriggering()) {
+            visionContext.stop();
+            context.takeOwnership(drive);
+            context.takeOwnership(intake);
+
+            intake.stop();
+            drive.stopDrive();
+
+            context.releaseOwnership(drive);
+            context.releaseOwnership(intake);
+
+            visionContext = context.startAsync(new IntakeIn());
+        } else if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
 
             visionContext = context.startAsync(new DriverShootNow());
 
-        } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
+        } else if (shooterOverride.isFinishedTriggering() || leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.stop();
             context.takeOwnership(drive);
             context.takeOwnership(intake);
