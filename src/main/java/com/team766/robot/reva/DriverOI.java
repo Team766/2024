@@ -12,6 +12,7 @@ import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.DriverShootNow;
+import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 
 public class DriverOI extends OIFragment {
 
@@ -59,8 +60,8 @@ public class DriverOI extends OIFragment {
                                                 > 0);
     }
 
-    public void handleOI(Context context) {
-
+    @Override
+    protected void handlePre() {
         // Negative because forward is negative in driver station
         leftJoystickX =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
@@ -73,6 +74,10 @@ public class DriverOI extends OIFragment {
         rightJoystickY =
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
+    }
+
+    @Override
+    protected void handleOI(Context context) {
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
             drive.resetGyro();
@@ -103,10 +108,24 @@ public class DriverOI extends OIFragment {
             context.takeOwnership(drive);
             context.takeOwnership(intake);
 
-            Robot.intake.stop();
+            intake.stop();
             drive.stopDrive();
 
             context.releaseOwnership(drive);
+            context.releaseOwnership(intake);
+        }
+
+        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+
+            visionContext = context.startAsync(new DriverShootVelocityAndIntake());
+
+        } else if (rightJoystick.getButtonReleased(
+                InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
+
+            visionContext.stop();
+
+            context.takeOwnership(intake);
+            intake.stop();
             context.releaseOwnership(intake);
         }
 

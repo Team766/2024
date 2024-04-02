@@ -22,12 +22,12 @@ public class ShootVelocityAndIntake extends Procedure {
         Robot.shooter.shoot(speed);
         context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1.5);
 
-        context.takeOwnership(Robot.intake);
         new IntakeIn().run(context);
         context.waitForSeconds(1.5);
 
         new IntakeStop().run(context);
-        Robot.shooter.stop();
         Robot.lights.signalFinishedShootingProcedure();
+
+        // Shooter stopped at the end of auton
     }
 }

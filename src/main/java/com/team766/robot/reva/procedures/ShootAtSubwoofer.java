@@ -5,12 +5,11 @@ import com.team766.framework.Procedure;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
 
-public class AutoIntake extends Procedure {
+public class ShootAtSubwoofer extends Procedure {
     public void run(Context context) {
         context.takeOwnership(Robot.shoulder);
-        Robot.shoulder.rotate(ShoulderPosition.BOTTOM);
+        Robot.shoulder.rotate(ShoulderPosition.SHOOT_LOW);
         context.releaseOwnership(Robot.shoulder);
-        context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 1.5);
-        context.startAsync(new IntakeUntilIn());
+        new ShootVelocityAndIntake().run(context);
     }
 }

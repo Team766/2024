@@ -136,7 +136,7 @@ public class Shoulder extends Mechanism {
     }
 
     public boolean isFinished() {
-        return Math.abs(getAngle() - targetAngle) < 1;
+        return Math.abs(getAngle() - targetAngle) < 2.5;
     }
 
     @Override

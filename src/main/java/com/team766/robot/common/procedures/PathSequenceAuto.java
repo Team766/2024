@@ -10,6 +10,7 @@ import com.team766.framework.RunnableWithContext;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -108,7 +109,7 @@ public class PathSequenceAuto extends Procedure {
         drive.setCurrentPosition(
                 shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
-        context.takeOwnership(drive);
+        // context.takeOwnership(drive);
         drive.resetGyro(
                 (shouldFlipAuton
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
@@ -118,5 +119,16 @@ public class PathSequenceAuto extends Procedure {
             pathItem.run(context);
             context.yield();
         }
+
+        context.takeOwnership(Robot.shooter);
+        Robot.shooter.stop();
+        context.releaseOwnership(Robot.shooter);
+
+        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
+        // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
+        // current angle
+        context.takeOwnership(drive);
+        drive.resetGyro(180 + drive.getHeading());
+        context.releaseOwnership(drive);
     }
 }
