@@ -109,7 +109,7 @@ public class Intake extends Mechanism {
         return (threshold.get()) > sensor.getRange() && sensor.isRangeValid();
     }
 
-    public boolean isNoteClose(){
+    public boolean isNoteClose() {
         return (200) > sensor.getRange() && sensor.isRangeValid();
     }
 

@@ -11,7 +11,7 @@ public class IntakeUntilIn extends Procedure {
         while (!Robot.intake.hasNoteInIntake()) {
             Robot.intake.setIntakePowerForSensorDistance();
 
-            if(Robot.intake.isNoteClose()){
+            if (Robot.intake.isNoteClose()) {
                 Robot.lights.signalNoteInIntake();
             }
             context.yield();
