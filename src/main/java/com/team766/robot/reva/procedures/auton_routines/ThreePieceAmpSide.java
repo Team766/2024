@@ -2,7 +2,7 @@ package com.team766.robot.reva.procedures.auton_routines;
 
 import com.team766.robot.common.procedures.PathSequenceAuto;
 import com.team766.robot.reva.Robot;
-import com.team766.robot.reva.procedures.AutoIntake;
+import com.team766.robot.reva.procedures.StartAutoIntake;
 import com.team766.robot.reva.procedures.ShootAtSubwoofer;
 import com.team766.robot.reva.procedures.ShootNow;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,10 +12,10 @@ public class ThreePieceAmpSide extends PathSequenceAuto {
     public ThreePieceAmpSide() {
         super(Robot.drive, new Pose2d(0.75, 6.68, Rotation2d.fromDegrees(60)));
         addProcedure(new ShootAtSubwoofer());
-        addProcedure(new AutoIntake());
+        addProcedure(new StartAutoIntake());
         addPath("Amp Side Start to Top Piece");
         addProcedure(new ShootNow());
-        addProcedure(new AutoIntake());
+        addProcedure(new StartAutoIntake());
         addPath("Top Piece to Middle Piece");
         addProcedure(new ShootNow());
     }
