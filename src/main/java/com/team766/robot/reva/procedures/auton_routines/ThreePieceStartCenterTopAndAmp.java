@@ -8,18 +8,15 @@ import com.team766.robot.reva.procedures.ShootNow;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class FourPieceAmpSide extends PathSequenceAuto {
-    public FourPieceAmpSide() {
+public class ThreePieceStartCenterTopAndAmp extends PathSequenceAuto {
+    public ThreePieceStartCenterTopAndAmp() {
         super(Robot.drive, new Pose2d(0.78, 6.72, Rotation2d.fromDegrees(60)));
         addProcedure(new ShootAtSubwoofer());
         addProcedure(new StartAutoIntake());
-        addPath("Amp Side Start to Top Piece");
+        addPath("Middle Start to Middle Piece");
         addProcedure(new ShootNow());
         addProcedure(new StartAutoIntake());
-        addPath("Fast Top Piece to Middle Piece");
-        addProcedure(new ShootNow());
-        addProcedure(new StartAutoIntake());
-        addPath("Middle Piece to Bottom Piece");
+        addPath("Middle Piece to Top Piece");
         addProcedure(new ShootNow());
     }
 }

@@ -20,7 +20,7 @@ public class Shooter extends Mechanism {
     private static final double MIN_SPEED = 0.0;
 
     // TODO: Get the voltage of the battery and set the speed tolerance propotional to this
-    private static final double SPEED_TOLERANCE = 800.0; // rpm
+    private static final double SPEED_TOLERANCE = 200.0; // rpm
 
     private MotorController shooterMotorTop;
     private MotorController shooterMotorBottom;

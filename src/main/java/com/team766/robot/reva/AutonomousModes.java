@@ -3,6 +3,7 @@ package com.team766.robot.reva;
 import com.team766.framework.AutonomousMode;
 import com.team766.robot.reva.procedures.auton_routines.FourPieceAmpSide;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSide;
+import com.team766.robot.reva.procedures.auton_routines.ThreePieceStartCenterTopAndAmp;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES =
@@ -16,5 +17,6 @@ public class AutonomousModes {
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
                 new AutonomousMode("3 Piece Amp Side", () -> new ThreePieceAmpSide()),
                 new AutonomousMode("4 Piece Amp Side", () -> new FourPieceAmpSide()),
+                new AutonomousMode("3 Piece Center Start Center and Top", () -> new ThreePieceStartCenterTopAndAmp())
             };
 }
