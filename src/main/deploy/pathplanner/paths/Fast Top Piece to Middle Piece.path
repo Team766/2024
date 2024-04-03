@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7727477445695636,
-        "y": 6.834904373512451
+        "x": 2.729397148609112,
+        "y": 6.803430653157602
       },
       "isLocked": false,
       "linkedName": "Top Piece"
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6,
-      "rotationDegrees": -52.571672837394004,
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -60.80632561397451,
       "rotateFast": true
     }
   ],

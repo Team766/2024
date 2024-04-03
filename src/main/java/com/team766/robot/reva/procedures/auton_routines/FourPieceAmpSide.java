@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class FourPieceAmpSide extends PathSequenceAuto {
     public FourPieceAmpSide() {
-        super(Robot.drive, new Pose2d(0.78, 6.72, Rotation2d.fromDegrees(60)));
+        super(Robot.drive, new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
         addProcedure(new ShootAtSubwoofer());
         addProcedure(new StartAutoIntake());
         addPath("Amp Side Start to Top Piece");

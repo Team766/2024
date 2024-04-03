@@ -16,19 +16,25 @@
     },
     {
       "anchor": {
-        "x": 2.6321255373992227,
-        "y": 4.231077550118064
+        "x": 2.496610386739292,
+        "y": 4.342898333944817
       },
       "prevControl": {
-        "x": 2.237100654756865,
-        "y": 4.471703049887583
+        "x": 1.9195723854410676,
+        "y": 4.741189357378715
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Bottom Piece"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": -45.0,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [
     {
       "name": "Don't Smash Stage",
@@ -52,7 +58,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": -31.5,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
   "folder": null,

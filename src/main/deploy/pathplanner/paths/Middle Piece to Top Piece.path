@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.221304410198268,
-        "y": 6.166889505079905
+        "x": 2.087630175260351,
+        "y": 6.068964665707109
       },
       "isLocked": false,
       "linkedName": "Middle Piece"
@@ -20,8 +20,8 @@
         "y": 6.9776644182918
       },
       "prevControl": {
-        "x": 2.453853634555976,
-        "y": 6.883777716634106
+        "x": 2.6331350718256994,
+        "y": 6.696420003951119
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 53.054260493817424,
+      "rotationDegrees": 59.93497852372517,
       "rotateFast": true
     }
   ],

@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceStartCenterTopAndAmp extends PathSequenceAuto {
     public ThreePieceStartCenterTopAndAmp() {
-        super(Robot.drive, new Pose2d(0.78, 6.72, Rotation2d.fromDegrees(60)));
+        super(Robot.drive, new Pose2d(1.35, 5.55, Rotation2d.fromDegrees(0)));
         addProcedure(new ShootAtSubwoofer());
         addProcedure(new StartAutoIntake());
         addPath("Middle Start to Middle Piece");
