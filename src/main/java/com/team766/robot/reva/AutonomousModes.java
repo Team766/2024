@@ -17,6 +17,8 @@ public class AutonomousModes {
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
                 new AutonomousMode("3 Piece Amp Side", () -> new ThreePieceAmpSide()),
                 new AutonomousMode("4 Piece Amp Side", () -> new FourPieceAmpSide()),
-                new AutonomousMode("3 Piece Center Start Center and Top", () -> new ThreePieceStartCenterTopAndAmp())
+                new AutonomousMode(
+                        "3 Piece Center Start Center and Top",
+                        () -> new ThreePieceStartCenterTopAndAmp())
             };
 }
