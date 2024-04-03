@@ -35,6 +35,7 @@ public class Intake extends Mechanism {
     private static final double CURRENT_LIMIT = 30.0; // a little lower than max efficiency
     private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
+    private static final double IS_CLOSE_THRESHOLD = 200;
 
     // This should be the amount that getRange() should return less than for a note to be classified
     // as in
@@ -111,7 +112,7 @@ public class Intake extends Mechanism {
     }
 
     public boolean isNoteClose() {
-        return (200) > sensor.getRange() && sensor.isRangeValid();
+        return (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid();
     }
 
     public boolean hasNoteInIntake() {
