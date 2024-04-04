@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7483342975945213,
-        "y": 6.675397934129203
+        "x": 0.7128224395337682,
+        "y": 6.718986067601764
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.406194437388875,
-        "y": 7.089841508386721
+        "x": 1.988042573307369,
+        "y": 6.3556130584483395
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp Side Start"
     },
     {
       "anchor": {
-        "x": 2.1015855040969345,
-        "y": 6.522126854438895
+        "x": 2.8691879744870605,
+        "y": 6.9776644182918
       },
       "prevControl": {
-        "x": 1.7969436448132157,
-        "y": 6.6332944101073394
+        "x": 1.67324598538086,
+        "y": 6.336669441857402
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "3 Piece 1 Stop 1"
+      "linkedName": "Top Piece"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.2,
-      "rotationDegrees": 37.38608672087997,
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 60.0,
       "rotateFast": false
     }
   ],
@@ -45,13 +45,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.26397392088418,
+    "rotation": 31.5,
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "RevA",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 59.08161572041965,
+    "rotation": 60.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
