@@ -23,7 +23,9 @@ public class ShootVelocityAndIntake extends Procedure {
         context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1.5);
 
         new IntakeIn().run(context);
-        context.waitForSeconds(1.5);
+
+        // FIXME: change this value back to 1.5s if doesn't intake for long enough
+        context.waitForSeconds(1.2);
 
         new IntakeStop().run(context);
         Robot.lights.signalFinishedShootingProcedure();
