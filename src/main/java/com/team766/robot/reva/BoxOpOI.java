@@ -110,7 +110,7 @@ public class BoxOpOI extends OIFragment {
                     shoulder.rotate(ShoulderPosition.SHOOTER_ASSIST);
                     // Currently it will only modify the speed if the right trigger is already held.
                     // TODO: Make this more tolerant for when Y is pressed before right trigger.
-                    if (shooter.hasTargetSpeed()) {
+                    if (shooter.getShouldRun()) {
                         shooter.shoot(Shooter.SHOOTER_ASSIST_SPEED);
                     }
                     context.releaseOwnership(shoulder);

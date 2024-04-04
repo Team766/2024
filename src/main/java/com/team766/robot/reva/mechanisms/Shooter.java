@@ -59,8 +59,8 @@ public class Shooter extends Mechanism {
         return shooterMotorBottom.getSensorVelocity();
     }
 
-    public boolean hasTargetSpeed() {
-        return targetSpeed > 0;
+    public boolean getShouldRun() {
+        return shouldRun;
     }
 
     public void shoot(double speed) {
