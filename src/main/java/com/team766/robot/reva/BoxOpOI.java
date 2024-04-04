@@ -100,14 +100,18 @@ public class BoxOpOI extends OIFragment {
                     shoulder.rotate(ShoulderPosition.SHOOT_LOW);
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-                    // other shoot pos
+                    // amp shot
                     context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.AMP);
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-                    // amp shot
+                    // shooter assist
                     context.takeOwnership(shoulder);
-                    shoulder.rotate(ShoulderPosition.TOP);
+                    shoulder.rotate(ShoulderPosition.SHOOTER_ASSIST);
+                    // Checks if the shooter is moving.
+                    if (shooter.hasTargetSpeed()) {
+                        shooter.shoot(Shooter.SHOOTER_ASSIST_SPEED);
+                    }
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
                     context.takeOwnership(shoulder);
