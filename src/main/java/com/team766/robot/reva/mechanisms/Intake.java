@@ -10,7 +10,6 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Mechanism {
 
