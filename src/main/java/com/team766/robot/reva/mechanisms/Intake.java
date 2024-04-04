@@ -100,7 +100,7 @@ public class Intake extends Mechanism {
 
     public void run() {
         // SmartDashboard.putString("[INTAKE]", state.toString());
-        SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
+        // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
         // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
         // SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
     }
