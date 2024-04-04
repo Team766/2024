@@ -108,7 +108,8 @@ public class BoxOpOI extends OIFragment {
                     // shooter assist
                     context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.SHOOTER_ASSIST);
-                    // Checks if the shooter is moving.
+                    // Currently it will only modify the speed if the right trigger is already held.
+                    // TODO: Make this more tolerant for when Y is pressed before right trigger.
                     if (shooter.hasTargetSpeed()) {
                         shooter.shoot(Shooter.SHOOTER_ASSIST_SPEED);
                     }
