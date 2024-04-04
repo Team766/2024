@@ -17,10 +17,15 @@ public class AutonomousModes {
                 // define one or more different autonomous modes with it like this:
                 //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
-                new AutonomousMode("3p Start Amp, Amp and Center Pieces", () -> new ThreePieceAmpSide()),
+                new AutonomousMode(
+                        "3p Start Amp, Amp and Center Pieces", () -> new ThreePieceAmpSide()),
                 new AutonomousMode("4p Start Amp, All Close Pieces", () -> new FourPieceAmpSide()),
-                new AutonomousMode("2p Start Source, Bottom Midfield Piece", () -> new TwoPieceMidfieldSourceSide()),
-                new AutonomousMode("3p Start Amp, Amp and Top Midfield Pieces", () -> new ThreePieceMidfieldAmpSide()),
+                new AutonomousMode(
+                        "2p Start Source, Bottom Midfield Piece",
+                        () -> new TwoPieceMidfieldSourceSide()),
+                new AutonomousMode(
+                        "3p Start Amp, Amp and Top Midfield Pieces",
+                        () -> new ThreePieceMidfieldAmpSide()),
                 new AutonomousMode(
                         "3p Start Center, Amp and Center Pieces",
                         () -> new ThreePieceStartCenterTopAndAmp())
