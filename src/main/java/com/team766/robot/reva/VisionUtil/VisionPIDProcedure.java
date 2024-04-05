@@ -23,8 +23,8 @@ public abstract class VisionPIDProcedure extends Procedure {
             new AnywhereScoringPosition(1.7201, 4800, 22.205946);
     private static AnywhereScoringPosition a3 = new AnywhereScoringPosition(1.9506, 4800, 23.516);
     private static AnywhereScoringPosition a4 = new AnywhereScoringPosition(2.072, 4800, 27.32);
-    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.29161, 4800, 31.109);
-    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.4616, 4800, 31.8987);
+    private static AnywhereScoringPosition a5 = new AnywhereScoringPosition(2.29161, 4800, 30.109);
+    private static AnywhereScoringPosition a6 = new AnywhereScoringPosition(2.4616, 4800, 30.8987);
     private static AnywhereScoringPosition a7 = new AnywhereScoringPosition(2.6942, 4800, 32.699);
     private static AnywhereScoringPosition a8 =
             new AnywhereScoringPosition(2.8657, 4800, 34.103733);
