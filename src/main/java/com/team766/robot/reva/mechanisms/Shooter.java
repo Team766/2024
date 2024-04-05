@@ -11,8 +11,9 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 
 public class Shooter extends Mechanism {
-    private static final double DEFAULT_SPEED =
+    public static final double DEFAULT_SPEED =
             4800.0; // motor shaft rps, does not take gearing into account
+    public static final double SHOOTER_ASSIST_SPEED = 4000.0;
     private static final double NUDGE_INCREMENT = 100.0;
     private static final double CURRENT_LIMIT = 40.0; // needs tuning
     private static final double MAX_SPEED = 5600.0; // spec is 6000.0
@@ -55,6 +56,10 @@ public class Shooter extends Mechanism {
 
     private double getShooterSpeedBottom() {
         return shooterMotorBottom.getSensorVelocity();
+    }
+
+    public boolean getShouldRun() {
+        return shouldRun;
     }
 
     public void shoot(double speed) {
