@@ -100,14 +100,19 @@ public class BoxOpOI extends OIFragment {
                     shoulder.rotate(ShoulderPosition.SHOOT_LOW);
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_X)) {
-                    // other shoot pos
+                    // amp shot
                     context.takeOwnership(shoulder);
                     shoulder.rotate(ShoulderPosition.AMP);
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getButtonPressed(InputConstants.XBOX_Y)) {
-                    // amp shot
+                    // shooter assist
                     context.takeOwnership(shoulder);
-                    shoulder.rotate(ShoulderPosition.TOP);
+                    shoulder.rotate(ShoulderPosition.SHOOTER_ASSIST);
+                    // Currently it will only modify the speed if the right trigger is already held.
+                    // TODO: Make this more tolerant for when Y is pressed before right trigger.
+                    if (shooter.getShouldRun()) {
+                        shooter.shoot(Shooter.SHOOTER_ASSIST_SPEED);
+                    }
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
                     context.takeOwnership(shoulder);
@@ -177,7 +182,7 @@ public class BoxOpOI extends OIFragment {
         // shooter
         if (shooterShoot.isNewlyTriggering()) {
             context.takeOwnership(shooter);
-            shooter.shoot(5600);
+            shooter.shoot(4800);
             context.releaseOwnership(shooter);
         } else if (shooterShoot.isFinishedTriggering()) {
             context.takeOwnership(shooter);

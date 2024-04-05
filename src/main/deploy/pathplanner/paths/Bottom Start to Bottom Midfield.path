@@ -3,50 +3,60 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 0.7132975145579924,
+        "y": 4.40352978391142
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 0.7139507427163004,
+        "y": 3.9251886188957568
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Bottom Start"
     },
     {
       "anchor": {
-        "x": 2.9208403278961947,
-        "y": 7.0
+        "x": 2.0177347623213766,
+        "y": 1.3250436269391064
       },
       "prevControl": {
-        "x": 2.647327938174395,
-        "y": 6.99797387557738
+        "x": 0.5501092437370062,
+        "y": 2.1267327303173134
       },
       "nextControl": {
-        "x": 3.2912178856275127,
-        "y": 7.0027436819811815
+        "x": 3.8443245108246487,
+        "y": 0.32727063977417226
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.4866439657691353,
-        "y": 6.6044715548077715
+        "x": 8.214257072032662,
+        "y": 0.7568538979670562
       },
       "prevControl": {
-        "x": 4.13474631460541,
-        "y": 7.149700514939878
+        "x": 7.759606904612749,
+        "y": 1.1302501893122792
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "intake test 1"
+      "linkedName": "Bottom Midfield"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -61,13 +71,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -98.13010235415607,
-    "rotateFast": false
+    "rotation": -60.0,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "gatorade",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -140.22201891090498,
+    "rotation": -60.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

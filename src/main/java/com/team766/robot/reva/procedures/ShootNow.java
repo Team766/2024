@@ -40,6 +40,9 @@ public class ShootNow extends VisionPIDProcedure {
         Robot.drive.stopDrive();
 
         Transform3d toUse;
+
+        context.waitForConditionOrTimeout(() -> seesTarget(), 1.0);
+
         try {
             toUse = getTransform3dOfRobotToTag();
 
@@ -106,7 +109,7 @@ public class ShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitFor(() -> Robot.shoulder.isFinished());
+        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
         context.releaseOwnership(Robot.shooter);
         Robot.lights.signalFinishingShootingProcedure();
@@ -118,5 +121,16 @@ public class ShootNow extends VisionPIDProcedure {
         GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
 
         return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
+    }
+
+    private boolean seesTarget() {
+        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+
+        try {
+            toUse.getTrackedTargetWithID(tagId);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
