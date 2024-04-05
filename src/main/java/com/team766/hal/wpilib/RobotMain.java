@@ -102,7 +102,7 @@ public class RobotMain extends LoggedRobot {
 
             if (isReal()) {
                 // enable dual-logging
-                com.team766.logging.Logger.enableLoggingToDataLog(false);
+                com.team766.logging.Logger.enableLoggingToDataLog(true);
 
                 // set up AdvantageKit logging
                 DataLogManager.log("Initializing logging.");
