@@ -199,6 +199,12 @@ public class SwerveModule {
                         steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset));
     }
 
+    public boolean checkDevices() {
+        // TODO: check CANcoder too.  perhaps check magnet health?
+        return MotorUtil.checkMotor("[SWERVE] " + modulePlacement + " steer", steer)
+                && MotorUtil.checkMotor("[SWERVE] " + modulePlacement + " drive", drive);
+    }
+
     public void dashboardCurrentUsage() {
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + " steer supply current",

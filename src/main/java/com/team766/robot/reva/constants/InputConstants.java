@@ -23,7 +23,7 @@ public final class InputConstants {
     public static final int NUDGE_DOWN = 12;
     public static final int MACROPAD_PRESET_1 = 13;
     public static final int MACROPAD_PRESET_2 = 14;
-    public static final int MACROPAD_PRESET_3 = 15;
+    public static final int QUICKTEST = 15;
     public static final int MACROPAD_PRESET_4 = 16;
 
     // Joystick buttons

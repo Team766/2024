@@ -140,6 +140,14 @@ public class Shoulder extends Mechanism {
         return Math.abs(getAngle() - targetAngle) < 2.5;
     }
 
+    public boolean checkDevices() {
+        boolean checkEncoder = absoluteEncoder.isConnected();
+        log("[SHOULDER] encoder: " + checkEncoder);
+        return checkEncoder
+                && MotorUtil.checkMotor("[SHOULDER] left motor", leftMotor)
+                && MotorUtil.checkMotor("[SHOULDER] right motor", rightMotor);
+    }
+
     @Override
     public void run() {
         // encoder takes some time to settle.

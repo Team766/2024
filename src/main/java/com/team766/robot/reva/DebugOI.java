@@ -8,6 +8,7 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.procedures.CheckDevices;
 
 /**
  * Programmer-centric controls to test each of our (non-drive) mechanisms.
@@ -146,6 +147,10 @@ public class DebugOI extends OIFragment {
         } else if (controlShooter.isFinishedTriggering()) {
             shooter.stop();
             context.releaseOwnership(shooter);
+        }
+
+        if (macropad.getButtonPressed(InputConstants.QUICKTEST)) {
+            new CheckDevices().run(context);
         }
     }
 }

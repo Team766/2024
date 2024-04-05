@@ -86,6 +86,11 @@ public class Shooter extends Mechanism {
         shoot(Math.max(targetSpeed - NUDGE_INCREMENT, MIN_SPEED));
     }
 
+    public boolean checkDevices() {
+        return MotorUtil.checkMotor("[SHOOTER] top motor", shooterMotorTop)
+                && MotorUtil.checkMotor("[SHOOTER] bottom motor", shooterMotorBottom);
+    }
+
     public void run() {
         if (speedUpdated || rateLimiter.next()) {
             // SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);

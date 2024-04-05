@@ -37,6 +37,12 @@ public class ForwardApriltagCamera extends Mechanism {
         return camera;
     }
 
+    public boolean checkDevices() {
+        boolean check = ((camera != null) && camera.isConnected());
+        log("ForwardApriltagCamera: " + check);
+        return check;
+    }
+
     public void run() {
 
         try {

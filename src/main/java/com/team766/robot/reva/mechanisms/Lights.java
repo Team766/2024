@@ -71,6 +71,18 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
+    // Green
+    public boolean signalDeviceCheckHealthy() {
+        ErrorCode e = m_candle.setLEDs(0, 100, 0);
+        return handleErrorCode(e);
+    }
+
+    // Red
+    public boolean signalDeviceCheckUnhealthy() {
+        ErrorCode e = m_candle.setLEDs(100, 0, 0);
+        return handleErrorCode(e);
+    }
+
     public boolean isDoingShootingProcedure() {
         ErrorCode e = m_candle.setLEDs(0, 227, 197);
         return handleErrorCode(e);

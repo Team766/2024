@@ -14,4 +14,10 @@ public class NoteCamera extends Mechanism {
     public ColorCamera getCamera() {
         return camera;
     }
+
+    public boolean checkDevices() {
+        boolean check = ((camera != null) && camera.isConnected());
+        log("NoteCamera: " + check);
+        return check;
+    }
 }

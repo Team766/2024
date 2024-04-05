@@ -97,6 +97,10 @@ public class Intake extends Mechanism {
         intakeMotor.set(intakePower);
     }
 
+    public boolean checkDevices() {
+        return MotorUtil.checkMotor("[INTAKE] motor", intakeMotor);
+    }
+
     public void run() {
         // SmartDashboard.putString("[INTAKE]", state.toString());
         // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
