@@ -31,8 +31,6 @@ public class ForwardApriltagCamera extends Mechanism {
             LoggerExceptionUtils.logException(e);
             Robot.lights.signalCameraNotConnected();
         }
-
-        
     }
 
     public GrayScaleCamera getCamera() {

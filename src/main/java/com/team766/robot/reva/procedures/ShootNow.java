@@ -7,7 +7,6 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.constants.VisionConstants;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -122,10 +121,11 @@ public class ShootNow extends VisionPIDProcedure {
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
         GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
 
-        Transform3d current = GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
+        Transform3d current =
+                GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
         Transform3d offset = new Transform3d(0.0, -0.229, 0.0, new Rotation3d());
         current.plus(offset);
-        
+
         return current;
     }
 
