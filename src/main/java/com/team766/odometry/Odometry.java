@@ -8,6 +8,7 @@ import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.logging.ShuffleboardUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -174,23 +175,23 @@ public class Odometry {
                                     .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
                                     .getTranslation(),
                             currPositions[i].getRotation());
-            // SmartDashboard.putNumber(
-            //         "early curr rotation", currPositions[i].getRotation().getDegrees());
-            // SmartDashboard.putString("prev rotation direct", prevPositions[i].toString());
+            ShuffleboardUtil.putNumber(
+                    "early curr rotation", currPositions[i].getRotation().getDegrees());
+            ShuffleboardUtil.putString("prev rotation direct", prevPositions[i].toString());
             currPositions[i] =
                     new Pose2d(
                             currPositions[i].getTranslation(),
                             gyroPosition.plus(Rotation2d.fromDegrees(absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
-            // SmartDashboard.putNumber("curr rotation",
-            // currPositions[i].getRotation().getDegrees());
-            // SmartDashboard.putNumber("prev rotation",
-            // prevPositions[i].getRotation().getDegrees());
-            // SmartDashboard.putNumber("rotation change", rotationChange.getDegrees());
+            ShuffleboardUtil.putNumber(
+                    "curr rotation", currPositions[i].getRotation().getDegrees());
+            ShuffleboardUtil.putNumber(
+                    "prev rotation", prevPositions[i].getRotation().getDegrees());
+            ShuffleboardUtil.putNumber("rotation change", rotationChange.getDegrees());
 
             double yaw = Math.toRadians(gyro.getAngle());
-            // SmartDashboard.putNumber("odom yaw", yaw);
+            ShuffleboardUtil.putNumber("odom yaw", yaw);
             double roll = Math.toRadians(gyro.getRoll());
             double pitch = Math.toRadians(gyro.getPitch());
 

@@ -7,13 +7,13 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
+import com.team766.logging.ShuffleboardUtil;
 import com.team766.robot.common.DriverOI;
 import com.team766.robot.gatorade.constants.ControlConstants;
 import com.team766.robot.gatorade.constants.InputConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -56,7 +56,7 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
+            ShuffleboardUtil.putString("Alliance", DriverStation.getAlliance().toString());
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
@@ -76,11 +76,11 @@ public class OI extends Procedure {
             if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
                 new GoForCones().run(context);
                 setLightsForGamePiece();
-                SmartDashboard.putBoolean("Game Piece", true);
+                ShuffleboardUtil.putBoolean("Game Piece", true);
             } else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
                 new GoForCubes().run(context);
                 setLightsForGamePiece();
-                SmartDashboard.putBoolean("Game Piece", false);
+                ShuffleboardUtil.putBoolean("Game Piece", false);
             }
 
             // look for button presses to queue placement of intake/wrist/elevator superstructure

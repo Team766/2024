@@ -13,8 +13,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
+import com.team766.logging.ShuffleboardUtil;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Basic elevator mechanism.  Used in conjunction with the {@link Intake} and {@link Wrist}.
@@ -185,8 +185,8 @@ public class Elevator extends Mechanism {
         // convert the desired target degrees to encoder units
         double rotations = EncoderUtils.elevatorHeightToRotations(position);
 
-        // SmartDashboard.putNumber("[ELEVATOR] ff", ff);
-        SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
+        // ShuffleboardUtil.putNumber("[ELEVATOR] ff", ff);
+        ShuffleboardUtil.putNumber("[ELEVATOR] reference", rotations);
 
         // set the reference point for the wrist
         pidController.setReference(rotations, ControlType.kPosition, 0, ff);
@@ -195,8 +195,8 @@ public class Elevator extends Mechanism {
     @Override
     public void run() {
         if (rateLimiter.next()) {
-            SmartDashboard.putNumber("[ELEVATOR] Height", getHeight());
-            SmartDashboard.putNumber("[ELEVATOR] Rotations", getRotations());
+            ShuffleboardUtil.putNumber("[ELEVATOR] Height", getHeight());
+            ShuffleboardUtil.putNumber("[ELEVATOR] Rotations", getRotations());
         }
     }
 }

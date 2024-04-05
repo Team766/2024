@@ -10,6 +10,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.ShuffleboardUtil;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
@@ -163,8 +164,8 @@ public class Drive extends Mechanism {
      */
     public void controlRobotOriented(double x, double y, double turn) {
         checkContextOwnership();
-        // SmartDashboard.putString(
-        //         "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
+        ShuffleboardUtil.putString(
+                "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
 
         // Calculate the necessary turn velocity (m/s) for each motor:
         double turnVelocity = config.wheelDistanceFromCenter() * turn;
@@ -239,7 +240,7 @@ public class Drive extends Mechanism {
         checkContextOwnership();
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
-            // SmartDashboard.putNumber("Rotation Target", target.getDegrees());
+            ShuffleboardUtil.putNumber("Rotation Target", target.getDegrees());
         }
 
         movingToTarget = true;
@@ -257,7 +258,7 @@ public class Drive extends Mechanism {
     public boolean isAtRotationTarget() {
         boolean value =
                 Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
-        // SmartDashboard.putBoolean("Is At Drive Rotation Target", value);
+        // ShuffleboardUtil.putBoolean("Is At Drive Rotation Target", value);
         return value;
     }
 
@@ -384,11 +385,11 @@ public class Drive extends Mechanism {
     public void run() {
         swerveOdometry.run();
         // log(currentPosition.toString());
-        // SmartDashboard.putString("pos", getCurrentPosition().toString());
+        ShuffleboardUtil.putString("pos", getCurrentPosition().toString());
 
-        // SmartDashboard.putNumber("Yaw", getHeading());
-        // SmartDashboard.putNumber("Pitch", getPitch());
-        // SmartDashboard.putNumber("Roll", getRoll());
+        ShuffleboardUtil.putNumber("Yaw", getHeading());
+        ShuffleboardUtil.putNumber("Pitch", getPitch());
+        ShuffleboardUtil.putNumber("Roll", getRoll());
 
         if (movingToTarget) {
             rotationPID.calculate(getHeading());
@@ -400,9 +401,9 @@ public class Drive extends Mechanism {
                             : rotationPID.getOutput()));
         }
 
-        // SmartDashboard.putBoolean("movingToTarget", movingToTarget);
+        ShuffleboardUtil.putBoolean("movingToTarget", movingToTarget);
 
-        // SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
+        ShuffleboardUtil.putBoolean("isAtRotationTarget", isAtRotationTarget());
 
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();

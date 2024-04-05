@@ -2,6 +2,7 @@ package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
+import com.team766.logging.ShuffleboardUtil;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
@@ -68,7 +69,7 @@ public class VisionSpeakerHelper {
                                     relativeTarget.rotateBy(
                                             Rotation2d.fromDegrees((drive.getHeading() + 180))));
 
-            // SmartDashboard.putString("target pos", absTargetPos.toString());
+            ShuffleboardUtil.putString("target pos", absTargetPos.toString());
 
             // context.takeOwnership(drive);
 
@@ -113,8 +114,8 @@ public class VisionSpeakerHelper {
         updateAlliance();
         updateTarget();
         updateRelativeTranslation2d();
-        // SmartDashboard.putString("translation", relativeTranslation2d.toString());
-        // SmartDashboard.putNumber("Tag Dist", relativeTranslation2d.getNorm());
+        ShuffleboardUtil.putString("translation", relativeTranslation2d.toString());
+        ShuffleboardUtil.putNumber("Tag Dist", relativeTranslation2d.getNorm());
     }
 
     public Rotation2d getHeadingToTarget() {
@@ -125,23 +126,23 @@ public class VisionSpeakerHelper {
         // Calculated the heading the robot needs to face from this translation
 
         double val = relativeTranslation2d.getAngle().getDegrees() + drive.getHeading();
-        // SmartDashboard.putNumber(
-        //         "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
-        // SmartDashboard.putNumber(
-        //         "heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
-        // SmartDashboard.putNumber("output heading", val);
+        ShuffleboardUtil.putNumber(
+                "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
+        ShuffleboardUtil.putNumber(
+                "heading angle", Rotation2d.fromDegrees(drive.getHeading()).getDegrees());
+        ShuffleboardUtil.putNumber("output heading", val);
         return Rotation2d.fromDegrees(val);
     }
 
     public double getShooterPower() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestPowerToUse(relativeTranslation2d.getNorm());
-        // SmartDashboard.putNumber("shooter power", val);
+        ShuffleboardUtil.putNumber("shooter power", val);
         return val;
     }
 
     public double getArmAngle() throws AprilTagGeneralCheckedException {
         double val = VisionPIDProcedure.getBestArmAngleToUse(relativeTranslation2d.getNorm());
-        // SmartDashboard.putNumber("arm angle", val);
+        ShuffleboardUtil.putNumber("arm angle", val);
         return val;
     }
 }
