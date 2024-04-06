@@ -112,7 +112,9 @@ public class BoxOpOI extends OIFragment {
                     // Currently it will only modify the speed if the right trigger is already held.
                     // TODO: Make this more tolerant for when Y is pressed before right trigger.
                     if (shooter.getShouldRun()) {
+                        context.takeOwnership(shooter);
                         shooter.shoot(Shooter.SHOOTER_ASSIST_SPEED);
+                        context.releaseOwnership(shooter);
                     }
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
