@@ -14,6 +14,6 @@ public class TwoPieceMidfieldSourceSide extends PathSequenceAuto {
         addProcedure(new StartAutoIntake());
         addPath("Bottom Start to Bottom Midfield"); // moves to midfield position
         addPath("Bottom Midfield to Bottom Start"); // moves to subwoofer scoring position
-        addProcedure(new ShootAtSubwoofer());
+        // addProcedure(new ShootAtSubwoofer());
     }
 }
