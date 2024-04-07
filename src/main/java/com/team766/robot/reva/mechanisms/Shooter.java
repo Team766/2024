@@ -27,6 +27,7 @@ public class Shooter extends Mechanism {
     private MotorController shooterMotorBottom;
     // decrease period if we're tuning PID
     private RateLimiter rateLimiter = new RateLimiter(10.0);
+    private RateLimiter setSpeedLimiter = new RateLimiter(0.1);
     private boolean shouldRun = false;
     // only used if shouldRun is true
     private double targetSpeed = DEFAULT_SPEED;
@@ -106,7 +107,7 @@ public class Shooter extends Mechanism {
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
         // until then, this is equivalent to the earlier approach
-        if (speedUpdated) {
+        if (speedUpdated || setSpeedLimiter.next()) {
             if (shouldRun) {
                 shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
                 shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);
