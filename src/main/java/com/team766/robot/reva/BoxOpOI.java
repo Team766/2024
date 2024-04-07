@@ -159,9 +159,9 @@ public class BoxOpOI extends OIFragment {
             // if the sticks are being moving, move the corresponding climber(s)
             if (climberClimb.isTriggering()) {
                 climber.setLeftPower(
-                    createJoystickDeadzone(gamepad.getAxis(InputConstants.XBOX_LS_Y)));
+                        createJoystickDeadzone(gamepad.getAxis(InputConstants.XBOX_LS_Y)));
                 climber.setRightPower(
-                    createJoystickDeadzone(gamepad.getAxis(InputConstants.XBOX_RS_Y)));
+                        createJoystickDeadzone(gamepad.getAxis(InputConstants.XBOX_RS_Y)));
             } else {
                 climber.stop();
             }

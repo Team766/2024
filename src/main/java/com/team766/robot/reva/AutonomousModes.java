@@ -30,8 +30,6 @@ public class AutonomousModes {
                 new AutonomousMode(
                         "3p Start Center, Amp and Center Pieces",
                         () -> new ThreePieceStartCenterTopAndAmp()),
-                new AutonomousMode(
-                        "Just Shoot Amp",
-                        () -> new JustShootAmp())
+                new AutonomousMode("Just Shoot Amp", () -> new JustShootAmp())
             };
 }
