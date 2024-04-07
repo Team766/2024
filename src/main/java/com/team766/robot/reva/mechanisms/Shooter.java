@@ -100,6 +100,8 @@ public class Shooter extends Mechanism {
         }
 
         // SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
+        SmartDashboard.putBoolean("[SHOOTER SPEED UPDATED]", speedUpdated);
+        SmartDashboard.putBoolean("[SHOOTER SHOULD RUN]", shouldRun);
 
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
