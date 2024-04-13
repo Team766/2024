@@ -335,10 +335,10 @@ public class Context implements Runnable, LaunchedContext {
      * This is the entry point for this Context's worker thread.
      */
     private void threadFunction() {
-        // OS threads run independently of one another, so we need to wait until
-        // the baton is passed to us before we can start running the user's code
-        waitForControl(ControlOwner.SUBROUTINE);
         try {
+            // OS threads run independently of one another, so we need to wait until
+            // the baton is passed to us before we can start running the user's code
+            waitForControl(ControlOwner.SUBROUTINE);
             // Call into the user's code.
             m_func.run(this);
             Logger.get(Category.FRAMEWORK)
