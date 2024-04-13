@@ -13,9 +13,15 @@ public interface LaunchedContextWithValue<T> extends LaunchedContext {
     T lastYieldedValue();
 
     /**
+     * Return true if a has been yielded by the Procedure since since the last call to
+     * getAndClearLastYieldedValue. Return false otherwise.
+     */
+    boolean hasYieldedValue();
+
+    /**
      * Return the most recent value that the Procedure passed to Context.yield(T), and clear the
-     * recorded last yielded value such that subsequent calls to lastYieldedValue() will return
-     * null.
+     * recorded last yielded value such that subsequent calls to hasYieldedValue() will return
+     * false.
      */
     T getAndClearLastYieldedValue();
 }

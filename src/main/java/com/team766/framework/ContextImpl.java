@@ -9,11 +9,12 @@ import com.team766.logging.Severity;
 import java.lang.StackWalker.StackFrame;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWithValue<T> {
-    private T m_lastYieldedValue;
+    private Optional<T> m_lastYieldedValue = Optional.empty();
 
     /**
      * Represents the baton-passing state (see class comments). Instead of
@@ -374,20 +375,25 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
 
     @Override
     public void yield(final T valueToYield) {
-        m_lastYieldedValue = valueToYield;
+        m_lastYieldedValue = Optional.of(valueToYield);
         this.yield();
     }
 
     @Override
     public T lastYieldedValue() {
-        return m_lastYieldedValue;
+        return m_lastYieldedValue.orElse(null);
+    }
+
+    @Override
+    public boolean hasYieldedValue() {
+        return m_lastYieldedValue.isPresent();
     }
 
     @Override
     public T getAndClearLastYieldedValue() {
         final var result = m_lastYieldedValue;
-        m_lastYieldedValue = null;
-        return result;
+        m_lastYieldedValue = Optional.empty();
+        return result.orElse(null);
     }
 
     @Override
