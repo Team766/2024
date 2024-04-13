@@ -9,7 +9,7 @@ public class ShootVelocityAndIntake extends Procedure {
     double speed;
 
     public ShootVelocityAndIntake() {
-        this(2000);
+        this(4800);
     }
 
     public ShootVelocityAndIntake(double speed) {
@@ -18,16 +18,18 @@ public class ShootVelocityAndIntake extends Procedure {
 
     public void run(Context context) {
         context.takeOwnership(Robot.shooter);
-        context.takeOwnership(Robot.intake);
 
         Robot.shooter.shoot(speed);
-        context.waitFor(Robot.shooter::isCloseToExpectedSpeed);
-        log("SUIIII");
+        context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1.5);
 
         new IntakeIn().run(context);
-        context.waitForSeconds(1.5);
+
+        // FIXME: change this value back to 1.5s if doesn't intake for long enough
+        context.waitForSeconds(1.2);
 
         new IntakeStop().run(context);
-        Robot.shooter.shoot(0);
+        Robot.lights.signalFinishedShootingProcedure();
+
+        // Shooter stopped at the end of auton
     }
 }

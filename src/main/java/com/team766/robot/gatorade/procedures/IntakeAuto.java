@@ -8,20 +8,20 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class IntakeAuto extends PathSequenceAuto {
     public IntakeAuto() {
         super(Robot.drive, new Pose2d(2.00, 7.00, new Rotation2d(0)));
-        add(new IntakeIn());
-        add("Intake_Path_1");
-        add(new IntakeIdle());
-        add("Intake_Path_2");
-        add(new IntakeOut());
-        add(new SetCross());
-        add(1);
-        add(new IntakeStop());
-        add("Intake_Path_3");
-        add(new IntakeIn());
-        add("Intake_Path_4");
-        add(new SetCross());
-        add(new IntakeOut());
-        add(2);
-        add(new IntakeStop());
+        addProcedure(new IntakeIn());
+        addPath("Intake_Path_1");
+        addProcedure(new IntakeIdle());
+        addPath("Intake_Path_2");
+        addProcedure(new IntakeOut());
+        addProcedure(new SetCross());
+        addWait(1);
+        addProcedure(new IntakeStop());
+        addPath("Intake_Path_3");
+        addProcedure(new IntakeIn());
+        addPath("Intake_Path_4");
+        addProcedure(new SetCross());
+        addProcedure(new IntakeOut());
+        addWait(2);
+        addProcedure(new IntakeStop());
     }
 }

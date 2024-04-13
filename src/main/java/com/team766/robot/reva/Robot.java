@@ -1,13 +1,16 @@
 package com.team766.robot.reva;
 
+import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -22,17 +25,23 @@ public class Robot implements RobotConfigurator {
     // not yet initialized, until we have the camera on the robot and test it.
     public static ForwardApriltagCamera forwardApriltagCamera;
     public static NoteCamera noteCamera;
+    public static Lights lights;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
+        lights = new Lights();
         drive = new Drive(config);
         climber = new Climber();
         shoulder = new Shoulder();
         intake = new Intake();
         shooter = new Shooter();
         noteCamera = new NoteCamera();
-        forwardApriltagCamera = new ForwardApriltagCamera();
+        try {
+            forwardApriltagCamera = new ForwardApriltagCamera();
+        } catch (AprilTagGeneralCheckedException e) {
+            LoggerExceptionUtils.logException(e);
+        }
     }
 
     @Override

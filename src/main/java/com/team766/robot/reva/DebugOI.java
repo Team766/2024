@@ -92,18 +92,26 @@ public class DebugOI extends OIFragment {
         if (controlClimber.isTriggering()) {
             if (controlClimber.isNewlyTriggering()) {
                 context.takeOwnership(climber);
-                climber.goNoPID();
+                climber.enableSoftLimits(false);
             }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                climber.nudgeUp();
+                climber.setLeftPower(-0.25);
+                climber.setRightPower(-0.25);
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                climber.nudgeDown();
+                climber.setLeftPower(0.25);
+                climber.setRightPower(0.25);
             }
 
         } else if (controlClimber.isFinishedTriggering()) {
             climber.stop();
+            climber.enableSoftLimits(true);
             context.releaseOwnership(climber);
+        }
+
+        if (macropad.getButtonPressed(16)) {
+            climber.resetLeftPosition();
+            climber.resetRightPosition();
         }
 
         // simple one-button controls for intake

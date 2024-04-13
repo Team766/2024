@@ -7,6 +7,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
+import com.team766.robot.common.DriverOI;
 import com.team766.robot.gatorade.constants.ControlConstants;
 import com.team766.robot.gatorade.constants.InputConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
@@ -27,6 +28,7 @@ public class OI extends Procedure {
     private double leftJoystickX = 0;
     private double leftJoystickY = 0;
     private boolean isCross = false;
+    private final DriverOI driverOI;
 
     double turningValue = 0;
     boolean manualControl = true;
@@ -40,10 +42,11 @@ public class OI extends Procedure {
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
+
+        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
     }
 
     public void run(Context context) {
-        context.takeOwnership(Robot.drive);
         context.takeOwnership(Robot.lights);
 
         boolean elevatorManual = false;
@@ -58,64 +61,13 @@ public class OI extends Procedure {
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
 
-            // Negative because forward is negative in driver station
-            leftJoystickX =
-                    -createJoystickDeadzone(
-                                    leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
-                            * ControlConstants.MAX_VEL_POS; // For fwd/rv
-            // Negative because left is negative in driver station
-            leftJoystickY =
-                    -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                            * ControlConstants.MAX_VEL_POS; // For left/right
-            // Negative because left is negative in driver station
-            rightJoystickY =
-                    -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                            * ControlConstants.MAX_VEL_ROT; // For steer
+            // Driver OI: take input from left, right joysticks.  control drive.
+            driverOI.handleOI(context);
 
             if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
                 new IntakeOut().run(context);
             } else if (leftJoystick.getButtonReleased(InputConstants.INTAKE_OUT)) {
                 new IntakeStop().run(context);
-            }
-
-            if (leftJoystick.getButtonPressed(InputConstants.RESET_GYRO)) {
-                Robot.drive.resetGyro();
-            }
-
-            if (leftJoystick.getButtonPressed(InputConstants.RESET_POS)) {
-                Robot.drive.resetCurrentPosition();
-            }
-
-            // Sets the wheels to the cross position if the cross button is pressed
-            if (rightJoystick.getButtonPressed(InputConstants.CROSS_WHEELS)) {
-                if (!isCross) {
-                    context.startAsync(new SetCross());
-                }
-                isCross = !isCross;
-            }
-
-            // Moves the robot if there are joystick inputs
-            if (!isCross
-                    && Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                            > 0) {
-                context.takeOwnership(Robot.drive);
-                // log("current pos: " + Robot.drive.getCurrentPosition());
-                // If a button is pressed, drive is just fine adjustment
-                if (rightJoystick.getButton(InputConstants.FINE_DRIVING)) {
-                    Robot.drive.controlFieldOriented(
-                            (leftJoystickX * ControlConstants.FINE_DRIVING_COEFFICIENT),
-                            (leftJoystickY * ControlConstants.FINE_DRIVING_COEFFICIENT),
-                            (rightJoystickY * ControlConstants.FINE_DRIVING_COEFFICIENT));
-                } else {
-                    // On default, controls the robot field oriented
-                    Robot.drive.controlFieldOriented(
-                            (leftJoystickX), (leftJoystickY), (rightJoystickY));
-                }
-            } else {
-                // if (rightJoystick.getButton(9)) {Robot.drive.controlFieldOriented(0, -0.2, 0);}
-                // else if (rightJoystick.getButton(10)) {Robot.drive.controlFieldOriented(0, 0.2,
-                // 0);}
-                Robot.drive.stopDrive();
             }
 
             // Respond to boxop commands

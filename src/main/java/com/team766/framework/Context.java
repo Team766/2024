@@ -45,6 +45,18 @@ import java.util.function.BooleanSupplier;
  */
 public interface Context {
     /**
+     * Pauses the execution of this Context until the given predicate returns true or until
+     * the timeout has elapsed.  Yields to other Contexts in the meantime.
+     *
+     * Note that the predicate will be evaluated repeatedly (possibly on a different thread) while
+     * the Context is paused to determine whether it should continue waiting.
+     *
+     * @return True if the predicate succeeded, false if the wait timed out.
+     */
+    public boolean waitForConditionOrTimeout(
+            final BooleanSupplier predicate, double timeoutSeconds);
+
+    /**
      * Pauses the execution of this Context until the given predicate returns true. Yields to other
      * Contexts in the meantime.
      *

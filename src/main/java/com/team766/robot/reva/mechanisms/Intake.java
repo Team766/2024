@@ -10,7 +10,6 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Mechanism {
 
@@ -32,8 +31,10 @@ public class Intake extends Mechanism {
 
     private static final double DEFAULT_POWER = 1.0;
     private static final double NUDGE_INCREMENT = 0.05;
+    private static final double CURRENT_LIMIT = 30.0; // a little lower than max efficiency
     private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
+    private static final double IS_CLOSE_THRESHOLD = 200;
 
     // This should be the amount that getRange() should return less than for a note to be classified
     // as in
@@ -49,6 +50,7 @@ public class Intake extends Mechanism {
     public Intake() {
         intakeMotor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
         intakeMotor.setNeutralMode(NeutralMode.Brake);
+        intakeMotor.setCurrentLimit(CURRENT_LIMIT);
         sensor = new TimeOfFlight(0); // needs calibration
 
         sensor.setRangingMode(RangingMode.Short, 24);
@@ -96,15 +98,20 @@ public class Intake extends Mechanism {
     }
 
     public void run() {
-        SmartDashboard.putString("[INTAKE]", state.toString());
-        SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
-        SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
+        // SmartDashboard.putString("[INTAKE]", state.toString());
+        // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
+        // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
+        // SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
     }
 
     // feel free to refactor these two functions later - I didn't want to mess up existing code
 
     private boolean isNoteReady() {
         return (threshold.get()) > sensor.getRange() && sensor.isRangeValid();
+    }
+
+    public boolean isNoteClose() {
+        return (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid();
     }
 
     public boolean hasNoteInIntake() {
@@ -114,6 +121,7 @@ public class Intake extends Mechanism {
     }
 
     public void setIntakePowerForSensorDistance() {
+        checkContextOwnership();
         intakePower =
                 com.team766.math.Math.interpolate(
                         positions,

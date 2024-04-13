@@ -5,10 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.robot.common.DriverOI;
 import com.team766.robot.reva.constants.InputConstants;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -32,7 +29,14 @@ public class OI extends Procedure {
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
         gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
-        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+        driverOI =
+                new DriverOI(
+                        Robot.drive,
+                        Robot.shoulder,
+                        Robot.intake,
+                        Robot.shooter,
+                        leftJoystick,
+                        rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
         boxOpOI = new BoxOpOI(gamepad, Robot.shoulder, Robot.intake, Robot.shooter, Robot.climber);
     }
@@ -42,7 +46,8 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
+            // NOTE: DriverStation.getAlliance() returns Optional<Alliance>
+            // SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.

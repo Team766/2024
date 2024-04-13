@@ -10,11 +10,14 @@ import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.Optional;
 
 public class FollowPath extends Procedure {
     private final Drive drive;
-    private final PathPlannerPath path;
+    private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
@@ -24,8 +27,7 @@ public class FollowPath extends Procedure {
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
             PPHolonomicDriveController controller,
-            Drive drive
-            /* TODO: add flip path support */ ) {
+            Drive drive) {
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
@@ -44,9 +46,19 @@ public class FollowPath extends Procedure {
     public void run(Context context) {
         context.takeOwnership(drive);
 
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            boolean flip = (alliance.get() == Alliance.Red);
+            if (flip) {
+                path = path.flipPath();
+            }
+        } else {
+            log("Unable to get Alliance in FollowPath.");
+            // TODO: don't follow this path?
+        }
+
         // intitialization
 
-        // TODO: flip path as necessary
         Pose2d curPose = drive.getCurrentPosition();
         ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
 
@@ -102,6 +114,7 @@ public class FollowPath extends Procedure {
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
             drive.stopDrive();
+            drive.setCross();
         }
     }
 
