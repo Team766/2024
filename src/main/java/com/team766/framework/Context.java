@@ -122,26 +122,4 @@ public interface Context {
         this.runSync(YieldedValues.collectInto(func, values));
         return values;
     }
-
-    /**
-     * Take ownership of the given Mechanism with this Context.
-     *
-     * Only one Context can own a Mechanism at one time. If any Context previously owned this
-     * Mechanism, it will be terminated. Ownership of this Mechanism can be released by calling
-     * releaseOwnership, or it will be automatically released when this Context finishes running.
-     *
-     * @see Mechanism#takeOwnership(Context, Context)
-     */
-    void takeOwnership(final Mechanism mechanism);
-
-    /**
-     * Release ownership of the given Mechanism.
-     *
-     * It is an error to call this method with a Mechanism that was not previously passed to
-     * takeOwnership.
-     *
-     * @see #takeOwnership(Mechanism)
-     * @see Mechanism#releaseOwnership(Context)
-     */
-    void releaseOwnership(final Mechanism mechanism);
 }

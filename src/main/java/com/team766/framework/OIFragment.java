@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import com.team766.logging.Category;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -83,6 +84,8 @@ public abstract class OIFragment implements LoggingBase {
     private void register(OICondition condition) {
         conditions.add(condition);
     }
+
+    public abstract Subsystem[] getRequirements();
 
     /**
      * Called at the beginning of {@link #runOI(Context)}, before evaluating any of the registered conditions

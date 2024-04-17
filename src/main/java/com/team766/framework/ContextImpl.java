@@ -7,9 +7,9 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.lang.StackWalker.StackFrame;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -120,13 +120,6 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     private final ProcedureWithValueInterface<T> m_func;
 
     /**
-     * If this Context was created by another context using
-     * {@link #startAsync}, this will contain a reference to that originating
-     * Context.
-     */
-    private final ContextImpl<?> m_parentContext;
-
-    /**
      * The OS thread that this Context is executing on.
      */
     private Thread m_thread;
@@ -162,22 +155,14 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
      */
     private String m_previousWaitPoint;
 
-    /**
-     * The mechanisms that have been claimed by this Context using
-     * takeOwnership. These will be automatically released when the Context
-     * finishes executing.
-     */
-    private Set<Mechanism> m_ownedMechanisms = new HashSet<Mechanism>();
-
     /*
      * Constructors are intentionally private or package-private. New contexts
      * should be created with {@link Context#startAsync} or
      * {@link Scheduler#startAsync}.
      */
 
-    ContextImpl(final ProcedureWithValueInterface<T> func, final ContextImpl<?> parentContext) {
+    ContextImpl(final ProcedureWithValueInterface<T> func) {
         m_func = func;
-        m_parentContext = parentContext;
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
                         Severity.DEBUG,
@@ -187,18 +172,22 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         m_controlOwner = ControlOwner.MAIN_THREAD;
         m_state = State.NEW;
         setName(getContextName());
-    }
-
-    ContextImpl(final ProcedureWithValueInterface<T> func) {
-        this(func, null);
-    }
-
-    ContextImpl(final ProcedureInterface func, final ContextImpl<?> parentContext) {
-        this((ContextWithValue<T> context) -> func.run(context), parentContext);
+        addRequirements(func.getRequirements().toArray(Subsystem[]::new));
     }
 
     ContextImpl(final ProcedureInterface func) {
-        this(func, null);
+        this(
+                new ProcedureWithValueInterface<T>() {
+                    @Override
+                    public void run(ContextWithValue<T> context) {
+                        func.run(context);
+                    }
+
+                    @Override
+                    public Set<Subsystem> getRequirements() {
+                        return func.getRequirements();
+                    }
+                });
     }
 
     /**
@@ -335,21 +324,11 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.WARNING, "Context " + getContextName() + " died");
         } finally {
-            for (Mechanism m : m_ownedMechanisms) {
-                // Don't use this.releaseOwnership here, because that would cause a
-                // ConcurrentModificationException since we're iterating over m_ownedMechanisms
-                try {
-                    m.releaseOwnership(this);
-                } catch (Exception ex) {
-                    LoggerExceptionUtils.logException(ex);
-                }
-            }
             synchronized (m_threadSync) {
                 m_state = State.DONE;
                 c_currentContext = null;
                 m_threadSync.notifyAll();
             }
-            m_ownedMechanisms.clear();
         }
     }
 
@@ -416,21 +395,36 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
 
     @Override
     public LaunchedContext startAsync(final ProcedureInterface func) {
-        var newContext = new ContextImpl<>(func, this);
+        var newContext = new ContextImpl<>(func);
         newContext.schedule();
         return newContext;
     }
 
     @Override
     public <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValueInterface<U> func) {
-        var newContext = new ContextImpl<U>(func, this);
+        var newContext = new ContextImpl<U>(func);
         newContext.schedule();
         return newContext;
     }
 
     @Override
     public void runSync(final ProcedureInterface func) {
+        checkProcedureRequirements(func, func.getRequirements());
         func.run(this);
+    }
+
+    private void checkProcedureRequirements(Object procedure, Set<Subsystem> requirements) {
+        final var this_requirements = getRequirements();
+        for (var req : requirements) {
+            if (!this_requirements.contains(req)) {
+                throw new IllegalArgumentException(
+                        getName()
+                                + " tried to run "
+                                + procedure
+                                + " but is missing the requirement on "
+                                + req.getName());
+            }
+        }
     }
 
     @Override
@@ -487,17 +481,5 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     @Override
     public boolean isDone() {
         return m_state == State.DONE;
-    }
-
-    @Override
-    public void takeOwnership(final Mechanism mechanism) {
-        mechanism.takeOwnership(this, m_parentContext);
-        m_ownedMechanisms.add(mechanism);
-    }
-
-    @Override
-    public void releaseOwnership(final Mechanism mechanism) {
-        mechanism.releaseOwnership(this);
-        m_ownedMechanisms.remove(mechanism);
     }
 }

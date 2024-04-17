@@ -1,6 +1,8 @@
 package com.team766.framework;
 
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -21,7 +23,17 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
      * Adapts a ProcedureWithValue into a Procedure by discarding any values that it produces.
      */
     public static <T> ProcedureInterface discard(ProcedureWithValueInterface<T> procedure) {
-        return (context) -> procedure.run(discard(context));
+        return new ProcedureInterface() {
+            @Override
+            public void run(Context context) {
+                procedure.run(discard(context));
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                return procedure.getRequirements();
+            }
+        };
     }
 
     /**
@@ -38,7 +50,17 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
      */
     public static <T> ProcedureInterface collectInto(
             ProcedureWithValueInterface<T> procedure, List<T> valuesCollection) {
-        return (context) -> procedure.run(collectInto(context, valuesCollection));
+        return new ProcedureInterface() {
+            @Override
+            public void run(Context context) {
+                procedure.run(collectInto(context, valuesCollection));
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                return procedure.getRequirements();
+            }
+        };
     }
 
     private final Context parentContext;
@@ -92,16 +114,6 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     @Override
     public void runSync(final ProcedureInterface func) {
         parentContext.runSync(func);
-    }
-
-    @Override
-    public void takeOwnership(Mechanism mechanism) {
-        parentContext.takeOwnership(mechanism);
-    }
-
-    @Override
-    public void releaseOwnership(Mechanism mechanism) {
-        parentContext.releaseOwnership(mechanism);
     }
 
     @Override

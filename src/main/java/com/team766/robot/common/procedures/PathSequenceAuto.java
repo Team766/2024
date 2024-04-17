@@ -16,8 +16,10 @@ import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Set;
 
 public class PathSequenceAuto extends Procedure {
 
@@ -87,7 +89,18 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void addWait(double waitForSeconds) {
-        pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
+        pathItems.add(
+                new ProcedureInterface() {
+                    @Override
+                    public void run(Context context) {
+                        context.waitForSeconds(waitForSeconds);
+                    }
+
+                    @Override
+                    public Set<Subsystem> getRequirements() {
+                        return Set.of();
+                    }
+                });
     }
 
     @Override
