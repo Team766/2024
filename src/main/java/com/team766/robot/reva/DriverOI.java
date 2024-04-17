@@ -104,7 +104,7 @@ public class DriverOI extends OIFragment {
             visionContext = context.startAsync(new DriverShootNow());
 
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            visionContext.stop();
+            visionContext.cancel();
             context.takeOwnership(drive);
             context.takeOwnership(intake);
 
@@ -122,7 +122,7 @@ public class DriverOI extends OIFragment {
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
 
-            visionContext.stop();
+            visionContext.cancel();
 
             context.takeOwnership(intake);
             intake.stop();

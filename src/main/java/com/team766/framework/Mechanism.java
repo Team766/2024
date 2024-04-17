@@ -4,43 +4,17 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class Mechanism extends LoggingBase {
+public abstract class Mechanism extends SubsystemBase implements LoggingBase {
     private ContextImpl<?> m_owningContext = null;
     private Thread m_runningPeriodic = null;
 
-    public Mechanism() {
-        loggerCategory = Category.MECHANISMS;
+    protected Category loggerCategory = Category.MECHANISMS;
 
-        Scheduler.getInstance()
-                .add(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Mechanism.this.m_runningPeriodic = Thread.currentThread();
-                                    Mechanism.this.run();
-                                } finally {
-                                    Mechanism.this.m_runningPeriodic = null;
-                                }
-                            }
-
-                            @Override
-                            public String toString() {
-                                String repr = Mechanism.this.getName();
-                                if (Mechanism.this.m_runningPeriodic != null) {
-                                    repr +=
-                                            " running\n"
-                                                    + StackTraceUtils.getStackTrace(
-                                                            m_runningPeriodic);
-                                }
-                                return repr;
-                            }
-                        });
-    }
-
-    public String getName() {
-        return this.getClass().getName();
+    @Override
+    public final Category getLoggerCategory() {
+        return loggerCategory;
     }
 
     protected void checkContextOwnership() {
@@ -84,7 +58,7 @@ public abstract class Mechanism extends LoggingBase {
                                         + getName()
                                         + ": "
                                         + m_owningContext.getContextName());
-                m_owningContext.stop();
+                m_owningContext.cancel();
                 var stoppedContext = m_owningContext;
                 context.yield();
                 if (m_owningContext == stoppedContext) {
@@ -119,6 +93,16 @@ public abstract class Mechanism extends LoggingBase {
                         Severity.DEBUG,
                         context.getContextName() + " is releasing ownership of " + getName());
         m_owningContext = null;
+    }
+
+    @Override
+    public final void periodic() {
+        try {
+            m_runningPeriodic = Thread.currentThread();
+            run();
+        } finally {
+            m_runningPeriodic = null;
+        }
     }
 
     public void run() {}

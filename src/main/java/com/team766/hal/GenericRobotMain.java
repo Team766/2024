@@ -3,8 +3,8 @@ package com.team766.hal;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.LaunchedContext;
 import com.team766.framework.Procedure;
-// import com.team766.hal.GenericRobotMain;
-import com.team766.framework.Scheduler;
+import com.team766.framework.SchedulerMonitor;
+import com.team766.framework.SchedulerUtils;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -15,6 +15,7 @@ import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.ReadLogs;
 import com.team766.web.WebServer;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
 
@@ -38,7 +39,8 @@ public final class GenericRobotMain {
     private boolean faultInTeleopInit = false;
 
     public GenericRobotMain() {
-        Scheduler.getInstance().reset();
+        SchedulerUtils.reset();
+        SchedulerMonitor.start();
 
         configurator = RobotSelector.createConfigurator();
         m_autonSelector = new AutonomousSelector(configurator.getAutonomousModes());
@@ -92,12 +94,12 @@ public final class GenericRobotMain {
         if (timeInState > RESET_IN_DISABLED_PERIOD) {
             resetAutonomousMode("time in disabled mode");
         }
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 
     public void resetAutonomousMode(final String reason) {
         if (m_autonomous != null) {
-            m_autonomous.stop();
+            m_autonomous.cancel();
             m_autonomous = null;
             m_autonMode = null;
             Logger.get(Category.AUTONOMOUS)
@@ -109,7 +111,7 @@ public final class GenericRobotMain {
         faultInAutoInit = true;
 
         if (m_oiContext != null) {
-            m_oiContext.stop();
+            m_oiContext.cancel();
             m_oiContext = null;
         }
 
@@ -131,27 +133,27 @@ public final class GenericRobotMain {
         final AutonomousMode autonomousMode = m_autonSelector.getSelectedAutonMode();
         if (autonomousMode != null && m_autonMode != autonomousMode) {
             final Procedure autonProcedure = autonomousMode.instantiate();
-            m_autonomous = Scheduler.getInstance().startAsync(autonProcedure);
+            m_autonomous = SchedulerUtils.startAsync(autonProcedure);
             m_autonMode = autonomousMode;
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(
                             Severity.INFO,
                             "Starting new autonomus procedure " + autonProcedure.getName());
         }
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 
     public void teleopInit() {
         faultInTeleopInit = true;
 
         if (m_autonomous != null) {
-            m_autonomous.stop();
+            m_autonomous.cancel();
             m_autonomous = null;
             m_autonMode = null;
         }
 
         if (m_oiContext == null && m_oi != null) {
-            m_oiContext = Scheduler.getInstance().startAsync(m_oi);
+            m_oiContext = SchedulerUtils.startAsync(m_oi);
         }
 
         faultInTeleopInit = false;
@@ -161,10 +163,10 @@ public final class GenericRobotMain {
         if (faultInRobotInit || faultInTeleopInit) return;
 
         if (m_oiContext != null && m_oiContext.isDone()) {
-            m_oiContext = Scheduler.getInstance().startAsync(m_oi);
+            m_oiContext = SchedulerUtils.startAsync(m_oi);
             Logger.get(Category.OPERATOR_INTERFACE)
                     .logRaw(Severity.WARNING, "Restarting OI context");
         }
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 }

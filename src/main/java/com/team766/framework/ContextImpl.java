@@ -6,6 +6,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import edu.wpi.first.wpilibj2.command.Command;
 import java.lang.StackWalker.StackFrame;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,7 +24,7 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWithValue<T> {
+class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedContextWithValue<T> {
     private Optional<T> m_lastYieldedValue = Optional.empty();
 
     /**
@@ -44,12 +45,15 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
      */
     private enum State {
         /**
-         * The Context has been started (a Context is started immediately upon
-         * construction).
+         * The Context has not yet been started.
+         */
+        NEW,
+        /**
+         * The Context has been started.
          */
         RUNNING,
         /**
-         * stop() has been called on this Context (but it has not been allowed
+         * cancel() has been called on this Context (but it has not been allowed
          * to respond to the stop request yet).
          */
         CANCELED,
@@ -125,7 +129,7 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
     /**
      * The OS thread that this Context is executing on.
      */
-    private final Thread m_thread;
+    private Thread m_thread;
 
     /**
      * Used to synchronize access to this Context's state variable.
@@ -181,21 +185,19 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
         m_threadSync = new Object();
         m_previousWaitPoint = null;
         m_controlOwner = ControlOwner.MAIN_THREAD;
-        m_state = State.RUNNING;
-        m_thread = new Thread(this::threadFunction, getContextName());
-        m_thread.start();
-        Scheduler.getInstance().add(this);
+        m_state = State.NEW;
+        setName(getContextName());
     }
 
     ContextImpl(final RunnableWithContextWithValue<T> func) {
         this(func, null);
     }
 
-    ContextImpl(final Runnable func, final ContextImpl<?> parentContext) {
-        this((context) -> func.run());
+    ContextImpl(final RunnableWithContext func, final ContextImpl<?> parentContext) {
+        this((ContextWithValue<T> context) -> func.run(context), parentContext);
     }
 
-    ContextImpl(final Runnable func) {
+    ContextImpl(final RunnableWithContext func) {
         this(func, null);
     }
 
@@ -212,9 +214,15 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
         if (currentContext() == this) {
             repr += " running";
         }
-        repr += "\n";
-        repr += StackTraceUtils.getStackTrace(m_thread);
         return repr;
+    }
+
+    public String getStackTrace() {
+        if (m_thread != null) {
+            return StackTraceUtils.getStackTrace(m_thread);
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -241,7 +249,7 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
      *
      * @param thisOwner the thread from which this function is being called (and thus the
      *        baton-passing state that should be waited for)
-     * @throws ContextStoppedException if stop() is called on this Context while waiting.
+     * @throws ContextStoppedException if cancel() is called on this Context while waiting.
      */
     private void waitForControl(final ControlOwner thisOwner) {
         // If this is being called from the worker thread, log from where in the
@@ -280,7 +288,7 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
      * @param thisOwner the thread from which this function is being called (and thus the
      *        baton-passing state that should be waited for)
      * @param desiredOwner the thread to which the baton should be passed
-     * @throws ContextStoppedException if stop() is called on this Context while waiting.
+     * @throws ContextStoppedException if cancel() is called on this Context while waiting.
      */
     private void transferControl(final ControlOwner thisOwner, final ControlOwner desiredOwner) {
         synchronized (m_threadSync) {
@@ -408,17 +416,16 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
 
     @Override
     public LaunchedContext startAsync(final RunnableWithContext func) {
-        return new ContextImpl<>(func::run, this);
+        var newContext = new ContextImpl<>(func, this);
+        newContext.schedule();
+        return newContext;
     }
 
     @Override
     public <U> LaunchedContextWithValue<U> startAsync(final RunnableWithContextWithValue<U> func) {
-        return new ContextImpl<U>(func, this);
-    }
-
-    @Override
-    public LaunchedContext startAsync(final Runnable func) {
-        return new ContextImpl<>(func, this);
+        var newContext = new ContextImpl<U>(func, this);
+        newContext.schedule();
+        return newContext;
     }
 
     @Override
@@ -426,44 +433,55 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
         func.run(this);
     }
 
-    /**
-     * Interrupt the running of this Context and force it to terminate.
-     *
-     * A ContextStoppedException will be raised on this Context at the point where the Context most
-     * recently waited or yielded -- if this Context is currently executing, a
-     * ContextStoppedException will be raised immediately.
-     */
     @Override
-    public void stop() {
-        Logger.get(Category.FRAMEWORK)
-                .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
+    public void initialize() {
+        m_state = State.RUNNING;
+        m_thread = new Thread(this::threadFunction, getContextName());
+        m_thread.start();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isDone();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
         synchronized (m_threadSync) {
             if (m_state != State.DONE) {
+                Logger.get(Category.FRAMEWORK)
+                        .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
                 m_state = State.CANCELED;
-            }
-            if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                throw new ContextStoppedException();
+                if (m_controlOwner == ControlOwner.SUBROUTINE) {
+                    throw new IllegalStateException(
+                            "A Procedure should not cancel() its own Context");
+                }
+                transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+                if (m_state != State.DONE) {
+                    Logger.get(Category.FRAMEWORK)
+                            .logRaw(
+                                    Severity.ERROR,
+                                    getContextName() + " did not end when requested");
+                }
             }
         }
     }
 
-    /**
-     * Entry point for the Scheduler to execute this Context.
-     *
-     * This should only be called from framework code; it is public only as an implementation
-     * detail.
-     */
     @Override
-    public void run() {
+    public void execute() {
         if (m_state == State.DONE) {
-            Scheduler.getInstance().cancel(this);
             return;
         }
-        if (m_state == State.CANCELED
-                || m_blockingPredicate == null
-                || m_blockingPredicate.getAsBoolean()) {
+        if (m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
             transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
         }
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
+        // TODO: Re-evaluate whether this should use the default Command behavior (return false).
+        return true;
     }
 
     @Override

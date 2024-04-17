@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import com.team766.logging.Category;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -14,7 +15,7 @@ import java.util.function.BooleanSupplier;
  * specific condition is currently triggering (eg pressing or holding down a joystick button) or if a condition that had been triggering
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
  */
-public abstract class OIFragment extends LoggingBase {
+public abstract class OIFragment implements LoggingBase {
 
     protected class OICondition {
         private final BooleanSupplier condition;
@@ -72,6 +73,11 @@ public abstract class OIFragment extends LoggingBase {
 
     public final String getName() {
         return name;
+    }
+
+    @Override
+    public Category getLoggerCategory() {
+        return Category.OPERATOR_INTERFACE;
     }
 
     private void register(OICondition condition) {

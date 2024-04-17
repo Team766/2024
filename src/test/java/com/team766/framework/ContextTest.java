@@ -10,8 +10,8 @@ public class ContextTest extends TestCase {
     /// run the first time should not crash the program.
     @Test
     public void testStopOnFirstTick() {
-        var lc = Scheduler.getInstance().startAsync(Procedure.NO_OP);
-        lc.stop();
+        var lc = SchedulerUtils.startAsync(Procedure.NO_OP);
+        lc.cancel();
 
         step();
 

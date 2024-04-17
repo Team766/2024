@@ -18,5 +18,5 @@ public interface LaunchedContext {
     /**
      * Interrupt the running of this Context and force it to terminate.
      */
-    void stop();
+    void cancel();
 }

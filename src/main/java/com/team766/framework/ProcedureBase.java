@@ -1,6 +1,8 @@
 package com.team766.framework;
 
-public abstract class ProcedureBase extends LoggingBase {
+import com.team766.logging.Category;
+
+abstract class ProcedureBase implements LoggingBase {
     private static int c_idCounter = 0;
 
     private static synchronized int createNewId() {
@@ -8,6 +10,7 @@ public abstract class ProcedureBase extends LoggingBase {
     }
 
     protected final int m_id;
+    protected Category loggerCategory = Category.MECHANISMS;
 
     ProcedureBase() {
         m_id = createNewId();
@@ -15,6 +18,11 @@ public abstract class ProcedureBase extends LoggingBase {
 
     public String getName() {
         return this.getClass().getName() + "/" + m_id;
+    }
+
+    @Override
+    public final Category getLoggerCategory() {
+        return loggerCategory;
     }
 
     @Override

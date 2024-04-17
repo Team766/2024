@@ -90,11 +90,6 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     }
 
     @Override
-    public LaunchedContext startAsync(Runnable func) {
-        return parentContext.startAsync(func);
-    }
-
-    @Override
     public void runSync(final RunnableWithContext func) {
         parentContext.runSync(func);
     }

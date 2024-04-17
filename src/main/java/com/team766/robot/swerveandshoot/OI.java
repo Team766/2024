@@ -68,7 +68,7 @@ public class OI extends Procedure {
             }
 
             if (joystick0.getButtonReleased(1)) {
-                visionProcedure.stop();
+                visionProcedure.cancel();
             }
 
             /*
@@ -82,7 +82,7 @@ public class OI extends Procedure {
             }
 
             if (joystick0.getButtonReleased(2)) {
-                visionProcedure.stop();
+                visionProcedure.cancel();
             }
 
             /*
@@ -95,7 +95,7 @@ public class OI extends Procedure {
             }
 
             if (joystick1.getButtonReleased(1)) {
-                visionProcedure.stop();
+                visionProcedure.cancel();
             }
             // if (joystick1.getButton(1)) {
             //     try {
