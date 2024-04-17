@@ -1,8 +1,6 @@
 package com.team766.hal;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.framework.LaunchedContext;
-import com.team766.framework.Procedure;
 import com.team766.framework.SchedulerMonitor;
 import com.team766.framework.SchedulerUtils;
 import com.team766.logging.Category;
@@ -15,19 +13,19 @@ import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.ReadLogs;
 import com.team766.web.WebServer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
 
 public final class GenericRobotMain {
     private RobotConfigurator configurator;
-    private Procedure m_oi;
+    private Command m_oi;
 
     private WebServer m_webServer;
     private AutonomousSelector m_autonSelector;
     private AutonomousMode m_autonMode = null;
-    private LaunchedContext m_autonomous = null;
-    private LaunchedContext m_oiContext = null;
+    private Command m_autonomous = null;
 
     // Reset the autonomous routine if the robot is disabled for more than this
     // number of seconds.
@@ -110,17 +108,15 @@ public final class GenericRobotMain {
     public void autonomousInit() {
         faultInAutoInit = true;
 
-        if (m_oiContext != null) {
-            m_oiContext.cancel();
-            m_oiContext = null;
+        if (m_oi.isScheduled()) {
+            m_oi.cancel();
         }
 
         if (m_autonomous != null) {
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(
                             Severity.INFO,
-                            "Continuing previous autonomus procedure "
-                                    + m_autonomous.getContextName());
+                            "Continuing previous autonomus procedure " + m_autonomous.getName());
         } else if (m_autonSelector.getSelectedAutonMode() == null) {
             Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
         }
@@ -132,13 +128,13 @@ public final class GenericRobotMain {
 
         final AutonomousMode autonomousMode = m_autonSelector.getSelectedAutonMode();
         if (autonomousMode != null && m_autonMode != autonomousMode) {
-            final Procedure autonProcedure = autonomousMode.instantiate();
-            m_autonomous = SchedulerUtils.startAsync(autonProcedure);
+            m_autonomous = autonomousMode.instantiate();
+            m_autonomous.schedule();
             m_autonMode = autonomousMode;
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(
                             Severity.INFO,
-                            "Starting new autonomus procedure " + autonProcedure.getName());
+                            "Starting new autonomus procedure " + m_autonomous.getName());
         }
         CommandScheduler.getInstance().run();
     }
@@ -152,8 +148,8 @@ public final class GenericRobotMain {
             m_autonMode = null;
         }
 
-        if (m_oiContext == null && m_oi != null) {
-            m_oiContext = SchedulerUtils.startAsync(m_oi);
+        if (m_oi != null && !m_oi.isScheduled()) {
+            m_oi.schedule();
         }
 
         faultInTeleopInit = false;
@@ -162,8 +158,8 @@ public final class GenericRobotMain {
     public void teleopPeriodic() {
         if (faultInRobotInit || faultInTeleopInit) return;
 
-        if (m_oiContext != null && m_oiContext.isDone()) {
-            m_oiContext = SchedulerUtils.startAsync(m_oi);
+        if (m_oi != null && !m_oi.isScheduled()) {
+            m_oi.schedule();
             Logger.get(Category.OPERATOR_INTERFACE)
                     .logRaw(Severity.WARNING, "Restarting OI context");
         }

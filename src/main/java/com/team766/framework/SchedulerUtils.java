@@ -7,17 +7,4 @@ public class SchedulerUtils {
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterAllSubsystems();
     }
-
-    public static LaunchedContext startAsync(final RunnableWithContext func) {
-        var newContext = new ContextImpl<>(func);
-        newContext.schedule();
-        return newContext;
-    }
-
-    public static <T> LaunchedContextWithValue<T> startAsync(
-            final RunnableWithContextWithValue<T> func) {
-        var newContext = new ContextImpl<T>(func);
-        newContext.schedule();
-        return newContext;
-    }
 }

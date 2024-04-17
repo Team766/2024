@@ -7,5 +7,12 @@ public abstract class Procedure extends ProcedureBase implements RunnableWithCon
         public void run(final Context context) {}
     }
 
-    public static final Procedure NO_OP = new NoOpProcedure();
+    public static Procedure noOp() {
+        return new NoOpProcedure();
+    }
+
+    @Override
+    /* package */ final ContextImpl<?> makeContext() {
+        return new ContextImpl<>(this);
+    }
 }

@@ -43,7 +43,7 @@ public class YieldWithValueTest extends TestCase {
     @Test
     public void testYieldWithValue() {
         var consumer = new ValueConsumer();
-        SchedulerUtils.startAsync(consumer);
+        consumer.schedule();
 
         for (int i = 0; i < 50; ++i) {
             step();
@@ -68,7 +68,7 @@ public class YieldWithValueTest extends TestCase {
     @Test
     public void testDiscardYieldedValues() {
         var caller = new DiscardingCaller();
-        SchedulerUtils.startAsync(caller);
+        caller.schedule();
 
         for (int i = 0; i < 50; ++i) {
             step();
@@ -89,7 +89,7 @@ public class YieldWithValueTest extends TestCase {
     @Test
     public void testCollectYieldedValues() {
         var consumer = new CollectingCaller();
-        SchedulerUtils.startAsync(consumer);
+        consumer.schedule();
 
         for (int i = 0; i < 50; ++i) {
             step();
