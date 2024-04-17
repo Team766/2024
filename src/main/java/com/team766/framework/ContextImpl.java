@@ -100,20 +100,6 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         }
     }
 
-    private static ContextImpl<?> c_currentContext = null;
-
-    /**
-     * Returns the currently-executing Context.
-     *
-     * This is maintained for things like checking Mechanism ownership, but
-     * intentionally only has package-private visibility - code outside of the
-     * framework should ideally pass around references to the current context
-     * object rather than cheating with this static accessor.
-     */
-    static ContextImpl<?> currentContext() {
-        return c_currentContext;
-    }
-
     /**
      * The top-level procedure being run by this Context.
      */
@@ -200,7 +186,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     @Override
     public String toString() {
         String repr = getContextName();
-        if (currentContext() == this) {
+        if (m_controlOwner == ControlOwner.SUBROUTINE) {
             repr += " running";
         }
         return repr;
@@ -292,11 +278,6 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
             }
             // Pass the baton.
             m_controlOwner = desiredOwner;
-            if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                c_currentContext = this;
-            } else {
-                c_currentContext = null;
-            }
             m_threadSync.notifyAll();
             // Wait for the baton to be passed back.
             waitForControl(thisOwner);
@@ -326,7 +307,6 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         } finally {
             synchronized (m_threadSync) {
                 m_state = State.DONE;
-                c_currentContext = null;
                 m_threadSync.notifyAll();
             }
         }

@@ -16,16 +16,18 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
     }
 
     protected void checkContextOwnership() {
-        if (ContextImpl.currentContext() != getCurrentCommand() && m_runningPeriodic == null) {
+        if (SchedulerMonitor.getCurrentCommand() != this.getCurrentCommand()
+                && m_runningPeriodic == null) {
             String message =
                     getName()
                             + " tried to be used by "
-                            + ContextImpl.currentContext().getContextName();
-            if (getCurrentCommand() != null) {
-                message += " while owned by " + getCurrentCommand().getName();
+                            + SchedulerMonitor.getCurrentCommand().getName();
+            if (this.getCurrentCommand() != null) {
+                message += " while owned by " + this.getCurrentCommand().getName();
             } else {
-                message += " without taking ownership of it";
+                message += " without requiring it";
             }
+            message += "\n" + StackTraceUtils.getStackTrace(Thread.currentThread());
             Logger.get(Category.FRAMEWORK).logRaw(Severity.ERROR, message);
             throw new IllegalStateException(message);
         }
