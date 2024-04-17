@@ -1,6 +1,6 @@
 package com.team766.framework;
 
 @FunctionalInterface
-public interface RunnableWithContext {
+public interface ProcedureInterface {
     void run(Context context);
 }

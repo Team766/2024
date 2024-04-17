@@ -6,7 +6,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.framework.RunnableWithContext;
+import com.team766.framework.ProcedureInterface;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public class PathSequenceAuto extends Procedure {
 
-    private final LinkedList<RunnableWithContext> pathItems;
+    private final LinkedList<ProcedureInterface> pathItems;
     private final Drive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
@@ -33,7 +33,7 @@ public class PathSequenceAuto extends Procedure {
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
     public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
-        pathItems = new LinkedList<RunnableWithContext>();
+        pathItems = new LinkedList<ProcedureInterface>();
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
@@ -82,7 +82,7 @@ public class PathSequenceAuto extends Procedure {
         pathItems.add(new FollowPath(pathName, controller, drive));
     }
 
-    protected void addProcedure(RunnableWithContext procedure) {
+    protected void addProcedure(ProcedureInterface procedure) {
         pathItems.add(procedure);
     }
 
@@ -115,7 +115,7 @@ public class PathSequenceAuto extends Procedure {
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
-        for (RunnableWithContext pathItem : pathItems) {
+        for (ProcedureInterface pathItem : pathItems) {
             context.runSync(pathItem);
             context.yield();
         }

@@ -117,7 +117,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     /**
      * The top-level procedure being run by this Context.
      */
-    private final RunnableWithContextWithValue<T> m_func;
+    private final ProcedureWithValueInterface<T> m_func;
 
     /**
      * If this Context was created by another context using
@@ -175,7 +175,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
      * {@link Scheduler#startAsync}.
      */
 
-    ContextImpl(final RunnableWithContextWithValue<T> func, final ContextImpl<?> parentContext) {
+    ContextImpl(final ProcedureWithValueInterface<T> func, final ContextImpl<?> parentContext) {
         m_func = func;
         m_parentContext = parentContext;
         Logger.get(Category.FRAMEWORK)
@@ -189,15 +189,15 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         setName(getContextName());
     }
 
-    ContextImpl(final RunnableWithContextWithValue<T> func) {
+    ContextImpl(final ProcedureWithValueInterface<T> func) {
         this(func, null);
     }
 
-    ContextImpl(final RunnableWithContext func, final ContextImpl<?> parentContext) {
+    ContextImpl(final ProcedureInterface func, final ContextImpl<?> parentContext) {
         this((ContextWithValue<T> context) -> func.run(context), parentContext);
     }
 
-    ContextImpl(final RunnableWithContext func) {
+    ContextImpl(final ProcedureInterface func) {
         this(func, null);
     }
 
@@ -415,21 +415,21 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     }
 
     @Override
-    public LaunchedContext startAsync(final RunnableWithContext func) {
+    public LaunchedContext startAsync(final ProcedureInterface func) {
         var newContext = new ContextImpl<>(func, this);
         newContext.schedule();
         return newContext;
     }
 
     @Override
-    public <U> LaunchedContextWithValue<U> startAsync(final RunnableWithContextWithValue<U> func) {
+    public <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValueInterface<U> func) {
         var newContext = new ContextImpl<U>(func, this);
         newContext.schedule();
         return newContext;
     }
 
     @Override
-    public void runSync(final RunnableWithContext func) {
+    public void runSync(final ProcedureInterface func) {
         func.run(this);
     }
 

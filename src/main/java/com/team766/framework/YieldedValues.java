@@ -20,7 +20,7 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     /**
      * Adapts a ProcedureWithValue into a Procedure by discarding any values that it produces.
      */
-    public static <T> RunnableWithContext discard(RunnableWithContextWithValue<T> procedure) {
+    public static <T> ProcedureInterface discard(ProcedureWithValueInterface<T> procedure) {
         return (context) -> procedure.run(discard(context));
     }
 
@@ -36,8 +36,8 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
      * Adapts a ProcedureWithValue into a Procedure by collecting any values that it produces into
      * the provided List.
      */
-    public static <T> RunnableWithContext collectInto(
-            RunnableWithContextWithValue<T> procedure, List<T> valuesCollection) {
+    public static <T> ProcedureInterface collectInto(
+            ProcedureWithValueInterface<T> procedure, List<T> valuesCollection) {
         return (context) -> procedure.run(collectInto(context, valuesCollection));
     }
 
@@ -80,17 +80,17 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     }
 
     @Override
-    public LaunchedContext startAsync(RunnableWithContext func) {
+    public LaunchedContext startAsync(ProcedureInterface func) {
         return parentContext.startAsync(func);
     }
 
     @Override
-    public <U> LaunchedContextWithValue<U> startAsync(RunnableWithContextWithValue<U> func) {
+    public <U> LaunchedContextWithValue<U> startAsync(ProcedureWithValueInterface<U> func) {
         return parentContext.startAsync(func);
     }
 
     @Override
-    public void runSync(final RunnableWithContext func) {
+    public void runSync(final ProcedureInterface func) {
         parentContext.runSync(func);
     }
 

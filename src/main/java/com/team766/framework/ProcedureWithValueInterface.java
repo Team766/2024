@@ -1,6 +1,6 @@
 package com.team766.framework;
 
 @FunctionalInterface
-public interface RunnableWithContextWithValue<T> {
+public interface ProcedureWithValueInterface<T> {
     void run(ContextWithValue<T> context);
 }
