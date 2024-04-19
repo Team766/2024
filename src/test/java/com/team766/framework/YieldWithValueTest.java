@@ -1,5 +1,7 @@
 package com.team766.framework;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.team766.TestCase;
 import java.util.ArrayList;
 import java.util.List;
