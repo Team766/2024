@@ -3,6 +3,7 @@ package com.team766.robot.reva;
 import com.team766.framework.Context;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
+import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
@@ -111,7 +112,9 @@ public class BoxOpOI extends OIFragment {
                     // Currently it will only modify the speed if the right trigger is already held.
                     // TODO: Make this more tolerant for when Y is pressed before right trigger.
                     if (shooter.getShouldRun()) {
+                        context.takeOwnership(shooter);
                         shooter.shoot(Shooter.SHOOTER_ASSIST_SPEED);
+                        context.releaseOwnership(shooter);
                     }
                     context.releaseOwnership(shoulder);
                 } else if (gamepad.getPOV() == 0) {
@@ -155,8 +158,10 @@ public class BoxOpOI extends OIFragment {
 
             // if the sticks are being moving, move the corresponding climber(s)
             if (climberClimb.isTriggering()) {
-                climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
-                climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
+                climber.setLeftPower(
+                        createJoystickDeadzone(gamepad.getAxis(InputConstants.XBOX_LS_Y)));
+                climber.setRightPower(
+                        createJoystickDeadzone(gamepad.getAxis(InputConstants.XBOX_RS_Y)));
             } else {
                 climber.stop();
             }
@@ -207,5 +212,14 @@ public class BoxOpOI extends OIFragment {
         // if (intake.hasNoteInIntake()) {
         //   ((GenericHID) gamepad).setRumble(RumbleType.kBothRumble, 0.5);
         // }
+    }
+
+    /**
+     * Helper method to ignore joystick values below JOYSTICK_DEADZONE
+     * @param joystickValue the value to trim
+     * @return the trimmed joystick value
+     */
+    private double createJoystickDeadzone(double joystickValue) {
+        return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
     }
 }

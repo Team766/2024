@@ -55,7 +55,7 @@ public class Lights extends Mechanism {
 
     // Coral orange
     public boolean signalNoteInIntake() {
-        ErrorCode e = m_candle.setLEDs(255, 127, 80);
+        ErrorCode e = m_candle.setLEDs(255, 95, 21);
         return handleErrorCode(e);
     }
 

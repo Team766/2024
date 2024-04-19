@@ -17,6 +17,6 @@ public class ThreePieceMidfieldAmpSide extends PathSequenceAuto {
         addProcedure(new ShootNow());
         addProcedure(new StartAutoIntake());
         addPath("Retrieve Top Midfield from Top Piece");
-        addProcedure(new ShootNow());
+        // addProcedure(new ShootNow());
     }
 }

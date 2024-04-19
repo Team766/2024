@@ -9,6 +9,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Mechanism {
     public static final double DEFAULT_SPEED =
@@ -26,6 +27,7 @@ public class Shooter extends Mechanism {
     private MotorController shooterMotorBottom;
     // decrease period if we're tuning PID
     private RateLimiter rateLimiter = new RateLimiter(10.0);
+    private RateLimiter setSpeedLimiter = new RateLimiter(0.1);
     private boolean shouldRun = false;
     // only used if shouldRun is true
     private double targetSpeed = DEFAULT_SPEED;
@@ -88,9 +90,9 @@ public class Shooter extends Mechanism {
 
     public void run() {
         if (speedUpdated || rateLimiter.next()) {
-            // SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
-            // SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
-            // SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
+            SmartDashboard.putNumber("[SHOOTER TARGET SPEED]", shouldRun ? targetSpeed : 0.0);
+            SmartDashboard.putNumber("[SHOOTER TOP MOTOR SPEED]", getShooterSpeedTop());
+            SmartDashboard.putNumber("[SHOOTER BOTTOM MOTOR SPEED]", getShooterSpeedBottom());
             // SmartDashboard.putNumber(
             //         "[SHOOTER] Top Motor Current", MotorUtil.getCurrentUsage(shooterMotorTop));
             // SmartDashboard.putNumber(
@@ -99,11 +101,13 @@ public class Shooter extends Mechanism {
         }
 
         // SmartDashboard.putBoolean("Shooter At Speed", isCloseToExpectedSpeed());
+        SmartDashboard.putBoolean("[SHOOTER SPEED UPDATED]", speedUpdated);
+        SmartDashboard.putBoolean("[SHOOTER SHOULD RUN]", shouldRun);
 
         // FIXME: problem with this - does not pay attention to changes in PID values
         // https://github.com/Team766/2024/pull/49 adds support to address this
         // until then, this is equivalent to the earlier approach
-        if (speedUpdated) {
+        if (speedUpdated || setSpeedLimiter.next()) {
             if (shouldRun) {
                 shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
                 shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);

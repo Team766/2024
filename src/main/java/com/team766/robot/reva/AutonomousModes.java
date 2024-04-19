@@ -2,6 +2,7 @@ package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
 import com.team766.robot.reva.procedures.auton_routines.FourPieceAmpSide;
+import com.team766.robot.reva.procedures.auton_routines.JustShootAmp;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSide;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceMidfieldAmpSide;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceStartCenterTopAndAmp;
@@ -28,6 +29,7 @@ public class AutonomousModes {
                         () -> new ThreePieceMidfieldAmpSide()),
                 new AutonomousMode(
                         "3p Start Center, Amp and Center Pieces",
-                        () -> new ThreePieceStartCenterTopAndAmp())
+                        () -> new ThreePieceStartCenterTopAndAmp()),
+                new AutonomousMode("Just Shoot Amp", () -> new JustShootAmp())
             };
 }
