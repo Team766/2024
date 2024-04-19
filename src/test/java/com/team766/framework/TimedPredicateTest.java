@@ -11,8 +11,8 @@ public class TimedPredicateTest {
     @Test
     public void testTimedPredicateTimedOut() {
         MockClock testClock = new MockClock(1710411240.0);
-        Context.TimedPredicate predicate =
-                new Context.TimedPredicate(testClock, () -> false, 1.766);
+        ContextImpl.TimedPredicate predicate =
+                new ContextImpl.TimedPredicate(testClock, () -> false, 1.766);
         assertFalse(predicate.getAsBoolean());
         testClock.tick(1.0);
         assertFalse(predicate.getAsBoolean());
@@ -24,8 +24,8 @@ public class TimedPredicateTest {
     @Test
     public void testTimedPredicateCondition() {
         MockClock testClock = new MockClock(1710411240.0);
-        Context.TimedPredicate predicate =
-                new Context.TimedPredicate(
+        ContextImpl.TimedPredicate predicate =
+                new ContextImpl.TimedPredicate(
                         testClock,
                         new BooleanSupplier() {
                             private int counter = 0;
