@@ -15,7 +15,7 @@ import java.util.function.BooleanSupplier;
 
 /**
  * See {@link Context} for a general description of the Context concept.
- * 
+ *
  * Currently, threads of execution are implemented using OS threads, but this
  * should be considered an implementation detail and may change in the future.
  * Even though the framework creates multiple OS threads, it uses Java's

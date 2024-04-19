@@ -46,8 +46,7 @@ public interface Context {
      *
      * @return True if the predicate succeeded, false if the wait timed out.
      */
-    boolean waitForConditionOrTimeout(
-            final BooleanSupplier predicate, double timeoutSeconds);
+    boolean waitForConditionOrTimeout(final BooleanSupplier predicate, double timeoutSeconds);
 
     /**
      * Pauses the execution of this Context until the given predicate returns true. Yields to other
