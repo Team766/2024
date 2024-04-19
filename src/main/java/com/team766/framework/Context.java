@@ -1,5 +1,7 @@
 package com.team766.framework;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -103,6 +105,28 @@ public interface Context {
      * has finished).
      */
     void runSync(final RunnableWithContext func);
+
+    /**
+     * Run the given ProcedureWithValue synchronously (the calling Procedure will not resume until
+     * this one has finished).
+     *
+     * Any values yielded by the procedure will be discarded.
+     */
+    default void runSync(final RunnableWithContextWithValue<?> func) {
+        this.runSync(YieldedValues.discard(func));
+    }
+
+    /**
+     * Run the given ProcedureWithValue synchronously (the calling Procedure will not resume until
+     * this one has finished).
+     *
+     * All values yielded by the procedure will be collected into a List and returned.
+     */
+    default <T> List<T> runSyncAndCollectValues(final RunnableWithContextWithValue<T> func) {
+        ArrayList<T> values = new ArrayList<T>();
+        this.runSync(YieldedValues.collectInto(func, values));
+        return values;
+    }
 
     /**
      * Take ownership of the given Mechanism with this Context.
