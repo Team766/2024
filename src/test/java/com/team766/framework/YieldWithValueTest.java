@@ -16,8 +16,8 @@ public class YieldWithValueTest extends TestCase {
             var generator = context.startAsync(new ValueGenerator());
 
             assertNull(
-                    "lastYieldedValue should be null before the procedure yields a value",
-                    generator.lastYieldedValue());
+                    generator.lastYieldedValue(),
+                    "lastYieldedValue should be null before the procedure yields a value");
 
             while (generator.lastYieldedValue() == null || generator.lastYieldedValue() < 10) {
                 var value = generator.lastYieldedValue();
