@@ -3,7 +3,7 @@ package com.team766.hal.wpilib;
 import com.team766.hal.EncoderReader;
 
 public class Encoder extends edu.wpi.first.wpilibj.Encoder implements EncoderReader {
-	public Encoder(final int channelA, final int channelB) {
-		super(channelA, channelB);
-	}
+    public Encoder(final int channelA, final int channelB) {
+        super(channelA, channelB);
+    }
 }

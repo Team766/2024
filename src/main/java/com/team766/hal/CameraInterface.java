@@ -3,9 +3,9 @@ package com.team766.hal;
 import org.opencv.core.Mat;
 
 public interface CameraInterface {
-	void startAutomaticCapture();
+    void startAutomaticCapture();
 
-	void getFrame(Mat img);
+    void getFrame(Mat img);
 
-	void putFrame(Mat img);
+    void putFrame(Mat img);
 }

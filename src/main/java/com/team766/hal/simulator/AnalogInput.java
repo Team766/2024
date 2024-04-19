@@ -5,15 +5,14 @@ import com.team766.simulator.ProgramInterface;
 
 public class AnalogInput implements AnalogInputReader {
 
-	private final int channel;
+    private final int channel;
 
-	public AnalogInput(final int channel_) {
-		this.channel = channel_;
-	}
+    public AnalogInput(final int channel_) {
+        this.channel = channel_;
+    }
 
-	@Override
-	public double getVoltage() {
-		return ProgramInterface.analogChannels[channel];
-	}
-
+    @Override
+    public double getVoltage() {
+        return ProgramInterface.analogChannels[channel];
+    }
 }
