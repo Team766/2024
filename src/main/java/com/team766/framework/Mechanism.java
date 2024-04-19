@@ -6,7 +6,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public abstract class Mechanism extends LoggingBase {
-    private Context m_owningContext = null;
+    private ContextImpl<?> m_owningContext = null;
     private Thread m_runningPeriodic = null;
 
     public Mechanism() {
@@ -44,9 +44,11 @@ public abstract class Mechanism extends LoggingBase {
     }
 
     protected void checkContextOwnership() {
-        if (Context.currentContext() != m_owningContext && m_runningPeriodic == null) {
+        if (ContextImpl.currentContext() != m_owningContext && m_runningPeriodic == null) {
             String message =
-                    getName() + " tried to be used by " + Context.currentContext().getContextName();
+                    getName()
+                            + " tried to be used by "
+                            + ContextImpl.currentContext().getContextName();
             if (m_owningContext != null) {
                 message += " while owned by " + m_owningContext.getContextName();
             } else {
@@ -57,7 +59,7 @@ public abstract class Mechanism extends LoggingBase {
         }
     }
 
-    void takeOwnership(final Context context, final Context parentContext) {
+    void takeOwnership(final ContextImpl<?> context, final ContextImpl<?> parentContext) {
         if (m_owningContext != null && m_owningContext == parentContext) {
             Logger.get(Category.FRAMEWORK)
                     .logRaw(
@@ -102,7 +104,7 @@ public abstract class Mechanism extends LoggingBase {
         m_owningContext = context;
     }
 
-    void releaseOwnership(final Context context) {
+    void releaseOwnership(final ContextImpl<?> context) {
         if (m_owningContext != context) {
             LoggerExceptionUtils.logException(
                     new Exception(

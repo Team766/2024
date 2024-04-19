@@ -41,9 +41,9 @@ public class OnePieceExitCommunityBalance extends Procedure {
             return;
         }
         log("exiting");
-        new ScoreHigh(type).run(context);
-        new ExitCommunity().run(context);
+        context.runSync(new ScoreHigh(type));
+        context.runSync(new ExitCommunity());
         log("Transitioning");
-        new GyroBalance(alliance.get()).run(context);
+        context.runSync(new GyroBalance(alliance.get()));
     }
 }

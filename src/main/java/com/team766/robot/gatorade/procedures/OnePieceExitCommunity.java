@@ -41,8 +41,8 @@ public class OnePieceExitCommunity extends Procedure {
             return;
         }
         log("exiting");
-        new ScoreHigh(type).run(context);
-        new RetractWristvator().run(context);
-        new ExitCommunity().run(context);
+        context.runSync(new ScoreHigh(type));
+        context.runSync(new RetractWristvator());
+        context.runSync(new ExitCommunity());
     }
 }

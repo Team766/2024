@@ -2,26 +2,15 @@ package com.team766.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
-import java.io.FileWriter;
+import com.team766.TestCase;
 import java.io.IOException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ConfigFileReaderTest {
-    @BeforeEach
-    public void setup() {
-        AbstractConfigValue.resetStatics();
-    }
-
+public class ConfigFileReaderTest extends TestCase {
     @Test
     public void getJsonStringFromEmptyConfigFile() throws IOException {
-        File testConfigFile = File.createTempFile("config_file_test", ".json");
-        try (FileWriter fos = new FileWriter(testConfigFile)) {
-            fos.append("{}");
-        }
+        loadConfig("{}");
 
-        ConfigFileReader.instance = new ConfigFileReader(testConfigFile.getPath());
         ConfigFileReader.getInstance().getString("test.sub.key");
         assertEquals(
                 "{\"test\": {\"sub\": {\"key\": null}}}",
@@ -30,12 +19,8 @@ public class ConfigFileReaderTest {
 
     @Test
     public void getJsonStringFromPartialConfigFile() throws IOException {
-        File testConfigFile = File.createTempFile("config_file_test", ".json");
-        try (FileWriter fos = new FileWriter(testConfigFile)) {
-            fos.append("{\"test\": {\"sub\": {\"key\": \"pi\", \"value\": 3.14159}}}");
-        }
+        loadConfig("{\"test\": {\"sub\": {\"key\": \"pi\", \"value\": 3.14159}}}");
 
-        ConfigFileReader.instance = new ConfigFileReader(testConfigFile.getPath());
         assertEquals("pi", ConfigFileReader.getInstance().getString("test.sub.key").get());
         assertEquals(
                 3.14159,

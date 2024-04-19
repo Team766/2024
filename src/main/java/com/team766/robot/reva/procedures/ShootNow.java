@@ -113,7 +113,7 @@ public class ShootNow extends VisionPIDProcedure {
 
         context.releaseOwnership(Robot.shooter);
         Robot.lights.signalFinishingShootingProcedure();
-        new ShootVelocityAndIntake(power).run(context);
+        context.runSync(new ShootVelocityAndIntake(power));
         context.releaseOwnership(Robot.drive);
     }
 

@@ -5,17 +5,16 @@ import com.team766.simulator.interfaces.ElectricalDevice;
 
 public class PwmMotorController extends MotorController {
 
-	private int channel;
+    private int channel;
 
-	public PwmMotorController(final int channel_, final ElectricalDevice downstream) {
-		super(downstream);
+    public PwmMotorController(final int channel_, final ElectricalDevice downstream) {
+        super(downstream);
 
-		this.channel = channel_;
-	}
+        this.channel = channel_;
+    }
 
-	@Override
-	protected double getCommand() {
-		return ProgramInterface.pwmChannels[channel];
-	}
-
+    @Override
+    protected double getCommand() {
+        return ProgramInterface.pwmChannels[channel];
+    }
 }

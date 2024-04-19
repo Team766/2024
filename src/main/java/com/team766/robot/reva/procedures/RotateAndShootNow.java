@@ -53,6 +53,6 @@ public class RotateAndShootNow extends Procedure {
         // context.releaseOwnership(Robot.shoulder);
         context.releaseOwnership(Robot.drive);
         context.releaseOwnership(Robot.shooter);
-        new ShootVelocityAndIntake().run(context);
+        context.runSync(new ShootVelocityAndIntake());
     }
 }

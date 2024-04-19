@@ -5,31 +5,31 @@ import java.util.function.IntFunction;
 import org.json.JSONArray;
 
 abstract class AbstractConfigMultiValue<E> extends AbstractConfigValue<E[]> {
-	private final IntFunction<E[]> m_arrayFactory;
+    private final IntFunction<E[]> m_arrayFactory;
 
-	@SuppressWarnings("unchecked")
-	protected AbstractConfigMultiValue(final String key, final Class<E> elementClass) {
-		super(key);
-		m_arrayFactory = (int length) -> (E[]) Array.newInstance(elementClass, length);
-	}
+    @SuppressWarnings("unchecked")
+    protected AbstractConfigMultiValue(final String key, final Class<E> elementClass) {
+        super(key);
+        m_arrayFactory = (int length) -> (E[]) Array.newInstance(elementClass, length);
+    }
 
-	@Override
-	protected final E[] parseJsonValue(final Object configValue) {
-		JSONArray jsonArray;
-		try {
-			jsonArray = (JSONArray) configValue;
-		} catch (ClassCastException ex) {
-			final E[] valueArray = m_arrayFactory.apply(1);
-			valueArray[0] = parseJsonElement(configValue);
-			return valueArray;
-		}
-		final int length = jsonArray.length();
-		final E[] valueArray = m_arrayFactory.apply(length);
-		for (int i = 0; i < length; ++i) {
-			valueArray[i] = parseJsonElement(jsonArray.get(i));
-		}
-		return valueArray;
-	}
+    @Override
+    protected final E[] parseJsonValue(final Object configValue) {
+        JSONArray jsonArray;
+        try {
+            jsonArray = (JSONArray) configValue;
+        } catch (ClassCastException ex) {
+            final E[] valueArray = m_arrayFactory.apply(1);
+            valueArray[0] = parseJsonElement(configValue);
+            return valueArray;
+        }
+        final int length = jsonArray.length();
+        final E[] valueArray = m_arrayFactory.apply(length);
+        for (int i = 0; i < length; ++i) {
+            valueArray[i] = parseJsonElement(jsonArray.get(i));
+        }
+        return valueArray;
+    }
 
-	protected abstract E parseJsonElement(Object configElement);
+    protected abstract E parseJsonElement(Object configElement);
 }

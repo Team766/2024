@@ -36,6 +36,7 @@ public final class Logger {
     }
 
     private static final int MAX_NUM_RECENT_ENTRIES = 100;
+    private static final String LOG_FILE_PATH_KEY = "logFilePath";
 
     private static EnumMap<Category, Logger> m_loggers =
             new EnumMap<Category, Logger>(Category.class);
@@ -53,8 +54,8 @@ public final class Logger {
         }
         try {
             ConfigFileReader config_file = ConfigFileReader.getInstance();
-            if (config_file != null) {
-                logFilePathBase = config_file.getString("logFilePath").get();
+            if (config_file != null && config_file.containsKey(LOG_FILE_PATH_KEY)) {
+                logFilePathBase = config_file.getString(LOG_FILE_PATH_KEY).get();
                 new File(logFilePathBase).mkdirs();
                 final String timestamp =
                         new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(new Date());
@@ -65,7 +66,9 @@ public final class Logger {
                 get(Category.CONFIGURATION)
                         .logRaw(
                                 Severity.ERROR,
-                                "Config file is not available. Logs will only be in-memory and will be lost when the robot is turned off.");
+                                "Config file does not specify "
+                                        + LOG_FILE_PATH_KEY
+                                        + ". Logs will only be in-memory and will be lost when the robot is turned off.");
             }
         } catch (Exception e) {
             e.printStackTrace();

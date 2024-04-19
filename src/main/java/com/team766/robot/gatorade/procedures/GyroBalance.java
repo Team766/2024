@@ -73,7 +73,7 @@ public class GyroBalance extends Procedure {
         double driveSpeed = 1;
 
         // extend wristvator to put CG in a place where robot can climb ramp
-        new ExtendWristvatorToMid().run(context);
+        context.runSync(new ExtendWristvatorToMid());
 
         // Sets movement direction ground state if on ground
         setDir(curY);

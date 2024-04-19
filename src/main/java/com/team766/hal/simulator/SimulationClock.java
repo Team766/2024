@@ -5,11 +5,10 @@ import com.team766.simulator.ProgramInterface;
 
 public class SimulationClock implements Clock {
 
-	public static final SimulationClock instance = new SimulationClock();
+    public static final SimulationClock instance = new SimulationClock();
 
-	@Override
-	public double getTime() {
-		return ProgramInterface.simulationTime;
-	}
-
+    @Override
+    public double getTime() {
+        return ProgramInterface.simulationTime;
+    }
 }
