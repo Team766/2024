@@ -4,14 +4,13 @@ import com.team766.hal.DigitalInputReader;
 
 public class MockDigitalInput implements DigitalInputReader {
 
-	private boolean sensor = false;
+    private boolean sensor = false;
 
-	public boolean get() {
-		return sensor;
-	}
+    public boolean get() {
+        return sensor;
+    }
 
-	public void set(final boolean on) {
-		sensor = on;
-	}
-
+    public void set(final boolean on) {
+        sensor = on;
+    }
 }

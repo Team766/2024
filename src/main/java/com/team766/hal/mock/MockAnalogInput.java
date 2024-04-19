@@ -4,15 +4,14 @@ import com.team766.hal.AnalogInputReader;
 
 public class MockAnalogInput implements AnalogInputReader {
 
-	private double sensor = 0.0;
+    private double sensor = 0.0;
 
-	public void set(final double value) {
-		sensor = value;
-	}
+    public void set(final double value) {
+        sensor = value;
+    }
 
-	@Override
-	public double getVoltage() {
-		return sensor;
-	}
-
+    @Override
+    public double getVoltage() {
+        return sensor;
+    }
 }

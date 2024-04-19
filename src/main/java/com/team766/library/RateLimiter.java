@@ -3,31 +3,30 @@ package com.team766.library;
 import com.team766.hal.RobotProvider;
 
 public class RateLimiter {
-	private final double periodSeconds;
-	private double nextTime = 0;
+    private final double periodSeconds;
+    private double nextTime = 0;
 
-	public RateLimiter(final double periodSeconds_) {
-		this.periodSeconds = periodSeconds_;
-	}
+    public RateLimiter(final double periodSeconds_) {
+        this.periodSeconds = periodSeconds_;
+    }
 
-	public boolean next() {
-		final double now = RobotProvider.getTimeProvider().get();
-		if (now > nextTime) {
-			if (nextTime == 0) {
-				// Lazy-initialize the first time, because TimeProvider in
-				// simulation often isn't ready at construction time.
-				nextTime = now;
-			}
-			nextTime += periodSeconds;
-			return true;
-		} else {
-			return false;
-		}
-	}
+    public boolean next() {
+        final double now = RobotProvider.getTimeProvider().get();
+        if (now > nextTime) {
+            if (nextTime == 0) {
+                // Lazy-initialize the first time, because TimeProvider in
+                // simulation often isn't ready at construction time.
+                nextTime = now;
+            }
+            nextTime += periodSeconds;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/** Restarts the timer. */
-	public void reset() {
-		nextTime = 0;
-	}
-
+    /** Restarts the timer. */
+    public void reset() {
+        nextTime = 0;
+    }
 }
