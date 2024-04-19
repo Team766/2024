@@ -35,13 +35,6 @@ import java.util.function.BooleanSupplier;
  * model execution of the program as a sequence of imperative commands"), rather
  * than as state machines or in continuation-passing style, which can be much
  * more complicated to reason about, especially for new programmers.
- *
- * Currently, threads of execution are implemented using OS threads, but this
- * should be considered an implementation detail and may change in the future.
- * Even though the framework creates multiple OS threads, it uses Java's
- * monitors to implement a "baton passing" pattern in order to ensure that only
- * one of threads is actually running at once (the others will be sleeping,
- * waiting for the baton to be passed to them).
  */
 public interface Context {
     /**
@@ -53,7 +46,7 @@ public interface Context {
      *
      * @return True if the predicate succeeded, false if the wait timed out.
      */
-    public boolean waitForConditionOrTimeout(
+    boolean waitForConditionOrTimeout(
             final BooleanSupplier predicate, double timeoutSeconds);
 
     /**
@@ -63,18 +56,18 @@ public interface Context {
      * Note that the predicate will be evaluated repeatedly (possibly on a different thread) while
      * the Context is paused to determine whether it should continue waiting.
      */
-    public void waitFor(final BooleanSupplier predicate);
+    void waitFor(final BooleanSupplier predicate);
 
     /**
      * Pauses the execution of this Context until the given LaunchedContext has finished running.
      */
-    public void waitFor(final LaunchedContext otherContext);
+    void waitFor(final LaunchedContext otherContext);
 
     /**
      * Pauses the execution of this Context until all of the given LaunchedContexts have finished
      * running.
      */
-    public void waitFor(final LaunchedContext... otherContexts);
+    void waitFor(final LaunchedContext... otherContexts);
 
     /**
      * Momentarily pause execution of this Context to allow other Contexts to execute. Execution of
@@ -84,27 +77,27 @@ public interface Context {
      * Procedures should call this periodically if they wouldn't otherwise call one of the wait*
      * methods for a while.
      */
-    public void yield();
+    void yield();
 
     /**
      * Pauses the execution of this Context for the given length of time.
      */
-    public void waitForSeconds(final double seconds);
+    void waitForSeconds(final double seconds);
 
     /**
      * Start running a new Context so the given procedure can run in parallel.
      */
-    public LaunchedContext startAsync(final RunnableWithContext func);
+    LaunchedContext startAsync(final RunnableWithContext func);
 
     /**
      * Start running a new Context so the given procedure can run in parallel.
      */
-    public <U> LaunchedContextWithValue<U> startAsync(final RunnableWithContextWithValue<U> func);
+    <U> LaunchedContextWithValue<U> startAsync(final RunnableWithContextWithValue<U> func);
 
     /**
      * Start running a new Context so the given procedure can run in parallel.
      */
-    public LaunchedContext startAsync(final Runnable func);
+    LaunchedContext startAsync(final Runnable func);
 
     /**
      * Take ownership of the given Mechanism with this Context.
@@ -115,7 +108,7 @@ public interface Context {
      *
      * @see Mechanism#takeOwnership(Context, Context)
      */
-    public void takeOwnership(final Mechanism mechanism);
+    void takeOwnership(final Mechanism mechanism);
 
     /**
      * Release ownership of the given Mechanism.
@@ -126,5 +119,5 @@ public interface Context {
      * @see #takeOwnership(Mechanism)
      * @see Mechanism#releaseOwnership(Context)
      */
-    public void releaseOwnership(final Mechanism mechanism);
+    void releaseOwnership(final Mechanism mechanism);
 }

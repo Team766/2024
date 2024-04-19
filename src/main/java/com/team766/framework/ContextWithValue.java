@@ -13,5 +13,5 @@ public interface ContextWithValue<T> extends Context {
      * The most recent value passed to this yield(T) method will be returned by subsequent calls to
      * LaunchedContextWithValue.lastYieldedValue().
      */
-    public void yield(final T valueToYield);
+    void yield(final T valueToYield);
 }
