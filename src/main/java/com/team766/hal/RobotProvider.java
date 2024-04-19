@@ -21,17 +21,6 @@ public abstract class RobotProvider {
 
     public static RobotProvider instance;
 
-    protected EncoderReader[] encoders = new EncoderReader[20];
-    protected SolenoidController[] solenoids = new SolenoidController[20];
-    protected GyroReader[] gyros = new GyroReader[13];
-    protected HashMap<String, CameraReader> cams = new HashMap<String, CameraReader>();
-    protected JoystickReader[] joysticks = new JoystickReader[8];
-    protected DigitalInputReader[] digInputs = new DigitalInputReader[8];
-    protected AnalogInputReader[] angInputs = new AnalogInputReader[5];
-    protected RelayOutput[] relays = new RelayOutput[5];
-    protected PositionReader positionSensor = null;
-    protected BeaconReader beaconSensor = null;
-
     private HashMap<Integer, String> motorDeviceIdNames = new HashMap<Integer, String>();
     private HashMap<Integer, String> motorPortNames = new HashMap<Integer, String>();
     private HashMap<Integer, String> digitalIoNames = new HashMap<Integer, String>();

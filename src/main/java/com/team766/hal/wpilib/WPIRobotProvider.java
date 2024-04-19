@@ -172,10 +172,7 @@ public class WPIRobotProvider extends RobotProvider {
 
     @Override
     public EncoderReader getEncoder(int index1, int index2) {
-        if (encoders[index1] == null) {
-            encoders[index1] = new Encoder(index1, index2);
-        }
-        return encoders[index1];
+        return new Encoder(index1, index2);
     }
 
     @Override
@@ -210,10 +207,7 @@ public class WPIRobotProvider extends RobotProvider {
 
     @Override
     public SolenoidController getSolenoid(int index) {
-        if (solenoids[index] == null) {
-            solenoids[index] = new Solenoid(index);
-        }
-        return solenoids[index];
+        return new Solenoid(index);
     }
 
     @Override
@@ -234,24 +228,21 @@ public class WPIRobotProvider extends RobotProvider {
             }
         }
 
-        if (gyros[index + 2] == null) {
-            if (index < -2) {
-                Logger.get(Category.CONFIGURATION)
-                        .logRaw(
-                                Severity.ERROR,
-                                "Invalid gyro port "
-                                        + index
-                                        + ". Must be -2, -1, or a non-negative integer");
-                return new MockGyro();
-            } else if (index == -2) {
-                gyros[index + 2] = new NavXGyro(I2C.Port.kOnboard);
-            } else if (index == -1) {
-                gyros[index + 2] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-            } else {
-                gyros[index + 2] = new AnalogGyro(index);
-            }
+        if (index < -2) {
+            Logger.get(Category.CONFIGURATION)
+                    .logRaw(
+                            Severity.ERROR,
+                            "Invalid gyro port "
+                                    + index
+                                    + ". Must be -2, -1, or a non-negative integer");
+            return new MockGyro();
+        } else if (index == -2) {
+            return new NavXGyro(I2C.Port.kOnboard);
+        } else if (index == -1) {
+            return new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+        } else {
+            return new AnalogGyro(index);
         }
-        return gyros[index + 2];
     }
 
     @Override
@@ -262,10 +253,7 @@ public class WPIRobotProvider extends RobotProvider {
 
     @Override
     public JoystickReader getJoystick(int index) {
-        if (joysticks[index] == null) {
-            joysticks[index] = new Joystick(index);
-        }
-        return joysticks[index];
+        return new Joystick(index);
     }
 
     @Override
@@ -275,50 +263,35 @@ public class WPIRobotProvider extends RobotProvider {
 
     @Override
     public DigitalInputReader getDigitalInput(final int index) {
-        if (digInputs[index] == null) {
-            digInputs[index] = new DigitalInput(index);
-        }
-        return digInputs[index];
+        return new DigitalInput(index);
     }
 
     @Override
     public AnalogInputReader getAnalogInput(int index) {
-        if (angInputs[index] == null) {
-            angInputs[index] = new AnalogInput(index);
-        }
-        return angInputs[index];
+        return new AnalogInput(index);
     }
 
     @Override
     public RelayOutput getRelay(int index) {
-        if (relays[index] == null) {
-            relays[index] = new Relay(index);
-        }
-        return relays[index];
+        return new Relay(index);
     }
 
     @Override
     public PositionReader getPositionSensor() {
-        if (positionSensor == null) {
-            positionSensor = new MockPositionSensor();
-            Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            "Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0");
-        }
-        return positionSensor;
+        Logger.get(Category.CONFIGURATION)
+                .logRaw(
+                        Severity.ERROR,
+                        "Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0");
+        return new MockPositionSensor();
     }
 
     @Override
     public BeaconReader getBeaconSensor() {
-        if (beaconSensor == null) {
-            beaconSensor = new MockBeaconSensor();
-            Logger.get(Category.CONFIGURATION)
-                    .logRaw(
-                            Severity.ERROR,
-                            "Beacon sensor does not exist on real robots. Using mock beacon sensor instead - it will always return no beacons");
-        }
-        return beaconSensor;
+        Logger.get(Category.CONFIGURATION)
+                .logRaw(
+                        Severity.ERROR,
+                        "Beacon sensor does not exist on real robots. Using mock beacon sensor instead - it will always return no beacons");
+        return new MockBeaconSensor();
     }
 
     @Override
