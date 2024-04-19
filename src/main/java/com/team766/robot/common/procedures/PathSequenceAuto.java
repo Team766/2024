@@ -6,7 +6,6 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.framework.RunnableWithContext;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
@@ -16,12 +15,10 @@ import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.LinkedList;
 import java.util.Optional;
 
-public class PathSequenceAuto extends Procedure {
+public abstract class PathSequenceAuto extends Procedure {
 
-    private final LinkedList<RunnableWithContext> pathItems;
     private final Drive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
@@ -33,7 +30,6 @@ public class PathSequenceAuto extends Procedure {
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
     public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
-        pathItems = new LinkedList<RunnableWithContext>();
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
@@ -78,17 +74,11 @@ public class PathSequenceAuto extends Procedure {
                 drive.maxWheelDistToCenter());
     }
 
-    protected void addPath(String pathName) {
-        pathItems.add(new FollowPath(pathName, controller, drive));
+    protected void runPath(Context context, String pathName) {
+        context.runSync(new FollowPath(pathName, controller, drive));
     }
 
-    protected void addProcedure(Procedure procedure) {
-        pathItems.add(procedure);
-    }
-
-    protected void addWait(double waitForSeconds) {
-        pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
-    }
+    protected abstract void runSequence(Context context);
 
     @Override
     public final void run(Context context) {
@@ -115,10 +105,7 @@ public class PathSequenceAuto extends Procedure {
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
-        for (RunnableWithContext pathItem : pathItems) {
-            context.runSync(pathItem);
-            context.yield();
-        }
+        runSequence(context);
 
         context.takeOwnership(Robot.shooter);
         Robot.shooter.stop();
