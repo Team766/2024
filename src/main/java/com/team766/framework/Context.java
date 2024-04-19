@@ -99,6 +99,12 @@ public interface Context {
     LaunchedContext startAsync(final Runnable func);
 
     /**
+     * Run the given Procedure synchronously (the calling Procedure will not resume until this one
+     * has finished).
+     */
+    void runSync(final RunnableWithContext func);
+
+    /**
      * Take ownership of the given Mechanism with this Context.
      *
      * Only one Context can own a Mechanism at one time. If any Context previously owned this

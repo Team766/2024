@@ -109,7 +109,7 @@ public class DriverShootNow extends VisionPIDProcedure {
         context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
         Robot.lights.signalFinishingShootingProcedure();
-        new DriverShootVelocityAndIntake().run(context);
+        context.runSync(new DriverShootVelocityAndIntake());
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {

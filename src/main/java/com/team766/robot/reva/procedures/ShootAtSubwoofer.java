@@ -10,6 +10,6 @@ public class ShootAtSubwoofer extends Procedure {
         context.takeOwnership(Robot.shoulder);
         Robot.shoulder.rotate(ShoulderPosition.SHOOT_LOW);
         context.releaseOwnership(Robot.shoulder);
-        new ShootVelocityAndIntake().run(context);
+        context.runSync(new ShootVelocityAndIntake());
     }
 }

@@ -421,6 +421,11 @@ class ContextImpl<T> implements Runnable, ContextWithValue<T>, LaunchedContextWi
         return new ContextImpl<>(func, this);
     }
 
+    @Override
+    public void runSync(final RunnableWithContext func) {
+        func.run(this);
+    }
+
     /**
      * Interrupt the running of this Context and force it to terminate.
      *
