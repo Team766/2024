@@ -62,7 +62,6 @@ public class DriverOI extends OIFragment {
         // Sets the wheels to the cross position if the cross button is pressed
         if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
             if (!isCross) {
-                context.takeOwnership(drive);
                 drive.stopDrive();
                 drive.setCross();
             }
@@ -76,7 +75,6 @@ public class DriverOI extends OIFragment {
             if (rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)) {
                 drivingCoefficient = FINE_DRIVING_COEFFICIENT;
             }
-            context.takeOwnership(drive);
             drive.controlFieldOriented(
                     (drivingCoefficient
                             * curvedJoystickPower(
@@ -88,7 +86,6 @@ public class DriverOI extends OIFragment {
                             * curvedJoystickPower(
                                     rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)));
         } else {
-            context.takeOwnership(drive);
             drive.stopDrive();
             drive.setCross();
         }

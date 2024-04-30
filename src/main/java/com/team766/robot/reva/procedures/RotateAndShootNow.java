@@ -4,26 +4,44 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Lights;
+import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.mechanisms.Shoulder;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class RotateAndShootNow extends Procedure {
 
-    VisionSpeakerHelper visionSpeakerHelper;
+    private final Drive drive;
+    private final Shoulder shoulder;
+    private final Shooter shooter;
+    private final Intake intake;
+    private final Lights lights;
 
-    public RotateAndShootNow() {
-        visionSpeakerHelper = new VisionSpeakerHelper(Robot.drive);
+    private final VisionSpeakerHelper visionSpeakerHelper;
+
+    public RotateAndShootNow(
+            Drive drive,
+            Shoulder shoulder,
+            Shooter shooter,
+            Intake intake,
+            Lights lights,
+            ForwardApriltagCamera forwardApriltagCamera) {
+        super(reservations(drive, shoulder, shooter, intake));
+        this.drive = drive;
+        this.shoulder = shoulder;
+        this.shooter = shooter;
+        this.intake = intake;
+        this.lights = lights;
+        visionSpeakerHelper = new VisionSpeakerHelper(drive, forwardApriltagCamera);
     }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
-        context.takeOwnership(Robot.shooter);
-        context.takeOwnership(Robot.shoulder);
-        context.takeOwnership(Robot.drive);
-
-        Robot.drive.stopDrive();
-        // context.releaseOwnership(Robot.drive);
+        drive.stopDrive();
 
         // double power;
         double armAngle;
@@ -40,19 +58,14 @@ public class RotateAndShootNow extends Procedure {
             return;
         }
 
-        // context.takeOwnership(Robot.drive);
-        Robot.shoulder.rotate(armAngle);
-        Robot.drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
-        // Robot.shooter.shoot(power);
-        context.releaseOwnership(Robot.shoulder);
+        shoulder.rotate(armAngle);
+        drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
+        // shooter.shoot(power);
 
-        context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
-        context.waitForConditionOrTimeout(Robot.drive::isAtRotationTarget, 3.0);
-        Robot.drive.stopDrive();
+        context.waitForConditionOrTimeout(shoulder::isFinished, 0.5);
+        context.waitForConditionOrTimeout(drive::isAtRotationTarget, 3.0);
+        drive.stopDrive();
 
-        // context.releaseOwnership(Robot.shoulder);
-        context.releaseOwnership(Robot.drive);
-        context.releaseOwnership(Robot.shooter);
-        context.runSync(new ShootVelocityAndIntake());
+        context.runSync(new ShootVelocityAndIntake(shooter, intake, lights));
     }
 }

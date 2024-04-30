@@ -6,6 +6,11 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.swerveandshoot.mechanisms.ForwardApriltagCamera;
+import com.team766.robot.swerveandshoot.mechanisms.NoteCamera;
+import com.team766.robot.swerveandshoot.mechanisms.TempPickerUpper;
+import com.team766.robot.swerveandshoot.mechanisms.TempShooter;
 import com.team766.robot.swerveandshoot.procedures.*;
 
 /**
@@ -13,12 +18,31 @@ import com.team766.robot.swerveandshoot.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
-    private JoystickReader joystick0;
-    private JoystickReader joystick1;
-    private JoystickReader joystick2;
+    private final Drive drive;
+    private final TempPickerUpper tempPickerUpper;
+    private final TempShooter tempShooter;
+    private final ForwardApriltagCamera forwardApriltagCamera;
+    private final NoteCamera noteDetectorCamera;
 
-    public OI() {
+    private final JoystickReader joystick0;
+    private final JoystickReader joystick1;
+    private final JoystickReader joystick2;
+
+    public OI(
+            Drive drive,
+            TempPickerUpper tempPickerUpper,
+            TempShooter tempShooter,
+            ForwardApriltagCamera forwardApriltagCamera,
+            NoteCamera noteDetectorCamera) {
+        super(reservations(drive, tempPickerUpper, tempShooter));
+
         loggerCategory = Category.OPERATOR_INTERFACE;
+
+        this.drive = drive;
+        this.tempPickerUpper = tempPickerUpper;
+        this.tempShooter = tempShooter;
+        this.forwardApriltagCamera = forwardApriltagCamera;
+        this.noteDetectorCamera = noteDetectorCamera;
 
         joystick0 = RobotProvider.instance.getJoystick(0);
         joystick1 = RobotProvider.instance.getJoystick(1);
@@ -30,26 +54,24 @@ public class OI extends Procedure {
         while (true) {
             // wait for driver station data (and refresh it using the WPILib APIs)
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-            context.takeOwnership(Robot.lights);
-            context.takeOwnership(Robot.drive);
 
             RobotProvider.instance.refreshDriverStationData();
 
             // General drive util
 
             if (joystick0.getButtonPressed(2)) {
-                Robot.drive.resetGyro();
+                drive.resetGyro();
             }
             if (Math.abs(joystick0.getAxis(0))
                             + Math.abs(joystick0.getAxis(1))
                             + Math.abs(joystick1.getAxis(0))
                     > 0.05) {
-                Robot.drive.controlRobotOriented(
+                drive.controlRobotOriented(
                         joystick0.getAxis(0) * .2,
                         -joystick0.getAxis(1) * .2,
                         joystick1.getAxis(0) * .2);
             } else {
-                Robot.drive.stopDrive();
+                drive.stopDrive();
             }
 
             /*
@@ -64,7 +86,12 @@ public class OI extends Procedure {
             if (joystick0.getButtonPressed(1)) {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 visionProcedure =
-                        context.startAsync(new DriveToAndScoreAt(ScoringPositions.makerSpace1R));
+                        context.startAsync(
+                                new DriveToAndScoreAt(
+                                        ScoringPositions.makerSpace1R,
+                                        drive,
+                                        tempShooter,
+                                        forwardApriltagCamera));
             }
 
             if (joystick0.getButtonReleased(1)) {
@@ -78,7 +105,12 @@ public class OI extends Procedure {
             if (joystick0.getButtonPressed(2)) {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
                 visionProcedure =
-                        context.startAsync(new DriveToAndScoreAt(ScoringPositions.makerSpace1L));
+                        context.startAsync(
+                                new DriveToAndScoreAt(
+                                        ScoringPositions.makerSpace1L,
+                                        drive,
+                                        tempShooter,
+                                        forwardApriltagCamera));
             }
 
             if (joystick0.getButtonReleased(2)) {
@@ -91,7 +123,9 @@ public class OI extends Procedure {
              */
 
             if (joystick1.getButtonPressed(1)) {
-                visionProcedure = context.startAsync(new PickupNote());
+                visionProcedure =
+                        context.startAsync(
+                                new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
             }
 
             if (joystick1.getButtonReleased(1)) {

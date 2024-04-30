@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +23,7 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     /**
      * Adapts a ProcedureWithValue into a Procedure by discarding any values that it produces.
      */
-    public static <T> ProcedureInterface discard(ProcedureWithValueInterface<T> procedure) {
+    public static <T> ProcedureInterface discard(ProcedureWithValue<T> procedure) {
         return new ProcedureInterface() {
             @Override
             public void run(Context context) {
@@ -30,8 +31,8 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
             }
 
             @Override
-            public Set<Subsystem> getRequirements() {
-                return procedure.getRequirements();
+            public Set<Subsystem> getReservations() {
+                return procedure.getReservations();
             }
         };
     }
@@ -49,7 +50,7 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
      * the provided List.
      */
     public static <T> ProcedureInterface collectInto(
-            ProcedureWithValueInterface<T> procedure, List<T> valuesCollection) {
+            ProcedureWithValue<T> procedure, List<T> valuesCollection) {
         return new ProcedureInterface() {
             @Override
             public void run(Context context) {
@@ -57,8 +58,8 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
             }
 
             @Override
-            public Set<Subsystem> getRequirements() {
-                return procedure.getRequirements();
+            public Set<Subsystem> getReservations() {
+                return procedure.getReservations();
             }
         };
     }
@@ -102,12 +103,12 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     }
 
     @Override
-    public LaunchedContext startAsync(ProcedureInterface func) {
-        return parentContext.startAsync(func);
+    public LaunchedContext startAsync(Command cmd) {
+        return parentContext.startAsync(cmd);
     }
 
     @Override
-    public <U> LaunchedContextWithValue<U> startAsync(ProcedureWithValueInterface<U> func) {
+    public <U> LaunchedContextWithValue<U> startAsync(ProcedureWithValue<U> func) {
         return parentContext.startAsync(func);
     }
 

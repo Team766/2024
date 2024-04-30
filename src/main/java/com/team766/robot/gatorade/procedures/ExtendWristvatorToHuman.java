@@ -7,7 +7,8 @@ import com.team766.robot.gatorade.mechanisms.Wrist;
 
 public class ExtendWristvatorToHuman extends MoveWristvator {
 
-    public ExtendWristvatorToHuman(GamePieceType gamePieceType) {
+    public ExtendWristvatorToHuman(
+            GamePieceType gamePieceType, Shoulder shoulder, Elevator elevator, Wrist wrist) {
         super(
                 Shoulder.Position.RAISED,
                 gamePieceType == GamePieceType.CONE
@@ -15,6 +16,9 @@ public class ExtendWristvatorToHuman extends MoveWristvator {
                         : Elevator.Position.HUMAN_CUBES,
                 gamePieceType == GamePieceType.CONE
                         ? Wrist.Position.HUMAN_CONES
-                        : Wrist.Position.HUMAN_CUBES);
+                        : Wrist.Position.HUMAN_CUBES,
+                shoulder,
+                elevator,
+                wrist);
     }
 }

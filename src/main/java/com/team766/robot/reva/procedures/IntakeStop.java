@@ -1,12 +1,17 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.robot.reva.Robot;
+import com.team766.framework.InstantProcedure;
+import com.team766.robot.reva.mechanisms.Intake;
 
-public class IntakeStop extends Procedure {
-    public void run(Context context) {
-        context.takeOwnership(Robot.intake);
-        Robot.intake.stop();
+public class IntakeStop extends InstantProcedure {
+    private final Intake intake;
+
+    public IntakeStop(Intake intake) {
+        super(reservations(intake));
+        this.intake = intake;
+    }
+
+    public void run() {
+        intake.stop();
     }
 }

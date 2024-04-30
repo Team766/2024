@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -88,12 +89,12 @@ public interface Context {
     /**
      * Start running a new Context so the given procedure can run in parallel.
      */
-    LaunchedContext startAsync(final ProcedureInterface func);
+    LaunchedContext startAsync(final Command func);
 
     /**
      * Start running a new Context so the given procedure can run in parallel.
      */
-    <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValueInterface<U> func);
+    <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValue<U> func);
 
     /**
      * Run the given Procedure synchronously (the calling Procedure will not resume until this one
@@ -107,7 +108,7 @@ public interface Context {
      *
      * Any values yielded by the procedure will be discarded.
      */
-    default void runSync(final ProcedureWithValueInterface<?> func) {
+    default void runSync(final ProcedureWithValue<?> func) {
         this.runSync(YieldedValues.discard(func));
     }
 
@@ -117,7 +118,7 @@ public interface Context {
      *
      * All values yielded by the procedure will be collected into a List and returned.
      */
-    default <T> List<T> runSyncAndCollectValues(final ProcedureWithValueInterface<T> func) {
+    default <T> List<T> runSyncAndCollectValues(final ProcedureWithValue<T> func) {
         ArrayList<T> values = new ArrayList<T>();
         this.runSync(YieldedValues.collectInto(func, values));
         return values;

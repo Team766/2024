@@ -8,7 +8,9 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.DriverShootNow;
@@ -23,6 +25,8 @@ public class DriverOI extends OIFragment {
     protected final Shoulder shoulder;
     protected final Intake intake;
     protected final Shooter shooter;
+    protected final Lights lights;
+    protected final ForwardApriltagCamera forwardApriltagCamera;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
     protected double rightJoystickY = 0;
@@ -39,6 +43,8 @@ public class DriverOI extends OIFragment {
             Shoulder shoulder,
             Intake intake,
             Shooter shooter,
+            Lights lights,
+            ForwardApriltagCamera forwardApriltagCamera,
             JoystickReader leftJoystick,
             JoystickReader rightJoystick) {
         super("DriverOI");
@@ -46,9 +52,11 @@ public class DriverOI extends OIFragment {
         this.shoulder = shoulder;
         this.intake = intake;
         this.shooter = shooter;
+        this.lights = lights;
+        this.forwardApriltagCamera = forwardApriltagCamera;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
+        visionSpeakerHelper = new VisionSpeakerHelper(drive, forwardApriltagCamera);
 
         movingJoysticks =
                 new OICondition(
@@ -90,7 +98,6 @@ public class DriverOI extends OIFragment {
         // Sets the wheels to the cross position if the cross button is pressed
         // if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
         //     if (!isCross) {
-        //         context.takeOwnership(drive);
         //         drive.stopDrive();
         //         drive.setCross();
         //     }
@@ -100,33 +107,29 @@ public class DriverOI extends OIFragment {
         visionSpeakerHelper.update();
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-
-            visionContext = context.startAsync(new DriverShootNow());
-
+            visionContext =
+                    context.startAsync(
+                            new DriverShootNow(
+                                    drive,
+                                    shoulder,
+                                    shooter,
+                                    intake,
+                                    lights,
+                                    forwardApriltagCamera));
         } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
             visionContext.cancel();
-            context.takeOwnership(drive);
-            context.takeOwnership(intake);
 
             intake.stop();
             drive.stopDrive();
-
-            context.releaseOwnership(drive);
-            context.releaseOwnership(intake);
         }
 
         if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-
-            visionContext = context.startAsync(new DriverShootVelocityAndIntake());
-
+            visionContext = context.startAsync(new DriverShootVelocityAndIntake(shooter, intake));
         } else if (rightJoystick.getButtonReleased(
                 InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-
             visionContext.cancel();
 
-            context.takeOwnership(intake);
             intake.stop();
-            context.releaseOwnership(intake);
         }
 
         // Moves the robot if there are joystick inputs
@@ -137,7 +140,6 @@ public class DriverOI extends OIFragment {
                 drivingCoefficient = FINE_DRIVING_COEFFICIENT;
             }
 
-            context.takeOwnership(drive);
             drive.controlFieldOriented(
                     (drivingCoefficient
                             * curvedJoystickPower(
@@ -149,7 +151,6 @@ public class DriverOI extends OIFragment {
                             * curvedJoystickPower(
                                     rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)));
         } else if (movingJoysticks.isFinishedTriggering()) {
-            context.takeOwnership(drive);
             drive.stopDrive();
             drive.setCross();
         }

@@ -27,6 +27,10 @@ import java.util.function.BooleanSupplier;
 class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedContextWithValue<T> {
     private Optional<T> m_lastYieldedValue = Optional.empty();
 
+    // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
+    // TODO: Re-evaluate whether this should use the default Command behavior (return false).
+    static final boolean RUNS_WHEN_DISABLED = true;
+
     /**
      * Represents the baton-passing state (see class comments). Instead of
      * passing a baton directly from one Context's thread to the next, each
@@ -103,7 +107,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     /**
      * The top-level procedure being run by this Context.
      */
-    private final ProcedureWithValueInterface<T> m_func;
+    private final ProcedureWithValue<T> m_func;
 
     /**
      * The OS thread that this Context is executing on.
@@ -147,7 +151,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
      * {@link Scheduler#startAsync}.
      */
 
-    ContextImpl(final ProcedureWithValueInterface<T> func) {
+    ContextImpl(final ProcedureWithValue<T> func) {
         m_func = func;
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
@@ -158,20 +162,15 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         m_controlOwner = ControlOwner.MAIN_THREAD;
         m_state = State.NEW;
         setName(getContextName());
-        addRequirements(func.getRequirements().toArray(Subsystem[]::new));
+        addRequirements(func.getReservations().toArray(Subsystem[]::new));
     }
 
     ContextImpl(final ProcedureInterface func) {
         this(
-                new ProcedureWithValueInterface<T>() {
+                new ProcedureWithValue<T>(ProcedureWithValue.reservations(func.getReservations())) {
                     @Override
                     public void run(ContextWithValue<T> context) {
                         func.run(context);
-                    }
-
-                    @Override
-                    public Set<Subsystem> getRequirements() {
-                        return func.getRequirements();
                     }
                 });
     }
@@ -374,14 +373,28 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     }
 
     @Override
-    public LaunchedContext startAsync(final ProcedureInterface func) {
-        var newContext = new ContextImpl<>(func);
-        newContext.schedule();
-        return newContext;
+    public LaunchedContext startAsync(final Command cmd) {
+        cmd.schedule();
+        return new LaunchedContext() {
+            @Override
+            public String getName() {
+                return cmd.getName();
+            }
+
+            @Override
+            public boolean isDone() {
+                return cmd.isFinished();
+            }
+
+            @Override
+            public void cancel() {
+                cmd.cancel();
+            }
+        };
     }
 
     @Override
-    public <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValueInterface<U> func) {
+    public <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValue<U> func) {
         var newContext = new ContextImpl<U>(func);
         newContext.schedule();
         return newContext;
@@ -389,19 +402,19 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
 
     @Override
     public void runSync(final ProcedureInterface func) {
-        checkProcedureRequirements(func, func.getRequirements());
+        checkProcedureReservations(func, func.getReservations());
         func.run(this);
     }
 
-    private void checkProcedureRequirements(Object procedure, Set<Subsystem> requirements) {
-        final var this_requirements = getRequirements();
-        for (var req : requirements) {
-            if (!this_requirements.contains(req)) {
+    private void checkProcedureReservations(Object procedure, Set<Subsystem> reservations) {
+        final var this_reservations = getRequirements();
+        for (var req : reservations) {
+            if (!this_reservations.contains(req)) {
                 throw new IllegalArgumentException(
                         getName()
                                 + " tried to run "
                                 + procedure
-                                + " but is missing the requirement on "
+                                + " but is missing the reservation on "
                                 + req.getName());
             }
         }
@@ -453,9 +466,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
 
     @Override
     public boolean runsWhenDisabled() {
-        // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
-        // TODO: Re-evaluate whether this should use the default Command behavior (return false).
-        return true;
+        return RUNS_WHEN_DISABLED;
     }
 
     @Override

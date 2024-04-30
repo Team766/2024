@@ -8,7 +8,7 @@ public interface LaunchedContext {
      * Returns a string meant to uniquely identify this Context (e.g. for use in
      * logging).
      */
-    String getContextName();
+    String getName();
 
     /**
      * Returns true if this Context has finished running, false otherwise.

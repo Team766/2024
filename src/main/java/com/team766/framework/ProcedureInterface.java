@@ -6,5 +6,5 @@ import java.util.Set;
 public interface ProcedureInterface {
     void run(Context context);
 
-    Set<Subsystem> getRequirements();
+    Set<Subsystem> getReservations();
 }

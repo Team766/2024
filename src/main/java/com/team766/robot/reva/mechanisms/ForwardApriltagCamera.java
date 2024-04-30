@@ -4,7 +4,6 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Mechanism;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,23 +12,26 @@ import java.util.Optional;
 
 public class ForwardApriltagCamera extends Mechanism {
 
+    private final Lights lights;
     private GrayScaleCamera camera;
     private int tagId = -1;
 
-    public ForwardApriltagCamera() throws AprilTagGeneralCheckedException {
+    public ForwardApriltagCamera(Lights lights) throws AprilTagGeneralCheckedException {
+        this.lights = lights;
+
         try {
             camera = new GrayScaleCamera("Main_Test_Camera_2024");
 
             if (camera.isConnected()) {
                 // Robot.lights is initialized before this mechanism
-                Robot.lights.signalCameraConnected();
+                lights.signalCameraConnected();
             } else {
-                Robot.lights.signalCameraNotConnected();
+                lights.signalCameraNotConnected();
             }
         } catch (Exception e) {
             log("Unable to create GrayScaleCamera");
             LoggerExceptionUtils.logException(e);
-            Robot.lights.signalCameraNotConnected();
+            lights.signalCameraNotConnected();
         }
     }
 
@@ -49,7 +51,7 @@ public class ForwardApriltagCamera extends Mechanism {
                     } else {
                         tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
                     }
-                    Robot.lights.signalCameraConnected();
+                    lights.signalCameraConnected();
                 } else {
                     // LoggerExceptionUtils.logException(
                     //         new AprilTagGeneralCheckedException(

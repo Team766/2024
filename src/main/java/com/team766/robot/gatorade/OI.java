@@ -8,8 +8,10 @@ import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Severity;
 import com.team766.robot.common.DriverOI;
+import com.team766.robot.common.mechanisms.*;
 import com.team766.robot.gatorade.constants.ControlConstants;
 import com.team766.robot.gatorade.constants.InputConstants;
+import com.team766.robot.gatorade.mechanisms.*;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,9 +23,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class OI extends Procedure {
 
-    private JoystickReader leftJoystick;
-    private JoystickReader rightJoystick;
-    private JoystickReader boxopGamepad;
+    private final JoystickReader leftJoystick;
+    private final JoystickReader rightJoystick;
+    private final JoystickReader boxopGamepad;
+    private final Drive drive;
+    private final Shoulder shoulder;
+    private final Elevator elevator;
+    private final Wrist wrist;
+    private final Intake intake;
+    private final Lights lights;
     private double rightJoystickY = 0;
     private double leftJoystickX = 0;
     private double leftJoystickY = 0;
@@ -36,19 +44,32 @@ public class OI extends Procedure {
 
     private RateLimiter lightsRateLimit = new RateLimiter(1.3);
 
-    public OI() {
+    public OI(
+            Drive drive,
+            Shoulder shoulder,
+            Elevator elevator,
+            Wrist wrist,
+            Intake intake,
+            Lights lights) {
+        super(reservations(drive, shoulder, elevator, wrist, intake, lights));
+
         loggerCategory = Category.OPERATOR_INTERFACE;
+
+        this.drive = drive;
+        this.shoulder = shoulder;
+        this.elevator = elevator;
+        this.wrist = wrist;
+        this.intake = intake;
+        this.lights = lights;
 
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
-        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+        driverOI = new DriverOI(drive, leftJoystick, rightJoystick);
     }
 
     public void run(Context context) {
-        context.takeOwnership(Robot.lights);
-
         boolean elevatorManual = false;
         boolean wristManual = false;
 
@@ -58,27 +79,26 @@ public class OI extends Procedure {
 
             SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
 
-            // Add driver controls here - make sure to take/release ownership
-            // of mechanisms when appropriate.
+            // Add driver controls here.
 
             // Driver OI: take input from left, right joysticks.  control drive.
             driverOI.handleOI(context);
 
             if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
-                context.runSync(new IntakeOut());
+                context.runSync(new IntakeOut(intake));
             } else if (leftJoystick.getButtonReleased(InputConstants.INTAKE_OUT)) {
-                context.runSync(new IntakeStop());
+                context.runSync(new IntakeStop(intake));
             }
 
             // Respond to boxop commands
 
             // first, check if the boxop is making a cone or cube selection
             if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
-                context.runSync(new GoForCones());
+                context.runSync(new GoForCones(intake));
                 setLightsForGamePiece();
                 SmartDashboard.putBoolean("Game Piece", true);
             } else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
-                context.runSync(new GoForCubes());
+                context.runSync(new GoForCubes(intake));
                 setLightsForGamePiece();
                 SmartDashboard.putBoolean("Game Piece", false);
             }
@@ -103,11 +123,11 @@ public class OI extends Procedure {
 
             // look for button hold to start intake, release to idle intake
             if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_INTAKE_IN)) {
-                context.runSync(new IntakeIn());
+                context.runSync(new IntakeIn(intake));
             } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_INTAKE_IN)) {
-                context.runSync(new IntakeIdle());
+                context.runSync(new IntakeIdle(intake));
             } else if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
-                context.runSync(new IntakeStop());
+                context.runSync(new IntakeStop(intake));
             }
 
             // look for button hold to extend intake/wrist/elevator superstructure,
@@ -117,17 +137,22 @@ public class OI extends Procedure {
                     case NONE:
                         break;
                     case LOW_NODE:
-                        context.startAsync(new ExtendWristvatorToLow());
+                        context.startAsync(new ExtendWristvatorToLow(shoulder, elevator, wrist));
                         break;
                     case MID_NODE:
-                        context.startAsync(new ExtendWristvatorToMid());
+                        context.startAsync(new ExtendWristvatorToMid(shoulder, elevator, wrist));
                         break;
                     case HIGH_NODE:
-                        context.startAsync(new ExtendWristvatorToHigh());
+                        context.startAsync(new ExtendWristvatorToHigh(shoulder, elevator, wrist));
                         break;
                     case HUMAN_PLAYER:
                         context.startAsync(
-                                new ExtendToHumanWithIntake(Robot.intake.getGamePieceType()));
+                                new ExtendToHumanWithIntake(
+                                        intake.getGamePieceType(),
+                                        shoulder,
+                                        elevator,
+                                        wrist,
+                                        intake));
                         break;
                     default:
                         // warn, ignore
@@ -138,9 +163,10 @@ public class OI extends Procedure {
                 }
             } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
                 if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
-                    context.startAsync(new RetractWristvatorIdleIntake());
+                    context.startAsync(
+                            new RetractWristvatorIdleIntake(shoulder, elevator, wrist, intake));
                 } else {
-                    context.startAsync(new RetractWristvator());
+                    context.startAsync(new RetractWristvator(shoulder, elevator, wrist));
                 }
             }
 
@@ -153,16 +179,14 @@ public class OI extends Procedure {
                         -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
                 if (Math.abs(elevatorNudgeAxis) > 0.05) {
                     // elevatorManual = true;
-                    context.takeOwnership(Robot.elevator);
                     // Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
                     if (elevatorNudgeAxis > 0) {
-                        Robot.elevator.nudgeUp();
+                        elevator.nudgeUp();
                     } else {
-                        Robot.elevator.nudgeDown();
+                        elevator.nudgeDown();
                     }
-                    context.releaseOwnership(Robot.elevator);
                 } else if (false && elevatorManual) {
-                    Robot.elevator.stopElevator();
+                    elevator.stopElevator();
                     elevatorManual = false;
                 }
 
@@ -171,23 +195,21 @@ public class OI extends Procedure {
                         -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
                 if (Math.abs(wristNudgeAxis) > 0.05) {
                     // wristManual = true;
-                    context.takeOwnership(Robot.wrist);
                     // Robot.wrist.nudgeNoPID(wristNudgeAxis);
                     if (wristNudgeAxis > 0) {
-                        Robot.wrist.nudgeUp();
+                        wrist.nudgeUp();
                     } else {
-                        Robot.wrist.nudgeDown();
+                        wrist.nudgeDown();
                     }
-                    context.releaseOwnership(Robot.wrist);
                 } else if (false && wristManual) {
-                    Robot.wrist.stopWrist();
+                    wrist.stopWrist();
                     wristManual = true;
                 }
             }
 
             if (lightsRateLimit.next()) {
                 if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
-                    Robot.lights.rainbow();
+                    lights.rainbow();
                 } else {
                     setLightsForGamePiece();
                 }
@@ -225,10 +247,10 @@ public class OI extends Procedure {
     }
 
     private void setLightsForGamePiece() {
-        if (Robot.intake.getGamePieceType() == GamePieceType.CUBE) {
-            Robot.lights.purple();
+        if (intake.getGamePieceType() == GamePieceType.CUBE) {
+            lights.purple();
         } else {
-            Robot.lights.yellow();
+            lights.yellow();
         }
 
         lightsRateLimit.reset();

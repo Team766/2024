@@ -4,9 +4,14 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Context;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.constants.VisionConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Lights;
+import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.mechanisms.Shoulder;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -14,8 +19,31 @@ import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
 
+    private final Drive drive;
+    private final Shoulder shoulder;
+    private final Shooter shooter;
+    private final Intake intake;
+    private final Lights lights;
+    private final ForwardApriltagCamera forwardApriltagCamera;
+
     private int tagId;
     private double angle;
+
+    public ShootNow(
+            Drive drive,
+            Shoulder shoulder,
+            Shooter shooter,
+            Intake intake,
+            Lights lights,
+            ForwardApriltagCamera forwardApriltagCamera) {
+        super(reservations(drive, shoulder, shooter, intake));
+        this.drive = drive;
+        this.shoulder = shoulder;
+        this.shooter = shooter;
+        this.intake = intake;
+        this.lights = lights;
+        this.forwardApriltagCamera = forwardApriltagCamera;
+    }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
@@ -32,12 +60,8 @@ public class ShootNow extends VisionPIDProcedure {
             tagId = -1;
         }
 
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.shooter);
-        context.takeOwnership(Robot.shoulder);
-
-        Robot.lights.signalStartingShootingProcedure();
-        Robot.drive.stopDrive();
+        lights.signalStartingShootingProcedure();
+        drive.stopDrive();
 
         Transform3d toUse;
 
@@ -63,7 +87,7 @@ public class ShootNow extends VisionPIDProcedure {
                 > VisionPIDProcedure.scoringPositions
                         .get(VisionPIDProcedure.scoringPositions.size() - 1)
                         .distanceFromCenterApriltag()) {
-            Robot.lights.signalShooterOutOfRange();
+            lights.signalShooterOutOfRange();
         }
         double power;
         double armAngle;
@@ -75,9 +99,9 @@ public class ShootNow extends VisionPIDProcedure {
             return;
         }
 
-        Robot.shooter.shoot(power);
+        shooter.shoot(power);
 
-        Robot.shoulder.rotate(armAngle);
+        shoulder.rotate(armAngle);
 
         angle = Math.atan2(y, x);
 
@@ -101,30 +125,28 @@ public class ShootNow extends VisionPIDProcedure {
                 continue;
             }
 
-            Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
+            drive.controlRobotOriented(0, 0, -anglePID.getOutput());
         }
 
-        Robot.drive.stopDrive();
+        drive.stopDrive();
 
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
+        context.waitForConditionOrTimeout(() -> shoulder.isFinished(), 1);
 
-        context.releaseOwnership(Robot.shooter);
-        Robot.lights.signalFinishingShootingProcedure();
-        context.runSync(new ShootVelocityAndIntake(power));
-        context.releaseOwnership(Robot.drive);
+        lights.signalFinishingShootingProcedure();
+        context.runSync(new ShootVelocityAndIntake(power, shooter, intake, lights));
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+        GrayScaleCamera toUse = forwardApriltagCamera.getCamera();
 
         return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
     }
 
     private boolean seesTarget() {
-        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+        GrayScaleCamera toUse = forwardApriltagCamera.getCamera();
 
         try {
             toUse.getTrackedTargetWithID(tagId);

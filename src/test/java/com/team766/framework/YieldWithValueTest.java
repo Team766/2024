@@ -11,6 +11,10 @@ public class YieldWithValueTest extends TestCase {
     private static class ValueConsumer extends Procedure {
         public final ArrayList<Integer> values = new ArrayList<>();
 
+        public ValueConsumer() {
+            super(NO_RESERVATIONS);
+        }
+
         @Override
         public void run(Context context) {
             var generator = context.startAsync(new ValueGenerator());
@@ -31,6 +35,10 @@ public class YieldWithValueTest extends TestCase {
 
     private static class ValueGenerator extends ProcedureWithValue<Integer> {
         public int nextToYield = 0;
+
+        public ValueGenerator() {
+            super(NO_RESERVATIONS);
+        }
 
         @Override
         public void run(ContextWithValue<Integer> context) {
@@ -54,6 +62,10 @@ public class YieldWithValueTest extends TestCase {
 
     private static class DiscardingCaller extends Procedure {
         private ValueGenerator generator = new ValueGenerator();
+
+        public DiscardingCaller() {
+            super(NO_RESERVATIONS);
+        }
 
         public int stepCount() {
             return generator.nextToYield;
@@ -79,6 +91,10 @@ public class YieldWithValueTest extends TestCase {
 
     private static class CollectingCaller extends Procedure {
         public List<Integer> values;
+
+        public CollectingCaller() {
+            super(NO_RESERVATIONS);
+        }
 
         @Override
         public void run(Context context) {

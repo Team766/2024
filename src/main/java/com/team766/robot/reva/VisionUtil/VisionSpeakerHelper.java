@@ -3,8 +3,8 @@ package com.team766.robot.reva.VisionUtil;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,8 +22,8 @@ public class VisionSpeakerHelper {
     Translation2d relativeTranslation2d;
 
     // TODO: make this static
-    public VisionSpeakerHelper(Drive drive) {
-        camera = Robot.forwardApriltagCamera.getCamera();
+    public VisionSpeakerHelper(Drive drive, ForwardApriltagCamera forwardApriltagCamera) {
+        camera = forwardApriltagCamera.getCamera();
         this.drive = drive;
     }
 
@@ -70,16 +70,12 @@ public class VisionSpeakerHelper {
 
             // SmartDashboard.putString("target pos", absTargetPos.toString());
 
-            // context.takeOwnership(drive);
-
             // drive.setCurrentPosition(
             //         new Pose2d(
             //                 absTargetPos.minus(
             //                         relativeTarget.rotateBy(
             //                                 Rotation2d.fromDegrees(drive.getHeading() + 180))),
             //                 Rotation2d.fromDegrees(drive.getHeading())));
-
-            // context.releaseOwnership(drive);
 
             return true;
 

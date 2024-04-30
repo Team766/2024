@@ -2,8 +2,10 @@ package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.NoteCamera;
 
 public class PickupNote extends VisionPIDProcedure {
 
@@ -13,16 +15,25 @@ public class PickupNote extends VisionPIDProcedure {
         RING_IN_INTAKE
     }
 
+    private final Drive drive;
+    private final Intake intake;
+    private final NoteCamera noteCamera;
+
+    public PickupNote(Drive drive, Intake intake, NoteCamera noteCamera) {
+        super(reservations(drive, intake));
+        this.drive = drive;
+        this.intake = intake;
+        this.noteCamera = noteCamera;
+    }
+
     // button needs to be held down
     public void run(Context context) {
         yawPID.setSetpoint(0.00);
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.intake);
 
         try {
-            while (!Robot.intake.hasNoteInIntake()) {
+            while (!intake.hasNoteInIntake()) {
 
-                double yawInDegrees = Robot.noteCamera.getCamera().getYawOfRing();
+                double yawInDegrees = noteCamera.getCamera().getYawOfRing();
                 yawPID.calculate(yawInDegrees);
                 double power = yawPID.getOutput();
 
@@ -34,18 +45,19 @@ public class PickupNote extends VisionPIDProcedure {
 
                 if (Math.abs(power) > 0.045) {
                     // x needs inverted if camera is on front (found out through tests)
-                    Robot.drive.controlRobotOriented(power, 0, 0);
+                    drive.controlRobotOriented(power, 0, 0);
                 } else {
                     // Run intake the whole time
-                    Robot.intake.runIntake();
-                    Robot.drive.controlRobotOriented(0, -0.3, 0);
+                    intake.runIntake();
+                    drive.controlRobotOriented(0, -0.3, 0);
                 }
 
                 // double pitchInDegrees = Robot.noteDetectorCamera.getCamera().getPitchOfRing();
                 // return status.RING_IN_VIEW;
 
+                context.yield();
             }
-            Robot.intake.stop();
+            intake.stop();
 
         } catch (AprilTagGeneralCheckedException e) {
             // return status.NO_RING_IN_VIEW;

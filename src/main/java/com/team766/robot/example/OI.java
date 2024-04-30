@@ -17,6 +17,8 @@ public class OI extends Procedure {
     private JoystickReader joystick2;
 
     public OI() {
+        super(NO_RESERVATIONS);
+
         loggerCategory = Category.OPERATOR_INTERFACE;
 
         joystick0 = RobotProvider.instance.getJoystick(0);
@@ -30,8 +32,7 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            // Add driver controls here - make sure to take/release ownership
-            // of mechanisms when appropriate.
+            // Add driver controls here.
         }
     }
 }

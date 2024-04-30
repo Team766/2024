@@ -1,7 +1,6 @@
 package com.team766.framework;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * This wraps a class that confroms to WPILib's Command interface, and allows
@@ -13,12 +12,10 @@ public class WPILibCommandProcedure extends Procedure {
 
     /**
      * @param command The WPILib Command to adapt
-     * @param requirements This Procedure will take ownership of the Mechanisms
-     *                     given here during the time it is executing.
      */
     public WPILibCommandProcedure(final Command command_) {
+        super(reservations(command_.getRequirements()));
         this.command = command_;
-        addRequirements(command.getRequirements().toArray(Subsystem[]::new));
     }
 
     @Override
@@ -32,7 +29,6 @@ public class WPILibCommandProcedure extends Procedure {
             }
         } catch (Throwable ex) {
             interrupted = true;
-            this.command.cancel();
             throw ex;
         } finally {
             this.command.end(interrupted);

@@ -2,8 +2,10 @@ package com.team766.robot.swerveandshoot.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
-import com.team766.robot.swerveandshoot.Robot;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.VisionPIDProcedure;
+import com.team766.robot.swerveandshoot.mechanisms.NoteCamera;
+import com.team766.robot.swerveandshoot.mechanisms.TempPickerUpper;
 
 public class PickupNote extends VisionPIDProcedure {
 
@@ -13,16 +15,25 @@ public class PickupNote extends VisionPIDProcedure {
         RING_IN_INTAKE
     }
 
+    private final Drive drive;
+    private final TempPickerUpper tempPickerUpper;
+    private final NoteCamera noteDetectorCamera;
+
+    public PickupNote(Drive drive, TempPickerUpper tempPickerUpper, NoteCamera noteDetectorCamera) {
+        super(reservations(drive, tempPickerUpper));
+        this.drive = drive;
+        this.tempPickerUpper = tempPickerUpper;
+        this.noteDetectorCamera = noteDetectorCamera;
+    }
+
     // button needs to be held down
     public void run(Context context) {
         yawPID.setSetpoint(0.00);
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.tempPickerUpper);
 
         try {
-            while (!Robot.tempPickerUpper.hasNoteInIntake()) {
+            while (!tempPickerUpper.hasNoteInIntake()) {
 
-                double yawInDegrees = Robot.noteDetectorCamera.getCamera().getYawOfRing();
+                double yawInDegrees = noteDetectorCamera.getCamera().getYawOfRing();
                 yawPID.calculate(yawInDegrees);
                 double power = yawPID.getOutput();
 
@@ -34,16 +45,17 @@ public class PickupNote extends VisionPIDProcedure {
 
                 if (Math.abs(power) > 0.045) {
                     // x needs inverted if camera is on front (found out through tests)
-                    Robot.drive.controlRobotOriented(power, 0, 0);
+                    drive.controlRobotOriented(power, 0, 0);
                 } else {
                     // Run intake the whole time
-                    Robot.tempPickerUpper.runIntake();
-                    Robot.drive.controlRobotOriented(0, -0.3, 0);
+                    tempPickerUpper.runIntake();
+                    drive.controlRobotOriented(0, -0.3, 0);
                 }
 
                 // double pitchInDegrees = Robot.noteDetectorCamera.getCamera().getPitchOfRing();
                 // return status.RING_IN_VIEW;
 
+                context.yield();
             }
             // Robot.tempPickerUpper.runIntake();
             // Todo: create method to stop intake

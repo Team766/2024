@@ -7,15 +7,16 @@ import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
 import com.team766.robot.swerveandshoot.mechanisms.*;
+import com.team766.robot.swerveandshoot.procedures.*;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms here
-    public static TempPickerUpper tempPickerUpper;
-    public static TempShooter tempShooter;
-    public static Lights lights;
-    public static Drive drive;
-    public static NoteCamera noteDetectorCamera;
-    public static ForwardApriltagCamera forwardApriltagCamera;
+    private TempPickerUpper tempPickerUpper;
+    private TempShooter tempShooter;
+    private Lights lights;
+    private Drive drive;
+    private NoteCamera noteDetectorCamera;
+    private ForwardApriltagCamera forwardApriltagCamera;
 
     @Override
     public void initializeMechanisms() {
@@ -30,11 +31,22 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public Procedure createOI() {
-        return new OI();
+        return new OI(
+                drive, tempPickerUpper, tempShooter, forwardApriltagCamera, noteDetectorCamera);
     }
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
-        return AutonomousModes.AUTONOMOUS_MODES;
+        return new AutonomousMode[] {
+            // Add autonomous modes here like this:
+            //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
+            //
+            // If your autonomous procedure has constructor arguments, you can
+            // define one or more different autonomous modes with it like this:
+            //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
+            //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+
+            new AutonomousMode("DoNothing", () -> new DoNothing()),
+        };
     }
 }

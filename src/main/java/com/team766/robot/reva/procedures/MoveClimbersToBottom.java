@@ -2,13 +2,19 @@ package com.team766.robot.reva.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.reva.mechanisms.Climber;
 
 public class MoveClimbersToBottom extends Procedure {
+    private final Climber climber;
+
+    public MoveClimbersToBottom(Climber climber) {
+        super(reservations(climber));
+        this.climber = climber;
+    }
+
     public void run(Context context) {
-        context.takeOwnership(Robot.climber);
-        Robot.climber.setPower(0.25);
-        context.waitFor(() -> Robot.climber.isLeftAtBottom() && Robot.climber.isRightAtBottom());
-        Robot.climber.stop();
+        climber.setPower(0.25);
+        context.waitFor(() -> climber.isLeftAtBottom() && climber.isRightAtBottom());
+        climber.stop();
     }
 }

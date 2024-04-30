@@ -71,10 +71,6 @@ public class DebugOI extends OIFragment {
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
         if (controlShoulder.isTriggering()) {
-            if (controlShoulder.isNewlyTriggering()) {
-                context.takeOwnership(shoulder);
-            }
-
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
                 shoulder.nudgeUp();
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
@@ -82,8 +78,6 @@ public class DebugOI extends OIFragment {
             } else if (macropad.getButtonPressed(InputConstants.MACROPAD_RESET_SHOULDER)) {
                 shoulder.reset();
             }
-        } else if (controlShoulder.isFinishedTriggering()) {
-            context.releaseOwnership(shoulder);
         }
 
         // fine-grained control of the climber
@@ -91,7 +85,6 @@ public class DebugOI extends OIFragment {
         // press down the climber control button and nudge the climber up and down
         if (controlClimber.isTriggering()) {
             if (controlClimber.isNewlyTriggering()) {
-                context.takeOwnership(climber);
                 climber.enableSoftLimits(false);
             }
 
@@ -106,7 +99,6 @@ public class DebugOI extends OIFragment {
         } else if (controlClimber.isFinishedTriggering()) {
             climber.stop();
             climber.enableSoftLimits(true);
-            context.releaseOwnership(climber);
         }
 
         if (macropad.getButtonPressed(16)) {
@@ -118,14 +110,11 @@ public class DebugOI extends OIFragment {
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
         if (intakeIn.isNewlyTriggering()) {
-            context.takeOwnership(intake);
             intake.in();
         } else if (intakeOut.isNewlyTriggering()) {
-            context.takeOwnership(intake);
             intake.out();
         } else if (intakeIn.isFinishedTriggering() || intakeOut.isFinishedTriggering()) {
             intake.stop();
-            context.releaseOwnership(intake);
         }
 
         // fine-grained controls for shooter
@@ -133,8 +122,7 @@ public class DebugOI extends OIFragment {
         // press down the intake control button and nudge ths shooter speed up and down
         if (controlShooter.isTriggering()) {
             if (controlShooter.isNewlyTriggering()) {
-                context.takeOwnership(shooter);
-                Robot.shooter.shoot();
+                shooter.shoot();
             }
 
             if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
@@ -142,10 +130,8 @@ public class DebugOI extends OIFragment {
             } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
                 shooter.nudgeDown();
             }
-
         } else if (controlShooter.isFinishedTriggering()) {
             shooter.stop();
-            context.releaseOwnership(shooter);
         }
     }
 }

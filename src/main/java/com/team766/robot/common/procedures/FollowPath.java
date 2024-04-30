@@ -28,6 +28,7 @@ public class FollowPath extends Procedure {
             ReplanningConfig replanningConfig,
             PPHolonomicDriveController controller,
             Drive drive) {
+        super(reservations(drive));
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
@@ -44,8 +45,6 @@ public class FollowPath extends Procedure {
 
     @Override
     public void run(Context context) {
-        context.takeOwnership(drive);
-
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             boolean flip = (alliance.get() == Alliance.Red);

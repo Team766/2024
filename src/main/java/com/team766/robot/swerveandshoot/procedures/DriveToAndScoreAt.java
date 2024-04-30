@@ -5,28 +5,37 @@ import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.ViSIONbase.ScoringPosition;
 import com.team766.framework.Context;
 import com.team766.hal.RobotProvider;
-import com.team766.robot.swerveandshoot.Robot;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.VisionPIDProcedure;
+import com.team766.robot.swerveandshoot.mechanisms.ForwardApriltagCamera;
+import com.team766.robot.swerveandshoot.mechanisms.TempShooter;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class DriveToAndScoreAt extends VisionPIDProcedure {
+    private final Drive drive;
+    private final TempShooter tempShooter;
+    private final ForwardApriltagCamera forwardApriltagCamera;
 
-    private ScoringPosition score;
+    private final ScoringPosition score;
     private double lastX;
     private double lastY;
 
     private double timeLastSeen = -1;
 
-    public DriveToAndScoreAt(ScoringPosition score) {
+    public DriveToAndScoreAt(
+            ScoringPosition score,
+            Drive drive,
+            TempShooter tempShooter,
+            ForwardApriltagCamera forwardApriltagCamera) {
+        super(reservations(drive, tempShooter));
         this.score = score;
+        this.drive = drive;
+        this.tempShooter = tempShooter;
+        this.forwardApriltagCamera = forwardApriltagCamera;
     }
 
     // button needs to be held down
     public void run(final Context context) {
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.tempPickerUpper);
-        context.takeOwnership(Robot.tempShooter);
-
         yPID.setSetpoint(score.y_position);
         xPID.setSetpoint(score.x_position);
 
@@ -61,24 +70,23 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                 double time = RobotProvider.instance.getClock().getTime();
 
                 if (time - timeLastSeen >= 1) {
-                    Robot.drive.controlRobotOriented(0, 0, 0);
+                    drive.controlRobotOriented(0, 0, 0);
                 } else {
                     turnConstant = 0; // needed?
                     yPID.calculate(lastY);
                     xPID.calculate(lastX);
-                    Robot.drive.controlRobotOriented(
-                            yPID.getOutput(), -xPID.getOutput(), turnConstant);
+                    drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
                 }
             }
 
-            Robot.tempShooter.setAngle(score.angle);
-            Robot.tempShooter.runMotors(score.speed);
+            tempShooter.setAngle(score.angle);
+            tempShooter.runMotors(score.speed);
 
-            Robot.drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+            drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
         }
 
         // Stand in for a full shoot procedure
-        Robot.tempShooter.shoot();
+        tempShooter.shoot();
     }
 
     /**
@@ -92,7 +100,7 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
      * @author Max Spier, 1/7/2024
      */
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+        GrayScaleCamera toUse = forwardApriltagCamera.getCamera();
 
         Transform3d robotToTag = toUse.getBestTargetTransform3d(toUse.getBestTrackedTarget());
 

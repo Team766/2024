@@ -4,15 +4,43 @@ import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Context;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.constants.VisionConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Lights;
+import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.mechanisms.Shoulder;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
 public class DriverShootNow extends VisionPIDProcedure {
+
+    private final Drive drive;
+    private final Shoulder shoulder;
+    private final Shooter shooter;
+    private final Intake intake;
+    private final Lights lights;
+    private final ForwardApriltagCamera forwardApriltagCamera;
+
+    public DriverShootNow(
+            Drive drive,
+            Shoulder shoulder,
+            Shooter shooter,
+            Intake intake,
+            Lights lights,
+            ForwardApriltagCamera forwardApriltagCamera) {
+        super(reservations(drive, shoulder, shooter, intake));
+        this.drive = drive;
+        this.shoulder = shoulder;
+        this.shooter = shooter;
+        this.intake = intake;
+        this.lights = lights;
+        this.forwardApriltagCamera = forwardApriltagCamera;
+    }
 
     private int tagId;
     private double angle;
@@ -32,11 +60,8 @@ public class DriverShootNow extends VisionPIDProcedure {
             tagId = -1;
         }
 
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.shoulder);
-
-        Robot.lights.signalStartingShootingProcedure();
-        Robot.drive.stopDrive();
+        lights.signalStartingShootingProcedure();
+        drive.stopDrive();
 
         Transform3d toUse;
         try {
@@ -59,7 +84,7 @@ public class DriverShootNow extends VisionPIDProcedure {
                 > VisionPIDProcedure.scoringPositions
                         .get(VisionPIDProcedure.scoringPositions.size() - 1)
                         .distanceFromCenterApriltag()) {
-            Robot.lights.signalShooterOutOfRange();
+            lights.signalShooterOutOfRange();
         }
         // double power;
         double armAngle;
@@ -73,7 +98,7 @@ public class DriverShootNow extends VisionPIDProcedure {
 
         // Robot.shooter.shoot(power);
 
-        Robot.shoulder.rotate(armAngle);
+        shoulder.rotate(armAngle);
 
         angle = Math.atan2(y, x);
 
@@ -97,23 +122,22 @@ public class DriverShootNow extends VisionPIDProcedure {
                 continue;
             }
 
-            Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
+            drive.controlRobotOriented(0, 0, -anglePID.getOutput());
         }
 
-        Robot.drive.stopDrive();
-        context.releaseOwnership(Robot.drive);
+        drive.stopDrive();
 
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
+        context.waitForConditionOrTimeout(() -> shoulder.isFinished(), 1);
 
-        Robot.lights.signalFinishingShootingProcedure();
-        context.runSync(new DriverShootVelocityAndIntake());
+        lights.signalFinishingShootingProcedure();
+        context.runSync(new DriverShootVelocityAndIntake(shooter, intake));
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
+        GrayScaleCamera toUse = forwardApriltagCamera.getCamera();
 
         return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
     }

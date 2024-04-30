@@ -4,6 +4,7 @@ import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.example.mechanisms.*;
+import com.team766.robot.example.procedures.*;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
@@ -20,6 +21,16 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
-        return AutonomousModes.AUTONOMOUS_MODES;
+        return new AutonomousMode[] {
+            // Add autonomous modes here like this:
+            //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
+            //
+            // If your autonomous procedure has constructor arguments, you can
+            // define one or more different autonomous modes with it like this:
+            //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
+            //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+
+            new AutonomousMode("DoNothing", () -> new DoNothing()),
+        };
     }
 }

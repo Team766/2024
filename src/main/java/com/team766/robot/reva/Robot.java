@@ -14,18 +14,19 @@ import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.procedures.auton_routines.*;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
-    public static Drive drive;
-    public static Climber climber;
-    public static Shoulder shoulder;
-    public static Intake intake;
-    public static Shooter shooter;
+    private Drive drive;
+    private Climber climber;
+    private Shoulder shoulder;
+    private Intake intake;
+    private Shooter shooter;
     // not yet initialized, until we have the camera on the robot and test it.
-    public static ForwardApriltagCamera forwardApriltagCamera;
-    public static NoteCamera noteCamera;
-    public static Lights lights;
+    private ForwardApriltagCamera forwardApriltagCamera;
+    private NoteCamera noteCamera;
+    private Lights lights;
 
     @Override
     public void initializeMechanisms() {
@@ -38,7 +39,7 @@ public class Robot implements RobotConfigurator {
         shooter = new Shooter();
         noteCamera = new NoteCamera();
         try {
-            forwardApriltagCamera = new ForwardApriltagCamera();
+            forwardApriltagCamera = new ForwardApriltagCamera(lights);
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
         }
@@ -46,11 +47,74 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public Procedure createOI() {
-        return new OI();
+        return new OI(drive, shoulder, shooter, intake, climber, lights, forwardApriltagCamera);
     }
 
     @Override
     public AutonomousMode[] getAutonomousModes() {
-        return AutonomousModes.AUTONOMOUS_MODES;
+        return new AutonomousMode[] {
+            // Add autonomous modes here like this:
+            //    new AutonomousMode("NameOfAutonomousMode", () -> new MyAutonomousProcedure()),
+            //
+            // If your autonomous procedure has constructor arguments, you can
+            // define one or more different autonomous modes with it like this:
+            //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
+            //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
+            new AutonomousMode(
+                    "3p Start Amp, Amp and Center Pieces",
+                    () ->
+                            new ThreePieceAmpSide(
+                                    drive,
+                                    shoulder,
+                                    shooter,
+                                    intake,
+                                    climber,
+                                    lights,
+                                    forwardApriltagCamera)),
+            new AutonomousMode(
+                    "4p Start Amp, All Close Pieces",
+                    () ->
+                            new FourPieceAmpSide(
+                                    drive,
+                                    shoulder,
+                                    shooter,
+                                    intake,
+                                    climber,
+                                    lights,
+                                    forwardApriltagCamera)),
+            new AutonomousMode(
+                    "2p Start Source, Bottom Midfield Piece",
+                    () ->
+                            new TwoPieceMidfieldSourceSide(
+                                    drive,
+                                    shoulder,
+                                    shooter,
+                                    intake,
+                                    climber,
+                                    lights,
+                                    forwardApriltagCamera)),
+            new AutonomousMode(
+                    "3p Start Amp, Amp and Top Midfield Pieces",
+                    () ->
+                            new ThreePieceMidfieldAmpSide(
+                                    drive,
+                                    shoulder,
+                                    shooter,
+                                    intake,
+                                    climber,
+                                    lights,
+                                    forwardApriltagCamera)),
+            new AutonomousMode(
+                    "3p Start Center, Amp and Center Pieces",
+                    () ->
+                            new ThreePieceStartCenterTopAndAmp(
+                                    drive,
+                                    shoulder,
+                                    shooter,
+                                    intake,
+                                    climber,
+                                    lights,
+                                    forwardApriltagCamera))
+        };
     }
 }
