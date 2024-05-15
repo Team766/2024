@@ -43,9 +43,9 @@ public class OI extends OIBase {
         this.wrist = wrist;
         this.intake = intake;
 
-        leftJoystick = RobotProvider.instance.getJoystick(this, InputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(this, InputConstants.RIGHT_JOYSTICK);
-        boxopGamepad = RobotProvider.instance.getJoystick(this, InputConstants.BOXOP_GAMEPAD);
+        leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
+        rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
         driverOI = new DriverOI(this, drive, leftJoystick, rightJoystick);
     }
@@ -56,11 +56,10 @@ public class OI extends OIBase {
         // Driver OI: take input from left, right joysticks.  control drive.
         driverOI.run();
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_INTAKE_OUT)
-                .whileTriggering(() -> intake.setGoalBehavior(
-                        new Intake.State(gamePieceType, Intake.MotorState.OUT)))
-                .ifFinishedTriggering(() -> intake.setGoalBehavior(
+        when(leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT))
+                .isTriggering(() -> runIfAvailable(() -> intake.setGoalBehavior(
+                        new Intake.State(gamePieceType, Intake.MotorState.OUT))))
+                .isFinishedTriggering(() -> intake.setGoalBehavior(
                         new Intake.State(gamePieceType, Intake.MotorState.STOP)));
 
         // Respond to boxop commands
@@ -73,101 +72,102 @@ public class OI extends OIBase {
         }
 
         // look for button presses to queue placement of intake/wrist/elevator superstructure
-        if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE).isTriggering()) {
+        if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
             placementPosition = PlacementPosition.NONE;
-        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW).isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
             placementPosition = PlacementPosition.LOW_NODE;
-        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID).isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
             placementPosition = PlacementPosition.MID_NODE;
-        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH).isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
             placementPosition = PlacementPosition.HIGH_NODE;
-        } else if (boxopGamepad
-                .getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)
-                .isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
             placementPosition = PlacementPosition.HUMAN_PLAYER;
         }
 
         // look for button hold to start intake, release to idle intake
-        boxopGamepad
-                .getButton(InputConstants.BUTTON_INTAKE_IN)
-                .whileTriggering(() -> intake.setGoalBehavior(
-                        new Intake.State(gamePieceType, Intake.MotorState.IN)))
-                .ifFinishedTriggering(() -> intake.setGoalBehavior(
-                        new Intake.State(gamePieceType, Intake.MotorState.IDLE)));
+        when(boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN))
+                .isTriggering(() -> runIfAvailable(() -> intake.setGoalBehavior(
+                        new Intake.State(gamePieceType, Intake.MotorState.IN))))
+                .isFinishedTriggering(() -> runIfAvailable(() -> intake.setGoalBehavior(
+                        new Intake.State(gamePieceType, Intake.MotorState.IDLE))));
 
-        boxopGamepad
-                .getButton(InputConstants.BUTTON_INTAKE_STOP)
-                .whileTriggering(() -> intake.setGoalBehavior(
-                        new Intake.State(gamePieceType, Intake.MotorState.STOP)));
+        when(boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP))
+                .isTriggering(() -> runIfAvailable(() -> intake.setGoalBehavior(
+                        new Intake.State(gamePieceType, Intake.MotorState.STOP))));
 
         // look for button hold to extend intake/wrist/elevator superstructure,
         // release to retract
-        boxopGamepad
-                .getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)
-                .ifNewlyTriggering(() -> {
+        when(boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR))
+                .isNewlyTriggering(() -> {
                     switch (placementPosition) {
                         case NONE:
-                            return null;
+                            break;
                         case LOW_NODE:
-                            return new ExtendWristvatorToLow(shoulder, elevator, wrist);
+                            runIfAvailable(
+                                    () -> new ExtendWristvatorToLow(shoulder, elevator, wrist));
+                            break;
                         case MID_NODE:
-                            return new ExtendWristvatorToMid(shoulder, elevator, wrist);
+                            runIfAvailable(
+                                    () -> new ExtendWristvatorToMid(shoulder, elevator, wrist));
+                            break;
                         case HIGH_NODE:
-                            return new ExtendWristvatorToHigh(shoulder, elevator, wrist);
+                            runIfAvailable(
+                                    () -> new ExtendWristvatorToHigh(shoulder, elevator, wrist));
+                            break;
                         case HUMAN_PLAYER:
-                            return new ExtendToHumanWithIntake(
-                                    gamePieceType, shoulder, elevator, wrist, intake);
+                            runIfAvailable(() -> new ExtendToHumanWithIntake(
+                                    gamePieceType, shoulder, elevator, wrist, intake));
+                            break;
                     }
                     // warn, ignore
                     log(
                             Severity.WARNING,
                             "Unexpected placement position: " + placementPosition.toString());
-                    return null;
                 })
-                .ifFinishedTriggering(() -> {
+                .isFinishedTriggering(() -> {
                     if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
-                        return Commands.sequence(
+                        runIfAvailable(() -> Commands.sequence(
                                 new RetractWristvator(shoulder, elevator, wrist),
                                 intake.setGoalBehavior(
-                                        new Intake.State(gamePieceType, Intake.MotorState.IDLE)));
+                                        new Intake.State(gamePieceType, Intake.MotorState.IDLE))));
                     } else {
-                        return new RetractWristvator(shoulder, elevator, wrist);
+                        runIfAvailable(() -> new RetractWristvator(shoulder, elevator, wrist));
+                    }
+                })
+                /* TODO: this is fully procedural style. Do we want this?
+                Validation would be based on line coverage. */
+                // look for manual nudges
+                // we only allow these if the extend elevator trigger is extended
+                .isTriggering(() -> {
+                    // look for elevator nudges
+                    final double elevatorNudgeAxis =
+                            -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
+                    if (Math.abs(elevatorNudgeAxis) > 0.05) {
+                        // tryScheduling(
+                        //     elevator.setGoalBehavior(new
+                        // Elevator.NudgeNoPID(elevatorNudgeAxis)));
+                        if (elevatorNudgeAxis > 0) {
+                            runIfAvailable(() -> elevator.setGoalBehavior(new Elevator.NudgeUp()));
+                        } else {
+                            runIfAvailable(
+                                    () -> elevator.setGoalBehavior(new Elevator.NudgeDown()));
+                        }
+                    }
+                    // look for wrist nudges
+                    final double wristNudgeAxis =
+                            -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
+                    if (Math.abs(wristNudgeAxis) > 0.05) {
+                        // tryScheduling(wrist.setGoalBehavior(new
+                        // Wrist.NudgeNoPID(wristNudgeAxis)));
+                        if (wristNudgeAxis > 0) {
+                            runIfAvailable(() -> wrist.setGoalBehavior(new Wrist.NudgeUp()));
+                        } else {
+                            runIfAvailable(() -> wrist.setGoalBehavior(new Wrist.NudgeDown()));
+                        }
                     }
                 });
 
-        /* TODO: this is fully procedural style. Do we want this?
-        Validation would be based on line coverage. */
-        // look for manual nudges
-        // we only allow these if the extend elevator trigger is extended
-        boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR).whileTriggering(() -> {
-            // look for elevator nudges
-            final double elevatorNudgeAxis =
-                    -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
-            if (Math.abs(elevatorNudgeAxis) > 0.05) {
-                // tryScheduling(
-                //     elevator.setGoalBehavior(new
-                // Elevator.NudgeNoPID(elevatorNudgeAxis)));
-                if (elevatorNudgeAxis > 0) {
-                    tryScheduling(elevator.setGoalBehavior(new Elevator.NudgeUp()));
-                } else {
-                    tryScheduling(elevator.setGoalBehavior(new Elevator.NudgeDown()));
-                }
-            }
-            // look for wrist nudges
-            final double wristNudgeAxis =
-                    -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
-            if (Math.abs(wristNudgeAxis) > 0.05) {
-                // tryScheduling(wrist.setGoalBehavior(new
-                // Wrist.NudgeNoPID(wristNudgeAxis)));
-                if (wristNudgeAxis > 0) {
-                    tryScheduling(wrist.setGoalBehavior(new Wrist.NudgeUp()));
-                } else {
-                    tryScheduling(wrist.setGoalBehavior(new Wrist.NudgeDown()));
-                }
-            }
-        });
-
-        byDefault(elevator.setGoalBehavior(new Elevator.StopElevator()));
-        byDefault(wrist.setGoalBehavior(new Wrist.StopWrist()));
+        byDefault(() -> elevator.setGoalBehavior(new Elevator.StopElevator()));
+        byDefault(() -> wrist.setGoalBehavior(new Wrist.StopWrist()));
     }
 }

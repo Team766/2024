@@ -1,11 +1,8 @@
 package com.team766.robot.swerveandshoot;
 
-import com.team766.framework.Context;
-import com.team766.framework.LaunchedContext;
-import com.team766.framework.Procedure;
+import com.team766.framework.OIBase;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.logging.Category;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.swerveandshoot.mechanisms.NoteCamera;
@@ -17,7 +14,7 @@ import com.team766.robot.swerveandshoot.procedures.*;
  * This class is the glue that binds the controls on the physical operator
  * interface to the code that allow control of the robot.
  */
-public class OI extends Procedure {
+public class OI extends OIBase {
     private final Drive drive;
     private final TempPickerUpper tempPickerUpper;
     private final TempShooter tempShooter;
@@ -34,133 +31,109 @@ public class OI extends Procedure {
             TempShooter tempShooter,
             ForwardApriltagCamera forwardApriltagCamera,
             NoteCamera noteDetectorCamera) {
-        super(reservations(drive, tempPickerUpper, tempShooter));
-
-        loggerCategory = Category.OPERATOR_INTERFACE;
-
         this.drive = drive;
         this.tempPickerUpper = tempPickerUpper;
         this.tempShooter = tempShooter;
         this.forwardApriltagCamera = forwardApriltagCamera;
         this.noteDetectorCamera = noteDetectorCamera;
 
-        joystick0 = RobotProvider.instance.getJoystick(null, 0);
-        joystick1 = RobotProvider.instance.getJoystick(null, 1);
-        joystick2 = RobotProvider.instance.getJoystick(null, 2);
+        joystick0 = RobotProvider.instance.getJoystick(0);
+        joystick1 = RobotProvider.instance.getJoystick(1);
+        joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
-    public void run(final Context context) {
-        LaunchedContext visionProcedure = null;
-        while (true) {
-            // wait for driver station data (and refresh it using the WPILib APIs)
-            context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+    public void dispatch() {
+        // General drive util
 
-            RobotProvider.instance.refreshDriverStationData();
+        when(joystick0.getButton(2)).isNewlyTriggering(() -> {
+            runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        });
 
-            // General drive util
+        /*
+         * The joystick operator will need to hold all of these buttons when using vision to score or pickup a note
+         * The areas that this needs to happen are labled {SCORE1R, SCORE1L, PICKUP}
+         */
 
-            if (joystick0.getButtonPressed(2)) {
-                drive.resetGyro();
-            }
-            if (Math.abs(joystick0.getAxis(0))
-                            + Math.abs(joystick0.getAxis(1))
-                            + Math.abs(joystick1.getAxis(0))
-                    > 0.05) {
-                drive.controlRobotOriented(
-                        joystick0.getAxis(0) * .2,
-                        -joystick0.getAxis(1) * .2,
-                        joystick1.getAxis(0) * .2);
-            } else {
-                drive.stopDrive();
-            }
+        /*
+         * SCORE1R
+         * This is used to drive into the area labled 1R in the maker space.
+         */
+        when(joystick0.getButton(1)).isTriggering(() -> {
+            runIfAvailable(() -> new DriveToAndScoreAt(
+                    ScoringPositions.makerSpace1R, drive, tempShooter, forwardApriltagCamera));
+        });
 
-            /*
-             * The joystick operator will need to hold all of these buttons when using vision to score or pickup a note
-             * The areas that this needs to happen are labled {SCORE1R, SCORE1L, PICKUP}
-             */
+        /*
+         * SCORE1L
+         * This is used to drive into the area labled 1L in the maker space.
+         */
+        when(joystick0.getButton(2)).isTriggering(() -> {
+            runIfAvailable(() -> new DriveToAndScoreAt(
+                    ScoringPositions.makerSpace1L, drive, tempShooter, forwardApriltagCamera));
+        });
 
-            /*
-             * SCORE1R
-             * This is used to drive into the area labled 1R in the maker space.
-             */
-            if (joystick0.getButtonPressed(1)) {
-                // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
-                visionProcedure = context.startAsync(new DriveToAndScoreAt(
-                        ScoringPositions.makerSpace1R, drive, tempShooter, forwardApriltagCamera));
-            }
+        /*
+         * PICKUP
+         * This is used to go to the ring and "pick" it up, or in reality right now just nudge it and pretend like it was picked up
+         */
 
-            if (joystick0.getButtonReleased(1)) {
-                visionProcedure.cancel();
-            }
+        when(joystick1.getButton(1)).isTriggering(() -> {
+            runIfAvailable(() -> new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
+        });
 
-            /*
-             * SCORE1L
-             * This is used to drive into the area labled 1L in the maker space.
-             */
-            if (joystick0.getButtonPressed(2)) {
-                // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
-                visionProcedure = context.startAsync(new DriveToAndScoreAt(
-                        ScoringPositions.makerSpace1L, drive, tempShooter, forwardApriltagCamera));
-            }
+        // if (joystick1.getButton(1)) {
+        //     try {
+        //         switch (Robot.noteUtil.goToAndPickupNote()) {
+        //             case NO_RING_IN_VIEW:
+        //                 Robot.lights.signalNoRing();
+        //                 break;
+        //             case RING_IN_INTAKE:
+        //                 Robot.lights.signalNoteInIntake();
+        //                 break;
+        //             case RING_IN_VIEW:
+        //                 Robot.lights.signalRing();
+        //                 break;
+        //             default:
+        //                 Robot.lights.turnLEDsOff();
+        //                 break;
+        //         }
 
-            if (joystick0.getButtonReleased(2)) {
-                visionProcedure.cancel();
-            }
+        //     } catch (AprilTagGeneralCheckedException e) {
+        //         Robot.lights.signalNoRing();
+        //     }
+        // }
 
-            /*
-             * PICKUP
-             * This is used to go to the ring and "pick" it up, or in reality right now just nudge it and pretend like it was picked up
-             */
+        /*
+         * This is used to display the status of the ring viewer if the operator does not want to go to the ring
+         */
+        // if (joystick1.getButton(2)) {
+        //     switch (Robot.noteUtil.getStatus()) {
+        //         case NO_RING_IN_VIEW:
+        //             Robot.lights.signalNoRing();
+        //             break;
+        //         case RING_IN_INTAKE:
+        //             Robot.lights.signalNoteInIntake();
+        //             break;
+        //         case RING_IN_VIEW:
+        //             Robot.lights.signalRing();
+        //             break;
+        //         default:
+        //             Robot.lights.turnLEDsOff();
+        //             break;
+        //     }
+        // }
 
-            if (joystick1.getButtonPressed(1)) {
-                visionProcedure = context.startAsync(
-                        new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
-            }
+        when(Math.abs(joystick0.getAxis(0))
+                                + Math.abs(joystick0.getAxis(1))
+                                + Math.abs(joystick1.getAxis(0))
+                        > 0.05)
+                .isTriggering(() -> {
+                    runIfAvailable(() -> drive.setGoalBehavior(new Drive.RobotOrientedVelocity(
+                            joystick0.getAxis(0) * .2,
+                            -joystick0.getAxis(1) * .2,
+                            joystick1.getAxis(0) * .2)));
+                });
 
-            if (joystick1.getButtonReleased(1)) {
-                visionProcedure.cancel();
-            }
-            // if (joystick1.getButton(1)) {
-            //     try {
-            //         switch (Robot.noteUtil.goToAndPickupNote()) {
-            //             case NO_RING_IN_VIEW:
-            //                 Robot.lights.signalNoRing();
-            //                 break;
-            //             case RING_IN_INTAKE:
-            //                 Robot.lights.signalNoteInIntake();
-            //                 break;
-            //             case RING_IN_VIEW:
-            //                 Robot.lights.signalRing();
-            //                 break;
-            //             default:
-            //                 Robot.lights.turnLEDsOff();
-            //                 break;
-            //         }
-
-            //     } catch (AprilTagGeneralCheckedException e) {
-            //         Robot.lights.signalNoRing();
-            //     }
-            // }
-
-            /*
-             * This is used to display the status of the ring viewer if the operator does not want to go to the ring
-             */
-            // if (joystick1.getButton(2)) {
-            //     switch (Robot.noteUtil.getStatus()) {
-            //         case NO_RING_IN_VIEW:
-            //             Robot.lights.signalNoRing();
-            //             break;
-            //         case RING_IN_INTAKE:
-            //             Robot.lights.signalNoteInIntake();
-            //             break;
-            //         case RING_IN_VIEW:
-            //             Robot.lights.signalRing();
-            //             break;
-            //         default:
-            //             Robot.lights.turnLEDsOff();
-            //             break;
-            //     }
-            // }
-        }
+        byDefault(() -> drive.setGoalBehavior(new Drive.StopDrive()));
     }
 }

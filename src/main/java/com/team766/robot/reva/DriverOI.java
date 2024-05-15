@@ -28,9 +28,6 @@ public class DriverOI extends OIFragment {
     @AutoLogOutput
     protected boolean isCross = false;
 
-    private final InlineCondition isCrossCondition = new InlineCondition();
-    private final InlineCondition movingJoysticks = new InlineCondition();
-
     public DriverOI(
             RuleEngineProvider oi,
             Drive drive,
@@ -55,28 +52,31 @@ public class DriverOI extends OIFragment {
     @Override
     protected void dispatch() {
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_GYRO)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        when(leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO)).isNewlyTriggering(() -> {
+            runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        });
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_POS)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        when(leftJoystick.getButton(InputConstants.BUTTON_RESET_POS)).isNewlyTriggering(() -> {
+            runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        });
 
-        // if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
+        // when(rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS)).isNewlyTriggering(() ->
+        // {
         //     isCross = !isCross;
-        // }
-        // isCrossCondition.update(isCross).whileTriggering(
-        //     () -> drive.setGoalBehavior(new Drive.SetCross()));
+        // });
+        // when(isCross).isTriggering(() -> {
+        //     runIfAvailable(() -> drive.setGoalBehavior(new Drive.SetCross()));
+        // });
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_TARGET_SHOOTER)
-                .whileTriggering(() -> new DriverShootNow(
-                        drive, shoulder, shooter, intake, lights, forwardApriltagCamera));
+        when(leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)).isTriggering(() -> {
+            runIfAvailable(() -> new DriverShootNow(
+                    drive, shoulder, shooter, intake, lights, forwardApriltagCamera));
+        });
 
-        rightJoystick
-                .getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)
-                .whileTriggering(() -> new DriverShootVelocityAndIntake(shooter, intake));
+        when(rightJoystick.getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE))
+                .isTriggering(() -> {
+                    runIfAvailable(() -> new DriverShootVelocityAndIntake(shooter, intake));
+                });
 
         // Negative because forward is negative in driver station
         final double leftJoystickX =
@@ -92,19 +92,14 @@ public class DriverOI extends OIFragment {
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
         // Moves the robot if there are joystick inputs
-        movingJoysticks
-                .update(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                        > 0)
-                .whileTriggering(() -> {
-                    double drivingCoefficient = 1;
+        when(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0)
+                .isTriggering(() -> {
                     // If a button is pressed, drive is just fine adjustment
-                    if (rightJoystick
-                            .getButton(InputConstants.BUTTON_FINE_DRIVING)
-                            .isTriggering()) {
-                        drivingCoefficient = ControlConstants.FINE_DRIVING_COEFFICIENT;
-                    }
-
-                    return drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
+                    final double drivingCoefficient =
+                            rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
+                                    ? ControlConstants.FINE_DRIVING_COEFFICIENT
+                                    : 1;
+                    runIfAvailable(() -> drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
@@ -116,10 +111,10 @@ public class DriverOI extends OIFragment {
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             rightJoystickY,
-                                            ControlConstants.ROTATIONAL_CURVE_POWER))));
+                                            ControlConstants.ROTATIONAL_CURVE_POWER)))));
                 });
 
-        byDefault(drive.setGoalBehavior(new Drive.SetCross()));
+        byDefault(() -> drive.setGoalBehavior(new Drive.SetCross()));
     }
 
     /**

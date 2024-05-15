@@ -1,157 +1,82 @@
 package com.team766.framework.conditions;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 public class RulesMixin implements RuleEngineProvider {
-    interface ManagedCondition {
-        void invalidate();
-    }
 
-    private class ConditionBase extends Condition implements ManagedCondition {
-        private boolean valid = false;
-        private boolean triggering = false;
-        private boolean newlyTriggering = false;
-        private boolean finishedTriggering = false;
+    public class Condition {
+        private final boolean triggeringNow;
 
-        protected ConditionBase() {
-            engine.registerCondition(this);
+        public Condition(boolean triggeringNow) {
+            this.triggeringNow = triggeringNow;
         }
 
-        @Override
-        public void invalidate() {
-            valid = false;
+        private boolean prevTriggering(Class<?> handle) {
+            return prevConditions.getOrDefault(handle, false);
         }
 
-        protected void update(final boolean triggeringNow) {
-            if (valid) {
-                throw new IllegalStateException("update() called multiple times on this Condition");
-            }
-
-            newlyTriggering = !triggering && triggeringNow;
-            finishedTriggering = triggering && !triggeringNow;
-            triggering = triggeringNow;
-            valid = true;
-        }
-
-        @Override
-        protected final boolean isTriggering() {
-            if (!valid) {
+        private boolean isTriggering(Class<?> handle) {
+            var result = conditions.put(handle, triggeringNow);
+            if (result != null) {
                 throw new IllegalStateException(
-                        "Call update() on this Condition before calling isTriggering()");
+                        "A single callback object was used in two different conditions. This is not supported.");
             }
-            return triggering;
+            return triggeringNow;
         }
 
-        @Override
-        protected final boolean isNewlyTriggering() {
-            if (!valid) {
-                throw new IllegalStateException(
-                        "Call update() on this Condition before calling isNewlyTriggering()");
+        private boolean isNewlyTriggering(Class<?> handle) {
+            return !prevTriggering(handle) && isTriggering(handle);
+        }
+
+        private boolean isFinishedTriggering(Class<?> handle) {
+            return prevTriggering(handle) && !isTriggering(handle);
+        }
+
+        public Condition isNewlyTriggering(Runnable callback) {
+            if (isNewlyTriggering(callback.getClass())) {
+                callback.run();
             }
-            return newlyTriggering;
+            return this;
         }
 
-        @Override
-        protected final boolean isFinishedTriggering() {
-            if (!valid) {
-                throw new IllegalStateException(
-                        "Call update() on this Condition before calling isFinishedTriggering()");
+        public Condition isFinishedTriggering(Runnable callback) {
+            if (isFinishedTriggering(callback.getClass())) {
+                callback.run();
             }
-            return finishedTriggering;
+            return this;
         }
 
-        @Override
-        protected RuleEngine getRuleEngine() {
-            return engine;
-        }
-    }
-
-    public class InlineCondition {
-        private ConditionBase base = new ConditionBase();
-
-        public InlineCondition() {}
-
-        // Method redefined to make it public.
-        public Condition update(boolean triggeringNow) {
-            base.update(triggeringNow);
-            return base;
-        }
-    }
-
-    public class DeclaredCondition extends ConditionBase {
-        private final BooleanSupplier condition;
-
-        public DeclaredCondition(BooleanSupplier condition) {
-            this.condition = condition;
+        public Condition isTriggering(Runnable callback) {
+            if (isTriggering(callback.getClass())) {
+                callback.run();
+            }
+            return this;
         }
 
-        @Override
-        public void invalidate() {
-            super.invalidate();
-
-            super.update(condition.getAsBoolean());
-        }
-    }
-
-    public class ValueCondition<Value> implements ManagedCondition {
-        private final Supplier<Value> valueSupplier;
-        private Value value;
-        private Value prevValue;
-
-        public ValueCondition(Supplier<Value> valueSupplier) {
-            this.valueSupplier = valueSupplier;
-
-            engine.registerCondition(this);
-        }
-
-        @Override
-        public void invalidate() {
-            prevValue = value;
-            value = valueSupplier.get();
-        }
-
-        public Condition condition(Predicate<Value> predicate) {
-            return new Condition() {
-                private boolean prevTriggering() {
-                    return predicate.test(prevValue);
-                }
-
-                @Override
-                protected boolean isTriggering() {
-                    return predicate.test(value);
-                }
-
-                @Override
-                protected boolean isNewlyTriggering() {
-                    return !prevTriggering() && isTriggering();
-                }
-
-                @Override
-                protected boolean isFinishedTriggering() {
-                    return prevTriggering() && !isTriggering();
-                }
-
-                @Override
-                protected RuleEngine getRuleEngine() {
-                    return engine;
-                }
-            };
-        }
-
-        public Condition onEquals(Value value) {
-            return condition(value::equals);
+        public Condition isNotTriggering(Runnable callback) {
+            if (!isTriggering(callback.getClass())) {
+                callback.run();
+            }
+            return this;
         }
     }
 
     private final RuleEngine engine;
-    public final Condition neverCondition;
+    private HashMap<Class<?>, Boolean> prevConditions = new HashMap<>();
+    private HashMap<Class<?>, Boolean> conditions = new HashMap<>();
 
     protected RulesMixin(RuleEngineProvider engine) {
         this.engine = engine.getRuleEngine();
-        neverCondition = this.engine.neverCondition;
+        this.engine.registerStartFrameCallback(() -> {
+            prevConditions = conditions;
+            conditions = new HashMap<>();
+        });
+    }
+
+    public Condition when(boolean triggeringNow) {
+        return new Condition(triggeringNow);
     }
 
     @Override
@@ -159,7 +84,11 @@ public class RulesMixin implements RuleEngineProvider {
         return engine;
     }
 
-    protected void byDefault(Command behavior) {
+    protected void runIfAvailable(Supplier<Command> behavior) {
+        engine.tryScheduling(behavior);
+    }
+
+    protected void byDefault(Supplier<Command> behavior) {
         engine.tryScheduling(behavior);
     }
 }

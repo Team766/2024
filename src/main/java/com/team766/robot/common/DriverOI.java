@@ -20,9 +20,6 @@ public class DriverOI extends OIFragment {
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
 
-    private final InlineCondition isCrossCondition = new InlineCondition();
-    private final InlineCondition movingJoysticks = new InlineCondition();
-
     public DriverOI(
             RuleEngineProvider oi,
             Drive drive,
@@ -48,36 +45,30 @@ public class DriverOI extends OIFragment {
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_GYRO)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        when(leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO)).isNewlyTriggering(() -> {
+            runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        });
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_POS)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        when(leftJoystick.getButton(InputConstants.BUTTON_RESET_POS)).isNewlyTriggering(() -> {
+            runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        });
 
         // Sets the wheels to the cross position if the cross button is pressed
-        rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).ifNewlyTriggering(() -> {
+        when(rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS)).isNewlyTriggering(() -> {
             state.isCross = !state.isCross;
         });
 
-        isCrossCondition
-                .update(state.isCross)
-                .whileTriggering(() -> drive.setGoalBehavior(new Drive.SetCross()));
+        when(state.isCross).isTriggering(() -> drive.setGoalBehavior(new Drive.SetCross()));
 
         // Moves the robot if there are joystick inputs
-        movingJoysticks
-                .update(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                        > 0)
-                .whileTriggering(() -> {
-                    double drivingCoefficient = 1;
+        when(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0)
+                .isTriggering(() -> {
                     // If a button is pressed, drive is just fine adjustment
-                    rightJoystick
-                            .getButton(InputConstants.BUTTON_FINE_DRIVING)
-                            .whileTriggering(() -> {
-                                drivingCoefficient = ControlConstants.FINE_DRIVING_COEFFICIENT;
-                            });
-                    return drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
+                    final double drivingCoefficient =
+                            rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
+                                    ? ControlConstants.FINE_DRIVING_COEFFICIENT
+                                    : 1;
+                    runIfAvailable(() -> drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
@@ -89,10 +80,10 @@ public class DriverOI extends OIFragment {
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             rightJoystickY,
-                                            ControlConstants.ROTATIONAL_CURVE_POWER))));
+                                            ControlConstants.ROTATIONAL_CURVE_POWER)))));
                 });
 
-        byDefault(drive.setGoalBehavior(new Drive.SetCross()));
+        byDefault(() -> drive.setGoalBehavior(new Drive.SetCross()));
     }
 
     /**

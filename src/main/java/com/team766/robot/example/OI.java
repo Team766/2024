@@ -1,38 +1,26 @@
 package com.team766.robot.example;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.OIBase;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.logging.Category;
 import com.team766.robot.example.procedures.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the code that allow control of the robot.
  */
-public class OI extends Procedure {
+public class OI extends OIBase {
     private JoystickReader joystick0;
     private JoystickReader joystick1;
     private JoystickReader joystick2;
 
     public OI() {
-        super(NO_RESERVATIONS);
-
-        loggerCategory = Category.OPERATOR_INTERFACE;
-
-        joystick0 = RobotProvider.instance.getJoystick(null, 0);
-        joystick1 = RobotProvider.instance.getJoystick(null, 1);
-        joystick2 = RobotProvider.instance.getJoystick(null, 2);
+        joystick0 = RobotProvider.instance.getJoystick(0);
+        joystick1 = RobotProvider.instance.getJoystick(1);
+        joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
-    public void run(final Context context) {
-        while (true) {
-            // wait for driver station data (and refresh it using the WPILib APIs)
-            context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-            RobotProvider.instance.refreshDriverStationData();
-
-            // Add driver controls here.
-        }
+    public void dispatch() {
+        // Add driver controls here.
     }
 }

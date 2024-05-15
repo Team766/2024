@@ -26,6 +26,7 @@ public class OI extends OIBase {
     private final DriverOI driverOI;
     private final DebugOI debugOI;
     private final BoxOpOI boxOpOI;
+    private final Intake intake;
 
     public OI(
             Drive drive,
@@ -37,10 +38,10 @@ public class OI extends OIBase {
             ForwardApriltagCamera forwardAprilTagCamera) {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
-        leftJoystick = RobotProvider.instance.getJoystick(null, InputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(null, InputConstants.RIGHT_JOYSTICK);
-        macropad = RobotProvider.instance.getJoystick(null, InputConstants.MACROPAD);
-        gamepad = RobotProvider.instance.getJoystick(null, InputConstants.BOXOP_GAMEPAD_X);
+        leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
+        rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
+        gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
         driverOI = new DriverOI(
                 this,
@@ -54,6 +55,8 @@ public class OI extends OIBase {
                 rightJoystick);
         debugOI = new DebugOI(macropad, shoulder, climber, intake, shooter);
         boxOpOI = new BoxOpOI(gamepad, shoulder, intake, shooter, climber, lights);
+
+        this.intake = intake;
     }
 
     @Override

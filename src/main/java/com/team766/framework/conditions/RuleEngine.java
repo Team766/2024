@@ -7,39 +7,18 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class RuleEngine {
     private final Set<Subsystem> reservedSubsystems = new HashSet<>();
-    private final List<RulesMixin.ManagedCondition> conditions =
-            new LinkedList<RulesMixin.ManagedCondition>();
+    private final List<Runnable> startFrameCallbacks = new LinkedList<>();
 
-    public final Condition neverCondition = new Condition() {
-        @Override
-        protected boolean isTriggering() {
-            return false;
-        }
-
-        @Override
-        protected boolean isNewlyTriggering() {
-            return false;
-        }
-
-        @Override
-        protected boolean isFinishedTriggering() {
-            return false;
-        }
-
-        @Override
-        protected RuleEngine getRuleEngine() {
-            return RuleEngine.this;
-        }
-    };
-
-    void registerCondition(RulesMixin.ManagedCondition condition) {
-        conditions.add(condition);
+    void registerStartFrameCallback(Runnable condition) {
+        startFrameCallbacks.add(condition);
     }
 
-    void tryScheduling(Command behavior) {
+    void tryScheduling(Supplier<Command> behaviorSupplier) {
+        final var behavior = behaviorSupplier.get();
         if (behavior == null) {
             return;
         }
@@ -50,8 +29,8 @@ public class RuleEngine {
     }
 
     void startFrame() {
-        for (var condition : conditions) {
-            condition.invalidate();
+        for (var callback : startFrameCallbacks) {
+            callback.run();
         }
     }
 }

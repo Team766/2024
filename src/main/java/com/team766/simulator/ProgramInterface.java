@@ -89,7 +89,5 @@ public class ProgramInterface {
     public static BeaconReader.BeaconPose[] beacons =
             initializeArray(NUM_BEACONS, BeaconReader.BeaconPose::new);
 
-    // TODO: the argument to the MockJoystick constructor should not be null
-    public static final MockJoystick[] joystickChannels =
-            initializeArray(6, () -> new MockJoystick(null));
+    public static final MockJoystick[] joystickChannels = initializeArray(6, MockJoystick::new);
 }
