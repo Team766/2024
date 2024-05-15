@@ -45,11 +45,11 @@ public class PickupNote extends VisionPIDProcedure {
 
                 if (Math.abs(power) > 0.045) {
                     // x needs inverted if camera is on front (found out through tests)
-                    drive.controlRobotOriented(power, 0, 0);
+                    drive.setGoal(new Drive.RobotOrientedVelocity(power, 0, 0));
                 } else {
                     // Run intake the whole time
                     tempPickerUpper.runIntake();
-                    drive.controlRobotOriented(0, -0.3, 0);
+                    drive.setGoal(new Drive.RobotOrientedVelocity(0, -0.3, 0));
                 }
 
                 // double pitchInDegrees = Robot.noteDetectorCamera.getCamera().getPitchOfRing();

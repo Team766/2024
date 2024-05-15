@@ -7,14 +7,14 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework.Subsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
  * Basic elevator mechanism.  Used in conjunction with the {@link Intake} and {@link Wrist}.
@@ -22,33 +22,54 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Mechanism {
-    public enum Position {
+public class Elevator extends Subsystem<Elevator.State, Elevator.Goal> {
+    /**
+     * @param height the current height of the elevator, in inches ('Murica).
+     */
+    public record State(@AutoLogOutput double rotations, @AutoLogOutput double height) {
+        public boolean isNearTo(MoveToPosition position) {
+            return isNearTo(position.height());
+        }
 
+        public boolean isNearTo(double position) {
+            return Math.abs(position - height) < NEAR_THRESHOLD;
+        }
+    }
+
+    public sealed interface Goal {}
+
+    public record StopElevator() implements Goal {}
+
+    public record NudgeNoPID(double value) implements Goal {}
+
+    public record NudgeUp() implements Goal {}
+
+    public record NudgeDown() implements Goal {}
+
+    /**
+     * Moves the elevator to a specific position (in inches).
+     */
+    public record MoveToPosition(double height) implements Goal {
         /** Elevator is fully retracted.  Starting position. */
-        RETRACTED(0),
+        public static final MoveToPosition RETRACTED = new MoveToPosition(0);
+
         /** Elevator is the appropriate height to place game pieces at the low node. */
-        LOW(0),
+        public static final MoveToPosition LOW = new MoveToPosition(0);
+
         /** Elevator is the appropriate height to place game pieces at the mid node. */
-        MID(18),
+        public static final MoveToPosition MID = new MoveToPosition(18);
+
         /** Elevator is at appropriate height to place game pieces at the high node. */
-        HIGH(40),
+        public static final MoveToPosition HIGH = new MoveToPosition(40);
+
         /** Elevator is at appropriate height to grab cubes from the human player. */
-        HUMAN_CUBES(39),
+        public static final MoveToPosition HUMAN_CUBES = new MoveToPosition(39);
+
         /** Elevator is at appropriate height to grab cones from the human player. */
-        HUMAN_CONES(40),
+        public static final MoveToPosition HUMAN_CONES = new MoveToPosition(40);
+
         /** Elevator is fully extended. */
-        EXTENDED(40);
-
-        private final double height;
-
-        Position(double position) {
-            this.height = position;
-        }
-
-        private double getHeight() {
-            return height;
-        }
+        public static final MoveToPosition EXTENDED = new MoveToPosition(40);
     }
 
     private static final double NUDGE_INCREMENT = 2.0;
@@ -66,8 +87,6 @@ public class Elevator extends Mechanism {
     private final ValueProvider<Double> maxVelocity;
     private final ValueProvider<Double> minOutputVelocity;
     private final ValueProvider<Double> maxAccel;
-
-    private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 
     /**
      * Contructs a new Elevator.
@@ -92,7 +111,7 @@ public class Elevator extends Mechanism {
         leftMotor
                 .getEncoder()
                 .setPosition(
-                        EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
+                        EncoderUtils.elevatorHeightToRotations(MoveToPosition.RETRACTED.height()));
 
         pidController = leftMotor.getPIDController();
         pidController.setFeedbackDevice(leftMotor.getEncoder());
@@ -106,97 +125,65 @@ public class Elevator extends Mechanism {
         maxAccel = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_ACCEL);
     }
 
-    public double getRotations() {
-        return leftMotor.getEncoder().getPosition();
-    }
-
-    /**
-     * Returns the current height of the elevator, in inches ('Murica).
-     */
-    public double getHeight() {
-        return EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition());
-    }
-
-    public boolean isNearTo(Position position) {
-        return isNearTo(position.getHeight());
-    }
-
-    public boolean isNearTo(double position) {
-        return Math.abs(position - getHeight()) < NEAR_THRESHOLD;
-    }
-
-    public void nudgeNoPID(double value) {
-        checkContextOwnership();
-        double clampedValue = MathUtil.clamp(value, -1, 1);
-        clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
-        leftMotor.set(clampedValue);
-    }
-
-    public void stopElevator() {
-        checkContextOwnership();
-        leftMotor.set(0);
-    }
-
-    public void nudgeUp() {
-        System.err.println("Nudging up.");
-
-        double height = getHeight();
-        // NOTE: this could artificially limit nudge range
-        double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
-
-        moveTo(targetHeight);
-    }
-
-    public void nudgeDown() {
-        double height = getHeight();
-        // NOTE: this could artificially limit nudge range
-        double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
-        moveTo(targetHeight);
-    }
-
-    /**
-     * Moves the elevator to a pre-set {@link Position}.
-     */
-    public void moveTo(Position position) {
-        moveTo(position.getHeight());
-    }
-
-    /**
-     * Moves the elevator to a specific position (in inches).
-     */
-    public void moveTo(double position) {
-        checkContextOwnership();
-
-        System.err.println("Setting target position to " + position);
-        // set the PID controller values with whatever the latest is in the config
-        pidController.setP(pGain.get());
-        pidController.setI(iGain.get());
-        pidController.setD(dGain.get());
-        // pidController.setFF(ffGain.get());
-        double ff = ffGain.get();
-
-        pidController.setOutputRange(-0.4, 0.4);
-
-        // pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-        // pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
-        // pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
-        // pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
-
-        // convert the desired target degrees to encoder units
-        double rotations = EncoderUtils.elevatorHeightToRotations(position);
-
-        // SmartDashboard.putNumber("[ELEVATOR] ff", ff);
-        SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
-
-        // set the reference point for the wrist
-        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+    @Override
+    protected State updateState() {
+        return new State(
+                leftMotor.getEncoder().getPosition(),
+                EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition()));
     }
 
     @Override
-    public void run() {
-        if (rateLimiter.next()) {
-            SmartDashboard.putNumber("[ELEVATOR] Height", getHeight());
-            SmartDashboard.putNumber("[ELEVATOR] Rotations", getRotations());
+    protected void dispatch(State state, Goal goal) {
+        switch (goal) {
+            case NudgeNoPID nudge -> {
+                double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
+                clampedValue *=
+                        NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
+                leftMotor.set(clampedValue);
+            }
+            case StopElevator s -> {
+                leftMotor.set(0);
+            }
+            case NudgeUp n -> {
+                // NOTE: this could artificially limit nudge range
+                double targetHeight =
+                        Math.min(
+                                state.height() + NUDGE_INCREMENT, MoveToPosition.EXTENDED.height());
+
+                setGoal(new MoveToPosition(targetHeight));
+            }
+            case NudgeDown n -> {
+                // NOTE: this could artificially limit nudge range
+                double targetHeight =
+                        Math.max(
+                                state.height() - NUDGE_INCREMENT,
+                                MoveToPosition.RETRACTED.height());
+                setGoal(new MoveToPosition(targetHeight));
+            }
+            case MoveToPosition position -> {
+                // set the PID controller values with whatever the latest is in the config
+                pidController.setP(pGain.get());
+                pidController.setI(iGain.get());
+                pidController.setD(dGain.get());
+                // pidController.setFF(ffGain.get());
+                double ff = ffGain.get();
+
+                pidController.setOutputRange(-0.4, 0.4);
+
+                // pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+                // pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
+                // pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
+                // pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
+
+                // convert the desired target degrees to encoder units
+                double rotations = EncoderUtils.elevatorHeightToRotations(position.height());
+
+                // SmartDashboard.putNumber("[ELEVATOR] ff", ff);
+                SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
+
+                // set the reference point for the wrist
+                pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+            }
         }
     }
 }

@@ -58,8 +58,8 @@ public class GyroBalance extends Procedure {
     }
 
     private double getAbsoluteTilt() {
-        final double pitch = drive.getPitch();
-        final double roll = drive.getRoll();
+        final double pitch = drive.getState().pitch();
+        final double roll = drive.getState().roll();
         return Math.toDegrees(
                 Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch)))));
     }
@@ -69,7 +69,7 @@ public class GyroBalance extends Procedure {
         context.runSync(new ExtendWristvatorToMid(shoulder, elevator, wrist));
 
         // initialY is robot y position when balancing starts
-        final double initialY = drive.getCurrentPosition().getY();
+        final double initialY = drive.getState().currentPosition().getY();
         // Sets movement direction towards desired charge station.
         switch (alliance) {
             case Red:
@@ -117,7 +117,7 @@ public class GyroBalance extends Procedure {
         while (true) {
             context.waitFor(() -> getAbsoluteTilt() < LEVEL);
 
-            context.runSync(new SetCross(drive));
+            drive.setGoal(new Drive.SetCross());
             context.waitForSeconds(1);
             if (getAbsoluteTilt() < LEVEL) {
                 // State: RAMP_LEVEL
@@ -144,6 +144,6 @@ public class GyroBalance extends Procedure {
         }
 
         // Drives the robot with the calculated speed and direction
-        drive.controlFieldOriented(0, driveSpeed, 0);
+        drive.setGoal(new Drive.FieldOrientedVelocity(0, driveSpeed, 0));
     }
 }

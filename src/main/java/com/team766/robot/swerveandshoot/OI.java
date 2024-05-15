@@ -44,9 +44,9 @@ public class OI extends Procedure {
         this.forwardApriltagCamera = forwardApriltagCamera;
         this.noteDetectorCamera = noteDetectorCamera;
 
-        joystick0 = RobotProvider.instance.getJoystick(0);
-        joystick1 = RobotProvider.instance.getJoystick(1);
-        joystick2 = RobotProvider.instance.getJoystick(2);
+        joystick0 = RobotProvider.instance.getJoystick(null, 0);
+        joystick1 = RobotProvider.instance.getJoystick(null, 1);
+        joystick2 = RobotProvider.instance.getJoystick(null, 2);
     }
 
     public void run(final Context context) {

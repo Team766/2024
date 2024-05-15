@@ -67,17 +67,21 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     }
                 }
 
-                drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+                drive.setGoal(
+                        new Drive.RobotOrientedVelocity(
+                                yPID.getOutput(), -xPID.getOutput(), turnConstant));
             } catch (AprilTagGeneralCheckedException e) {
                 double time = RobotProvider.instance.getClock().getTime();
 
                 if (time - timeLastSeen >= 1) {
-                    drive.controlRobotOriented(0, 0, 0);
+                    drive.setGoal(new Drive.RobotOrientedVelocity(0, 0, 0));
                 } else {
                     turnConstant = 0; // needed?
                     yPID.calculate(lastY);
                     xPID.calculate(lastX);
-                    drive.controlRobotOriented(yPID.getOutput(), -xPID.getOutput(), turnConstant);
+                    drive.setGoal(
+                            new Drive.RobotOrientedVelocity(
+                                    yPID.getOutput(), -xPID.getOutput(), turnConstant));
                 }
             }
 

@@ -1,4 +1,5 @@
 plugins {
+    id 'eclipse'
     id "java"
     id 'java-library'
     id 'maven-publish'
@@ -14,6 +15,18 @@ def protobufVersion = '3.21.6'
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Enable support for pattern matching switch statements.
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add '--enable-preview'
+}
+eclipse {
+    jdt {
+        // Use JDK 21 in VSCode (pattern matching is no longer a preview feature in JDK 21).
+        // Enabling previews with JDK 17 in VSCode seems to disrupt parts of the language server.
+        sourceCompatibility = 21
+    }
 }
 
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"

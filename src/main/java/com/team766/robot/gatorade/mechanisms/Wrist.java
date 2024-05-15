@@ -6,10 +6,9 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework.Subsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
@@ -22,35 +21,51 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * field, human player station), at which point the {@link Intake} can grab or release the game
  * piece as appropriate.
  */
-public class Wrist extends Mechanism {
+public class Wrist extends Subsystem<Wrist.State, Wrist.Goal> {
 
     /**
-     * Pre-set positions for the wrist.
+     * @param angle the current angle of the wrist.
      */
-    public enum Position {
+    public record State(double rotations, double angle) {
+        public boolean isNearTo(RotateToPosition position) {
+            return isNearTo(position.angle());
+        }
 
+        public boolean isNearTo(double angle) {
+            return Math.abs(angle - this.angle()) < NEAR_THRESHOLD;
+        }
+    }
+
+    public sealed interface Goal {}
+
+    public record NudgeNoPID(double value) implements Goal {}
+
+    public record StopWrist() implements Goal {}
+
+    public record NudgeUp() implements Goal {}
+
+    public record NudgeDown() implements Goal {}
+
+    /**
+     * Starts rotating the wrist to the specified angle.
+     */
+    public record RotateToPosition(double angle) implements Goal {
         /** Wrist is in top position.  Starting position. */
-        TOP(-180),
+        public static final RotateToPosition TOP = new RotateToPosition(-180);
+
         /** Wrist is in the position for moving around the field. */
-        RETRACTED(-175.0),
+        public static final RotateToPosition RETRACTED = new RotateToPosition(-175.0);
+
         /** Wrist is level with ground. */
-        LEVEL(-65),
-        HIGH_NODE(-20),
-        MID_NODE(-25.5),
-        HUMAN_CONES(-4),
-        HUMAN_CUBES(-8),
+        public static final RotateToPosition LEVEL = new RotateToPosition(-65);
+
+        public static final RotateToPosition HIGH_NODE = new RotateToPosition(-20);
+        public static final RotateToPosition MID_NODE = new RotateToPosition(-25.5);
+        public static final RotateToPosition HUMAN_CONES = new RotateToPosition(-4);
+        public static final RotateToPosition HUMAN_CUBES = new RotateToPosition(-8);
+
         /** Wrist is fully down. **/
-        BOTTOM(60);
-
-        private final double angle;
-
-        Position(double angle) {
-            this.angle = angle;
-        }
-
-        private double getAngle() {
-            return angle;
-        }
+        public static final RotateToPosition BOTTOM = new RotateToPosition(60);
     }
 
     private static final double NUDGE_INCREMENT = 5.0;
@@ -64,7 +79,6 @@ public class Wrist extends Mechanism {
     private final ValueProvider<Double> iGain;
     private final ValueProvider<Double> dGain;
     private final ValueProvider<Double> ffGain;
-    private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 
     /**
      * Contructs a new Wrist.
@@ -78,7 +92,7 @@ public class Wrist extends Mechanism {
         motor = (CANSparkMax) halMotor;
 
         motor.getEncoder()
-                .setPosition(EncoderUtils.wristDegreesToRotations(Position.TOP.getAngle()));
+                .setPosition(EncoderUtils.wristDegreesToRotations(RotateToPosition.TOP.angle()));
 
         // stash the PIDController for convenience.  will update the PID values to the latest from
         // the config
@@ -93,92 +107,54 @@ public class Wrist extends Mechanism {
         ffGain = ConfigFileReader.getInstance().getDouble(WRIST_FFGAIN);
     }
 
-    public double getRotations() {
-        return motor.getEncoder().getPosition();
-    }
-
-    /**
-     * Returns the current angle of the wrist.
-     */
-    public double getAngle() {
-        return EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition());
-    }
-
-    public boolean isNearTo(Position position) {
-        return isNearTo(position.getAngle());
-    }
-
-    public boolean isNearTo(double angle) {
-        return Math.abs(angle - getAngle()) < NEAR_THRESHOLD;
-    }
-
-    public void nudgeNoPID(double value) {
-        checkContextOwnership();
-        double clampedValue = MathUtil.clamp(value, -1, 1);
-        clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
-        motor.set(clampedValue);
-    }
-
-    public void stopWrist() {
-        checkContextOwnership();
-        motor.set(0);
-    }
-
-    public void nudgeUp() {
-        System.err.println("Nudging up.");
-        double angle = getAngle();
-        double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.TOP.getAngle());
-        System.err.println("Target: " + targetAngle);
-
-        rotate(targetAngle);
-    }
-
-    public void nudgeDown() {
-        System.err.println("Nudging down.");
-        double angle = getAngle();
-        double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.BOTTOM.getAngle());
-        rotate(targetAngle);
-    }
-
-    /**
-     * Rotates the wrist to a pre-set {@link Position}.
-     */
-    public void rotate(Position position) {
-        rotate(position.getAngle());
-    }
-
-    /**
-     * Starts rotating the wrist to the specified angle.
-     * NOTE: this method returns immediately.  Check the current wrist position of the wrist
-     * with {@link #getAngle()}.
-     */
-    public void rotate(double angle) {
-        checkContextOwnership();
-
-        System.err.println("Setting target angle to " + angle);
-        // set the PID controller values with whatever the latest is in the config
-        pidController.setP(pGain.get());
-        pidController.setI(iGain.get());
-        pidController.setD(dGain.get());
-        // pidController.setFF(ffGain.get());
-        double ff = ffGain.get() * Math.cos(Math.toRadians(angle));
-        SmartDashboard.putNumber("[WRIST] ff", ff);
-        SmartDashboard.putNumber("[WRIST] reference", angle);
-
-        pidController.setOutputRange(-1, 1);
-
-        // convert the desired target degrees to rotations
-        double rotations = EncoderUtils.wristDegreesToRotations(angle);
-
-        // set the reference point for the wrist
-        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+    @Override
+    protected State updateState() {
+        return new State(
+                motor.getEncoder().getPosition(),
+                EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition()));
     }
 
     @Override
-    public void run() {
-        if (rateLimiter.next()) {
-            SmartDashboard.putNumber("[WRIST] Angle", getAngle());
-            SmartDashboard.putNumber("[WRIST] Rotations", getRotations());
+    protected void dispatch(State state, Goal goal) {
+        switch (goal) {
+            case NudgeNoPID nudge -> {
+                double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
+                clampedValue *=
+                        NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
+                motor.set(clampedValue);
+            }
+            case StopWrist s -> {
+                motor.set(0);
+            }
+            case NudgeUp n -> {
+                double targetAngle =
+                        Math.max(state.angle - NUDGE_INCREMENT, RotateToPosition.TOP.angle());
+
+                setGoal(new RotateToPosition(targetAngle));
+            }
+            case NudgeDown n -> {
+                double targetAngle =
+                        Math.min(state.angle + NUDGE_INCREMENT, RotateToPosition.BOTTOM.angle());
+                setGoal(new RotateToPosition(targetAngle));
+            }
+            case RotateToPosition position -> {
+                // set the PID controller values with whatever the latest is in the config
+                pidController.setP(pGain.get());
+                pidController.setI(iGain.get());
+                pidController.setD(dGain.get());
+                // pidController.setFF(ffGain.get());
+                double ff = ffGain.get() * Math.cos(Math.toRadians(position.angle));
+                SmartDashboard.putNumber("[WRIST] ff", ff);
+                SmartDashboard.putNumber("[WRIST] reference", position.angle);
+
+                pidController.setOutputRange(-1, 1);
+
+                // convert the desired target degrees to rotations
+                double rotations = EncoderUtils.wristDegreesToRotations(position.angle);
+
+                // set the reference point for the wrist
+                pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+            }
         }
     }
 }

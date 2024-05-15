@@ -1,9 +1,8 @@
 package com.team766.framework;
 
+import com.team766.framework.conditions.RuleEngineProvider;
+import com.team766.framework.conditions.RulesMixin;
 import com.team766.logging.Category;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.BooleanSupplier;
 
 /**
  * Fragment of an OI, with facilities to make it easy to set up {@link OICondition}s for usage in the fragment's
@@ -15,59 +14,25 @@ import java.util.function.BooleanSupplier;
  * specific condition is currently triggering (eg pressing or holding down a joystick button) or if a condition that had been triggering
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
  */
-public abstract class OIFragment implements LoggingBase {
-
-    protected class OICondition {
-        private final BooleanSupplier condition;
-        private boolean triggering = false;
-        private boolean newlyTriggering = false;
-        private boolean finishedTriggering = false;
-
-        public OICondition(BooleanSupplier condition) {
-            this.condition = condition;
-            register(this);
-        }
-
-        private void evaluate() {
-            boolean triggeringNow = condition.getAsBoolean();
-            if (triggeringNow) {
-                newlyTriggering = !triggering;
-                finishedTriggering = false;
-            } else {
-                finishedTriggering = triggering;
-                newlyTriggering = false;
-            }
-            triggering = triggeringNow;
-        }
-
-        public boolean isTriggering() {
-            return triggering;
-        }
-
-        public boolean isNewlyTriggering() {
-            return newlyTriggering;
-        }
-
-        public boolean isFinishedTriggering() {
-            return finishedTriggering;
-        }
-    }
-
+public abstract class OIFragment extends RulesMixin implements LoggingBase {
     private final String name;
-    private final List<OICondition> conditions = new LinkedList<OICondition>();
+
+    protected Category loggerCategory = Category.OPERATOR_INTERFACE;
 
     /**
      * Creates a new OIFragment.
      * @param name The name of this part of the OI (eg, "BoxOpOI").  Used for logging.
      */
-    public OIFragment(String name) {
+    public OIFragment(RuleEngineProvider oi, String name) {
+        super(oi);
         this.name = name;
     }
 
     /**
      * Creates a new OIFragment, using the name of the sub-class.
      */
-    public OIFragment() {
+    public OIFragment(RuleEngineProvider oi) {
+        super(oi);
         this.name = this.getClass().getSimpleName();
     }
 
@@ -77,18 +42,8 @@ public abstract class OIFragment implements LoggingBase {
 
     @Override
     public Category getLoggerCategory() {
-        return Category.OPERATOR_INTERFACE;
+        return loggerCategory;
     }
-
-    private void register(OICondition condition) {
-        conditions.add(condition);
-    }
-
-    /**
-     * Called at the beginning of {@link #runOI(Context)}, before evaluating any of the registered conditions
-     * and before calling {@link #handleOI(Context)}.  Subclasses should override this if needed.
-     */
-    protected void handlePre() {}
 
     /**
      * OIFragments must override this method to implement their OI logic.  Typically called via the overall
@@ -96,27 +51,15 @@ public abstract class OIFragment implements LoggingBase {
      * they have set up to simplify checking if the {@link OICondition} is {@link OICondition#isTriggering()},
      * or, if it had been triggering in a previous iteration of the loop, if it is now
      * {@link OICondition#isFinishedTriggering()}.
-     *
-     * @param context The {@link Context} running the OI.
      */
-    protected abstract void handleOI(Context context);
-
-    /**
-     * Called after {@link #handleOI}, at the end of {@link #runOI}.  Subclasses should override this if needed.
-     */
-    protected void handlePost() {}
+    protected abstract void dispatch();
 
     /**
      * Called by a Robot's OI class, once per its loop.
      * Calls {@link #handlePre()}, evaluates all conditions once per call, and calls {@link #handlePost()}.
      * @param context The {@link Context} running the OI.
      */
-    public final void runOI(Context context) {
-        handlePre();
-        for (OICondition condition : conditions) {
-            condition.evaluate();
-        }
-        handleOI(context);
-        handlePost();
+    public void run() {
+        dispatch();
     }
 }

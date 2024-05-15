@@ -58,8 +58,8 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        Pose2d curPose = drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
+        Pose2d curPose = drive.getState().currentPosition();
+        ChassisSpeeds currentSpeeds = drive.getState().chassisSpeeds();
 
         controller.reset(curPose, currentSpeeds);
 
@@ -78,8 +78,8 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            curPose = drive.getCurrentPosition();
-            currentSpeeds = drive.getChassisSpeeds();
+            curPose = drive.getState().currentPosition();
+            currentSpeeds = drive.getState().chassisSpeeds();
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
@@ -107,13 +107,12 @@ public class FollowPath extends Procedure {
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "targetState", targetState.getTargetHolonomicPose());
-            drive.controlRobotOriented(targetSpeeds);
+            drive.setGoal(new Drive.RobotOrientedVelocity(targetSpeeds));
             context.yield();
         }
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
-            drive.stopDrive();
-            drive.setCross();
+            drive.setGoal(new Drive.SetCross());
         }
     }
 

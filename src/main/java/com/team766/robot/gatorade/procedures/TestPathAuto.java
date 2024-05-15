@@ -10,6 +10,6 @@ public class TestPathAuto extends PathSequenceAuto {
     public TestPathAuto(Drive drive) {
         super(drive, new Pose2d(2.00, 7.00, new Rotation2d()));
         addPath("RotationTest");
-        addProcedure(new SetCross(drive));
+        addProcedure(drive.setGoalBehavior(new Drive.SetCross()));
     }
 }

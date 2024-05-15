@@ -61,7 +61,7 @@ public class ShootNow extends VisionPIDProcedure {
         }
 
         lights.signalStartingShootingProcedure();
-        drive.stopDrive();
+        drive.setGoal(new Drive.StopDrive());
 
         Transform3d toUse;
 
@@ -125,10 +125,10 @@ public class ShootNow extends VisionPIDProcedure {
                 continue;
             }
 
-            drive.controlRobotOriented(0, 0, -anglePID.getOutput());
+            drive.setGoal(new Drive.RobotOrientedVelocity(0, 0, -anglePID.getOutput()));
         }
 
-        drive.stopDrive();
+        drive.setGoal(new Drive.StopDrive());
 
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);

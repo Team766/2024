@@ -42,7 +42,7 @@ public class NoRotateShootNow extends Procedure {
 
     public void run(Context context) {
         if (!amp) {
-            drive.stopDrive();
+            drive.setGoal(new Drive.StopDrive());
 
             double power;
             double armAngle;

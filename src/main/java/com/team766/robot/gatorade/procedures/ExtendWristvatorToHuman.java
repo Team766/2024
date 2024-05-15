@@ -10,13 +10,13 @@ public class ExtendWristvatorToHuman extends MoveWristvator {
     public ExtendWristvatorToHuman(
             GamePieceType gamePieceType, Shoulder shoulder, Elevator elevator, Wrist wrist) {
         super(
-                Shoulder.Position.RAISED,
+                Shoulder.RotateToPosition.RAISED,
                 gamePieceType == GamePieceType.CONE
-                        ? Elevator.Position.HUMAN_CONES
-                        : Elevator.Position.HUMAN_CUBES,
+                        ? Elevator.MoveToPosition.HUMAN_CONES
+                        : Elevator.MoveToPosition.HUMAN_CUBES,
                 gamePieceType == GamePieceType.CONE
-                        ? Wrist.Position.HUMAN_CONES
-                        : Wrist.Position.HUMAN_CUBES,
+                        ? Wrist.RotateToPosition.HUMAN_CONES
+                        : Wrist.RotateToPosition.HUMAN_CUBES,
                 shoulder,
                 elevator,
                 wrist);

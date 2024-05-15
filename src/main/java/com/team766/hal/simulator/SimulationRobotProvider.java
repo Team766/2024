@@ -1,5 +1,6 @@
 package com.team766.hal.simulator;
 
+import com.team766.framework.conditions.RulesMixin;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -82,7 +83,7 @@ public class SimulationRobotProvider extends RobotProvider {
     }
 
     @Override
-    public JoystickReader getJoystick(final int index) {
+    public JoystickReader getJoystick(RulesMixin oi, final int index) {
         return ProgramInterface.joystickChannels[index];
     }
 

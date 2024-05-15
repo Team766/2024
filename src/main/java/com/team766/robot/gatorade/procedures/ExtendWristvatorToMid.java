@@ -8,9 +8,9 @@ public class ExtendWristvatorToMid extends MoveWristvator {
 
     public ExtendWristvatorToMid(Shoulder shoulder, Elevator elevator, Wrist wrist) {
         super(
-                Shoulder.Position.RAISED,
-                Elevator.Position.MID,
-                Wrist.Position.MID_NODE,
+                Shoulder.RotateToPosition.RAISED,
+                Elevator.MoveToPosition.MID,
+                Wrist.RotateToPosition.MID_NODE,
                 shoulder,
                 elevator,
                 wrist);

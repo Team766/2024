@@ -24,5 +24,8 @@ public class ControlConstants {
      */
     public static final double MAX_ROTATIONAL_VELOCITY = 4.0;
 
-    public static final double DEFAULT_ROTATION_THRESHOLD = 0.40;
+    /**
+     * degrees
+     */
+    public static final double AT_ROTATION_ANGLE_THRESHOLD = 3.0;
 }

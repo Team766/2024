@@ -1,6 +1,7 @@
 package com.team766.hal.wpilib;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.framework.conditions.RulesMixin;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -261,11 +262,8 @@ public class WPIRobotProvider extends RobotProvider {
     }
 
     @Override
-    public JoystickReader getJoystick(int index) {
-        if (joysticks[index] == null) {
-            joysticks[index] = new Joystick(index);
-        }
-        return joysticks[index];
+    public JoystickReader getJoystick(RulesMixin oi, int index) {
+        return new Joystick(oi, index);
     }
 
     @Override

@@ -4,12 +4,11 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
-import com.team766.framework.Mechanism;
+import com.team766.framework.Subsystem;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
-import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
@@ -20,14 +19,89 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.littletonrobotics.junction.AutoLogOutput;
 
-public class Drive extends Mechanism {
+public class Drive extends Subsystem<Drive.State, Drive.Goal> {
+    /**
+     * @param heading current heading in degrees
+     */
+    public static record State(
+            @AutoLogOutput double heading,
+            @AutoLogOutput double pitch,
+            @AutoLogOutput double roll,
+            @AutoLogOutput Pose2d currentPosition,
+            @AutoLogOutput ChassisSpeeds chassisSpeeds,
+            @AutoLogOutput SwerveModuleState[] swerveStates) {
+
+        public boolean isAtRotationTarget(double targetHeading) {
+            // TODO: this should also check that rotational velocity is low
+            // TODO: this should use modular arithmetic
+            return Math.abs(targetHeading - heading) < ControlConstants.AT_ROTATION_ANGLE_THRESHOLD;
+        }
+
+        public boolean isAtRotationTarget(Rotation2d targetHeading) {
+            return isAtRotationTarget(targetHeading.getDegrees());
+        }
+    }
+
+    public sealed interface Goal {}
+
+    public record RobotOrientedVelocity(double x, double y, double turn) implements Goal {
+        public RobotOrientedVelocity(ChassisSpeeds chassisSpeeds) {
+            this(
+                    chassisSpeeds.vxMetersPerSecond,
+                    chassisSpeeds.vyMetersPerSecond,
+                    chassisSpeeds.omegaRadiansPerSecond);
+        }
+    }
+
+    public record FieldOrientedVelocity(double x, double y, double turn) implements Goal {}
+
+    public record FieldOrientedVelocityWithRotationTarget(double x, double y, Rotation2d target)
+            implements Goal {}
+
+    public record StopDrive() implements Goal {}
+
+    public record SetCross() implements Goal {}
+
+    // TODO: this doesn't really seem like a goal state
+    public record ResetGyro() implements Goal {}
+
+    // TODO: this doesn't really seem like a goal state
+    public record ResetCurrentPosition() implements Goal {}
+
+    @Override
+    protected void dispatch(State state, Goal goal) {
+        switch (goal) {
+            case RobotOrientedVelocity g -> {
+                controlRobotOriented(g.x, g.y, g.turn);
+            }
+            case FieldOrientedVelocity g -> {
+                controlFieldOriented(state, g.x, g.y, g.turn);
+            }
+            case FieldOrientedVelocityWithRotationTarget g -> {
+                controlFieldOrientedWithRotationTarget(state, g.x, g.y, g.target);
+            }
+            case StopDrive s -> {
+                stopDrive();
+            }
+            case SetCross s -> {
+                stopDrive();
+                setCross();
+            }
+            case ResetGyro r -> {
+                resetGyro();
+            }
+            case ResetCurrentPosition r -> {
+                resetCurrentPosition();
+            }
+        }
+        ;
+    }
 
     private final SwerveConfig config;
 
@@ -38,7 +112,6 @@ public class Drive extends Mechanism {
     private final SwerveModule swerveBL;
 
     private final GyroReader gyro;
-    private Optional<Alliance> alliance = DriverStation.getAlliance();
 
     // declaration of odometry object
     private Odometry swerveOdometry;
@@ -47,16 +120,7 @@ public class Drive extends Mechanism {
     private Translation2d[] wheelPositions;
     private SwerveDriveKinematics swerveDriveKinematics;
 
-    private StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher =
-            NetworkTableInstance.getDefault()
-                    .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
-                    .publish();
-
     private PIDController rotationPID;
-
-    private boolean movingToTarget = false;
-    private double x;
-    private double y;
 
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -161,11 +225,7 @@ public class Drive extends Mechanism {
      * @param y the y value for the position joystick, positive being left
      * @param turn the turn value from the rotation joystick, positive being CCW
      */
-    public void controlRobotOriented(double x, double y, double turn) {
-        checkContextOwnership();
-        // SmartDashboard.putString(
-        //         "[" + "joystick" + "]" + "x, y", String.format("%.2f, %.2f", x, y));
-
+    private void controlRobotOriented(double x, double y, double turn) {
         // Calculate the necessary turn velocity (m/s) for each motor:
         double turnVelocity = config.wheelDistanceFromCenter() * turn;
 
@@ -199,12 +259,11 @@ public class Drive extends Mechanism {
      * @param y the y value for the position joystick, positive being left, in meters/sec
      * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
-    private void controlFieldOrientedBase(double x, double y, double turn) {
-        checkContextOwnership();
-
+    private void controlFieldOriented(State state, double x, double y, double turn) {
+        final Optional<Alliance> alliance = DriverStation.getAlliance();
         double yawRad =
                 Math.toRadians(
-                        getHeading()
+                        state.heading()
                                 + (alliance.isPresent() && alliance.get() == Alliance.Blue
                                         ? 0
                                         : 180));
@@ -218,82 +277,31 @@ public class Drive extends Mechanism {
     }
 
     /**
-     * Uses controlRobotOriented() to control the robot relative to the field
-     * Sets robot to manual control mode rather than a rotation setpoint
-     * @param x the x value for the position joystick, positive being forward, in meters/sec
-     * @param y the y value for the position joystick, positive being left, in meters/sec
-     * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
-     */
-    public void controlFieldOriented(double x, double y, double turn) {
-        movingToTarget = false;
-        controlFieldOrientedBase(x, y, turn);
-    }
-
-    /**
      * Allows for field oriented control of the robot's position while moving to a specific angle for rotation
      * @param x the x value for the position joystick, positive being forward
      * @param y the y value for the position joystick, positive being left
      * @param target rotational target as a Rotation2d, can input a null value
      */
-    public void controlFieldOrientedWithRotationTarget(double x, double y, Rotation2d target) {
-        checkContextOwnership();
+    private void controlFieldOrientedWithRotationTarget(
+            State state, double x, double y, Rotation2d target) {
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
             // SmartDashboard.putNumber("Rotation Target", target.getDegrees());
         }
 
-        movingToTarget = true;
-        this.x = x;
-        this.y = y;
+        rotationPID.calculate(state.heading());
 
-        // controlFieldOriented(
-        //         x,
-        //         y,
-        //         (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
-        //                 ? 0
-        //                 : rotationPID.getOutput()));
-    }
+        final boolean isAtRotationTarget = state.isAtRotationTarget(target.getDegrees());
 
-    public boolean isAtRotationTarget() {
-        boolean value =
-                Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD;
-        // SmartDashboard.putBoolean("Is At Drive Rotation Target", value);
-        return value;
-    }
+        controlFieldOriented(state, x, y, isAtRotationTarget ? 0 : rotationPID.getOutput());
 
-    /**
-     * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param chassisSpeeds
-     */
-    public void controlFieldOriented(ChassisSpeeds chassisSpeeds) {
-        movingToTarget = false;
-
-        double vx = chassisSpeeds.vxMetersPerSecond;
-        double vy = chassisSpeeds.vyMetersPerSecond;
-        double vang = chassisSpeeds.omegaRadiansPerSecond;
-
-        controlFieldOrientedBase(vx, vy, vang);
-    }
-
-    /**
-     * Overloads controlFieldOriented to work with a chassisSpeeds input
-     * @param chassisSpeeds
-     */
-    public void controlRobotOriented(ChassisSpeeds chassisSpeeds) {
-        movingToTarget = false;
-
-        double vx = chassisSpeeds.vxMetersPerSecond;
-        double vy = chassisSpeeds.vyMetersPerSecond;
-        double vang = chassisSpeeds.omegaRadiansPerSecond;
-
-        controlRobotOriented(vx, vy, vang);
+        // SmartDashboard.putBoolean("Is At Drive Rotation Target", isAtRotationTarget);
     }
 
     /*
      * Stops each drive motor
      */
-    public void stopDrive() {
-        checkContextOwnership();
+    private void stopDrive() {
         swerveFR.stopDrive();
         swerveFL.stopDrive();
         swerveBR.stopDrive();
@@ -303,8 +311,7 @@ public class Drive extends Mechanism {
     /*
      * Turns wheels in a cross formation to prevent robot from moving
      */
-    public void setCross() {
-        checkContextOwnership();
+    private void setCross() {
         swerveFR.steer(config.frontRightLocation());
         swerveFL.steer(config.frontLeftLocation());
         swerveBR.steer(config.backRightLocation());
@@ -315,7 +322,8 @@ public class Drive extends Mechanism {
      * Resets gyro to zero degrees relative to the driver
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
-    public void resetGyro() {
+    private void resetGyro() {
+        final Optional<Alliance> alliance = DriverStation.getAlliance();
         resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
 
@@ -323,49 +331,20 @@ public class Drive extends Mechanism {
      * Sets gyro to value in degrees
      * @param angle in degrees
      */
-    public void resetGyro(double angle) {
-        checkContextOwnership();
+    private void resetGyro(double angle) {
         gyro.setAngle(angle);
     }
 
-    /**
-     * Gets current heading in degrees
-     * @return current heading in degrees
-     */
-    public double getHeading() {
-        return gyro.getAngle();
-    }
-
-    public double getPitch() {
-        return gyro.getPitch();
-    }
-
-    public double getRoll() {
-        return gyro.getRoll();
-    }
-
-    public Pose2d getCurrentPosition() {
-        return swerveOdometry.getCurrPosition();
-    }
-
-    public void setCurrentPosition(Pose2d P) {
+    private void setCurrentPosition(Pose2d P) {
         // log("setCurrentPosition(): " + P);
         swerveOdometry.setCurrentPosition(P);
     }
 
-    public void resetCurrentPosition() {
+    private void resetCurrentPosition() {
         swerveOdometry.setCurrentPosition(new Pose2d());
     }
 
-    public ChassisSpeeds getChassisSpeeds() {
-        return swerveDriveKinematics.toChassisSpeeds(
-                swerveFR.getModuleState(),
-                swerveFL.getModuleState(),
-                swerveBR.getModuleState(),
-                swerveBL.getModuleState());
-    }
-
-    public double maxWheelDistToCenter() {
+    private double maxWheelDistToCenter() {
         double max = 0;
         for (Translation2d translation : wheelPositions) {
             max = Math.max(max, translation.getNorm());
@@ -381,47 +360,34 @@ public class Drive extends Mechanism {
 
     // Odometry
     @Override
-    public void run() {
+    protected State updateState() {
         swerveOdometry.run();
-        // log(currentPosition.toString());
-        // SmartDashboard.putString("pos", getCurrentPosition().toString());
 
-        // SmartDashboard.putNumber("Yaw", getHeading());
-        // SmartDashboard.putNumber("Pitch", getPitch());
-        // SmartDashboard.putNumber("Roll", getRoll());
+        final double heading = gyro.getAngle();
+        final double pitch = gyro.getPitch();
+        final double roll = gyro.getRoll();
+        final Pose2d currentPosition = swerveOdometry.getCurrPosition();
 
-        if (movingToTarget) {
-            rotationPID.calculate(getHeading());
-            controlFieldOrientedBase(
-                    x,
-                    y,
-                    (Math.abs(rotationPID.getOutput()) < ControlConstants.DEFAULT_ROTATION_THRESHOLD
-                            ? 0
-                            : rotationPID.getOutput()));
-        }
-
-        // SmartDashboard.putBoolean("movingToTarget", movingToTarget);
-
-        // SmartDashboard.putBoolean("isAtRotationTarget", isAtRotationTarget());
+        final ChassisSpeeds chassisSpeeds =
+                swerveDriveKinematics.toChassisSpeeds(
+                        swerveFR.getModuleState(),
+                        swerveFL.getModuleState(),
+                        swerveBR.getModuleState(),
+                        swerveBL.getModuleState());
 
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();
         swerveBR.dashboardCurrentUsage();
         swerveBL.dashboardCurrentUsage();
 
-        SwerveModuleState[] states =
+        SwerveModuleState[] swerveStates =
                 new SwerveModuleState[] {
                     swerveFR.getModuleState(),
                     swerveFL.getModuleState(),
                     swerveBR.getModuleState(),
                     swerveBL.getModuleState(),
                 };
-        if (Logger.isLoggingToDataLog()) {
-            org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
-            org.littletonrobotics.junction.Logger.recordOutput(
-                    "current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
-            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
-        }
-        swerveModuleStatePublisher.set(states);
+
+        return new State(heading, pitch, roll, currentPosition, chassisSpeeds, swerveStates);
     }
 }
