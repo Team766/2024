@@ -45,9 +45,8 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
                 useFourTermSet = false;
                 break;
             default:
-                LoggerExceptionUtils.logException(
-                        new UnsupportedOperationException(
-                                "invalid mode provided. provided value: " + mode));
+                LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                        "invalid mode provided. provided value: " + mode));
                 break;
         }
         if (ctre_mode == null) {
@@ -89,9 +88,8 @@ public class CANVictorMotorController extends BaseCTREMotorController implements
         try {
             m_device.follow((IMotorController) leader);
         } catch (ClassCastException ex) {
-            LoggerExceptionUtils.logException(
-                    new IllegalArgumentException(
-                            "Victor can only follow another CTRE motor controller", ex));
+            LoggerExceptionUtils.logException(new IllegalArgumentException(
+                    "Victor can only follow another CTRE motor controller", ex));
         }
     }
 

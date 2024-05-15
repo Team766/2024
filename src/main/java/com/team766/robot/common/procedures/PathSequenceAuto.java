@@ -39,35 +39,28 @@ public class PathSequenceAuto extends Procedure {
     }
 
     private PPHolonomicDriveController createDriveController(Drive drive) {
-        double maxSpeed =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
-                        .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
+        double maxSpeed = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
+                .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
 
-        double translationP =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
-                        .valueOr(PathPlannerConstants.TRANSLATION_P);
-        double translationI =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
-                        .valueOr(PathPlannerConstants.TRANSLATION_I);
-        double translationD =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
-                        .valueOr(PathPlannerConstants.TRANSLATION_D);
-        double rotationP =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
-                        .valueOr(PathPlannerConstants.ROTATION_P);
-        double rotationI =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
-                        .valueOr(PathPlannerConstants.ROTATION_I);
-        double rotationD =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
-                        .valueOr(PathPlannerConstants.ROTATION_D);
+        double translationP = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
+                .valueOr(PathPlannerConstants.TRANSLATION_P);
+        double translationI = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
+                .valueOr(PathPlannerConstants.TRANSLATION_I);
+        double translationD = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
+                .valueOr(PathPlannerConstants.TRANSLATION_D);
+        double rotationP = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
+                .valueOr(PathPlannerConstants.ROTATION_P);
+        double rotationI = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
+                .valueOr(PathPlannerConstants.ROTATION_I);
+        double rotationD = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
+                .valueOr(PathPlannerConstants.ROTATION_D);
 
         return new PPHolonomicDriveController(
                 new PIDConstants(translationP, translationI, translationD),
@@ -86,18 +79,17 @@ public class PathSequenceAuto extends Procedure {
     }
 
     protected void addWait(double waitForSeconds) {
-        addProcedure(
-                new ProcedureInterface() {
-                    @Override
-                    public void run(Context context) {
-                        context.waitForSeconds(waitForSeconds);
-                    }
+        addProcedure(new ProcedureInterface() {
+            @Override
+            public void run(Context context) {
+                context.waitForSeconds(waitForSeconds);
+            }
 
-                    @Override
-                    public Set<Subsystem> getReservations() {
-                        return Set.of();
-                    }
-                });
+            @Override
+            public Set<Subsystem> getReservations() {
+                return Set.of();
+            }
+        });
     }
 
     public void runAtEnd() {}
@@ -119,11 +111,10 @@ public class PathSequenceAuto extends Procedure {
         drive.setCurrentPosition(
                 shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
-        drive.resetGyro(
-                (shouldFlipAuton
-                                ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
-                                : initialPosition.getRotation())
-                        .getDegrees());
+        drive.resetGyro((shouldFlipAuton
+                        ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
+                        : initialPosition.getRotation())
+                .getDegrees());
         for (ProcedureInterface pathItem : pathItems) {
             context.runSync(pathItem);
             context.yield();

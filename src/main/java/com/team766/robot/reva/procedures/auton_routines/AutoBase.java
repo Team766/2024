@@ -19,18 +19,17 @@ public class AutoBase extends PathSequenceAuto {
         super(drive, initialPosition);
         this.shooter = shooter;
         // TODO: Replace this with proper parallel execution
-        addProcedure(
-                new ProcedureInterface() {
-                    @Override
-                    public Set<Subsystem> getReservations() {
-                        return Set.of();
-                    }
+        addProcedure(new ProcedureInterface() {
+            @Override
+            public Set<Subsystem> getReservations() {
+                return Set.of();
+            }
 
-                    @Override
-                    public void run(Context context) {
-                        context.startAsync(new MoveClimbersToBottom(climber));
-                    }
-                });
+            @Override
+            public void run(Context context) {
+                context.startAsync(new MoveClimbersToBottom(climber));
+            }
+        });
     }
 
     @Override

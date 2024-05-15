@@ -12,15 +12,10 @@ public class Joystick extends edu.wpi.first.wpilibj.Joystick implements Joystick
 
     public Joystick(RulesMixin oi, final int port) {
         super(port);
-        buttonConditions =
-                ArrayUtils.initializeArray(
-                        getButtonCount(),
-                        button ->
-                                new Lazy<>(
-                                        () ->
-                                                oi
-                                                .new DeclaredCondition(
-                                                        () -> this.getButtonState(button))));
+        buttonConditions = ArrayUtils.initializeArray(
+                getButtonCount(),
+                button -> new Lazy<>(
+                        () -> oi.new DeclaredCondition(() -> this.getButtonState(button))));
         fallbackCondition = oi.neverCondition;
     }
 

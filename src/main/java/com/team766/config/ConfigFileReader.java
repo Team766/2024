@@ -137,11 +137,10 @@ public class ConfigFileReader {
         JSONObject parentObj = getParent(obj, keyParts);
         var rawValue = parentObj.opt(keyParts[keyParts.length - 1]);
         if (rawValue instanceof JSONObject) {
-            throw new IllegalArgumentException(
-                    "The config file cannot store both a single config "
-                            + "setting and a group of config settings with the name "
-                            + key
-                            + " Please pick a different name");
+            throw new IllegalArgumentException("The config file cannot store both a single config "
+                    + "setting and a group of config settings with the name "
+                    + key
+                    + " Please pick a different name");
         }
         if (rawValue == null) {
             parentObj.put(keyParts[keyParts.length - 1], JSONObject.NULL);

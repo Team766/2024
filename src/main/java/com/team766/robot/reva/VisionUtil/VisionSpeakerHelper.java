@@ -61,14 +61,11 @@ public class VisionSpeakerHelper {
             Translation2d relativeTarget =
                     new Translation2d(transform3d.getX(), transform3d.getY());
 
-            absTargetPos =
-                    drive.getState()
-                            .currentPosition()
-                            .getTranslation()
-                            .plus(
-                                    relativeTarget.rotateBy(
-                                            Rotation2d.fromDegrees(
-                                                    (drive.getState().heading() + 180))));
+            absTargetPos = drive.getState()
+                    .currentPosition()
+                    .getTranslation()
+                    .plus(relativeTarget.rotateBy(
+                            Rotation2d.fromDegrees((drive.getState().heading() + 180))));
 
             // SmartDashboard.putString("target pos", absTargetPos.toString());
 
@@ -100,10 +97,9 @@ public class VisionSpeakerHelper {
                 // Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
                 // LoggerExceptionUtils.logException(e);
             }
-            relativeTranslation2d =
-                    absTargetPos
-                            .minus(drive.getState().currentPosition().getTranslation())
-                            .rotateBy(Rotation2d.fromDegrees(-drive.getState().heading() - 180));
+            relativeTranslation2d = absTargetPos
+                    .minus(drive.getState().currentPosition().getTranslation())
+                    .rotateBy(Rotation2d.fromDegrees(-drive.getState().heading() - 180));
         }
     }
 
@@ -122,7 +118,8 @@ public class VisionSpeakerHelper {
         // if the target is not currently seen
         // Calculated the heading the robot needs to face from this translation
 
-        double val = relativeTranslation2d.getAngle().getDegrees() + drive.getState().heading();
+        double val =
+                relativeTranslation2d.getAngle().getDegrees() + drive.getState().heading();
         // SmartDashboard.putNumber(
         //         "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
         // SmartDashboard.putNumber(

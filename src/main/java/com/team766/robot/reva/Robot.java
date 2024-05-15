@@ -62,59 +62,54 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Center Pieces",
-                    () ->
-                            new ThreePieceAmpSide(
-                                    drive,
-                                    shoulder,
-                                    shooter,
-                                    intake,
-                                    climber,
-                                    lights,
-                                    forwardApriltagCamera)),
+                    () -> new ThreePieceAmpSide(
+                            drive,
+                            shoulder,
+                            shooter,
+                            intake,
+                            climber,
+                            lights,
+                            forwardApriltagCamera)),
             new AutonomousMode(
                     "4p Start Amp, All Close Pieces",
-                    () ->
-                            new FourPieceAmpSide(
-                                    drive,
-                                    shoulder,
-                                    shooter,
-                                    intake,
-                                    climber,
-                                    lights,
-                                    forwardApriltagCamera)),
+                    () -> new FourPieceAmpSide(
+                            drive,
+                            shoulder,
+                            shooter,
+                            intake,
+                            climber,
+                            lights,
+                            forwardApriltagCamera)),
             new AutonomousMode(
                     "2p Start Source, Bottom Midfield Piece",
-                    () ->
-                            new TwoPieceMidfieldSourceSide(
-                                    drive,
-                                    shoulder,
-                                    shooter,
-                                    intake,
-                                    climber,
-                                    lights,
-                                    forwardApriltagCamera)),
+                    () -> new TwoPieceMidfieldSourceSide(
+                            drive,
+                            shoulder,
+                            shooter,
+                            intake,
+                            climber,
+                            lights,
+                            forwardApriltagCamera)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Top Midfield Pieces",
-                    () ->
-                            new ThreePieceMidfieldAmpSide(
-                                    drive,
-                                    shoulder,
-                                    shooter,
-                                    intake,
-                                    climber,
-                                    lights,
-                                    forwardApriltagCamera)),
+                    () -> new ThreePieceMidfieldAmpSide(
+                            drive,
+                            shoulder,
+                            shooter,
+                            intake,
+                            climber,
+                            lights,
+                            forwardApriltagCamera)),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
-                    () ->
-                            new ThreePieceStartCenterTopAndAmp(
-                                    drive,
-                                    shoulder,
-                                    shooter,
-                                    intake,
-                                    climber,
-                                    lights,
-                                    forwardApriltagCamera))
+                    () -> new ThreePieceStartCenterTopAndAmp(
+                            drive,
+                            shoulder,
+                            shooter,
+                            intake,
+                            climber,
+                            lights,
+                            forwardApriltagCamera))
         };
     }
 }

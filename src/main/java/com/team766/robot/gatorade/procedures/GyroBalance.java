@@ -102,11 +102,10 @@ public class GyroBalance extends Procedure {
         // State: RAMP_TRANSITION
         setDriveSpeed(SPEED_TRANSITION);
         log("Transition, curState: RAMP_TRANSITION");
-        context.waitFor(
-                () -> {
-                    final double tilt = getAbsoluteTilt();
-                    return tilt < TOP_TILT && tilt > FLAP_TILT;
-                });
+        context.waitFor(() -> {
+            final double tilt = getAbsoluteTilt();
+            return tilt < TOP_TILT && tilt > FLAP_TILT;
+        });
 
         // State: RAMP_TILT
         setDriveSpeed(SPEED_TILT);

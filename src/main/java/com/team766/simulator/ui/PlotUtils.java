@@ -57,12 +57,10 @@ class PlotUtils {
      * This is useful for drawing overlays onto plots.
      */
     public static Point getPixelCoords(XYPlot plot, double x, double y) {
-        double pixelX =
-                plot.getAxisRenderer(XYPlot.AXIS_X)
-                        .worldToView(plot.getAxis(XYPlot.AXIS_X), x, false);
-        double pixelY =
-                plot.getAxisRenderer(XYPlot.AXIS_Y)
-                        .worldToView(plot.getAxis(XYPlot.AXIS_Y), y, false);
+        double pixelX = plot.getAxisRenderer(XYPlot.AXIS_X)
+                .worldToView(plot.getAxis(XYPlot.AXIS_X), x, false);
+        double pixelY = plot.getAxisRenderer(XYPlot.AXIS_Y)
+                .worldToView(plot.getAxis(XYPlot.AXIS_Y), y, false);
 
         double plotAreaHeight = plot.getPlotArea().getHeight();
         double plotAreaX = plot.getPlotArea().getX();

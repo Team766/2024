@@ -29,18 +29,17 @@ public class UIFrame extends JFrame {
         restoreFrameLocation();
         restoreFrameSize();
 
-        super.addComponentListener(
-                new ComponentAdapter() {
-                    @Override
-                    public void componentResized(ComponentEvent e) {
-                        updatePref();
-                    }
+        super.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updatePref();
+            }
 
-                    @Override
-                    public void componentMoved(ComponentEvent e) {
-                        updatePref();
-                    }
-                });
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                updatePref();
+            }
+        });
     }
 
     private void updatePref() {

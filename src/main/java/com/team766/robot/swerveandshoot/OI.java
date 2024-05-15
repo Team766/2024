@@ -85,13 +85,8 @@ public class OI extends Procedure {
              */
             if (joystick0.getButtonPressed(1)) {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
-                visionProcedure =
-                        context.startAsync(
-                                new DriveToAndScoreAt(
-                                        ScoringPositions.makerSpace1R,
-                                        drive,
-                                        tempShooter,
-                                        forwardApriltagCamera));
+                visionProcedure = context.startAsync(new DriveToAndScoreAt(
+                        ScoringPositions.makerSpace1R, drive, tempShooter, forwardApriltagCamera));
             }
 
             if (joystick0.getButtonReleased(1)) {
@@ -104,13 +99,8 @@ public class OI extends Procedure {
              */
             if (joystick0.getButtonPressed(2)) {
                 // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
-                visionProcedure =
-                        context.startAsync(
-                                new DriveToAndScoreAt(
-                                        ScoringPositions.makerSpace1L,
-                                        drive,
-                                        tempShooter,
-                                        forwardApriltagCamera));
+                visionProcedure = context.startAsync(new DriveToAndScoreAt(
+                        ScoringPositions.makerSpace1L, drive, tempShooter, forwardApriltagCamera));
             }
 
             if (joystick0.getButtonReleased(2)) {
@@ -123,9 +113,8 @@ public class OI extends Procedure {
              */
 
             if (joystick1.getButtonPressed(1)) {
-                visionProcedure =
-                        context.startAsync(
-                                new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
+                visionProcedure = context.startAsync(
+                        new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
             }
 
             if (joystick1.getButtonReleased(1)) {

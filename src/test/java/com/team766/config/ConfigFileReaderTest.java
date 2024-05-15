@@ -21,7 +21,8 @@ public class ConfigFileReaderTest extends TestCase {
     public void getJsonStringFromPartialConfigFile() throws IOException {
         loadConfig("{\"test\": {\"sub\": {\"key\": \"pi\", \"value\": 3.14159}}}");
 
-        assertEquals("pi", ConfigFileReader.getInstance().getString("test.sub.key").get());
+        assertEquals(
+                "pi", ConfigFileReader.getInstance().getString("test.sub.key").get());
         assertEquals(
                 3.14159,
                 ConfigFileReader.getInstance().getDouble("test.sub.value").get().doubleValue(),

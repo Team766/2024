@@ -20,10 +20,9 @@ public abstract class Condition {
     }
 
     public Condition ifNewlyTriggering(Supplier<Command> callback) {
-        return ifNewlyTriggering(
-                () -> {
-                    getRuleEngine().tryScheduling(callback.get());
-                });
+        return ifNewlyTriggering(() -> {
+            getRuleEngine().tryScheduling(callback.get());
+        });
     }
 
     public Condition ifFinishedTriggering(Runnable callback) {
@@ -34,10 +33,9 @@ public abstract class Condition {
     }
 
     public Condition ifFinishedTriggering(Supplier<Command> callback) {
-        return ifFinishedTriggering(
-                () -> {
-                    getRuleEngine().tryScheduling(callback.get());
-                });
+        return ifFinishedTriggering(() -> {
+            getRuleEngine().tryScheduling(callback.get());
+        });
     }
 
     public Condition whileTriggering(Runnable callback) {
@@ -48,10 +46,9 @@ public abstract class Condition {
     }
 
     public Condition whileTriggering(Supplier<Command> callback) {
-        return whileTriggering(
-                () -> {
-                    getRuleEngine().tryScheduling(callback.get());
-                });
+        return whileTriggering(() -> {
+            getRuleEngine().tryScheduling(callback.get());
+        });
     }
 
     public Condition whileNotTriggering(Runnable callback) {
@@ -62,9 +59,8 @@ public abstract class Condition {
     }
 
     public Condition whileNotTriggering(Supplier<Command> callback) {
-        return whileNotTriggering(
-                () -> {
-                    getRuleEngine().tryScheduling(callback.get());
-                });
+        return whileNotTriggering(() -> {
+            getRuleEngine().tryScheduling(callback.get());
+        });
     }
 }

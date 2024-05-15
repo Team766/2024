@@ -18,15 +18,10 @@ public class MockJoystick implements JoystickReader {
     public MockJoystick(RulesMixin oi) {
         axisValues = new double[12];
         buttonValues = new boolean[20];
-        buttonConditions =
-                ArrayUtils.initializeArray(
-                        buttonValues.length,
-                        button ->
-                                new Lazy<>(
-                                        () ->
-                                                oi
-                                                .new DeclaredCondition(
-                                                        () -> this.getButtonState(button))));
+        buttonConditions = ArrayUtils.initializeArray(
+                buttonValues.length,
+                button -> new Lazy<>(
+                        () -> oi.new DeclaredCondition(() -> this.getButtonState(button))));
         fallbackCondition = oi.neverCondition;
     }
 

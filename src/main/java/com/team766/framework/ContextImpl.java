@@ -166,13 +166,12 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     }
 
     ContextImpl(final ProcedureInterface func) {
-        this(
-                new ProcedureWithValue<T>(ProcedureWithValue.reservations(func.getReservations())) {
-                    @Override
-                    public void run(ContextWithValue<T> context) {
-                        func.run(context);
-                    }
-                });
+        this(new ProcedureWithValue<T>(ProcedureWithValue.reservations(func.getReservations())) {
+            @Override
+            public void run(ContextWithValue<T> context) {
+                func.run(context);
+            }
+        });
     }
 
     /**
@@ -206,16 +205,12 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
      */
     private String getExecutionPoint() {
         StackWalker walker = StackWalker.getInstance();
-        return walker.walk(
-                s ->
-                        s.dropWhile(f -> f.getClassName() != ContextImpl.this.getClass().getName())
-                                .filter(
-                                        f ->
-                                                f.getClassName()
-                                                        != ContextImpl.this.getClass().getName())
-                                .findFirst()
-                                .map(StackFrame::toString)
-                                .orElse(null));
+        return walker.walk(s -> s.dropWhile(
+                        f -> f.getClassName() != ContextImpl.this.getClass().getName())
+                .filter(f -> f.getClassName() != ContextImpl.this.getClass().getName())
+                .findFirst()
+                .map(StackFrame::toString)
+                .orElse(null));
     }
 
     /**
@@ -269,11 +264,10 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
             // Make sure we currently have the baton before trying to give it to
             // someone else.
             if (m_controlOwner != thisOwner) {
-                throw new IllegalStateException(
-                        "Subroutine had control owner "
-                                + m_controlOwner
-                                + " but assumed control owner "
-                                + thisOwner);
+                throw new IllegalStateException("Subroutine had control owner "
+                        + m_controlOwner
+                        + " but assumed control owner "
+                        + thisOwner);
             }
             // Pass the baton.
             m_controlOwner = desiredOwner;
@@ -410,12 +404,11 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         final var this_reservations = getRequirements();
         for (var req : reservations) {
             if (!this_reservations.contains(req)) {
-                throw new IllegalArgumentException(
-                        getName()
-                                + " tried to run "
-                                + procedure
-                                + " but is missing the reservation on "
-                                + req.getName());
+                throw new IllegalArgumentException(getName()
+                        + " tried to run "
+                        + procedure
+                        + " but is missing the reservation on "
+                        + req.getName());
             }
         }
     }

@@ -118,11 +118,10 @@ public final class Logger {
     }
 
     public void logData(final Severity severity, final String format, final Object... args) {
-        var entry =
-                LogEntry.newBuilder()
-                        .setTime(getTime())
-                        .setSeverity(severity)
-                        .setCategory(m_category);
+        var entry = LogEntry.newBuilder()
+                .setTime(getTime())
+                .setSeverity(severity)
+                .setCategory(m_category);
         String message = String.format(format, args);
         entry.setMessageStr(message);
         m_recentEntries.add(entry.build());
@@ -143,13 +142,12 @@ public final class Logger {
     }
 
     public void logRaw(final Severity severity, final String message) {
-        var entry =
-                LogEntry.newBuilder()
-                        .setTime(getTime())
-                        .setSeverity(severity)
-                        .setCategory(m_category)
-                        .setMessageStr(message)
-                        .build();
+        var entry = LogEntry.newBuilder()
+                .setTime(getTime())
+                .setSeverity(severity)
+                .setCategory(m_category)
+                .setMessageStr(message)
+                .build();
         m_recentEntries.add(entry);
         if (m_logWriter != null) {
             m_logWriter.log(entry);
@@ -161,13 +159,12 @@ public final class Logger {
     }
 
     void logOnlyInMemory(final Severity severity, final String message) {
-        var entry =
-                LogEntry.newBuilder()
-                        .setTime(getTime())
-                        .setSeverity(severity)
-                        .setCategory(m_category)
-                        .setMessageStr(message)
-                        .build();
+        var entry = LogEntry.newBuilder()
+                .setTime(getTime())
+                .setSeverity(severity)
+                .setCategory(m_category)
+                .setMessageStr(message)
+                .build();
         m_recentEntries.add(entry);
     }
 }

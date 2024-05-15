@@ -34,12 +34,11 @@ public class SingleActingPneumaticCylinder implements PneumaticDevice, Mechanica
         PneumaticDevice.Output output;
         double deviceVolume = isExtended ? boreArea() * stroke : 0;
         if (isExtended && !commandExtended) {
-            output =
-                    new PneumaticDevice.Output(
-                            -deviceVolume
-                                    * (input.pressure + PhysicalConstants.ATMOSPHERIC_PRESSURE)
-                                    / PhysicalConstants.ATMOSPHERIC_PRESSURE,
-                            deviceVolume);
+            output = new PneumaticDevice.Output(
+                    -deviceVolume
+                            * (input.pressure + PhysicalConstants.ATMOSPHERIC_PRESSURE)
+                            / PhysicalConstants.ATMOSPHERIC_PRESSURE,
+                    deviceVolume);
         } else {
             output = new PneumaticDevice.Output(0, deviceVolume);
         }

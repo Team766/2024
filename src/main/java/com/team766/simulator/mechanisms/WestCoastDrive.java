@@ -68,23 +68,18 @@ public class WestCoastDrive extends DriveBase {
         wheelForce = leftWheels.step(leftWheelInput, dt).force.scalarMultiply(-1.0);
         netForce = netForce.add(wheelForce);
         netTorque = netTorque.add(Vector3D.crossProduct(LEFT_WHEEL_POSITION, wheelForce));
-        MechanicalDevice.Input rightWheelInput =
-                new MechanicalDevice.Input(
-                        RIGHT_WHEEL_POSITION, linearVelocity.scalarMultiply(-1.));
+        MechanicalDevice.Input rightWheelInput = new MechanicalDevice.Input(
+                RIGHT_WHEEL_POSITION, linearVelocity.scalarMultiply(-1.));
         wheelForce = rightWheels.step(rightWheelInput, dt).force.scalarMultiply(-1.0);
         netForce = netForce.add(wheelForce);
         netTorque = netTorque.add(Vector3D.crossProduct(RIGHT_WHEEL_POSITION, wheelForce));
 
         Vector3D ego_velocity = robotRotation.applyInverseTo(linearVelocity);
 
-        double rateLeft =
-                ENCODER_TICKS_PER_METER
-                        * (ego_velocity.getX()
-                                - angularVelocity.getZ() * LEFT_WHEEL_POSITION.getNorm());
-        double rateRight =
-                ENCODER_TICKS_PER_METER
-                        * (ego_velocity.getX()
-                                + angularVelocity.getZ() * RIGHT_WHEEL_POSITION.getNorm());
+        double rateLeft = ENCODER_TICKS_PER_METER
+                * (ego_velocity.getX() - angularVelocity.getZ() * LEFT_WHEEL_POSITION.getNorm());
+        double rateRight = ENCODER_TICKS_PER_METER
+                * (ego_velocity.getX() + angularVelocity.getZ() * RIGHT_WHEEL_POSITION.getNorm());
         leftEncoderResidual += rateLeft * dt;
         rightEncoderResidual += rateRight * dt;
         ProgramInterface.encoderChannels[0].distance += (long) leftEncoderResidual;
@@ -94,38 +89,28 @@ public class WestCoastDrive extends DriveBase {
         leftEncoderResidual %= 1;
         rightEncoderResidual %= 1;
 
-        ProgramInterface.gyro.angle =
-                Math.toDegrees(
-                        robotRotation
-                                .getAngles(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR)[
-                                2]);
+        ProgramInterface.gyro.angle = Math.toDegrees(
+                robotRotation.getAngles(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR)[2]);
         ProgramInterface.gyro.rate = Math.toDegrees(angularVelocity.getZ());
 
-        Vector3D rollingResistance =
-                new Vector3D(-softSignum(ego_velocity.getX()), 0.0, 0.0)
-                        .scalarMultiply(
-                                Parameters.ROBOT_MASS
-                                        * PhysicalConstants.GRAVITY_ACCELERATION
-                                        * Parameters.ROLLING_RESISTANCE);
+        Vector3D rollingResistance = new Vector3D(-softSignum(ego_velocity.getX()), 0.0, 0.0)
+                .scalarMultiply(Parameters.ROBOT_MASS
+                        * PhysicalConstants.GRAVITY_ACCELERATION
+                        * Parameters.ROLLING_RESISTANCE);
         netForce = netForce.add(rollingResistance);
 
-        Vector3D transverseFriction =
-                new Vector3D(0., -softSignum(ego_velocity.getY()), 0.)
-                        .scalarMultiply(
-                                Parameters.WHEEL_COEFFICIENT_OF_FRICTION
-                                        * Parameters.ROBOT_MASS
-                                        * PhysicalConstants.GRAVITY_ACCELERATION);
+        Vector3D transverseFriction = new Vector3D(0., -softSignum(ego_velocity.getY()), 0.)
+                .scalarMultiply(Parameters.WHEEL_COEFFICIENT_OF_FRICTION
+                        * Parameters.ROBOT_MASS
+                        * PhysicalConstants.GRAVITY_ACCELERATION);
         netForce = netForce.add(transverseFriction);
 
-        double maxFriction =
-                Parameters.WHEEL_COEFFICIENT_OF_FRICTION
-                        * Parameters.ROBOT_MASS
-                        * PhysicalConstants.GRAVITY_ACCELERATION
-                        * Parameters.TURNING_RESISTANCE_FACTOR;
-        netTorque =
-                netTorque.add(
-                        new Vector3D(0, 0, -softSignum(angularVelocity.getZ()))
-                                .scalarMultiply(maxFriction * WHEEL_BASE / 2));
+        double maxFriction = Parameters.WHEEL_COEFFICIENT_OF_FRICTION
+                * Parameters.ROBOT_MASS
+                * PhysicalConstants.GRAVITY_ACCELERATION
+                * Parameters.TURNING_RESISTANCE_FACTOR;
+        netTorque = netTorque.add(new Vector3D(0, 0, -softSignum(angularVelocity.getZ()))
+                .scalarMultiply(maxFriction * WHEEL_BASE / 2));
 
         linearAcceleration =
                 robotRotation.applyTo(netForce).scalarMultiply(1.0 / Parameters.ROBOT_MASS);
@@ -135,15 +120,14 @@ public class WestCoastDrive extends DriveBase {
         angularAcceleration = netTorque.scalarMultiply(1.0 / Parameters.ROBOT_MOMENT_OF_INERTIA);
         angularVelocity = angularVelocity.add(angularAcceleration.scalarMultiply(dt));
         Vector3D angularDelta = angularVelocity.scalarMultiply(dt);
-        robotRotation =
-                robotRotation.compose(
-                        new Rotation(
-                                RotationOrder.XYZ,
-                                RotationConvention.VECTOR_OPERATOR,
-                                angularDelta.getX(),
-                                angularDelta.getY(),
-                                angularDelta.getZ()),
-                        RotationConvention.VECTOR_OPERATOR);
+        robotRotation = robotRotation.compose(
+                new Rotation(
+                        RotationOrder.XYZ,
+                        RotationConvention.VECTOR_OPERATOR,
+                        angularDelta.getX(),
+                        angularDelta.getY(),
+                        angularDelta.getZ()),
+                RotationConvention.VECTOR_OPERATOR);
     }
 
     public Vector3D getPosition() {

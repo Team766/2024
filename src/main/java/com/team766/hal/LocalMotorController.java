@@ -42,61 +42,53 @@ public class LocalMotorController implements MotorController {
         // the effect that this callback will be called immediately after the periodic function of
         // the Subsystem which owns this LocalMotorController. This has the desirable effect that
         // any setpoints,etc which are set by the Subsystem immediately take effect.
-        CommandScheduler.getInstance()
-                .registerSubsystem(
-                        new Subsystem() {
-                            @Override
-                            public void periodic() {
-                                if (leader != null) {
-                                    setPower(leader.get());
-                                    return;
-                                }
+        CommandScheduler.getInstance().registerSubsystem(new Subsystem() {
+            @Override
+            public void periodic() {
+                if (leader != null) {
+                    setPower(leader.get());
+                    return;
+                }
 
-                                switch (LocalMotorController.this.controlMode) {
-                                    case Disabled:
-                                        // support proper output disabling if this.motor is a
-                                        // MotorController
-                                        if (LocalMotorController.this.motor
-                                                instanceof MotorController) {
-                                            ((MotorController) LocalMotorController.this.motor)
-                                                    .set(ControlMode.Disabled, 0);
-                                        } else {
-                                            setPower(0);
-                                        }
-                                        break;
-                                    case PercentOutput:
-                                        setPower(setpoint);
-                                        break;
-                                    case Position:
-                                        pidController.calculate(getSensorPosition());
-                                        setPower(pidController.getOutput());
-                                        break;
-                                    case Velocity:
-                                        pidController.calculate(getSensorVelocity());
-                                        setPower(pidController.getOutput());
-                                        break;
-                                    case Voltage:
-                                        setPower(
-                                                setpoint
-                                                        / RobotProvider.instance
-                                                                .getBatteryVoltage());
-                                        break;
-                                    default:
-                                        LoggerExceptionUtils.logException(
-                                                new UnsupportedOperationException(
-                                                        toString()
-                                                                + " does not support control mode "
-                                                                + LocalMotorController.this
-                                                                        .controlMode));
-                                        break;
-                                }
-                            }
+                switch (LocalMotorController.this.controlMode) {
+                    case Disabled:
+                        // support proper output disabling if this.motor is a
+                        // MotorController
+                        if (LocalMotorController.this.motor instanceof MotorController) {
+                            ((MotorController) LocalMotorController.this.motor)
+                                    .set(ControlMode.Disabled, 0);
+                        } else {
+                            setPower(0);
+                        }
+                        break;
+                    case PercentOutput:
+                        setPower(setpoint);
+                        break;
+                    case Position:
+                        pidController.calculate(getSensorPosition());
+                        setPower(pidController.getOutput());
+                        break;
+                    case Velocity:
+                        pidController.calculate(getSensorVelocity());
+                        setPower(pidController.getOutput());
+                        break;
+                    case Voltage:
+                        setPower(setpoint / RobotProvider.instance.getBatteryVoltage());
+                        break;
+                    default:
+                        LoggerExceptionUtils.logException(
+                                new UnsupportedOperationException(toString()
+                                        + " does not support control mode "
+                                        + LocalMotorController.this.controlMode));
+                        break;
+                }
+            }
 
-                            @Override
-                            public String getName() {
-                                return LocalMotorController.this.toString();
-                            }
-                        });
+            @Override
+            public String getName() {
+                return LocalMotorController.this.toString();
+            }
+        });
     }
 
     @Override
@@ -217,10 +209,8 @@ public class LocalMotorController implements MotorController {
         if (this.motor instanceof MotorController) {
             ((MotorController) this.motor).setNeutralMode(neutralMode);
         } else {
-            LoggerExceptionUtils.logException(
-                    new UnsupportedOperationException(
-                            this.toString()
-                                    + " - setNeutralMode() is only supported with CAN motor controllers"));
+            LoggerExceptionUtils.logException(new UnsupportedOperationException(this.toString()
+                    + " - setNeutralMode() is only supported with CAN motor controllers"));
         }
     }
 
@@ -246,9 +236,8 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setSelectedFeedbsckSensor() is currently unsupported by LocalMotorController"));
+        LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                "setSelectedFeedbsckSensor() is currently unsupported by LocalMotorController"));
     }
 
     @Override
@@ -264,9 +253,8 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void setCurrentLimit(final double ampsLimit) {
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setCurrentLimit() is currently unsupported by LocalMotorController"));
+        LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                "setCurrentLimit() is currently unsupported by LocalMotorController"));
     }
 
     @Override
@@ -288,15 +276,13 @@ public class LocalMotorController implements MotorController {
 
     @Override
     public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setOpenLoopRamp() is currently unsupported by LocalMotorController"));
+        LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                "setOpenLoopRamp() is currently unsupported by LocalMotorController"));
     }
 
     @Override
     public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setClosedLoopRamp() is currently unsupported by LocalMotorController"));
+        LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                "setClosedLoopRamp() is currently unsupported by LocalMotorController"));
     }
 }

@@ -18,10 +18,9 @@ public abstract class Mechanism extends SubsystemBase implements LoggingBase {
     protected void checkContextOwnership() {
         if (SchedulerMonitor.getCurrentCommand() != this.getCurrentCommand()
                 && m_runningPeriodic == null) {
-            String message =
-                    getName()
-                            + " tried to be used by "
-                            + SchedulerMonitor.getCurrentCommand().getName();
+            String message = getName()
+                    + " tried to be used by "
+                    + SchedulerMonitor.getCurrentCommand().getName();
             if (this.getCurrentCommand() != null) {
                 message += " while owned by " + this.getCurrentCommand().getName();
             } else {

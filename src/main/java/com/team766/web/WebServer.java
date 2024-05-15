@@ -45,28 +45,27 @@ public class WebServer {
     private LinkedHashMap<String, Handler> pages = new LinkedHashMap<String, Handler>();
 
     public WebServer() {
-        addHandler(
-                new Handler() {
-                    @Override
-                    public String endpoint() {
-                        return "/";
-                    }
+        addHandler(new Handler() {
+            @Override
+            public String endpoint() {
+                return "/";
+            }
 
-                    @Override
-                    public String title() {
-                        return "Menu";
-                    }
+            @Override
+            public String title() {
+                return "Menu";
+            }
 
-                    @Override
-                    public boolean showInMenu() {
-                        return false;
-                    }
+            @Override
+            public boolean showInMenu() {
+                return false;
+            }
 
-                    @Override
-                    public String handle(final Map<String, Object> params) {
-                        return "";
-                    }
-                });
+            @Override
+            public String handle(final Map<String, Object> params) {
+                return "";
+            }
+        });
     }
 
     public void addHandler(final Handler handler) {
@@ -80,26 +79,25 @@ public class WebServer {
             throw new RuntimeException(e);
         }
         for (Map.Entry<String, Handler> page : pages.entrySet()) {
-            HttpHandler httpHandler =
-                    new HttpHandler() {
-                        @Override
-                        public void handle(final HttpExchange exchange) throws IOException {
-                            Map<String, Object> params = parseParams(exchange);
-                            String response = "<!DOCTYPE html><html><body>";
-                            response += buildPageHeader();
-                            try {
-                                response += page.getValue().handle(params);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                throw ex;
-                            }
-                            response += "</body></html>";
-                            exchange.sendResponseHeaders(200, response.getBytes().length);
-                            try (OutputStream os = exchange.getResponseBody()) {
-                                os.write(response.getBytes());
-                            }
-                        }
-                    };
+            HttpHandler httpHandler = new HttpHandler() {
+                @Override
+                public void handle(final HttpExchange exchange) throws IOException {
+                    Map<String, Object> params = parseParams(exchange);
+                    String response = "<!DOCTYPE html><html><body>";
+                    response += buildPageHeader();
+                    try {
+                        response += page.getValue().handle(params);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        throw ex;
+                    }
+                    response += "</body></html>";
+                    exchange.sendResponseHeaders(200, response.getBytes().length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+                }
+            };
             server.createContext(page.getKey(), httpHandler);
         }
         addLineNumbersSvgHandler();
@@ -123,10 +121,9 @@ public class WebServer {
         result += "<p>\n";
         for (Map.Entry<String, Handler> page : pages.entrySet()) {
             if (page.getValue().showInMenu()) {
-                result +=
-                        String.format(
-                                "<a href=\"%s\">%s</a><br>\n",
-                                page.getKey(), page.getValue().title());
+                result += String.format(
+                        "<a href=\"%s\">%s</a><br>\n",
+                        page.getKey(), page.getValue().title());
             }
         }
         result += "</p>\n";
@@ -134,28 +131,27 @@ public class WebServer {
     }
 
     private void addLineNumbersSvgHandler() {
-        HttpHandler httpHandler =
-                new HttpHandler() {
-                    @Override
-                    public void handle(final HttpExchange exchange) throws IOException {
-                        String response = "<?xml version=\"1.0\"?>\n";
-                        response +=
-                                "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
-                        response += "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
-                        response +=
-                                "<text x=\"0\" y=\"0\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"14px\">\n";
-                        for (int i = 1; i < 1000; ++i) {
-                            response += "<tspan x=\"45px\" dy=\"1.143em\">" + i + ".</tspan>\n";
-                        }
-                        response += "</text>\n";
-                        response += "</svg>";
-                        exchange.getResponseHeaders().set("Content-Type", "image/svg+xml");
-                        exchange.sendResponseHeaders(200, response.getBytes().length);
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(response.getBytes());
-                        }
-                    }
-                };
+        HttpHandler httpHandler = new HttpHandler() {
+            @Override
+            public void handle(final HttpExchange exchange) throws IOException {
+                String response = "<?xml version=\"1.0\"?>\n";
+                response +=
+                        "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+                response += "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
+                response +=
+                        "<text x=\"0\" y=\"0\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"14px\">\n";
+                for (int i = 1; i < 1000; ++i) {
+                    response += "<tspan x=\"45px\" dy=\"1.143em\">" + i + ".</tspan>\n";
+                }
+                response += "</text>\n";
+                response += "</svg>";
+                exchange.getResponseHeaders().set("Content-Type", "image/svg+xml");
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(response.getBytes());
+                }
+            }
+        };
         server.createContext("/line_numbers.svg", httpHandler);
     }
 

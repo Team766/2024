@@ -13,9 +13,11 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 public class OI extends OIBase {
     public static class State {
-        @AutoLogOutput public PlacementPosition placementPosition;
+        @AutoLogOutput
+        public PlacementPosition placementPosition;
 
-        @AutoLogOutput public boolean isCross;
+        @AutoLogOutput
+        public boolean isCross;
     }
 
     private final State state = new State();
@@ -57,12 +59,9 @@ public class OI extends OIBase {
                 .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
 
         // Sets the wheels to the cross position if the cross button is pressed
-        rightJoystick
-                .getButton(InputConstants.BUTTON_CROSS_WHEELS)
-                .ifNewlyTriggering(
-                        () -> {
-                            state.isCross = !state.isCross;
-                        });
+        rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).ifNewlyTriggering(() -> {
+            state.isCross = !state.isCross;
+        });
 
         isCrossCondition
                 .update(state.isCross)
@@ -81,15 +80,11 @@ public class OI extends OIBase {
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
         movingJoysticks
-                .update(
-                        Math.abs(leftJoystickX) > 0
-                                || Math.abs(leftJoystickY) > 0
-                                || Math.abs(rightJoystickY) > 0)
-                .whileTriggering(
-                        () ->
-                                drive.setGoalBehavior(
-                                        new Drive.FieldOrientedVelocity(
-                                                leftJoystickX, leftJoystickY, rightJoystickY)));
+                .update(Math.abs(leftJoystickX) > 0
+                        || Math.abs(leftJoystickY) > 0
+                        || Math.abs(rightJoystickY) > 0)
+                .whileTriggering(() -> drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
+                        leftJoystickX, leftJoystickY, rightJoystickY)));
 
         // TODO: shouldn't be able to do this, since it circumvents reservations
         drive.setGoal(new Drive.StopDrive());

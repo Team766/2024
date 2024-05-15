@@ -67,9 +67,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     }
                 }
 
-                drive.setGoal(
-                        new Drive.RobotOrientedVelocity(
-                                yPID.getOutput(), -xPID.getOutput(), turnConstant));
+                drive.setGoal(new Drive.RobotOrientedVelocity(
+                        yPID.getOutput(), -xPID.getOutput(), turnConstant));
             } catch (AprilTagGeneralCheckedException e) {
                 double time = RobotProvider.instance.getClock().getTime();
 
@@ -79,9 +78,8 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     turnConstant = 0; // needed?
                     yPID.calculate(lastY);
                     xPID.calculate(lastX);
-                    drive.setGoal(
-                            new Drive.RobotOrientedVelocity(
-                                    yPID.getOutput(), -xPID.getOutput(), turnConstant));
+                    drive.setGoal(new Drive.RobotOrientedVelocity(
+                            yPID.getOutput(), -xPID.getOutput(), turnConstant));
                 }
             }
 
