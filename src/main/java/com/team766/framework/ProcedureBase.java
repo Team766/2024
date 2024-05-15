@@ -19,17 +19,17 @@ import java.util.Set;
     protected final int m_id;
     protected Category loggerCategory = Category.PROCEDURES;
 
-    protected static final List<Subsystem> NO_RESERVATIONS = List.of();
+    public static final List<Subsystem> NO_RESERVATIONS = List.of();
 
-    protected static Collection<Subsystem> reservations(Collection<Subsystem> reqs) {
+    public static Collection<Subsystem> reservations(Collection<Subsystem> reqs) {
         return reqs;
     }
 
-    protected static List<Subsystem> reservations(Subsystem[] reqs) {
+    public static List<Subsystem> reservations(Subsystem[] reqs) {
         return Arrays.asList(reqs);
     }
 
-    protected static List<Subsystem> reservations(Subsystem req, Subsystem... reqs) {
+    public static List<Subsystem> reservations(Subsystem req, Subsystem... reqs) {
         var list = new ArrayList<Subsystem>(1 + reqs.length);
         list.add(req);
         for (var r : reqs) {

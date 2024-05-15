@@ -342,7 +342,7 @@ public class VrConnector implements Runnable {
                 }
                 int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
                 for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
-                    ProgramInterface.joystickChannels[j].setButton(
+                    ProgramInterface.joystickChannels[j].setButtonState(
                             b + 1, ((denseButtonState >> b) & 1) != 0);
                 }
             }

@@ -32,7 +32,7 @@ public class Robot implements RobotConfigurator {
 
     @Override
     public Procedure createOI() {
-        return new OI(drive, shoulder, elevator, wrist, intake, lights);
+        return new OI(drive, shoulder, elevator, wrist, intake);
     }
 
     @Override

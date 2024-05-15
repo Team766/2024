@@ -36,6 +36,7 @@ import com.team766.robot.example.Robot;
                         robotConfigurator.toString());
 
         try {
+            @SuppressWarnings("unchecked")
             Class<RobotConfigurator> clazz =
                     (Class<RobotConfigurator>) Class.forName(robotConfigurator);
             return clazz.getDeclaredConstructor().newInstance();

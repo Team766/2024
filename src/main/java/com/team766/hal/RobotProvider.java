@@ -3,6 +3,7 @@ package com.team766.hal;
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
 import com.team766.controllers.TimeProviderI;
+import com.team766.framework.conditions.RulesMixin;
 import com.team766.hal.mock.MockAnalogInput;
 import com.team766.hal.mock.MockDigitalInput;
 import com.team766.hal.mock.MockEncoder;
@@ -25,7 +26,6 @@ public abstract class RobotProvider {
     protected SolenoidController[] solenoids = new SolenoidController[20];
     protected GyroReader[] gyros = new GyroReader[13];
     protected HashMap<String, CameraReader> cams = new HashMap<String, CameraReader>();
-    protected JoystickReader[] joysticks = new JoystickReader[8];
     protected DigitalInputReader[] digInputs = new DigitalInputReader[8];
     protected AnalogInputReader[] angInputs = new AnalogInputReader[5];
     protected RelayOutput[] relays = new RelayOutput[5];
@@ -355,7 +355,7 @@ public abstract class RobotProvider {
     }
 
     // Operator Devices
-    public abstract JoystickReader getJoystick(int index);
+    public abstract JoystickReader getJoystick(RulesMixin oi, int index);
 
     public abstract CameraInterface getCamServer();
 

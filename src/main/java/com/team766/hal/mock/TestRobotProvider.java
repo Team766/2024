@@ -1,5 +1,6 @@
 package com.team766.hal.mock;
 
+import com.team766.framework.conditions.RulesMixin;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -78,11 +79,8 @@ public class TestRobotProvider extends RobotProvider {
     }
 
     @Override
-    public JoystickReader getJoystick(final int index) {
-        if (joysticks[index] == null) {
-            joysticks[index] = new MockJoystick();
-        }
-        return joysticks[index];
+    public JoystickReader getJoystick(RulesMixin oi, int index) {
+        return new MockJoystick(oi);
     }
 
     @Override

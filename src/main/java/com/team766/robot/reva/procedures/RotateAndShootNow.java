@@ -41,7 +41,7 @@ public class RotateAndShootNow extends Procedure {
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
-        drive.stopDrive();
+        drive.setGoal(new Drive.StopDrive());
 
         // double power;
         double armAngle;
@@ -59,12 +59,13 @@ public class RotateAndShootNow extends Procedure {
         }
 
         shoulder.rotate(armAngle);
-        drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
+        drive.setGoal(new Drive.FieldOrientedVelocityWithRotationTarget(0, 0, heading));
         // shooter.shoot(power);
 
         context.waitForConditionOrTimeout(shoulder::isFinished, 0.5);
-        context.waitForConditionOrTimeout(drive::isAtRotationTarget, 3.0);
-        drive.stopDrive();
+        context.waitForConditionOrTimeout(
+                () -> drive.getState().isAtRotationTarget(heading.getDegrees()), 3.0);
+        drive.setGoal(new Drive.StopDrive());
 
         context.runSync(new ShootVelocityAndIntake(shooter, intake, lights));
     }

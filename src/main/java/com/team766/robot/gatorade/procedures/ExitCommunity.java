@@ -17,9 +17,9 @@ public class ExitCommunity extends Procedure {
     }
 
     public void run(Context context) {
-        double startY = drive.getCurrentPosition().getY();
-        drive.controlFieldOriented(0, -FollowPointsInputConstants.SPEED, 0);
-        context.waitFor(() -> Math.abs(drive.getCurrentPosition().getY() - startY) > DIST);
-        drive.stopDrive();
+        double startY = drive.getState().currentPosition().getY();
+        drive.setGoal(new Drive.FieldOrientedVelocity(0, -FollowPointsInputConstants.SPEED, 0));
+        context.waitFor(() -> Math.abs(drive.getState().currentPosition().getY() - startY) > DIST);
+        drive.setGoal(new Drive.StopDrive());
     }
 }

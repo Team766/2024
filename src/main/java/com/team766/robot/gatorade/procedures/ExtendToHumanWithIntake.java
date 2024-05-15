@@ -5,6 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.robot.gatorade.mechanisms.Elevator;
 import com.team766.robot.gatorade.mechanisms.Intake;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
+import com.team766.robot.gatorade.mechanisms.Intake.MotorState;
 import com.team766.robot.gatorade.mechanisms.Shoulder;
 import com.team766.robot.gatorade.mechanisms.Wrist;
 
@@ -30,7 +31,7 @@ public class ExtendToHumanWithIntake extends Procedure {
     }
 
     public void run(Context context) {
-        context.runSync(new IntakeIn(intake));
+        intake.setGoal(new Intake.State(gamePieceType, MotorState.IN));
         context.runSync(new ExtendWristvatorToHuman(gamePieceType, shoulder, elevator, wrist));
     }
 }

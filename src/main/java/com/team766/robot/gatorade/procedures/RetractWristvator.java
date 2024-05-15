@@ -8,9 +8,9 @@ public class RetractWristvator extends MoveWristvator {
 
     public RetractWristvator(Shoulder shoulder, Elevator elevator, Wrist wrist) {
         super(
-                Shoulder.Position.BOTTOM,
-                Elevator.Position.RETRACTED,
-                Wrist.Position.RETRACTED,
+                Shoulder.RotateToPosition.BOTTOM,
+                Elevator.MoveToPosition.RETRACTED,
+                Wrist.RotateToPosition.RETRACTED,
                 shoulder,
                 elevator,
                 wrist);

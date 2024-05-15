@@ -1,8 +1,9 @@
 package com.team766.simulator;
 
+import static com.team766.library.ArrayUtils.initializeArray;
+
 import com.team766.hal.BeaconReader;
 import com.team766.hal.mock.MockJoystick;
-import java.lang.reflect.Array;
 
 public class ProgramInterface {
     public static Program program = null;
@@ -50,7 +51,7 @@ public class ProgramInterface {
     }
 
     public static final CANMotorControllerCommunication[] canMotorControllerChannels =
-            initializeArray(256, CANMotorControllerCommunication.class);
+            initializeArray(256, CANMotorControllerCommunication::new);
 
     public static final double[] analogChannels = new double[20];
 
@@ -65,8 +66,7 @@ public class ProgramInterface {
         public double rate = 0;
     }
 
-    public static final EncoderChannel[] encoderChannels =
-            initializeArray(20, EncoderChannel.class);
+    public static final EncoderChannel[] encoderChannels = initializeArray(20, EncoderChannel::new);
 
     public static class GyroCommunication {
         public double angle; // Yaw angle (accumulative)
@@ -87,20 +87,9 @@ public class ProgramInterface {
 
     public static final int NUM_BEACONS = 8;
     public static BeaconReader.BeaconPose[] beacons =
-            initializeArray(NUM_BEACONS, BeaconReader.BeaconPose.class);
+            initializeArray(NUM_BEACONS, BeaconReader.BeaconPose::new);
 
-    public static final MockJoystick[] joystickChannels = initializeArray(6, MockJoystick.class);
-
-    private static <E> E[] initializeArray(final int size, final Class<E> clazz) {
-        @SuppressWarnings("unchecked")
-        E[] array = (E[]) Array.newInstance(clazz, size);
-        for (int i = 0; i < size; ++i) {
-            try {
-                array[i] = clazz.getConstructor().newInstance();
-            } catch (Throwable e) {
-                throw new ExceptionInInitializerError(e);
-            }
-        }
-        return array;
-    }
+    // TODO: the argument to the MockJoystick constructor should not be null
+    public static final MockJoystick[] joystickChannels =
+            initializeArray(6, () -> new MockJoystick(null));
 }

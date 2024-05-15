@@ -134,6 +134,6 @@ public class PathSequenceAuto extends Procedure {
         // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
         // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
         // current angle
-        drive.resetGyro(180 + drive.getHeading());
+        drive.resetGyro(180 + drive.getState().heading());
     }
 }

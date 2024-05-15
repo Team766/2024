@@ -8,9 +8,9 @@ public class ExtendWristvatorToHigh extends MoveWristvator {
 
     public ExtendWristvatorToHigh(Shoulder shoulder, Elevator elevator, Wrist wrist) {
         super(
-                Shoulder.Position.RAISED,
-                Elevator.Position.HIGH,
-                Wrist.Position.HIGH_NODE,
+                Shoulder.RotateToPosition.RAISED,
+                Elevator.MoveToPosition.HIGH,
+                Wrist.RotateToPosition.HIGH_NODE,
                 shoulder,
                 elevator,
                 wrist);
