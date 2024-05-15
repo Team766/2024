@@ -85,12 +85,11 @@ class EnumConfigValue<E extends Enum<E>> extends AbstractConfigValue<E> {
                 return each;
             }
         }
-        throw new IllegalArgumentException(
-                "Unrecognized enum value: "
-                        + enumName
-                        + "; values are "
-                        + Arrays.stream(enumClass.getEnumConstants())
-                                .map(e -> e.name())
-                                .collect(Collectors.joining(", ")));
+        throw new IllegalArgumentException("Unrecognized enum value: "
+                + enumName
+                + "; values are "
+                + Arrays.stream(enumClass.getEnumConstants())
+                        .map(e -> e.name())
+                        .collect(Collectors.joining(", ")));
     }
 }

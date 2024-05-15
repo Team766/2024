@@ -13,28 +13,27 @@ public class RuleEngine {
     private final List<RulesMixin.ManagedCondition> conditions =
             new LinkedList<RulesMixin.ManagedCondition>();
 
-    public final Condition neverCondition =
-            new Condition() {
-                @Override
-                protected boolean isTriggering() {
-                    return false;
-                }
+    public final Condition neverCondition = new Condition() {
+        @Override
+        protected boolean isTriggering() {
+            return false;
+        }
 
-                @Override
-                protected boolean isNewlyTriggering() {
-                    return false;
-                }
+        @Override
+        protected boolean isNewlyTriggering() {
+            return false;
+        }
 
-                @Override
-                protected boolean isFinishedTriggering() {
-                    return false;
-                }
+        @Override
+        protected boolean isFinishedTriggering() {
+            return false;
+        }
 
-                @Override
-                protected RuleEngine getRuleEngine() {
-                    return RuleEngine.this;
-                }
-            };
+        @Override
+        protected RuleEngine getRuleEngine() {
+            return RuleEngine.this;
+        }
+    };
 
     void registerCondition(RulesMixin.ManagedCondition condition) {
         conditions.add(condition);

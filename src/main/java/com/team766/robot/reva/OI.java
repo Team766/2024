@@ -42,17 +42,16 @@ public class OI extends OIBase {
         macropad = RobotProvider.instance.getJoystick(null, InputConstants.MACROPAD);
         gamepad = RobotProvider.instance.getJoystick(null, InputConstants.BOXOP_GAMEPAD_X);
 
-        driverOI =
-                new DriverOI(
-                        this,
-                        drive,
-                        shoulder,
-                        intake,
-                        shooter,
-                        lights,
-                        forwardAprilTagCamera,
-                        leftJoystick,
-                        rightJoystick);
+        driverOI = new DriverOI(
+                this,
+                drive,
+                shoulder,
+                intake,
+                shooter,
+                lights,
+                forwardAprilTagCamera,
+                leftJoystick,
+                rightJoystick);
         debugOI = new DebugOI(macropad, shoulder, climber, intake, shooter);
         boxOpOI = new BoxOpOI(gamepad, shoulder, intake, shooter, climber, lights);
     }

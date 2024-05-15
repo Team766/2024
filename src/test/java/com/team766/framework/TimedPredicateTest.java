@@ -24,17 +24,16 @@ public class TimedPredicateTest {
     @Test
     public void testTimedPredicateCondition() {
         MockClock testClock = new MockClock(1710411240.0);
-        ContextImpl.TimedPredicate predicate =
-                new ContextImpl.TimedPredicate(
-                        testClock,
-                        new BooleanSupplier() {
-                            private int counter = 0;
+        ContextImpl.TimedPredicate predicate = new ContextImpl.TimedPredicate(
+                testClock,
+                new BooleanSupplier() {
+                    private int counter = 0;
 
-                            public boolean getAsBoolean() {
-                                return (counter++) >= 2;
-                            }
-                        },
-                        1.766);
+                    public boolean getAsBoolean() {
+                        return (counter++) >= 2;
+                    }
+                },
+                1.766);
         assertFalse(predicate.getAsBoolean()); // 0
         testClock.tick(1.0);
         assertFalse(predicate.getAsBoolean()); // 1

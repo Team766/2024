@@ -80,14 +80,10 @@ public class MetricsPlot extends JPanel {
         xAxis.setMin(-0.05 * xAxis.getRange());
         xAxis.setMax(xAxis.getMax().doubleValue() + 0.05 * xAxis.getRange());
         var yAxis = plot.getAxis(XYPlot.AXIS_Y);
-        yAxis.setMin(
-                Math.min(
-                        yAxis.getMin().doubleValue() - 0.05 * yAxis.getRange(),
-                        -0.05 * yAxis.getRange()));
-        yAxis.setMax(
-                Math.max(
-                        yAxis.getMax().doubleValue() + 0.05 * yAxis.getRange(),
-                        0.05 * yAxis.getRange()));
+        yAxis.setMin(Math.min(
+                yAxis.getMin().doubleValue() - 0.05 * yAxis.getRange(), -0.05 * yAxis.getRange()));
+        yAxis.setMax(Math.max(
+                yAxis.getMax().doubleValue() + 0.05 * yAxis.getRange(), 0.05 * yAxis.getRange()));
 
         // Assign a different color to each data series.
         int colorIndex = 0;
@@ -122,44 +118,41 @@ public class MetricsPlot extends JPanel {
             }
         }
         // Add a mouse listener that will set playback time if the plot is double-clicked.
-        panel.addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (!SwingUtilities.isLeftMouseButton(e) || e.getClickCount() < 2) {
-                            return;
-                        }
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!SwingUtilities.isLeftMouseButton(e) || e.getClickCount() < 2) {
+                    return;
+                }
 
-                        double x = e.getX() - plot.getPlotArea().getX();
-                        double selectedTime =
-                                plot.getAxisRenderer(XYPlot.AXIS_X)
-                                        .viewToWorld(plot.getAxis(XYPlot.AXIS_X), x, false)
-                                        .doubleValue();
+                double x = e.getX() - plot.getPlotArea().getX();
+                double selectedTime = plot.getAxisRenderer(XYPlot.AXIS_X)
+                        .viewToWorld(plot.getAxis(XYPlot.AXIS_X), x, false)
+                        .doubleValue();
 
-                        playbackTimer.setTime(selectedTime);
+                playbackTimer.setTime(selectedTime);
 
-                        // final int index = PlotUtils.findIndex(data.getColumn(0), time);
-                        // System.out.println("At time=" + selectedTime + ":");
-                        // for (int i = 0; i < labels.size(); ++i) {
-                        // 	System.out.println("  " + labels.get(i) + ": " + data.get(i + 1,
-                        // index));
-                        // }
-                        // System.out.println();
+                // final int index = PlotUtils.findIndex(data.getColumn(0), time);
+                // System.out.println("At time=" + selectedTime + ":");
+                // for (int i = 0; i < labels.size(); ++i) {
+                // 	System.out.println("  " + labels.get(i) + ": " + data.get(i + 1,
+                // index));
+                // }
+                // System.out.println();
 
-                        e.consume();
-                    }
-                });
+                e.consume();
+            }
+        });
 
         // Add the standard time slider and play/pause button.
         add(new PlaybackControls(playbackTimer), BorderLayout.SOUTH);
 
         // Add the callback that will update this window when playback time progresses.
-        playbackTimer.addListener(
-                event -> {
-                    this.time = (Double) event.getNewValue();
-                    updateLegend();
-                    this.repaint();
-                });
+        playbackTimer.addListener(event -> {
+            this.time = (Double) event.getNewValue();
+            updateLegend();
+            this.repaint();
+        });
     }
 
     /**
@@ -188,14 +181,8 @@ public class MetricsPlot extends JPanel {
         final int lineX = PlotUtils.getPixelCoords(plot, time, 0.0).x;
         final double plotAreaTop = plot.getPlotArea().getY();
         final double plotAreaBottom = plotAreaTop + plot.getPlotArea().getHeight();
-        g2d.setStroke(
-                new BasicStroke(
-                        2,
-                        BasicStroke.CAP_SQUARE,
-                        BasicStroke.JOIN_MITER,
-                        10.f,
-                        new float[] {10.0f},
-                        0.f));
+        g2d.setStroke(new BasicStroke(
+                2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.f, new float[] {10.0f}, 0.f));
         g2d.setColor(Color.black);
         g2d.drawLine(lineX, (int) plotAreaTop, lineX, (int) plotAreaBottom);
     }

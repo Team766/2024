@@ -27,16 +27,15 @@ public class IntakeUntilIn extends Procedure {
         }
 
         // Start an async procedure so that we release the reservation on the Intake.
-        context.startAsync(
-                new Procedure(NO_RESERVATIONS) {
-                    @Override
-                    public void run(Context context) {
-                        lights.signalNoteInIntake();
+        context.startAsync(new Procedure(NO_RESERVATIONS) {
+            @Override
+            public void run(Context context) {
+                lights.signalNoteInIntake();
 
-                        context.waitForSeconds(2);
+                context.waitForSeconds(2);
 
-                        lights.turnLightsOff();
-                    }
-                });
+                lights.turnLightsOff();
+            }
+        });
     }
 }

@@ -28,9 +28,8 @@ public class Relay extends edu.wpi.first.wpilibj.Relay implements RelayOutput {
                 wpi_value = edu.wpi.first.wpilibj.Relay.Value.kReverse;
                 break;
             default:
-                LoggerExceptionUtils.logException(
-                        new UnsupportedOperationException(
-                                "invalid relay output provided. provided value: " + value));
+                LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                        "invalid relay output provided. provided value: " + value));
                 break;
         }
         if (wpi_value == null) {

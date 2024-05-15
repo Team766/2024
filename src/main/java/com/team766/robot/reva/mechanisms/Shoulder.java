@@ -68,9 +68,8 @@ public class Shoulder extends Mechanism {
 
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
 
-        absoluteEncoder =
-                (REVThroughBoreDutyCycleEncoder)
-                        RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
+        absoluteEncoder = (REVThroughBoreDutyCycleEncoder)
+                RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
         leftMotor.setSensorPosition(DEFAULT_POSITION);
         targetAngle = -1;
     }
@@ -128,9 +127,8 @@ public class Shoulder extends Mechanism {
 
     public void rotate(double angle) {
         checkContextOwnership();
-        targetAngle =
-                com.team766.math.Math.clamp(
-                        angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
+        targetAngle = com.team766.math.Math.clamp(
+                angle, ShoulderPosition.BOTTOM.getAngle(), ShoulderPosition.TOP.getAngle());
         targetRotations = degreesToRotations(targetAngle);
         // SmartDashboard.putNumber("[SHOULDER Target Angle]", targetAngle);
         // actual rotation will happen in run()

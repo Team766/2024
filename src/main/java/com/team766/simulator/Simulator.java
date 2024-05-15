@@ -76,11 +76,8 @@ public class Simulator implements Runnable {
             metricsPoint.set(yPositionSeries, drive.getPosition().getY());
             metricsPoint.set(
                     rotationSeries,
-                    Math.toDegrees(
-                            drive.getRotation()
-                                    .getAngles(
-                                            RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR)[
-                                    2]));
+                    Math.toDegrees(drive.getRotation()
+                            .getAngles(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR)[2]));
             metricsPoint.set(velocitySeries, drive.getLinearVelocity().getX());
             metricsPoint.set(accelerationSeries, drive.getLinearAcceleration().getX());
             metricsPoint.set(armAngle1Series, arm.getJ1Angle());
@@ -95,26 +92,23 @@ public class Simulator implements Runnable {
                 metricsPoint.set(branchCurrentSeries.get(branch.getKey()), branch.getValue());
             }
 
-            driveTrajectory.add(
-                    new Double[] {
-                        time,
-                        drive.getPosition().getX(),
-                        drive.getPosition().getY(),
-                        drive.getRotation()
-                                .getAngles(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR)[
-                                2],
-                        drive.getLinearVelocity().getX(),
-                        drive.getLinearVelocity().getY(),
-                    });
+            driveTrajectory.add(new Double[] {
+                time,
+                drive.getPosition().getX(),
+                drive.getPosition().getY(),
+                drive.getRotation()
+                        .getAngles(RotationOrder.XYZ, RotationConvention.VECTOR_OPERATOR)[2],
+                drive.getLinearVelocity().getX(),
+                drive.getLinearVelocity().getY(),
+            });
 
-            armTrajectory.add(
-                    new Double[] {
-                        time,
-                        arm.getJ1Position().get(0, 0),
-                        arm.getJ1Position().get(1, 0),
-                        arm.getJ2Position().get(0, 0),
-                        arm.getJ2Position().get(1, 0)
-                    });
+            armTrajectory.add(new Double[] {
+                time,
+                arm.getJ1Position().get(0, 0),
+                arm.getJ1Position().get(1, 0),
+                arm.getJ2Position().get(0, 0),
+                arm.getJ2Position().get(1, 0)
+            });
         }
     }
 

@@ -52,34 +52,22 @@ public class BoxOpOI extends OIFragment {
         intakeOut = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_RB));
         intakeIn = new OICondition(() -> gamepad.getButton(InputConstants.XBOX_LB));
         shooterShoot = new OICondition(() -> gamepad.getAxis(InputConstants.XBOX_RT) > 0);
-        climberClimb =
-                new OICondition(
-                        () ->
-                                Math.abs(gamepad.getAxis(InputConstants.XBOX_LS_Y))
-                                                > InputConstants.XBOX_DEADZONE
-                                        || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
-                                                > InputConstants.XBOX_DEADZONE);
+        climberClimb = new OICondition(() ->
+                Math.abs(gamepad.getAxis(InputConstants.XBOX_LS_Y)) > InputConstants.XBOX_DEADZONE
+                        || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
+                                > InputConstants.XBOX_DEADZONE);
 
-        moveShoulder =
-                new OICondition(
-                        () ->
-                                (gamepad.getButton(InputConstants.XBOX_A)
-                                        || gamepad.getButton(InputConstants.XBOX_B)
-                                        || gamepad.getButton(InputConstants.XBOX_X)
-                                        || gamepad.getButton(InputConstants.XBOX_Y)
-                                        || gamepad.getPOV() == 0
-                                        || gamepad.getPOV() == 180));
-        enableClimberControls =
-                new OICondition(
-                        () ->
-                                ((gamepad.getButton(InputConstants.XBOX_A)
-                                        && gamepad.getButton(InputConstants.XBOX_B))));
+        moveShoulder = new OICondition(() -> (gamepad.getButton(InputConstants.XBOX_A)
+                || gamepad.getButton(InputConstants.XBOX_B)
+                || gamepad.getButton(InputConstants.XBOX_X)
+                || gamepad.getButton(InputConstants.XBOX_Y)
+                || gamepad.getPOV() == 0
+                || gamepad.getPOV() == 180));
+        enableClimberControls = new OICondition(() -> ((gamepad.getButton(InputConstants.XBOX_A)
+                && gamepad.getButton(InputConstants.XBOX_B))));
 
-        climberOverrideSoftLimits =
-                new OICondition(
-                        () ->
-                                (gamepad.getButton(InputConstants.XBOX_X)
-                                        && gamepad.getButton(InputConstants.XBOX_Y)));
+        climberOverrideSoftLimits = new OICondition(() -> (gamepad.getButton(InputConstants.XBOX_X)
+                && gamepad.getButton(InputConstants.XBOX_Y)));
     }
 
     @Override
