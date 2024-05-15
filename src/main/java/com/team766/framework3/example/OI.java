@@ -43,21 +43,36 @@ public class OI extends OIBase {
     }
 
     public void dispatchDriver() {
-        when(leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER))
-                .isTriggering(() -> new DriverShootNow(null, null, null, null, null, null));
+        new Condition(leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> new DriverShootNow(null, null, null, null, null, null));
+            }
+        };
 
-        when(leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO))
-                .isNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        new Condition(leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO)) {
+            protected void ifNewlyTriggering() {
+                runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+            }
+        };
 
-        when(leftJoystick.getButton(InputConstants.BUTTON_RESET_POS))
-                .isNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        new Condition(leftJoystick.getButton(InputConstants.BUTTON_RESET_POS)) {
+            protected void ifNewlyTriggering() {
+                runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+            }
+        };
 
         // Sets the wheels to the cross position if the cross button is pressed
-        when(rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS)).isNewlyTriggering(() -> {
-            state.isCross = !state.isCross;
-        });
+        new Condition(rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS)) {
+            protected void ifNewlyTriggering() {
+                state.isCross = !state.isCross;
+            }
+        };
 
-        when(state.isCross).isTriggering(() -> drive.setGoalBehavior(new Drive.SetCross()));
+        new Condition(state.isCross) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> drive.setGoalBehavior(new Drive.SetCross()));
+            }
+        };
 
         final double leftJoystickX =
                 -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
@@ -71,11 +86,13 @@ public class OI extends OIBase {
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
-        when(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0)
-                .isTriggering(() -> {
-                    runIfAvailable(() -> drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
-                            leftJoystickX, leftJoystickY, rightJoystickY)));
-                });
+        new Condition(
+                Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
+                        leftJoystickX, leftJoystickY, rightJoystickY)));
+            }
+        };
 
         // TODO: shouldn't be able to do this, since it circumvents reservations
         drive.setGoal(new Drive.StopDrive());

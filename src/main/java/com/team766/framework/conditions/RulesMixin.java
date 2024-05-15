@@ -2,81 +2,71 @@ package com.team766.framework.conditions;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class RulesMixin implements RuleEngineProvider {
 
-    public class Condition {
-        private final boolean triggeringNow;
+    protected abstract class Condition {
+        public Condition(boolean isTriggering) {
+            if (!this.getClass().isAnonymousClass()) {
+                throw new IllegalCallerException("Condition classes should be anonymous");
+            }
 
-        public Condition(boolean triggeringNow) {
-            this.triggeringNow = triggeringNow;
-        }
+            final Boolean prevTriggering = prevConditions.get(this.getClass());
 
-        private boolean prevTriggering(Class<?> handle) {
-            return prevConditions.getOrDefault(handle, false);
-        }
-
-        private boolean isTriggering(Class<?> handle) {
-            var result = conditions.put(handle, triggeringNow);
-            if (result != null) {
+            final var putResult = conditions.put(this.getClass(), isTriggering);
+            if (putResult != null) {
                 throw new IllegalStateException(
                         "A single callback object was used in two different conditions. This is not supported.");
             }
-            return triggeringNow;
-        }
 
-        private boolean isNewlyTriggering(Class<?> handle) {
-            return !prevTriggering(handle) && isTriggering(handle);
-        }
-
-        private boolean isFinishedTriggering(Class<?> handle) {
-            return prevTriggering(handle) && !isTriggering(handle);
-        }
-
-        public Condition isNewlyTriggering(Runnable callback) {
-            if (isNewlyTriggering(callback.getClass())) {
-                callback.run();
+            if (prevTriggering != null && !prevTriggering && isTriggering) {
+                ifNewlyTriggering();
             }
-            return this;
+
+            if (prevTriggering != null && prevTriggering && !isTriggering) {
+                ifFinishedTriggering();
+            }
+
+            if (isTriggering) {
+                ifTriggering();
+            }
+
+            if (!isTriggering) {
+                ifNotTriggering();
+            }
         }
 
-        public Condition isFinishedTriggering(Runnable callback) {
-            if (isFinishedTriggering(callback.getClass())) {
-                callback.run();
-            }
-            return this;
+        protected void runIfAvailable(Supplier<Command> command) {
+            engine.tryScheduling(command);
         }
 
-        public Condition isTriggering(Runnable callback) {
-            if (isTriggering(callback.getClass())) {
-                callback.run();
-            }
-            return this;
-        }
+        /// This prevents calling byDefault from inside a Condition.
+        /// Condition code should select behaviors using runIfAvailable instead.
+        protected void byDefault(Use_runIfAvailable_instead __) {}
 
-        public Condition isNotTriggering(Runnable callback) {
-            if (!isTriggering(callback.getClass())) {
-                callback.run();
-            }
-            return this;
-        }
+        protected void ifNewlyTriggering() {}
+
+        protected void ifFinishedTriggering() {}
+
+        protected void ifTriggering() {}
+
+        protected void ifNotTriggering() {}
     }
 
     private final RuleEngine engine;
-    private HashMap<Class<?>, Boolean> prevConditions = new HashMap<>();
-    private HashMap<Class<?>, Boolean> conditions = new HashMap<>();
+    private Map<Class<? extends Condition>, Boolean> prevConditions = new HashMap<>();
+    private Map<Class<? extends Condition>, Boolean> conditions = new HashMap<>();
 
     protected RulesMixin(RuleEngineProvider engine) {
         this.engine = engine.getRuleEngine();
         this.engine.registerStartFrameCallback(() -> {
+            var temp = prevConditions;
             prevConditions = conditions;
-            conditions = new HashMap<>();
+            conditions = temp;
+            conditions.clear();
         });
-    }
-
-    public Condition when(boolean triggeringNow) {
-        return new Condition(triggeringNow);
     }
 
     @Override
@@ -84,11 +74,11 @@ public class RulesMixin implements RuleEngineProvider {
         return engine;
     }
 
-    protected void runIfAvailable(Supplier<Command> behavior) {
-        engine.tryScheduling(behavior);
+    protected void byDefault(Supplier<Command> command) {
+        engine.tryScheduling(command);
     }
+}
 
-    protected void byDefault(Supplier<Command> behavior) {
-        engine.tryScheduling(behavior);
-    }
+class Use_runIfAvailable_instead {
+    private Use_runIfAvailable_instead() {}
 }

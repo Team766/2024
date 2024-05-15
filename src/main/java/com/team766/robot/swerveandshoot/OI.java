@@ -45,9 +45,11 @@ public class OI extends OIBase {
     public void dispatch() {
         // General drive util
 
-        when(joystick0.getButton(2)).isNewlyTriggering(() -> {
-            runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
-        });
+        new Condition(joystick0.getButton(2)) {
+            protected void ifNewlyTriggering() {
+                runIfAvailable(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+            }
+        };
 
         /*
          * The joystick operator will need to hold all of these buttons when using vision to score or pickup a note
@@ -58,28 +60,34 @@ public class OI extends OIBase {
          * SCORE1R
          * This is used to drive into the area labled 1R in the maker space.
          */
-        when(joystick0.getButton(1)).isTriggering(() -> {
-            runIfAvailable(() -> new DriveToAndScoreAt(
-                    ScoringPositions.makerSpace1R, drive, tempShooter, forwardApriltagCamera));
-        });
+        new Condition(joystick0.getButton(1)) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> new DriveToAndScoreAt(
+                        ScoringPositions.makerSpace1R, drive, tempShooter, forwardApriltagCamera));
+            }
+        };
 
         /*
          * SCORE1L
          * This is used to drive into the area labled 1L in the maker space.
          */
-        when(joystick0.getButton(2)).isTriggering(() -> {
-            runIfAvailable(() -> new DriveToAndScoreAt(
-                    ScoringPositions.makerSpace1L, drive, tempShooter, forwardApriltagCamera));
-        });
+        new Condition(joystick0.getButton(2)) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> new DriveToAndScoreAt(
+                        ScoringPositions.makerSpace1L, drive, tempShooter, forwardApriltagCamera));
+            }
+        };
 
         /*
          * PICKUP
          * This is used to go to the ring and "pick" it up, or in reality right now just nudge it and pretend like it was picked up
          */
 
-        when(joystick1.getButton(1)).isTriggering(() -> {
-            runIfAvailable(() -> new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
-        });
+        new Condition(joystick1.getButton(1)) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
+            }
+        };
 
         // if (joystick1.getButton(1)) {
         //     try {
@@ -123,16 +131,17 @@ public class OI extends OIBase {
         //     }
         // }
 
-        when(Math.abs(joystick0.getAxis(0))
-                                + Math.abs(joystick0.getAxis(1))
-                                + Math.abs(joystick1.getAxis(0))
-                        > 0.05)
-                .isTriggering(() -> {
-                    runIfAvailable(() -> drive.setGoalBehavior(new Drive.RobotOrientedVelocity(
-                            joystick0.getAxis(0) * .2,
-                            -joystick0.getAxis(1) * .2,
-                            joystick1.getAxis(0) * .2)));
-                });
+        new Condition(Math.abs(joystick0.getAxis(0))
+                        + Math.abs(joystick0.getAxis(1))
+                        + Math.abs(joystick1.getAxis(0))
+                > 0.05) {
+            protected void ifTriggering() {
+                runIfAvailable(() -> drive.setGoalBehavior(new Drive.RobotOrientedVelocity(
+                        joystick0.getAxis(0) * .2,
+                        -joystick0.getAxis(1) * .2,
+                        joystick1.getAxis(0) * .2)));
+            }
+        };
 
         byDefault(() -> drive.setGoalBehavior(new Drive.StopDrive()));
     }
