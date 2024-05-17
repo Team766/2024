@@ -2,13 +2,17 @@ package com.team766.framework;
 
 import static com.team766.framework.InstantProcedure.reservations;
 
+import com.team766.framework.Statuses.StatusSource;
 import com.team766.logging.Category;
+import com.team766.logging.LoggerExceptionUtils;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Objects;
 
-public abstract class Subsystem<StateRecord, Goal>
-        extends edu.wpi.first.wpilibj2.command.SubsystemBase
-        implements LoggingBase, WithState<StateRecord> {
-    private StateRecord currentState;
+public abstract class Subsystem<StatusRecord extends Record, Goal> extends SubsystemBase
+        implements LoggingBase, SubsystemStatus<StatusRecord>, StatusSource {
+    private StatusRecord currentStatus;
     private Goal currentGoal;
+    private boolean goalChanged = false;
 
     protected Category loggerCategory = Category.MECHANISMS;
 
@@ -18,32 +22,46 @@ public abstract class Subsystem<StateRecord, Goal>
     }
 
     /**
-     * Collect all of the information about the current state (i.e. from sensors)
-     * and return it in a StateRecord.
+     * Collect information about the current state (i.e. from sensors)
+     * and return it in a StatusRecord.
      */
-    protected abstract StateRecord updateState();
+    protected abstract StatusRecord updateState();
 
     /**
      *
      */
-    protected abstract void dispatch(StateRecord state, Goal goal);
+    protected abstract void dispatch(StatusRecord status, Goal goal, boolean goalChanged);
 
     @Override
-    public void periodic() {
-        currentState = updateState();
+    public final boolean isStatusActive() {
+        return true;
+    }
 
-        Goal initialGoal;
-        do {
-            initialGoal = currentGoal;
-            dispatch(currentState, currentGoal);
-        } while (currentGoal != initialGoal);
+    @Override
+    public final void periodic() {
+        try {
+            currentStatus = updateState();
+            Statuses.getInstance().add(currentStatus, this);
+
+            do {
+                goalChanged = false;
+                if (currentGoal != null) {
+                    dispatch(currentStatus, currentGoal, goalChanged);
+                }
+            } while (goalChanged);
+        } catch (Exception ex) {
+            LoggerExceptionUtils.logException(ex);
+        }
     }
 
     public final void setGoal(Goal newGoal) {
+        Objects.requireNonNull(newGoal, "Goal object must be non-null");
         currentGoal = newGoal;
+        goalChanged = true;
     }
 
     public final InstantProcedure setGoalBehavior(Goal goal) {
+        Objects.requireNonNull(goal, "Goal object must be non-null");
         return new InstantProcedure(reservations(this)) {
             @Override
             public void run() {
@@ -52,11 +70,11 @@ public abstract class Subsystem<StateRecord, Goal>
         };
     }
 
-    protected final Goal getGoal() {
+    public final Goal getGoal() {
         return currentGoal;
     }
 
-    public final StateRecord getState() {
-        return currentState;
+    public final StatusRecord getStatus() {
+        return currentStatus;
     }
 }

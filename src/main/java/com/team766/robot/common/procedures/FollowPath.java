@@ -58,8 +58,8 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        Pose2d curPose = drive.getState().currentPosition();
-        ChassisSpeeds currentSpeeds = drive.getState().chassisSpeeds();
+        Pose2d curPose = drive.getStatus().currentPosition();
+        ChassisSpeeds currentSpeeds = drive.getStatus().chassisSpeeds();
 
         controller.reset(curPose, currentSpeeds);
 
@@ -78,8 +78,8 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            curPose = drive.getState().currentPosition();
-            currentSpeeds = drive.getState().chassisSpeeds();
+            curPose = drive.getStatus().currentPosition();
+            currentSpeeds = drive.getStatus().chassisSpeeds();
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?

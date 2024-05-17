@@ -1,6 +1,8 @@
 package com.team766.hal;
 
 import com.team766.framework.AutonomousMode;
+import com.team766.framework.LightsBase;
+import com.team766.framework.OIBase;
 import com.team766.framework.SchedulerMonitor;
 import com.team766.framework.SchedulerUtils;
 import com.team766.logging.Category;
@@ -20,7 +22,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public final class GenericRobotMain {
     private RobotConfigurator configurator;
-    private Command m_oi;
+    private OIBase m_oi;
+    private LightsBase m_lights;
 
     private WebServer m_webServer;
     private AutonomousSelector m_autonSelector;
@@ -57,6 +60,7 @@ public final class GenericRobotMain {
             configurator.initializeMechanisms();
 
             m_oi = configurator.createOI();
+            m_lights = configurator.createLights();
         } catch (Throwable ex) {
             faultInRobotInit = true;
             throw ex;
@@ -92,7 +96,10 @@ public final class GenericRobotMain {
         if (timeInState > RESET_IN_DISABLED_PERIOD) {
             resetAutonomousMode("time in disabled mode");
         }
+
         CommandScheduler.getInstance().run();
+
+        m_lights.run();
     }
 
     public void resetAutonomousMode(final String reason) {
@@ -107,10 +114,6 @@ public final class GenericRobotMain {
 
     public void autonomousInit() {
         faultInAutoInit = true;
-
-        if (m_oi.isScheduled()) {
-            m_oi.cancel();
-        }
 
         if (m_autonomous != null) {
             Logger.get(Category.AUTONOMOUS)
@@ -136,7 +139,10 @@ public final class GenericRobotMain {
                             Severity.INFO,
                             "Starting new autonomus procedure " + m_autonomous.getName());
         }
+
         CommandScheduler.getInstance().run();
+
+        m_lights.run();
     }
 
     public void teleopInit() {
@@ -148,9 +154,7 @@ public final class GenericRobotMain {
             m_autonMode = null;
         }
 
-        if (m_oi != null && !m_oi.isScheduled()) {
-            m_oi.schedule();
-        }
+        m_oi = configurator.createOI();
 
         faultInTeleopInit = false;
     }
@@ -158,11 +162,10 @@ public final class GenericRobotMain {
     public void teleopPeriodic() {
         if (faultInRobotInit || faultInTeleopInit) return;
 
-        if (m_oi != null && !m_oi.isScheduled()) {
-            m_oi.schedule();
-            Logger.get(Category.OPERATOR_INTERFACE)
-                    .logRaw(Severity.WARNING, "Restarting OI context");
-        }
         CommandScheduler.getInstance().run();
+
+        m_oi.run();
+
+        m_lights.run();
     }
 }

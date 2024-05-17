@@ -4,7 +4,6 @@ import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.ShootAtSubwoofer;
@@ -20,15 +19,14 @@ public class ThreePieceMidfieldAmpSide extends AutoBase {
             Shooter shooter,
             Intake intake,
             Climber climber,
-            Lights lights,
             ForwardApriltagCamera forwardApriltagCamera) {
         super(drive, shooter, climber, new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
-        addProcedure(new ShootAtSubwoofer(shoulder, shooter, intake, lights));
-        addProcedure(new StartAutoIntake(shoulder, intake, lights));
+        addProcedure(new ShootAtSubwoofer(shoulder, shooter, intake));
+        addProcedure(new StartAutoIntake(shoulder, intake));
         addPath("Amp Side Start to Top Piece");
-        addProcedure(new ShootNow(drive, shoulder, shooter, intake, lights, forwardApriltagCamera));
-        addProcedure(new StartAutoIntake(shoulder, intake, lights));
+        addProcedure(new ShootNow(drive, shoulder, shooter, intake, forwardApriltagCamera));
+        addProcedure(new StartAutoIntake(shoulder, intake));
         addPath("Retrieve Top Midfield from Top Piece");
-        addProcedure(new ShootNow(drive, shoulder, shooter, intake, lights, forwardApriltagCamera));
+        addProcedure(new ShootNow(drive, shoulder, shooter, intake, forwardApriltagCamera));
     }
 }

@@ -27,8 +27,8 @@ public class ScoreHigh extends Procedure {
 
     public void run(Context context) {
         context.runSync(new ExtendWristvatorToHigh(shoulder, elevator, wrist));
-        intake.setGoal(new Intake.State(type, Intake.MotorState.OUT));
+        intake.setGoal(new Intake.Status(type, Intake.MotorState.OUT));
         context.waitForSeconds(1);
-        intake.setGoal(new Intake.State(type, Intake.MotorState.STOP));
+        intake.setGoal(new Intake.Status(type, Intake.MotorState.STOP));
     }
 }

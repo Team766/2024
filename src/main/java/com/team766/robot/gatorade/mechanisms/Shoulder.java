@@ -21,12 +21,12 @@ import org.littletonrobotics.junction.AutoLogOutput;
  * attached {@link Wrist} and {@link Intake}) to reach different positions, from the floor to different
  * heights of nodes.
  */
-public class Shoulder extends Subsystem<Shoulder.State, Shoulder.Goal> {
+public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
 
     /**
      * @param angle the current angle of the wrist.
      */
-    public record State(@AutoLogOutput double rotations, @AutoLogOutput double angle) {
+    public record Status(@AutoLogOutput double rotations, @AutoLogOutput double angle) {
         public boolean isNearTo(RotateToPosition position) {
             return isNearTo(position.angle());
         }
@@ -119,33 +119,35 @@ public class Shoulder extends Subsystem<Shoulder.State, Shoulder.Goal> {
     }
 
     @Override
-    protected State updateState() {
-        return new State(
+    protected Status updateState() {
+        return new Status(
                 leftMotor.getEncoder().getPosition(),
                 EncoderUtils.shoulderRotationsToDegrees(leftMotor.getEncoder().getPosition()));
     }
 
     @Override
-    protected void dispatch(State state, Goal goal) {
+    protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case NudgeNoPID nudge -> {
+                if (!goalChanged) return;
                 double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
                 clampedValue *=
                         NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
                 leftMotor.set(clampedValue);
             }
             case StopShoulder s -> {
+                if (!goalChanged) return;
                 leftMotor.set(0);
             }
             case NudgeUp n -> {
                 double targetAngle =
-                        Math.min(state.angle + NUDGE_INCREMENT, RotateToPosition.TOP.angle());
+                        Math.min(status.angle + NUDGE_INCREMENT, RotateToPosition.TOP.angle());
 
                 setGoal(new RotateToPosition(targetAngle));
             }
             case NudgeDown n -> {
                 double targetAngle =
-                        Math.max(state.angle - NUDGE_INCREMENT, RotateToPosition.BOTTOM.angle());
+                        Math.max(status.angle - NUDGE_INCREMENT, RotateToPosition.BOTTOM.angle());
                 setGoal(new RotateToPosition(targetAngle));
             }
             case RotateToPosition position -> {

@@ -3,13 +3,14 @@ package com.team766.robot.gatorade;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.team766.library.RateLimiter;
+import com.team766.framework.LightsBase;
+import com.team766.framework.Statuses;
 import com.team766.logging.Severity;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class Lights {
+public class Lights extends LightsBase {
     private final CANdle candle;
     private static final int CANID = 5;
     private static final int LED_COUNT = 90;
@@ -19,27 +20,22 @@ public class Lights {
         candle = new CANdle(CANID, SwerveDriveConstants.SWERVE_CANBUS);
     }
 
-    private RateLimiter lightsRateLimit = new RateLimiter(1.3);
-
-    public void dispatch() {
-        if (changed(gamePieceType)) {
-            setLightsForGamePiece();
-        }
-
-        // if (changed(placementPosition)) {
-        // 	setLightsForPlacement();
-        // }
-
-        if (lightsRateLimit.next()) {
-            if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
-                rainbow();
-            } else {
-                setLightsForGamePiece();
-            }
+    @Override
+    protected void dispatch(Statuses statuses) {
+        var status = statuses.get(OI.Status.class);
+        if ((!status.isPresent() || status.get().age() > 1.3)
+                && DriverStation.getMatchTime() > 0
+                && DriverStation.getMatchTime() < 17) {
+            rainbow();
+        } else if (status.isPresent()) {
+            var oiStatus = status.get().status;
+            setLightsForGamePiece(oiStatus.gamePieceType());
+            setLightsForPlacement(oiStatus.placementPosition(), oiStatus.gamePieceType());
         }
     }
 
-    private void setLightsForPlacement() {
+    private void setLightsForPlacement(
+            PlacementPosition placementPosition, GamePieceType gamePieceType) {
         switch (placementPosition) {
             case NONE:
                 white();
@@ -54,7 +50,7 @@ public class Lights {
                 orange();
                 break;
             case HUMAN_PLAYER:
-                setLightsForGamePiece();
+                setLightsForGamePiece(gamePieceType);
                 break;
             default:
                 // warn, ignore
@@ -63,20 +59,14 @@ public class Lights {
                         "Unexpected placement position: " + placementPosition.toString());
                 break;
         }
-
-        lightsRateLimit.reset();
-        lightsRateLimit.next();
     }
 
-    private void setLightsForGamePiece() {
-        if (intake.getGamePieceType() == GamePieceType.CUBE) {
-            lights.purple();
+    private void setLightsForGamePiece(GamePieceType gamePieceType) {
+        if (gamePieceType == GamePieceType.CUBE) {
+            purple();
         } else {
-            lights.yellow();
+            yellow();
         }
-
-        lightsRateLimit.reset();
-        lightsRateLimit.next();
     }
 
     public void purple() {

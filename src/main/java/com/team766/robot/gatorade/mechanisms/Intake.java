@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
  * intake or outtake.  This is because the motor must spin in opposite directions to intake cubes
  * versus cones.
  */
-public class Intake extends Subsystem<Intake.State, Intake.State> {
+public class Intake extends Subsystem<Intake.Status, Intake.Status> {
 
     private static final double POWER_IN = 0.3;
     private static final double POWER_OUT = 0.25;
@@ -54,7 +54,7 @@ public class Intake extends Subsystem<Intake.State, Intake.State> {
         OUT
     }
 
-    public record State(
+    public record Status(
             @AutoLogOutput GamePieceType gamePieceType, @AutoLogOutput MotorState state) {}
 
     private final MotorController motor;
@@ -64,16 +64,20 @@ public class Intake extends Subsystem<Intake.State, Intake.State> {
      */
     public Intake() {
         motor = RobotProvider.instance.getMotor(INTAKE_MOTOR);
-        setGoal(new State(GamePieceType.CONE, MotorState.IDLE));
+        setGoal(new Status(GamePieceType.CONE, MotorState.IDLE));
     }
 
     @Override
-    protected State updateState() {
+    protected Status updateState() {
         return getGoal();
     }
 
     @Override
-    protected void dispatch(State state, State goal) {
+    protected void dispatch(Status status, Status goal, boolean goalChanged) {
+        if (!goalChanged) {
+            return;
+        }
+
         switch (goal.state) {
             case IN -> {
                 double power =

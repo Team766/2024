@@ -10,25 +10,27 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class IntakeAuto extends PathSequenceAuto {
     public IntakeAuto(GamePieceType gamePieceType, Drive drive, Intake intake) {
         super(drive, new Pose2d(2.00, 7.00, new Rotation2d(0)));
-        addProcedure(intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.IN)));
+        addProcedure(
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
         addPath("Intake_Path_1");
         addProcedure(
-                intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.IDLE)));
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
         addPath("Intake_Path_2");
         addProcedure(
-                intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.OUT)));
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
         addProcedure(drive.setGoalBehavior(new Drive.SetCross()));
         addWait(1);
         addProcedure(
-                intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.STOP)));
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         addPath("Intake_Path_3");
-        addProcedure(intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.IN)));
+        addProcedure(
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
         addPath("Intake_Path_4");
         addProcedure(drive.setGoalBehavior(new Drive.SetCross()));
         addProcedure(
-                intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.OUT)));
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
         addWait(2);
         addProcedure(
-                intake.setGoalBehavior(new Intake.State(gamePieceType, Intake.MotorState.STOP)));
+                intake.setGoalBehavior(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
     }
 }

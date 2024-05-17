@@ -36,23 +36,23 @@ public class MoveWristvator extends Procedure {
         // It might already be retracted, so it's possible that this step finishes instantaneously.
         wrist.setGoal(Wrist.RotateToPosition.RETRACTED);
         // If raising the shoulder, do that before the elevator (else, lower it after the elevator).
-        if (shoulderSetpoint.angle() > shoulder.getState().angle()) {
+        if (shoulderSetpoint.angle() > shoulder.getStatus().angle()) {
             shoulder.setGoal(shoulderSetpoint);
-            context.waitFor(() -> shoulder.getState().isNearTo(shoulderSetpoint));
+            context.waitFor(() -> shoulder.getStatus().isNearTo(shoulderSetpoint));
         }
-        context.waitFor(() -> wrist.getState().isNearTo(Wrist.RotateToPosition.RETRACTED));
+        context.waitFor(() -> wrist.getStatus().isNearTo(Wrist.RotateToPosition.RETRACTED));
 
         // Move the elevator. Wait until it gets near the target position.
         elevator.setGoal(elevatorSetpoint);
-        context.waitFor(() -> elevator.getState().isNearTo(elevatorSetpoint));
+        context.waitFor(() -> elevator.getStatus().isNearTo(elevatorSetpoint));
 
         // If lowering the shoulder, do that after the elevator.
-        if (shoulderSetpoint.angle() < shoulder.getState().angle()) {
+        if (shoulderSetpoint.angle() < shoulder.getStatus().angle()) {
             shoulder.setGoal(shoulderSetpoint);
         }
         // Lastly, move the wrist.
         wrist.setGoal(wristSetpoint);
-        context.waitFor(() -> wrist.getState().isNearTo(wristSetpoint));
-        context.waitFor(() -> shoulder.getState().isNearTo(shoulderSetpoint));
+        context.waitFor(() -> wrist.getStatus().isNearTo(wristSetpoint));
+        context.waitFor(() -> shoulder.getStatus().isNearTo(shoulderSetpoint));
     }
 }

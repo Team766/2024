@@ -3,8 +3,8 @@ package com.team766.robot.reva.procedures;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 
 public class ShootVelocityAndIntake extends Procedure {
 
@@ -12,31 +12,29 @@ public class ShootVelocityAndIntake extends Procedure {
 
     private final Shooter shooter;
     private final Intake intake;
-    private final Lights lights;
 
-    public ShootVelocityAndIntake(Shooter shooter, Intake intake, Lights lights) {
-        this(4800, shooter, intake, lights);
+    public ShootVelocityAndIntake(Shooter shooter, Intake intake) {
+        this(4800, shooter, intake);
     }
 
-    public ShootVelocityAndIntake(double speed, Shooter shooter, Intake intake, Lights lights) {
+    public ShootVelocityAndIntake(double speed, Shooter shooter, Intake intake) {
         super(reservations(shooter, intake));
         this.speed = speed;
         this.shooter = shooter;
         this.intake = intake;
-        this.lights = lights;
     }
 
     public void run(Context context) {
-        shooter.shoot(speed);
-        context.waitForConditionOrTimeout(shooter::isCloseToExpectedSpeed, 1.5);
+        shooter.setGoal(new Shooter.ShootAtSpeed(speed));
+        context.waitForConditionOrTimeout(() -> shooter.getStatus().isCloseToSpeed(speed), 1.5);
 
-        context.runSync(new IntakeIn(intake));
+        intake.setGoal(new Intake.In());
 
         // FIXME: change this value back to 1.5s if doesn't intake for long enough
         context.waitForSeconds(1.2);
 
-        context.runSync(new IntakeStop(intake));
-        lights.signalFinishedShootingProcedure();
+        intake.setGoal(new Intake.Stop());
+        updateStatus(new ShootingProcedureStatus(Status.FINISHED));
 
         // Shooter stopped at the end of auton
     }

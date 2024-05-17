@@ -1,6 +1,7 @@
 package com.team766.hal;
 
-import com.team766.framework.conditions.Condition;
+import com.team766.framework.conditions.ConditionState;
+import com.team766.framework.conditions.RulesMixin.ValueCondition;
 
 public interface JoystickReader {
     /**
@@ -11,18 +12,15 @@ public interface JoystickReader {
      */
     double getAxis(int axis);
 
+    ValueCondition<Double> getAxisCondition(int axis);
+
     /**
-     * Get the button value (starting at button 1)
-     *
-     * The appropriate button is returned as a boolean value.
+     * Get the state of a button (starting at button 1)
      *
      * @param button The button number to be read (starting at 1).
      * @return The state of the button.
      */
-    // TODO: this should be hidden from the user. they should use getButton().isTriggering()
-    boolean getButtonState(int button);
-
-    Condition getButton(int button);
+    ConditionState getButton(int button);
 
     /**
      * Get the value of the POV
@@ -30,4 +28,6 @@ public interface JoystickReader {
      * @return the value of the POV
      */
     int getPOV();
+
+    ValueCondition<Integer> getPOVCondition();
 }

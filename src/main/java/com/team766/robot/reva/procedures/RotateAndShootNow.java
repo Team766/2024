@@ -3,12 +3,12 @@ package com.team766.robot.reva.procedures;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
+import com.team766.framework.SubsystemStatus;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,7 +19,6 @@ public class RotateAndShootNow extends Procedure {
     private final Shoulder shoulder;
     private final Shooter shooter;
     private final Intake intake;
-    private final Lights lights;
 
     private final VisionSpeakerHelper visionSpeakerHelper;
 
@@ -28,14 +27,12 @@ public class RotateAndShootNow extends Procedure {
             Shoulder shoulder,
             Shooter shooter,
             Intake intake,
-            Lights lights,
-            ForwardApriltagCamera forwardApriltagCamera) {
+            SubsystemStatus<ForwardApriltagCamera.Status> forwardApriltagCamera) {
         super(reservations(drive, shoulder, shooter, intake));
         this.drive = drive;
         this.shoulder = shoulder;
         this.shooter = shooter;
         this.intake = intake;
-        this.lights = lights;
         visionSpeakerHelper = new VisionSpeakerHelper(drive, forwardApriltagCamera);
     }
 
@@ -58,15 +55,15 @@ public class RotateAndShootNow extends Procedure {
             return;
         }
 
-        shoulder.rotate(armAngle);
+        shoulder.setGoal(new Shoulder.RotateToPosition(armAngle));
         drive.setGoal(new Drive.FieldOrientedVelocityWithRotationTarget(0, 0, heading));
         // shooter.shoot(power);
 
-        context.waitForConditionOrTimeout(shoulder::isFinished, 0.5);
+        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 0.5);
         context.waitForConditionOrTimeout(
-                () -> drive.getState().isAtRotationTarget(heading.getDegrees()), 3.0);
+                () -> drive.getStatus().isAtRotationTarget(heading.getDegrees()), 3.0);
         drive.setGoal(new Drive.StopDrive());
 
-        context.runSync(new ShootVelocityAndIntake(shooter, intake, lights));
+        context.runSync(new ShootVelocityAndIntake(shooter, intake));
     }
 }

@@ -1,6 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.OIBase;
+import com.team766.framework.conditions.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
@@ -9,7 +10,6 @@ import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 
@@ -26,6 +26,7 @@ public class OI extends OIBase {
     private final DriverOI driverOI;
     private final DebugOI debugOI;
     private final BoxOpOI boxOpOI;
+    private final Guarded<Intake> intake;
 
     public OI(
             Drive drive,
@@ -33,27 +34,28 @@ public class OI extends OIBase {
             Shooter shooter,
             Intake intake,
             Climber climber,
-            Lights lights,
             ForwardApriltagCamera forwardAprilTagCamera) {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
-        leftJoystick = RobotProvider.instance.getJoystick(null, InputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(null, InputConstants.RIGHT_JOYSTICK);
-        macropad = RobotProvider.instance.getJoystick(null, InputConstants.MACROPAD);
-        gamepad = RobotProvider.instance.getJoystick(null, InputConstants.BOXOP_GAMEPAD_X);
+        leftJoystick = RobotProvider.instance.getJoystick(this, InputConstants.LEFT_JOYSTICK);
+        rightJoystick = RobotProvider.instance.getJoystick(this, InputConstants.RIGHT_JOYSTICK);
+        macropad = RobotProvider.instance.getJoystick(this, InputConstants.MACROPAD);
+        gamepad = RobotProvider.instance.getJoystick(this, InputConstants.BOXOP_GAMEPAD_X);
+        this.intake = guard(intake);
 
         driverOI = new DriverOI(
                 this,
-                drive,
-                shoulder,
-                intake,
-                shooter,
-                lights,
-                forwardAprilTagCamera,
+                guard(drive),
+                guard(shoulder),
+                guard(intake),
+                guard(shooter),
+                guard(forwardAprilTagCamera),
                 leftJoystick,
                 rightJoystick);
-        debugOI = new DebugOI(macropad, shoulder, climber, intake, shooter);
-        boxOpOI = new BoxOpOI(gamepad, shoulder, intake, shooter, climber, lights);
+        debugOI = new DebugOI(
+                this, macropad, guard(shoulder), guard(climber), guard(intake), guard(shooter));
+        boxOpOI = new BoxOpOI(
+                this, gamepad, guard(shoulder), guard(intake), guard(shooter), guard(climber));
     }
 
     @Override
@@ -70,6 +72,6 @@ public class OI extends OIBase {
 
         boxOpOI.run();
 
-        byDefault(intake.setGoalBehavior(new Intake.StopIntake()));
+        byDefault(() -> reserve(intake).setGoal(new Intake.Stop()));
     }
 }

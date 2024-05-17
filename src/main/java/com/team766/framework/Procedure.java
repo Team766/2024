@@ -11,15 +11,34 @@ public abstract class Procedure extends ProcedureWithContextBase implements Proc
         }
 
         @Override
-        public void run(final Context context) {}
+        protected void run(final Context context) {}
     }
 
     public static Procedure noOp() {
         return new NoOpProcedure();
     }
 
+    private boolean isStatusActive = false;
+
     public Procedure(Collection<Subsystem> reservations) {
         super(reservations);
+    }
+
+    protected abstract void run(Context context);
+
+    @Override
+    public final void execute(Context context) {
+        try {
+            isStatusActive = true;
+            run(context);
+        } finally {
+            isStatusActive = false;
+        }
+    }
+
+    @Override
+    public final boolean isStatusActive() {
+        return isStatusActive;
     }
 
     @Override

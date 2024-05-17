@@ -1,21 +1,16 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.framework.Context;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
-import com.team766.robot.reva.constants.VisionConstants;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
 
@@ -23,10 +18,8 @@ public class ShootNow extends VisionPIDProcedure {
     private final Shoulder shoulder;
     private final Shooter shooter;
     private final Intake intake;
-    private final Lights lights;
     private final ForwardApriltagCamera forwardApriltagCamera;
 
-    private int tagId;
     private double angle;
 
     public ShootNow(
@@ -34,33 +27,18 @@ public class ShootNow extends VisionPIDProcedure {
             Shoulder shoulder,
             Shooter shooter,
             Intake intake,
-            Lights lights,
             ForwardApriltagCamera forwardApriltagCamera) {
         super(reservations(drive, shoulder, shooter, intake));
         this.drive = drive;
         this.shoulder = shoulder;
         this.shooter = shooter;
         this.intake = intake;
-        this.lights = lights;
         this.forwardApriltagCamera = forwardApriltagCamera;
     }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
-
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-
-        if (alliance.isPresent()) {
-            if (alliance.get().equals(Alliance.Blue)) {
-                tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
-            } else if (alliance.get().equals(Alliance.Red)) {
-                tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
-            }
-        } else {
-            tagId = -1;
-        }
-
-        lights.signalStartingShootingProcedure();
+        updateStatus(new ShootingProcedureStatus(Status.RUNNING));
         drive.setGoal(new Drive.StopDrive());
 
         Transform3d toUse;
@@ -87,7 +65,8 @@ public class ShootNow extends VisionPIDProcedure {
                 > VisionPIDProcedure.scoringPositions
                         .get(VisionPIDProcedure.scoringPositions.size() - 1)
                         .distanceFromCenterApriltag()) {
-            lights.signalShooterOutOfRange();
+            updateStatus(new ShootingProcedureStatus(Status.OUT_OF_RANGE));
+            return;
         }
         double power;
         double armAngle;
@@ -99,9 +78,9 @@ public class ShootNow extends VisionPIDProcedure {
             return;
         }
 
-        shooter.shoot(power);
+        shooter.setGoal(new Shooter.ShootAtSpeed(power));
 
-        shoulder.rotate(armAngle);
+        shoulder.setGoal(new Shoulder.RotateToPosition(armAngle));
 
         angle = Math.atan2(y, x);
 
@@ -133,26 +112,17 @@ public class ShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> shoulder.isFinished(), 1);
+        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 1);
 
-        lights.signalFinishingShootingProcedure();
-        context.runSync(new ShootVelocityAndIntake(power, shooter, intake, lights));
+        updateStatus(new ShootingProcedureStatus(Status.FINISHED));
+        context.runSync(new ShootVelocityAndIntake(power, shooter, intake));
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        GrayScaleCamera toUse = forwardApriltagCamera.getCamera();
-
-        return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
+        return forwardApriltagCamera.getStatus().speakerTagTransform().get();
     }
 
     private boolean seesTarget() {
-        GrayScaleCamera toUse = forwardApriltagCamera.getCamera();
-
-        try {
-            toUse.getTrackedTargetWithID(tagId);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return forwardApriltagCamera.getStatus().speakerTagTransform().hasValue();
     }
 }

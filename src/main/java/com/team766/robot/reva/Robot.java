@@ -1,16 +1,13 @@
 package com.team766.robot.reva;
 
-import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.AutonomousMode;
-import com.team766.framework.Procedure;
+import com.team766.framework.LightsBase;
 import com.team766.hal.RobotConfigurator;
-import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -26,28 +23,27 @@ public class Robot implements RobotConfigurator {
     // not yet initialized, until we have the camera on the robot and test it.
     private ForwardApriltagCamera forwardApriltagCamera;
     private NoteCamera noteCamera;
-    private Lights lights;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
-        lights = new Lights();
         drive = new Drive(config);
         climber = new Climber();
         shoulder = new Shoulder();
         intake = new Intake();
         shooter = new Shooter();
         noteCamera = new NoteCamera();
-        try {
-            forwardApriltagCamera = new ForwardApriltagCamera(lights);
-        } catch (AprilTagGeneralCheckedException e) {
-            LoggerExceptionUtils.logException(e);
-        }
+        forwardApriltagCamera = new ForwardApriltagCamera();
     }
 
     @Override
-    public Procedure createOI() {
-        return new OI(drive, shoulder, shooter, intake, climber, lights, forwardApriltagCamera);
+    public OI createOI() {
+        return new OI(drive, shoulder, shooter, intake, climber, forwardApriltagCamera);
+    }
+
+    @Override
+    public LightsBase createLights() {
+        return new Lights();
     }
 
     @Override
@@ -63,53 +59,23 @@ public class Robot implements RobotConfigurator {
             new AutonomousMode(
                     "3p Start Amp, Amp and Center Pieces",
                     () -> new ThreePieceAmpSide(
-                            drive,
-                            shoulder,
-                            shooter,
-                            intake,
-                            climber,
-                            lights,
-                            forwardApriltagCamera)),
+                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
             new AutonomousMode(
                     "4p Start Amp, All Close Pieces",
                     () -> new FourPieceAmpSide(
-                            drive,
-                            shoulder,
-                            shooter,
-                            intake,
-                            climber,
-                            lights,
-                            forwardApriltagCamera)),
+                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
             new AutonomousMode(
                     "2p Start Source, Bottom Midfield Piece",
                     () -> new TwoPieceMidfieldSourceSide(
-                            drive,
-                            shoulder,
-                            shooter,
-                            intake,
-                            climber,
-                            lights,
-                            forwardApriltagCamera)),
+                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Top Midfield Pieces",
                     () -> new ThreePieceMidfieldAmpSide(
-                            drive,
-                            shoulder,
-                            shooter,
-                            intake,
-                            climber,
-                            lights,
-                            forwardApriltagCamera)),
+                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
                     () -> new ThreePieceStartCenterTopAndAmp(
-                            drive,
-                            shoulder,
-                            shooter,
-                            intake,
-                            climber,
-                            lights,
-                            forwardApriltagCamera))
+                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera))
         };
     }
 }

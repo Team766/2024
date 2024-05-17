@@ -3,25 +3,23 @@ package com.team766.robot.reva.procedures;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Shoulder.ShoulderPosition;
+import com.team766.robot.reva.mechanisms.Shoulder.RotateToPosition;
 
 public class StartAutoIntake extends Procedure {
     private final Shoulder shoulder;
     private final Intake intake;
-    private final Lights lights;
 
-    public StartAutoIntake(Shoulder shoulder, Intake intake, Lights lights) {
+    public StartAutoIntake(Shoulder shoulder, Intake intake) {
         super(reservations(shoulder, intake));
         this.shoulder = shoulder;
         this.intake = intake;
-        this.lights = lights;
     }
 
     public void run(Context context) {
-        shoulder.rotate(ShoulderPosition.BOTTOM);
-        context.waitForConditionOrTimeout(shoulder::isFinished, 1.5);
-        context.startAsync(new IntakeUntilIn(intake, lights));
+        final var armTarget = RotateToPosition.BOTTOM;
+        shoulder.setGoal(armTarget);
+        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armTarget), 1.5);
+        context.startAsync(new IntakeUntilIn(intake));
     }
 }

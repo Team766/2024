@@ -1,7 +1,7 @@
 package com.team766.robot.gatorade;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.framework.Procedure;
+import com.team766.framework.LightsBase;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
@@ -17,7 +17,6 @@ public class Robot implements RobotConfigurator {
     private Elevator elevator;
     private Shoulder shoulder;
     private Drive drive;
-    private Lights lights;
 
     @Override
     public void initializeMechanisms() {
@@ -27,12 +26,16 @@ public class Robot implements RobotConfigurator {
         elevator = new Elevator();
         shoulder = new Shoulder();
         drive = new Drive(config);
-        lights = new Lights();
     }
 
     @Override
-    public Procedure createOI() {
+    public OI createOI() {
         return new OI(drive, shoulder, elevator, wrist, intake);
+    }
+
+    @Override
+    public LightsBase createLights() {
+        return new Lights();
     }
 
     @Override

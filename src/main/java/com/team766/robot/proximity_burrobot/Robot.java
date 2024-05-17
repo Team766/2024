@@ -1,7 +1,7 @@
 package com.team766.robot.proximity_burrobot;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.framework.Procedure;
+import com.team766.framework.LightsBase;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.proximity_burrobot.mechanisms.*;
 import com.team766.robot.proximity_burrobot.procedures.*;
@@ -15,8 +15,13 @@ public class Robot implements RobotConfigurator {
     }
 
     @Override
-    public Procedure createOI() {
+    public OI createOI() {
         return new OI();
+    }
+
+    @Override
+    public LightsBase createLights() {
+        return new Lights();
     }
 
     @Override

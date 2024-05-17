@@ -5,6 +5,7 @@ import com.team766.config.ConfigFileTestUtils;
 import com.team766.framework.SchedulerUtils;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.mock.TestRobotProvider;
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +15,8 @@ public abstract class TestCase {
 
     @BeforeEach
     public void setUp() {
+        assert HAL.initialize(500, 0);
+
         ConfigFileTestUtils.resetStatics();
         SchedulerUtils.reset();
 

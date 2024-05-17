@@ -9,7 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-/* package */ abstract class ProcedureBase extends Command implements LoggingBase {
+/* package */ abstract class ProcedureBase extends Command
+        implements LoggingBase, Statuses.StatusSource {
     private static int c_idCounter = 0;
 
     private static synchronized int createNewId() {
@@ -42,6 +43,10 @@ import java.util.Set;
         m_id = createNewId();
         setName(this.getClass().getName() + "/" + m_id);
         m_requirements.addAll(reservations);
+    }
+
+    protected final void updateStatus(Record status) {
+        Statuses.getInstance().add(status, this);
     }
 
     public Set<Subsystem> getReservations() {

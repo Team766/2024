@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
 
 public interface ProcedureInterface {
-    void run(Context context);
+    void execute(Context context);
 
     Set<Subsystem> getReservations();
 }

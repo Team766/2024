@@ -1,6 +1,7 @@
 package com.team766.robot.common;
 
 import com.team766.framework.OIFragment;
+import com.team766.framework.conditions.Guarded;
 import com.team766.framework.conditions.RuleEngineProvider;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
@@ -10,22 +11,16 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 public class DriverOI extends OIFragment {
 
-    public class State {
-        @AutoLogOutput
-        protected boolean isCross = false;
-    }
-
-    protected final State state = new State();
-    protected final Drive drive;
+    protected final Guarded<Drive> drive;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
 
-    private final InlineCondition isCrossCondition = new InlineCondition();
-    private final InlineCondition movingJoysticks = new InlineCondition();
+    @AutoLogOutput
+    protected boolean isCross = false;
 
     public DriverOI(
             RuleEngineProvider oi,
-            Drive drive,
+            Guarded<Drive> drive,
             JoystickReader leftJoystick,
             JoystickReader rightJoystick) {
         super(oi);
@@ -48,36 +43,32 @@ public class DriverOI extends OIFragment {
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_GYRO)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
+            tryRunning(() -> reserve(drive).resetGyro());
+        }
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_POS)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
+            tryRunning(() -> reserve(drive).resetCurrentPosition());
+        }
 
         // Sets the wheels to the cross position if the cross button is pressed
-        rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).ifNewlyTriggering(() -> {
-            state.isCross = !state.isCross;
-        });
+        if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
+            isCross = !isCross;
+        }
 
-        isCrossCondition
-                .update(state.isCross)
-                .whileTriggering(() -> drive.setGoalBehavior(new Drive.SetCross()));
+        if (isCross) {
+            tryRunning(() -> reserve(drive).setGoal(new Drive.SetCross()));
+        }
 
         // Moves the robot if there are joystick inputs
-        movingJoysticks
-                .update(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                        > 0)
-                .whileTriggering(() -> {
-                    double drivingCoefficient = 1;
-                    // If a button is pressed, drive is just fine adjustment
-                    rightJoystick
-                            .getButton(InputConstants.BUTTON_FINE_DRIVING)
-                            .whileTriggering(() -> {
-                                drivingCoefficient = ControlConstants.FINE_DRIVING_COEFFICIENT;
-                            });
-                    return drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
+        if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0) {
+            // If a button is pressed, drive is just fine adjustment
+            double drivingCoefficient =
+                    rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING).isTriggering()
+                            ? ControlConstants.FINE_DRIVING_COEFFICIENT
+                            : 1;
+            tryRunning(() -> reserve(drive)
+                    .setGoal(new Drive.FieldOrientedVelocity(
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
@@ -89,10 +80,10 @@ public class DriverOI extends OIFragment {
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             rightJoystickY,
-                                            ControlConstants.ROTATIONAL_CURVE_POWER))));
-                });
+                                            ControlConstants.ROTATIONAL_CURVE_POWER)))));
+        }
 
-        byDefault(drive.setGoalBehavior(new Drive.SetCross()));
+        byDefault(() -> reserve(drive).setGoal(new Drive.SetCross()));
     }
 
     /**

@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * field, human player station), at which point the {@link Intake} can grab or release the game
  * piece as appropriate.
  */
-public class Wrist extends Subsystem<Wrist.State, Wrist.Goal> {
+public class Wrist extends Subsystem<Wrist.Status, Wrist.Goal> {
 
     /**
      * @param angle the current angle of the wrist.
      */
-    public record State(double rotations, double angle) {
+    public record Status(double rotations, double angle) {
         public boolean isNearTo(RotateToPosition position) {
             return isNearTo(position.angle());
         }
@@ -108,33 +108,35 @@ public class Wrist extends Subsystem<Wrist.State, Wrist.Goal> {
     }
 
     @Override
-    protected State updateState() {
-        return new State(
+    protected Status updateState() {
+        return new Status(
                 motor.getEncoder().getPosition(),
                 EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition()));
     }
 
     @Override
-    protected void dispatch(State state, Goal goal) {
+    protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case NudgeNoPID nudge -> {
+                if (!goalChanged) return;
                 double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
                 clampedValue *=
                         NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
                 motor.set(clampedValue);
             }
             case StopWrist s -> {
-                motor.set(0);
+                if (!goalChanged) return;
+                motor.stopMotor();
             }
             case NudgeUp n -> {
                 double targetAngle =
-                        Math.max(state.angle - NUDGE_INCREMENT, RotateToPosition.TOP.angle());
+                        Math.max(status.angle - NUDGE_INCREMENT, RotateToPosition.TOP.angle());
 
                 setGoal(new RotateToPosition(targetAngle));
             }
             case NudgeDown n -> {
                 double targetAngle =
-                        Math.min(state.angle + NUDGE_INCREMENT, RotateToPosition.BOTTOM.angle());
+                        Math.min(status.angle + NUDGE_INCREMENT, RotateToPosition.BOTTOM.angle());
                 setGoal(new RotateToPosition(targetAngle));
             }
             case RotateToPosition position -> {

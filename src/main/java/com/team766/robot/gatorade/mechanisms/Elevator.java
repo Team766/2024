@@ -22,11 +22,11 @@ import org.littletonrobotics.junction.AutoLogOutput;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Subsystem<Elevator.State, Elevator.Goal> {
+public class Elevator extends Subsystem<Elevator.Status, Elevator.Goal> {
     /**
      * @param height the current height of the elevator, in inches ('Murica).
      */
-    public record State(@AutoLogOutput double rotations, @AutoLogOutput double height) {
+    public record Status(@AutoLogOutput double rotations, @AutoLogOutput double height) {
         public boolean isNearTo(MoveToPosition position) {
             return isNearTo(position.height());
         }
@@ -126,35 +126,37 @@ public class Elevator extends Subsystem<Elevator.State, Elevator.Goal> {
     }
 
     @Override
-    protected State updateState() {
-        return new State(
+    protected Status updateState() {
+        return new Status(
                 leftMotor.getEncoder().getPosition(),
                 EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition()));
     }
 
     @Override
-    protected void dispatch(State state, Goal goal) {
+    protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case NudgeNoPID nudge -> {
+                if (!goalChanged) return;
                 double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
                 clampedValue *=
                         NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
                 leftMotor.set(clampedValue);
             }
             case StopElevator s -> {
+                if (!goalChanged) return;
                 leftMotor.set(0);
             }
             case NudgeUp n -> {
                 // NOTE: this could artificially limit nudge range
                 double targetHeight = Math.min(
-                        state.height() + NUDGE_INCREMENT, MoveToPosition.EXTENDED.height());
+                        status.height() + NUDGE_INCREMENT, MoveToPosition.EXTENDED.height());
 
                 setGoal(new MoveToPosition(targetHeight));
             }
             case NudgeDown n -> {
                 // NOTE: this could artificially limit nudge range
                 double targetHeight = Math.max(
-                        state.height() - NUDGE_INCREMENT, MoveToPosition.RETRACTED.height());
+                        status.height() - NUDGE_INCREMENT, MoveToPosition.RETRACTED.height());
                 setGoal(new MoveToPosition(targetHeight));
             }
             case MoveToPosition position -> {

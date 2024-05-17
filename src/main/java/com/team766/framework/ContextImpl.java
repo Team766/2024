@@ -169,7 +169,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         this(new ProcedureWithValue<T>(ProcedureWithValue.reservations(func.getReservations())) {
             @Override
             public void run(ContextWithValue<T> context) {
-                func.run(context);
+                func.execute(context);
             }
         });
     }
@@ -397,7 +397,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     @Override
     public void runSync(final ProcedureInterface func) {
         checkProcedureReservations(func, func.getReservations());
-        func.run(this);
+        func.execute(this);
     }
 
     private void checkProcedureReservations(Object procedure, Set<Subsystem> reservations) {

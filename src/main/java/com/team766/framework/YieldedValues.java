@@ -26,8 +26,8 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
     public static <T> ProcedureInterface discard(ProcedureWithValue<T> procedure) {
         return new ProcedureInterface() {
             @Override
-            public void run(Context context) {
-                procedure.run(discard(context));
+            public void execute(Context context) {
+                procedure.execute(discard(context));
             }
 
             @Override
@@ -53,8 +53,8 @@ public final class YieldedValues<T> implements ContextWithValue<T> {
             ProcedureWithValue<T> procedure, List<T> valuesCollection) {
         return new ProcedureInterface() {
             @Override
-            public void run(Context context) {
-                procedure.run(collectInto(context, valuesCollection));
+            public void execute(Context context) {
+                procedure.execute(collectInto(context, valuesCollection));
             }
 
             @Override

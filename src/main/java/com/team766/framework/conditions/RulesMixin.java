@@ -1,27 +1,22 @@
 package com.team766.framework.conditions;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import com.team766.framework.SubsystemStatus;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class RulesMixin implements RuleEngineProvider {
-    interface ManagedCondition {
-        void invalidate();
-    }
-
-    private class ConditionBase extends Condition implements ManagedCondition {
+    private class ConditionBase implements Condition {
         private boolean valid = false;
-        private boolean triggering = false;
-        private boolean newlyTriggering = false;
-        private boolean finishedTriggering = false;
+        private Boolean triggering = null;
+        private ConditionState state = ConditionState.IsNotTriggering;
 
         protected ConditionBase() {
-            engine.registerCondition(this);
+            engine.registerStartFrameCallback(this::invalidate);
         }
 
-        @Override
-        public void invalidate() {
+        protected void invalidate() {
             valid = false;
         }
 
@@ -30,136 +25,172 @@ public class RulesMixin implements RuleEngineProvider {
                 throw new IllegalStateException("update() called multiple times on this Condition");
             }
 
-            newlyTriggering = !triggering && triggeringNow;
-            finishedTriggering = triggering && !triggeringNow;
+            if (triggering == null) {
+                triggering = triggeringNow;
+            }
+            state = ConditionState.make(triggering, triggeringNow);
             triggering = triggeringNow;
             valid = true;
         }
 
         @Override
-        protected final boolean isTriggering() {
+        public final ConditionState getState() {
             if (!valid) {
                 throw new IllegalStateException(
                         "Call update() on this Condition before calling isTriggering()");
             }
-            return triggering;
-        }
-
-        @Override
-        protected final boolean isNewlyTriggering() {
-            if (!valid) {
-                throw new IllegalStateException(
-                        "Call update() on this Condition before calling isNewlyTriggering()");
-            }
-            return newlyTriggering;
-        }
-
-        @Override
-        protected final boolean isFinishedTriggering() {
-            if (!valid) {
-                throw new IllegalStateException(
-                        "Call update() on this Condition before calling isFinishedTriggering()");
-            }
-            return finishedTriggering;
-        }
-
-        @Override
-        protected RuleEngine getRuleEngine() {
-            return engine;
+            return state;
         }
     }
 
-    public class InlineCondition {
+    public final class InlineCondition {
         private ConditionBase base = new ConditionBase();
 
         public InlineCondition() {}
 
-        // Method redefined to make it public.
         public Condition update(boolean triggeringNow) {
             base.update(triggeringNow);
             return base;
         }
     }
 
-    public class DeclaredCondition extends ConditionBase {
+    public final class DeclaredCondition extends ConditionBase {
         private final BooleanSupplier condition;
 
         public DeclaredCondition(BooleanSupplier condition) {
             this.condition = condition;
+            invalidate();
         }
 
         @Override
-        public void invalidate() {
+        protected void invalidate() {
             super.invalidate();
 
             super.update(condition.getAsBoolean());
         }
     }
 
-    public class ValueCondition<Value> implements ManagedCondition {
+    public final class ValueCondition<Value> {
         private final Supplier<Value> valueSupplier;
         private Value value;
         private Value prevValue;
 
         public ValueCondition(Supplier<Value> valueSupplier) {
             this.valueSupplier = valueSupplier;
+            prevValue = value = valueSupplier.get();
 
-            engine.registerCondition(this);
+            engine.registerStartFrameCallback(this::invalidate);
         }
 
-        @Override
-        public void invalidate() {
+        protected void invalidate() {
             prevValue = value;
             value = valueSupplier.get();
         }
 
-        public Condition condition(Predicate<Value> predicate) {
-            return new Condition() {
-                private boolean prevTriggering() {
-                    return predicate.test(prevValue);
-                }
-
-                @Override
-                protected boolean isTriggering() {
-                    return predicate.test(value);
-                }
-
-                @Override
-                protected boolean isNewlyTriggering() {
-                    return !prevTriggering() && isTriggering();
-                }
-
-                @Override
-                protected boolean isFinishedTriggering() {
-                    return prevTriggering() && !isTriggering();
-                }
-
-                @Override
-                protected RuleEngine getRuleEngine() {
-                    return engine;
-                }
-            };
+        public ConditionState condition(Predicate<Value> predicate) {
+            return ConditionState.make(predicate.test(prevValue), predicate.test(value));
         }
 
-        public Condition onEquals(Value value) {
+        public ConditionState onEquals(Value value) {
             return condition(value::equals);
+        }
+
+        public Value value() {
+            return value;
         }
     }
 
     private final RuleEngine engine;
-    public final Condition neverCondition;
 
     protected RulesMixin(RuleEngineProvider engine) {
         this.engine = engine.getRuleEngine();
-        neverCondition = this.engine.neverCondition;
     }
 
     @Override
-    public RuleEngine getRuleEngine() {
+    public final RuleEngine getRuleEngine() {
         return engine;
     }
 
-    protected void byDefault(Command behavior) {
-        engine.tryScheduling(behavior);
+    protected final boolean tryRunning(CommandSupplier behavior) {
+        return engine.tryScheduling(behavior);
     }
+
+    protected final boolean tryRunning(ReservingRunnable callback) {
+        try {
+            callback.run();
+            return true;
+        } catch (ResourceUnavailableException e) {
+            return false;
+        }
+    }
+
+    protected final boolean tryRunning(InvalidReturnType<?> callback) {
+        return false;
+    }
+
+    protected final void byDefault(CommandSupplier behavior) {
+        engine.registerTransientEndFrameCallback(() -> tryRunning(behavior));
+    }
+
+    protected final void byDefault(ReservingRunnable callback) {
+        engine.registerTransientEndFrameCallback(() -> tryRunning(callback));
+    }
+
+    protected final void byDefault(InvalidReturnType<?> callback) {}
+
+    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
+            SubsystemT reserve(Guarded<SubsystemT> subsystem) throws ResourceUnavailableException {
+        if (subsystem.engine != getRuleEngine()) {
+            throw new IllegalArgumentException();
+        }
+        return reserve(subsystem.value);
+    }
+
+    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
+            SubsystemT reserve(SubsystemT subsystem) throws ResourceUnavailableException {
+        getRuleEngine().reserveSubsystem(subsystem);
+        return subsystem;
+    }
+
+    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
+            boolean tryReserving(Guarded<SubsystemT> subsystem, Consumer<SubsystemT> callback) {
+        if (subsystem.engine != getRuleEngine()) {
+            throw new IllegalArgumentException();
+        }
+        return tryReserving(subsystem.value, callback);
+    }
+
+    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
+            boolean tryReserving(SubsystemT subsystem, Consumer<SubsystemT> callback) {
+        try {
+            callback.accept(reserve(subsystem));
+            return true;
+        } catch (ResourceUnavailableException e) {
+            return false;
+        }
+    }
+
+    protected final <
+                    StatusRecord extends Record,
+                    SubsystemT extends com.team766.framework.Subsystem<StatusRecord, ?>>
+            SubsystemStatus<StatusRecord> useStatus(Guarded<SubsystemT> subsystem) {
+        return subsystem.value;
+    }
+
+    protected final <
+                    StatusRecord extends Record,
+                    SubsystemT extends com.team766.framework.Subsystem<StatusRecord, ?>>
+            StatusRecord getStatus(Guarded<SubsystemT> subsystem) {
+        return subsystem.value.getStatus();
+    }
+
+    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
+            Guarded<SubsystemT> guard(SubsystemT subsystem) {
+        return new Guarded<>(subsystem, getRuleEngine());
+    }
+}
+
+@FunctionalInterface
+interface InvalidReturnType<T> {
+    T get() throws ResourceUnavailableException;
 }

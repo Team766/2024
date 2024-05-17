@@ -25,11 +25,11 @@ import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class Drive extends Subsystem<Drive.State, Drive.Goal> {
+public class Drive extends Subsystem<Drive.Status, Drive.Goal> {
     /**
      * @param heading current heading in degrees
      */
-    public static record State(
+    public static record Status(
             @AutoLogOutput double heading,
             @AutoLogOutput double pitch,
             @AutoLogOutput double roll,
@@ -68,39 +68,29 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
 
     public record SetCross() implements Goal {}
 
-    // TODO: this doesn't really seem like a goal state
-    public record ResetGyro() implements Goal {}
-
-    // TODO: this doesn't really seem like a goal state
-    public record ResetCurrentPosition() implements Goal {}
-
     @Override
-    protected void dispatch(State state, Goal goal) {
+    protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case RobotOrientedVelocity g -> {
+                if (!goalChanged) return;
                 controlRobotOriented(g.x, g.y, g.turn);
             }
             case FieldOrientedVelocity g -> {
-                controlFieldOriented(state, g.x, g.y, g.turn);
+                controlFieldOriented(status, g.x, g.y, g.turn);
             }
             case FieldOrientedVelocityWithRotationTarget g -> {
-                controlFieldOrientedWithRotationTarget(state, g.x, g.y, g.target);
+                controlFieldOrientedWithRotationTarget(status, g.x, g.y, g.target);
             }
             case StopDrive s -> {
+                if (!goalChanged) return;
                 stopDrive();
             }
             case SetCross s -> {
+                if (!goalChanged) return;
                 stopDrive();
                 setCross();
             }
-            case ResetGyro r -> {
-                resetGyro();
-            }
-            case ResetCurrentPosition r -> {
-                resetCurrentPosition();
-            }
         }
-        ;
     }
 
     private final SwerveConfig config;
@@ -249,9 +239,9 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
      * @param y the y value for the position joystick, positive being left, in meters/sec
      * @param turn the turn value from the rotation joystick, positive being CCW, in radians/sec
      */
-    private void controlFieldOriented(State state, double x, double y, double turn) {
+    private void controlFieldOriented(Status status, double x, double y, double turn) {
         final Optional<Alliance> alliance = DriverStation.getAlliance();
-        double yawRad = Math.toRadians(state.heading()
+        double yawRad = Math.toRadians(status.heading()
                 + (alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
@@ -269,17 +259,17 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
      * @param target rotational target as a Rotation2d, can input a null value
      */
     private void controlFieldOrientedWithRotationTarget(
-            State state, double x, double y, Rotation2d target) {
+            Status status, double x, double y, Rotation2d target) {
         if (target != null) {
             rotationPID.setSetpoint(target.getDegrees());
             // SmartDashboard.putNumber("Rotation Target", target.getDegrees());
         }
 
-        rotationPID.calculate(state.heading());
+        rotationPID.calculate(status.heading());
 
-        final boolean isAtRotationTarget = state.isAtRotationTarget(target.getDegrees());
+        final boolean isAtRotationTarget = status.isAtRotationTarget(target.getDegrees());
 
-        controlFieldOriented(state, x, y, isAtRotationTarget ? 0 : rotationPID.getOutput());
+        controlFieldOriented(status, x, y, isAtRotationTarget ? 0 : rotationPID.getOutput());
 
         // SmartDashboard.putBoolean("Is At Drive Rotation Target", isAtRotationTarget);
     }
@@ -308,7 +298,7 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
      * Resets gyro to zero degrees relative to the driver
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
-    private void resetGyro() {
+    public void resetGyro() {
         final Optional<Alliance> alliance = DriverStation.getAlliance();
         resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
@@ -317,20 +307,20 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
      * Sets gyro to value in degrees
      * @param angle in degrees
      */
-    private void resetGyro(double angle) {
+    public void resetGyro(double angle) {
         gyro.setAngle(angle);
     }
 
-    private void setCurrentPosition(Pose2d P) {
+    public void setCurrentPosition(Pose2d P) {
         // log("setCurrentPosition(): " + P);
         swerveOdometry.setCurrentPosition(P);
     }
 
-    private void resetCurrentPosition() {
+    public void resetCurrentPosition() {
         swerveOdometry.setCurrentPosition(new Pose2d());
     }
 
-    private double maxWheelDistToCenter() {
+    public double maxWheelDistToCenter() {
         double max = 0;
         for (Translation2d translation : wheelPositions) {
             max = Math.max(max, translation.getNorm());
@@ -346,7 +336,7 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
 
     // Odometry
     @Override
-    protected State updateState() {
+    protected Status updateState() {
         swerveOdometry.run();
 
         final double heading = gyro.getAngle();
@@ -372,6 +362,6 @@ public class Drive extends Subsystem<Drive.State, Drive.Goal> {
             swerveBL.getModuleState(),
         };
 
-        return new State(heading, pitch, roll, currentPosition, chassisSpeeds, swerveStates);
+        return new Status(heading, pitch, roll, currentPosition, chassisSpeeds, swerveStates);
     }
 }

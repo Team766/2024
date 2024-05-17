@@ -1,5 +1,6 @@
 package com.team766.framework;
 
+import com.team766.framework.Statuses.StatusSource;
 import com.team766.framework.conditions.RuleEngineProvider;
 import com.team766.framework.conditions.RulesMixin;
 import com.team766.logging.Category;
@@ -14,7 +15,7 @@ import com.team766.logging.Category;
  * specific condition is currently triggering (eg pressing or holding down a joystick button) or if a condition that had been triggering
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
  */
-public abstract class OIFragment extends RulesMixin implements LoggingBase {
+public abstract class OIFragment extends RulesMixin implements LoggingBase, StatusSource {
     private final String name;
 
     protected Category loggerCategory = Category.OPERATOR_INTERFACE;
@@ -53,6 +54,15 @@ public abstract class OIFragment extends RulesMixin implements LoggingBase {
      * {@link OICondition#isFinishedTriggering()}.
      */
     protected abstract void dispatch();
+
+    protected final void updateStatus(Record status) {
+        Statuses.getInstance().add(status, this);
+    }
+
+    @Override
+    public final boolean isStatusActive() {
+        return true;
+    }
 
     /**
      * Called by a Robot's OI class, once per its loop.

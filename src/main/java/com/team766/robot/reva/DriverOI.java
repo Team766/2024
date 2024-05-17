@@ -1,6 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.OIFragment;
+import com.team766.framework.conditions.Guarded;
 import com.team766.framework.conditions.RuleEngineProvider;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
@@ -8,7 +9,6 @@ import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.DriverShootNow;
@@ -16,29 +16,24 @@ import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class DriverOI extends OIFragment {
-    protected final Drive drive;
-    protected final Shoulder shoulder;
-    protected final Intake intake;
-    protected final Shooter shooter;
-    protected final Lights lights;
-    protected final ForwardApriltagCamera forwardApriltagCamera;
+    protected final Guarded<Drive> drive;
+    protected final Guarded<Shoulder> shoulder;
+    protected final Guarded<Intake> intake;
+    protected final Guarded<Shooter> shooter;
+    protected final Guarded<ForwardApriltagCamera> forwardApriltagCamera;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
 
     @AutoLogOutput
     protected boolean isCross = false;
 
-    private final InlineCondition isCrossCondition = new InlineCondition();
-    private final InlineCondition movingJoysticks = new InlineCondition();
-
     public DriverOI(
             RuleEngineProvider oi,
-            Drive drive,
-            Shoulder shoulder,
-            Intake intake,
-            Shooter shooter,
-            Lights lights,
-            ForwardApriltagCamera forwardApriltagCamera,
+            Guarded<Drive> drive,
+            Guarded<Shoulder> shoulder,
+            Guarded<Intake> intake,
+            Guarded<Shooter> shooter,
+            Guarded<ForwardApriltagCamera> forwardApriltagCamera,
             JoystickReader leftJoystick,
             JoystickReader rightJoystick) {
         super(oi);
@@ -46,7 +41,6 @@ public class DriverOI extends OIFragment {
         this.shoulder = shoulder;
         this.intake = intake;
         this.shooter = shooter;
-        this.lights = lights;
         this.forwardApriltagCamera = forwardApriltagCamera;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
@@ -55,28 +49,35 @@ public class DriverOI extends OIFragment {
     @Override
     protected void dispatch() {
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_GYRO)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetGyro()));
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
+            tryRunning(() -> reserve(drive).resetGyro());
+        }
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_RESET_POS)
-                .ifNewlyTriggering(() -> drive.setGoalBehavior(new Drive.ResetCurrentPosition()));
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
+            tryRunning(() -> reserve(drive).resetCurrentPosition());
+        }
 
-        // if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
-        //     isCross = !isCross;
-        // }
-        // isCrossCondition.update(isCross).whileTriggering(
-        //     () -> drive.setGoalBehavior(new Drive.SetCross()));
+        if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
+            isCross = !isCross;
+        }
+        if (isCross) {
+            tryRunning(() -> reserve(drive).setGoal(new Drive.SetCross()));
+        }
 
-        leftJoystick
-                .getButton(InputConstants.BUTTON_TARGET_SHOOTER)
-                .whileTriggering(() -> new DriverShootNow(
-                        drive, shoulder, shooter, intake, lights, forwardApriltagCamera));
+        if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER).isTriggering()) {
+            tryRunning(() -> new DriverShootNow(
+                    reserve(drive),
+                    reserve(shoulder),
+                    useStatus(shooter),
+                    reserve(intake),
+                    reserve(forwardApriltagCamera)));
+        }
 
-        rightJoystick
+        if (rightJoystick
                 .getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)
-                .whileTriggering(() -> new DriverShootVelocityAndIntake(shooter, intake));
+                .isTriggering()) {
+            tryRunning(() -> new DriverShootVelocityAndIntake(useStatus(shooter), reserve(intake)));
+        }
 
         // Negative because forward is negative in driver station
         final double leftJoystickX =
@@ -92,19 +93,15 @@ public class DriverOI extends OIFragment {
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
         // Moves the robot if there are joystick inputs
-        movingJoysticks
-                .update(Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY)
-                        > 0)
-                .whileTriggering(() -> {
-                    double drivingCoefficient = 1;
-                    // If a button is pressed, drive is just fine adjustment
-                    if (rightJoystick
-                            .getButton(InputConstants.BUTTON_FINE_DRIVING)
-                            .isTriggering()) {
-                        drivingCoefficient = ControlConstants.FINE_DRIVING_COEFFICIENT;
-                    }
+        if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0) {
+            // If a button is pressed, drive is just fine adjustment
+            final double drivingCoefficient =
+                    rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING).isTriggering()
+                            ? ControlConstants.FINE_DRIVING_COEFFICIENT
+                            : 1;
 
-                    return drive.setGoalBehavior(new Drive.FieldOrientedVelocity(
+            tryRunning(() -> reserve(drive)
+                    .setGoal(new Drive.FieldOrientedVelocity(
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             leftJoystickX,
@@ -116,10 +113,10 @@ public class DriverOI extends OIFragment {
                             (drivingCoefficient
                                     * curvedJoystickPower(
                                             rightJoystickY,
-                                            ControlConstants.ROTATIONAL_CURVE_POWER))));
-                });
+                                            ControlConstants.ROTATIONAL_CURVE_POWER)))));
+        }
 
-        byDefault(drive.setGoalBehavior(new Drive.SetCross()));
+        byDefault(() -> reserve(drive).setGoal(new Drive.SetCross()));
     }
 
     /**

@@ -1,7 +1,8 @@
 package com.team766.hal;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.framework.Procedure;
+import com.team766.framework.LightsBase;
+import com.team766.framework.OIBase;
 
 /**
  * Provides Robot-specific components: initializes {@link Mechanism}s, creates the Operator Interface (OI),
@@ -21,7 +22,9 @@ public interface RobotConfigurator {
     /**
      * Creates the Operator Interface (OI) for this robot.
      */
-    Procedure createOI();
+    OIBase createOI();
+
+    LightsBase createLights();
 
     /**
      * Returns an array of {@link AutonomousMode}s available for this robot.

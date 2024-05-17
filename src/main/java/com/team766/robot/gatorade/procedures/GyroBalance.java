@@ -58,8 +58,8 @@ public class GyroBalance extends Procedure {
     }
 
     private double getAbsoluteTilt() {
-        final double pitch = drive.getState().pitch();
-        final double roll = drive.getState().roll();
+        final double pitch = drive.getStatus().pitch();
+        final double roll = drive.getStatus().roll();
         return Math.toDegrees(
                 Math.acos(Math.cos(Math.toRadians(roll) * Math.cos(Math.toRadians(pitch)))));
     }
@@ -69,7 +69,7 @@ public class GyroBalance extends Procedure {
         context.runSync(new ExtendWristvatorToMid(shoulder, elevator, wrist));
 
         // initialY is robot y position when balancing starts
-        final double initialY = drive.getState().currentPosition().getY();
+        final double initialY = drive.getStatus().currentPosition().getY();
         // Sets movement direction towards desired charge station.
         switch (alliance) {
             case Red:

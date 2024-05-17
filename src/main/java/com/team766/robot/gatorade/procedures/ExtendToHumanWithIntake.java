@@ -31,7 +31,7 @@ public class ExtendToHumanWithIntake extends Procedure {
     }
 
     public void run(Context context) {
-        intake.setGoal(new Intake.State(gamePieceType, MotorState.IN));
+        intake.setGoal(new Intake.Status(gamePieceType, MotorState.IN));
         context.runSync(new ExtendWristvatorToHuman(gamePieceType, shoulder, elevator, wrist));
     }
 }

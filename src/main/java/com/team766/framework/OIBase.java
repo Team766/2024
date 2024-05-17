@@ -1,6 +1,7 @@
 package com.team766.framework;
 
 import com.team766.framework.conditions.RuleEngine;
+import com.team766.logging.LoggerExceptionUtils;
 
 public abstract class OIBase extends OIFragment {
     public OIBase() {
@@ -13,11 +14,17 @@ public abstract class OIBase extends OIFragment {
 
     @Override
     public void run() {
-        // if (!RobotProvider.instance.hasNewDriverStationData()) {
-        //     return;
-        // }
-        // RobotProvider.instance.refreshDriverStationData();
+        try {
+            // if (!RobotProvider.instance.hasNewDriverStationData()) {
+            //     return;
+            // }
+            // RobotProvider.instance.refreshDriverStationData();
 
-        super.run();
+            getRuleEngine().startFrame();
+            super.run();
+            getRuleEngine().endFrame();
+        } catch (Exception ex) {
+            LoggerExceptionUtils.logException(ex);
+        }
     }
 }

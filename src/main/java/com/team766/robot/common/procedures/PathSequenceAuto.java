@@ -81,7 +81,7 @@ public class PathSequenceAuto extends Procedure {
     protected void addWait(double waitForSeconds) {
         addProcedure(new ProcedureInterface() {
             @Override
-            public void run(Context context) {
+            public void execute(Context context) {
                 context.waitForSeconds(waitForSeconds);
             }
 
@@ -125,6 +125,6 @@ public class PathSequenceAuto extends Procedure {
         // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
         // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
         // current angle
-        drive.resetGyro(180 + drive.getState().heading());
+        drive.resetGyro(180 + drive.getStatus().heading());
     }
 }

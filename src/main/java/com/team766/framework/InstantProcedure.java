@@ -8,10 +8,10 @@ public abstract class InstantProcedure extends ProcedureBase implements Procedur
         super(reservations);
     }
 
-    public abstract void run();
+    protected abstract void run();
 
     @Override
-    public final void run(Context context) {
+    public final void execute(Context context) {
         run();
     }
 
@@ -34,5 +34,10 @@ public abstract class InstantProcedure extends ProcedureBase implements Procedur
     @Override
     public boolean runsWhenDisabled() {
         return ContextImpl.RUNS_WHEN_DISABLED;
+    }
+
+    @Override
+    public final boolean isStatusActive() {
+        return false;
     }
 }

@@ -18,6 +18,7 @@ public class AutoBase extends PathSequenceAuto {
     public AutoBase(Drive drive, Shooter shooter, Climber climber, Pose2d initialPosition) {
         super(drive, initialPosition);
         this.shooter = shooter;
+        addReservations(shooter);
         // TODO: Replace this with proper parallel execution
         addProcedure(new ProcedureInterface() {
             @Override
@@ -26,7 +27,7 @@ public class AutoBase extends PathSequenceAuto {
             }
 
             @Override
-            public void run(Context context) {
+            public void execute(Context context) {
                 context.startAsync(new MoveClimbersToBottom(climber));
             }
         });
@@ -35,6 +36,6 @@ public class AutoBase extends PathSequenceAuto {
     @Override
     public void runAtEnd() {
         super.runAtEnd();
-        shooter.stop();
+        shooter.setGoal(new Shooter.Stop());
     }
 }

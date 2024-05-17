@@ -8,7 +8,23 @@ public abstract class ProcedureWithValue<T> extends ProcedureWithContextBase {
         super(reservations);
     }
 
-    public abstract void run(ContextWithValue<T> context);
+    private boolean isStatusActive = false;
+
+    protected abstract void run(ContextWithValue<T> context);
+
+    public final void execute(ContextWithValue<T> context) {
+        try {
+            isStatusActive = true;
+            run(context);
+        } finally {
+            isStatusActive = false;
+        }
+    }
+
+    @Override
+    public final boolean isStatusActive() {
+        return isStatusActive;
+    }
 
     @Override
     /* package */ final ContextImpl<?> makeContext() {

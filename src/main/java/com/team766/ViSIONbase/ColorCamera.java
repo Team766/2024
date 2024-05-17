@@ -1,5 +1,6 @@
 package com.team766.ViSIONbase;
 
+import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -38,21 +39,21 @@ public class ColorCamera extends PhotonCamera {
     }
 
     // To be renamed once we know if yaw is X or Y
-    public double getYawOfRing() throws AprilTagGeneralCheckedException {
+    public Optional<Double> getYawOfRing() {
 
         try {
-            return getRing().getYaw();
+            return Optional.of(getRing().getYaw());
         } catch (AprilTagGeneralCheckedException e) {
-            throw new AprilTagGeneralCheckedException("No notes detected by the camera");
+            return Optional.empty();
         }
     }
 
-    public double getPitchOfRing() throws AprilTagGeneralCheckedException {
+    public Optional<Double> getPitchOfRing() {
 
         try {
-            return getRing().getPitch();
+            return Optional.of(getRing().getPitch());
         } catch (AprilTagGeneralCheckedException e) {
-            throw new AprilTagGeneralCheckedException("No notes detected by the camera");
+            return Optional.empty();
         }
     }
 }
