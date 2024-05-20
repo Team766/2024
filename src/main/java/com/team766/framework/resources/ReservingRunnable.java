@@ -1,4 +1,4 @@
-package com.team766.framework.conditions;
+package com.team766.framework.resources;
 
 @FunctionalInterface
 public interface ReservingRunnable {

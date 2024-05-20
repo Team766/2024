@@ -1,8 +1,8 @@
 package com.team766.robot.common;
 
+import com.team766.framework.OIBase;
 import com.team766.framework.OIFragment;
-import com.team766.framework.conditions.Guarded;
-import com.team766.framework.conditions.RuleEngineProvider;
+import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
@@ -19,7 +19,7 @@ public class DriverOI extends OIFragment {
     protected boolean isCross = false;
 
     public DriverOI(
-            RuleEngineProvider oi,
+            OIBase oi,
             Guarded<Drive> drive,
             JoystickReader leftJoystick,
             JoystickReader rightJoystick) {

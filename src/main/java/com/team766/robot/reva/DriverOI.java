@@ -1,8 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.OIFragment;
-import com.team766.framework.conditions.Guarded;
-import com.team766.framework.conditions.RuleEngineProvider;
+import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.Drive;
@@ -28,7 +27,7 @@ public class DriverOI extends OIFragment {
     protected boolean isCross = false;
 
     public DriverOI(
-            RuleEngineProvider oi,
+            OI oi,
             Guarded<Drive> drive,
             Guarded<Shoulder> shoulder,
             Guarded<Intake> intake,

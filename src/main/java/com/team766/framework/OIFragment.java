@@ -1,8 +1,12 @@
 package com.team766.framework;
 
 import com.team766.framework.Statuses.StatusSource;
+import com.team766.framework.conditions.RuleEngine;
 import com.team766.framework.conditions.RuleEngineProvider;
 import com.team766.framework.conditions.RulesMixin;
+import com.team766.framework.resources.ResourceManager;
+import com.team766.framework.resources.ResourceManagerProvider;
+import com.team766.framework.resources.ResourcesMixin;
 import com.team766.logging.Category;
 import java.util.Optional;
 
@@ -16,8 +20,10 @@ import java.util.Optional;
  * specific condition is currently triggering (eg pressing or holding down a joystick button) or if a condition that had been triggering
  * in a previous iteration of the OI loop is no longer triggering in this iteration.
  */
-public abstract class OIFragment extends RulesMixin implements LoggingBase, StatusSource {
+public abstract class OIFragment extends RulesMixin
+        implements ResourcesMixin, LoggingBase, StatusSource {
     private final String name;
+    private final ResourceManager resourceManager;
 
     protected Category loggerCategory = Category.OPERATOR_INTERFACE;
 
@@ -25,17 +31,34 @@ public abstract class OIFragment extends RulesMixin implements LoggingBase, Stat
      * Creates a new OIFragment.
      * @param name The name of this part of the OI (eg, "BoxOpOI").  Used for logging.
      */
-    public OIFragment(RuleEngineProvider oi, String name) {
+    public <ParentOI extends ResourceManagerProvider & RuleEngineProvider> OIFragment(
+            ParentOI oi, String name) {
         super(oi);
         this.name = name;
+        this.resourceManager = oi.getResourceManager();
     }
 
     /**
      * Creates a new OIFragment, using the name of the sub-class.
      */
-    public OIFragment(RuleEngineProvider oi) {
+    public <ParentOI extends ResourceManagerProvider & RuleEngineProvider> OIFragment(ParentOI oi) {
         super(oi);
         this.name = this.getClass().getSimpleName();
+        this.resourceManager = oi.getResourceManager();
+    }
+
+    /**
+     * Creates a new OIFragment, using the name of the sub-class.
+     */
+    public OIFragment(ResourceManager resourceManager, RuleEngine ruleEngine) {
+        super(() -> ruleEngine);
+        this.name = this.getClass().getSimpleName();
+        this.resourceManager = resourceManager;
+    }
+
+    @Override
+    public final ResourceManager getResourceManager() {
+        return resourceManager;
     }
 
     public final String getName() {

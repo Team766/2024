@@ -1,7 +1,6 @@
 package com.team766.framework.conditions;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -108,74 +107,5 @@ public class RulesMixin implements RuleEngineProvider {
     @Override
     public final RuleEngine getRuleEngine() {
         return engine;
-    }
-
-    protected final boolean tryRunning(CommandSupplier behavior) {
-        return engine.tryScheduling(behavior);
-    }
-
-    protected final boolean tryRunning(ReservingRunnable callback) {
-        try {
-            callback.run();
-            return true;
-        } catch (ResourceUnavailableException e) {
-            return false;
-        }
-    }
-
-    protected final boolean tryRunning(InvalidReturnType<?> callback) {
-        return false;
-    }
-
-    protected final void byDefault(CommandSupplier behavior) {
-        engine.registerTransientEndFrameCallback(() -> tryRunning(behavior));
-    }
-
-    protected final void byDefault(ReservingRunnable callback) {
-        engine.registerTransientEndFrameCallback(() -> tryRunning(callback));
-    }
-
-    protected final void byDefault(InvalidReturnType<?> callback) {}
-
-    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
-            SubsystemT reserve(Guarded<SubsystemT> subsystem) throws ResourceUnavailableException {
-        if (subsystem.engine != getRuleEngine()) {
-            throw new IllegalArgumentException();
-        }
-        return reserve(subsystem.value);
-    }
-
-    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
-            SubsystemT reserve(SubsystemT subsystem) throws ResourceUnavailableException {
-        getRuleEngine().reserveSubsystem(subsystem);
-        return subsystem;
-    }
-
-    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
-            boolean tryReserving(Guarded<SubsystemT> subsystem, Consumer<SubsystemT> callback) {
-        if (subsystem.engine != getRuleEngine()) {
-            throw new IllegalArgumentException();
-        }
-        return tryReserving(subsystem.value, callback);
-    }
-
-    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
-            boolean tryReserving(SubsystemT subsystem, Consumer<SubsystemT> callback) {
-        try {
-            callback.accept(reserve(subsystem));
-            return true;
-        } catch (ResourceUnavailableException e) {
-            return false;
-        }
-    }
-
-    protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
-            Guarded<SubsystemT> guard(SubsystemT subsystem) {
-        return new Guarded<>(subsystem, getRuleEngine());
-    }
-
-    @FunctionalInterface
-    private interface InvalidReturnType<T> {
-        T get() throws ResourceUnavailableException;
     }
 }

@@ -1,7 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.OIBase;
-import com.team766.framework.conditions.Guarded;
+import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;

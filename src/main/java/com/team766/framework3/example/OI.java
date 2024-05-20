@@ -1,7 +1,7 @@
 package com.team766.framework3.example;
 
 import com.team766.framework.OIBase;
-import com.team766.framework.conditions.Guarded;
+import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.constants.ControlConstants;

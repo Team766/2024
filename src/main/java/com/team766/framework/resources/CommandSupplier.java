@@ -1,4 +1,4 @@
-package com.team766.framework.conditions;
+package com.team766.framework.resources;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
