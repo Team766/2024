@@ -65,18 +65,14 @@ public class DriverOI extends OIFragment {
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER).isTriggering()) {
-            tryRunning(() -> new DriverShootNow(
-                    reserve(drive),
-                    reserve(shoulder),
-                    useStatus(shooter),
-                    reserve(intake),
-                    reserve(forwardApriltagCamera)));
+            tryRunning(
+                    () -> new DriverShootNow(reserve(drive), reserve(shoulder), reserve(intake)));
         }
 
         if (rightJoystick
                 .getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)
                 .isTriggering()) {
-            tryRunning(() -> new DriverShootVelocityAndIntake(useStatus(shooter), reserve(intake)));
+            tryRunning(() -> new DriverShootVelocityAndIntake(reserve(intake)));
         }
 
         // Negative because forward is negative in driver station

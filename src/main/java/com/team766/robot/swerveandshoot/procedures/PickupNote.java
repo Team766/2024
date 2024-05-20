@@ -1,7 +1,6 @@
 package com.team766.robot.swerveandshoot.procedures;
 
 import com.team766.framework.Context;
-import com.team766.framework.SubsystemStatus;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.swerveandshoot.VisionPIDProcedure;
 import com.team766.robot.swerveandshoot.mechanisms.NoteCamera;
@@ -18,12 +17,9 @@ public class PickupNote extends VisionPIDProcedure {
 
     private final Drive drive;
     private final TempPickerUpper tempPickerUpper;
-    private final SubsystemStatus<NoteCamera.Status> noteDetectorCamera;
+    private final NoteCamera noteDetectorCamera;
 
-    public PickupNote(
-            Drive drive,
-            TempPickerUpper tempPickerUpper,
-            SubsystemStatus<NoteCamera.Status> noteDetectorCamera) {
+    public PickupNote(Drive drive, TempPickerUpper tempPickerUpper, NoteCamera noteDetectorCamera) {
         super(reservations(drive, tempPickerUpper));
         this.drive = drive;
         this.tempPickerUpper = tempPickerUpper;

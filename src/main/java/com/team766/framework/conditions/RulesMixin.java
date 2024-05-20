@@ -1,6 +1,5 @@
 package com.team766.framework.conditions;
 
-import com.team766.framework.SubsystemStatus;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -170,27 +169,13 @@ public class RulesMixin implements RuleEngineProvider {
         }
     }
 
-    protected final <
-                    StatusRecord extends Record,
-                    SubsystemT extends com.team766.framework.Subsystem<StatusRecord, ?>>
-            SubsystemStatus<StatusRecord> useStatus(Guarded<SubsystemT> subsystem) {
-        return subsystem.value;
-    }
-
-    protected final <
-                    StatusRecord extends Record,
-                    SubsystemT extends com.team766.framework.Subsystem<StatusRecord, ?>>
-            StatusRecord getStatus(Guarded<SubsystemT> subsystem) {
-        return subsystem.value.getStatus();
-    }
-
     protected final <SubsystemT extends edu.wpi.first.wpilibj2.command.Subsystem>
             Guarded<SubsystemT> guard(SubsystemT subsystem) {
         return new Guarded<>(subsystem, getRuleEngine());
     }
-}
 
-@FunctionalInterface
-interface InvalidReturnType<T> {
-    T get() throws ResourceUnavailableException;
+    @FunctionalInterface
+    private interface InvalidReturnType<T> {
+        T get() throws ResourceUnavailableException;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /* package */ abstract class ProcedureBase extends Command
@@ -47,6 +48,11 @@ import java.util.Set;
 
     protected final void updateStatus(Record status) {
         Statuses.getInstance().add(status, this);
+    }
+
+    protected final <StatusRecord extends Record> Optional<StatusRecord> getStatus(
+            Class<StatusRecord> c) {
+        return Statuses.getStatus(c);
     }
 
     public Set<Subsystem> getReservations() {

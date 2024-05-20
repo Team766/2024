@@ -2,13 +2,11 @@ package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
-import com.team766.framework.SubsystemStatus;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -17,22 +15,13 @@ public class DriverShootNow extends VisionPIDProcedure {
 
     private final Drive drive;
     private final Shoulder shoulder;
-    private final SubsystemStatus<Shooter.Status> shooter;
     private final Intake intake;
-    private final SubsystemStatus<ForwardApriltagCamera.Status> forwardApriltagCamera;
 
-    public DriverShootNow(
-            Drive drive,
-            Shoulder shoulder,
-            SubsystemStatus<Shooter.Status> shooter,
-            Intake intake,
-            SubsystemStatus<ForwardApriltagCamera.Status> forwardApriltagCamera) {
+    public DriverShootNow(Drive drive, Shoulder shoulder, Intake intake) {
         super(reservations(drive, shoulder, intake));
         this.drive = drive;
         this.shoulder = shoulder;
-        this.shooter = shooter;
         this.intake = intake;
-        this.forwardApriltagCamera = forwardApriltagCamera;
     }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
@@ -111,10 +100,15 @@ public class DriverShootNow extends VisionPIDProcedure {
         context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 1);
 
         updateStatus(new ShootingProcedureStatus(Status.FINISHED));
-        context.runSync(new DriverShootVelocityAndIntake(shooter, intake));
+        context.runSync(new DriverShootVelocityAndIntake(intake));
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        return forwardApriltagCamera.getStatus().speakerTagTransform().get();
+        var cameraStatus = getStatus(ForwardApriltagCamera.Status.class);
+        if (!cameraStatus.isPresent()) {
+            throw new AprilTagGeneralCheckedException(
+                    "ForwardApriltagCamera status is not available");
+        }
+        return cameraStatus.get().speakerTagTransform().get();
     }
 }

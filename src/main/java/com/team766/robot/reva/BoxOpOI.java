@@ -77,7 +77,7 @@ public class BoxOpOI extends OIFragment {
                     tryRunning(() -> reserve(shoulder).setGoal(RotateToPosition.SHOOTER_ASSIST));
                     // Currently it will only modify the speed if the right trigger is already held.
                     // TODO: Make this more tolerant for when Y is pressed before right trigger.
-                    if (getStatus(shooter).targetSpeed() != 0.0) {
+                    if (getStatus(Shooter.Status.class).get().targetSpeed() != 0.0) {
                         tryRunning(() -> reserve(shooter)
                                 .setGoal(Shooter.ShootAtSpeed.SHOOTER_ASSIST_SPEED));
                     }

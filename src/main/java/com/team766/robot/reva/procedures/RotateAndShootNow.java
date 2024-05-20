@@ -3,11 +3,9 @@ package com.team766.robot.reva.procedures;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.framework.SubsystemStatus;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -22,18 +20,13 @@ public class RotateAndShootNow extends Procedure {
 
     private final VisionSpeakerHelper visionSpeakerHelper;
 
-    public RotateAndShootNow(
-            Drive drive,
-            Shoulder shoulder,
-            Shooter shooter,
-            Intake intake,
-            SubsystemStatus<ForwardApriltagCamera.Status> forwardApriltagCamera) {
+    public RotateAndShootNow(Drive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
         super(reservations(drive, shoulder, shooter, intake));
         this.drive = drive;
         this.shoulder = shoulder;
         this.shooter = shooter;
         this.intake = intake;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive, forwardApriltagCamera);
+        visionSpeakerHelper = new VisionSpeakerHelper();
     }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS

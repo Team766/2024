@@ -4,6 +4,7 @@ import com.team766.framework.Statuses.StatusSource;
 import com.team766.framework.conditions.RuleEngineProvider;
 import com.team766.framework.conditions.RulesMixin;
 import com.team766.logging.Category;
+import java.util.Optional;
 
 /**
  * Fragment of an OI, with facilities to make it easy to set up {@link OICondition}s for usage in the fragment's
@@ -62,6 +63,11 @@ public abstract class OIFragment extends RulesMixin implements LoggingBase, Stat
     @Override
     public final boolean isStatusActive() {
         return true;
+    }
+
+    protected final <StatusRecord extends Record> Optional<StatusRecord> getStatus(
+            Class<StatusRecord> c) {
+        return Statuses.getStatus(c);
     }
 
     /**

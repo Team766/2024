@@ -41,7 +41,7 @@ public class OI extends OIBase {
 
     public void dispatchDriver() {
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER).isTriggering()) {
-            tryRunning(() -> new DriverShootNow(null, null, null, null, null));
+            tryRunning(() -> new DriverShootNow(null, null, null));
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {

@@ -3,11 +3,9 @@ package com.team766.robot.reva.procedures;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.framework.SubsystemStatus;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -22,19 +20,14 @@ public class NoRotateShootNow extends Procedure {
     private final boolean amp;
 
     public NoRotateShootNow(
-            boolean amp,
-            Drive drive,
-            Shoulder shoulder,
-            Shooter shooter,
-            Intake intake,
-            SubsystemStatus<ForwardApriltagCamera.Status> forwardApriltagCamera) {
+            boolean amp, Drive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
         super(reservations(drive, shooter, shoulder, intake));
         this.drive = drive;
         this.shoulder = shoulder;
         this.shooter = shooter;
         this.intake = intake;
         this.amp = amp;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive, forwardApriltagCamera);
+        visionSpeakerHelper = new VisionSpeakerHelper();
     }
 
     public void run(Context context) {

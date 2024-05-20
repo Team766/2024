@@ -13,7 +13,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
         boolean isStatusActive();
     }
 
-    public static class Entry<T> {
+    public static class Entry<T extends Record> {
         public final T status;
         public final double timestamp;
         public final WeakReference<StatusSource> source;
@@ -61,6 +61,16 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
         return instance;
     }
 
+    public static <StatusRecord extends Record> Optional<StatusRecord> getStatus(
+            Class<StatusRecord> c) {
+        return Statuses.getInstance().get(c).map(s -> s.status);
+    }
+
+    public static <StatusRecord extends Record> Optional<Entry<StatusRecord>> getStatusEntry(
+            Class<StatusRecord> c) {
+        return Statuses.getInstance().get(c);
+    }
+
     private final LinkedList<Entry<?>> data = new LinkedList<>();
 
     private Entry<?> add(Entry<?> entry) {
@@ -95,7 +105,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    public final <T> Optional<Entry<T>> get(Class<T> statusClass) {
+    public final <T extends Record> Optional<Entry<T>> get(Class<T> statusClass) {
         return data.stream()
                 .filter(s -> statusClass.isInstance(s.status))
                 .map(s -> (Entry<T>) s)
@@ -107,7 +117,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
     }
 
     @SafeVarargs
-    public final Optional<Entry<?>> getFirst(Class<?>... statusClasses) {
+    public final Optional<Entry<?>> getFirst(Class<? extends Record>... statusClasses) {
         return data.stream()
                 .filter(s -> {
                     for (var statusClass : statusClasses) {
@@ -121,7 +131,8 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    public final <T> Optional<Entry<T>> get(Class<T> statusClass, Predicate<Entry<T>> predicate) {
+    public final <T extends Record> Optional<Entry<T>> get(
+            Class<T> statusClass, Predicate<Entry<T>> predicate) {
         return data.stream()
                 .filter(s -> statusClass.isInstance(s.status))
                 .map(s -> (Entry<T>) s)
@@ -129,7 +140,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
                 .findFirst();
     }
 
-    public final boolean has(Class<?> statusClass) {
+    public final boolean has(Class<? extends Record> statusClass) {
         return get(statusClass).isPresent();
     }
 
@@ -137,7 +148,8 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
         return getFirst(predicate).isPresent();
     }
 
-    public final <T> boolean has(Class<T> statusClass, Predicate<Entry<T>> predicate) {
+    public final <T extends Record> boolean has(
+            Class<T> statusClass, Predicate<Entry<T>> predicate) {
         return get(statusClass, predicate).isPresent();
     }
 
@@ -145,7 +157,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
         data.remove(entry);
     }
 
-    public void remove(Class<?> statusClass) {
+    public void remove(Class<? extends Record> statusClass) {
         data.removeIf(s -> statusClass.isInstance(s.status));
     }
 }

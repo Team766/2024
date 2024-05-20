@@ -1,7 +1,6 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.framework.Context;
-import com.team766.framework.SubsystemStatus;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.mechanisms.Intake;
@@ -18,13 +17,11 @@ public class PickupNote extends VisionPIDProcedure {
 
     private final Drive drive;
     private final Intake intake;
-    private final SubsystemStatus<NoteCamera.Status> noteCamera;
 
-    public PickupNote(Drive drive, Intake intake, SubsystemStatus<NoteCamera.Status> noteCamera) {
+    public PickupNote(Drive drive, Intake intake) {
         super(reservations(drive, intake));
         this.drive = drive;
         this.intake = intake;
-        this.noteCamera = noteCamera;
     }
 
     // button needs to be held down
@@ -35,7 +32,8 @@ public class PickupNote extends VisionPIDProcedure {
         intake.setGoal(new Intake.SetPowerForSensorDistance());
 
         while (!intake.getStatus().hasNoteInIntake()) {
-            Optional<Double> yawInDegrees = noteCamera.getStatus().yawOfRing();
+            Optional<Double> yawInDegrees =
+                    getStatus(NoteCamera.Status.class).flatMap(s -> s.yawOfRing());
             if (!yawInDegrees.isPresent()) {
                 break;
             }

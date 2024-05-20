@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Objects;
 
 public abstract class Subsystem<StatusRecord extends Record, Goal> extends SubsystemBase
-        implements LoggingBase, SubsystemStatus<StatusRecord>, StatusSource {
+        implements LoggingBase, StatusSource {
     private StatusRecord currentStatus;
     private Goal currentGoal;
     private boolean goalChanged = false;
