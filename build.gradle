@@ -318,3 +318,18 @@ protobuf {
         }
     }
 }
+
+// This processes any files ending in .template into generated code.
+// Uses Groovy's SimpleTemplateEngine
+// https://docs.groovy-lang.org/latest/html/documentation/template-engines.html#_simpletemplateengine
+task expandTemplates(type: Copy) {
+    from('src') {
+        include '**/*.template'
+    }
+    includeEmptyDirs = false
+    into 'src'
+    expand(functionArity: 8)
+    rename { String fileName ->
+        fileName.replace(".template", "")
+    }
+}

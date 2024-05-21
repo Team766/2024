@@ -1,6 +1,6 @@
 package com.team766.web;
 
-import com.team766.framework.AutonomousMode;
+import com.team766.framework.AutonomousModeBase;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 public class AutonomousSelector implements WebServer.Handler {
     private static final String ENDPOINT = "/auton";
 
-    private final AutonomousMode[] m_autonModes;
+    private final AutonomousModeBase[] m_autonModes;
     private final String[] m_autonModeNames;
-    private AutonomousMode m_selectedAutonMode;
+    private AutonomousModeBase m_selectedAutonMode;
 
     private static String getSavedAutonMode() {
         return Preferences.userNodeForPackage(AutonomousSelector.class).get("AutonomousMode", null);
@@ -25,7 +25,7 @@ public class AutonomousSelector implements WebServer.Handler {
         Preferences.userNodeForPackage(AutonomousSelector.class).put("AutonomousMode", modeName);
     }
 
-    public AutonomousSelector(final AutonomousMode[] autonModes) {
+    public AutonomousSelector(final AutonomousModeBase[] autonModes) {
         final String savedAutonMode = getSavedAutonMode();
         m_autonModes = autonModes;
         m_autonModeNames = Arrays.stream(autonModes).map(m -> m.name()).toArray(String[]::new);
@@ -54,7 +54,7 @@ public class AutonomousSelector implements WebServer.Handler {
         }
     }
 
-    public AutonomousMode getSelectedAutonMode() {
+    public AutonomousModeBase getSelectedAutonMode() {
         return m_selectedAutonMode;
     }
 
@@ -68,7 +68,7 @@ public class AutonomousSelector implements WebServer.Handler {
         String locationReplaceScript = "";
         final String selectedAutonModeName = (String) params.get("AutoMode");
         if (selectedAutonModeName != null) {
-            final Optional<AutonomousMode> selectedAutonMode = Arrays.stream(m_autonModes)
+            final Optional<AutonomousModeBase> selectedAutonMode = Arrays.stream(m_autonModes)
                     .filter(m -> m.name().equals(selectedAutonModeName))
                     .findFirst();
             if (selectedAutonMode.isEmpty()) {

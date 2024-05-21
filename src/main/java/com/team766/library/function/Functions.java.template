@@ -1,0 +1,16 @@
+/** Generated from the template in Functions.java.template */
+
+package com.team766.library.function;
+
+public interface Functions {
+<% (1..functionArity).each{ i -> %>
+    public interface Consumer${i}<<% (1..<i).each{ j -> %>Arg${j}, <%}%>Arg${i}> extends FunctionBase {
+        void accept(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
+    }
+<%}%>\
+<% (1..functionArity).each{ i -> %>
+    public interface Function${i}<<% (1..i).each{ j -> %>Arg${j}, <%}%>R> extends FunctionBase {
+        R apply(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
+    }
+<%}%>
+}

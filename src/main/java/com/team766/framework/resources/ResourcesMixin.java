@@ -1,26 +1,14 @@
+/** Generated from the template in ResourcesMixin.java.template */
 package com.team766.framework.resources;
 
-import com.team766.library.function.Consumer1;
-import com.team766.library.function.Consumer2;
-import com.team766.library.function.Consumer3;
-import com.team766.library.function.Consumer4;
-import com.team766.library.function.Consumer5;
-import com.team766.library.function.Consumer6;
-import com.team766.library.function.Consumer7;
-import com.team766.library.function.Consumer8;
-import com.team766.library.function.Function1;
-import com.team766.library.function.Function2;
-import com.team766.library.function.Function3;
-import com.team766.library.function.Function4;
-import com.team766.library.function.Function5;
-import com.team766.library.function.Function6;
-import com.team766.library.function.Function7;
-import com.team766.library.function.Function8;
+import com.team766.library.function.Functions.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public interface ResourcesMixin {
     ResourceManager getResourceManager();
+
+    // 1 subsystems
 
     @SuppressWarnings("unchecked")
     default <Subsystem0 extends Subsystem> boolean ifAvailable(
@@ -44,6 +32,8 @@ public interface ResourcesMixin {
     default <Subsystem0 extends Subsystem> void byDefault(Consumer1<Subsystem0> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
+
+    // 2 subsystems
 
     @SuppressWarnings("unchecked")
     default <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> boolean ifAvailable(
@@ -70,6 +60,8 @@ public interface ResourcesMixin {
             Consumer2<Subsystem0, Subsystem1> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
+
+    // 3 subsystems
 
     @SuppressWarnings("unchecked")
     default <
@@ -111,6 +103,8 @@ public interface ResourcesMixin {
             void byDefault(Consumer3<Subsystem0, Subsystem1, Subsystem2> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
+
+    // 4 subsystems
 
     @SuppressWarnings("unchecked")
     default <
@@ -165,6 +159,8 @@ public interface ResourcesMixin {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
+    // 5 subsystems
+
     @SuppressWarnings("unchecked")
     default <
                     Subsystem0 extends Subsystem,
@@ -228,6 +224,8 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
+
+    // 6 subsystems
 
     @SuppressWarnings("unchecked")
     default <
@@ -324,6 +322,8 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
+
+    // 7 subsystems
 
     @SuppressWarnings("unchecked")
     default <
@@ -430,6 +430,8 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
+
+    // 8 subsystems
 
     @SuppressWarnings("unchecked")
     default <

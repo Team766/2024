@@ -1,6 +1,6 @@
 package com.team766.hal;
 
-import com.team766.framework.AutonomousMode;
+import com.team766.framework.AutonomousModeBase;
 import com.team766.framework.LightsBase;
 import com.team766.framework.OIBase;
 import com.team766.framework.SchedulerMonitor;
@@ -27,7 +27,7 @@ public final class GenericRobotMain {
 
     private WebServer m_webServer;
     private AutonomousSelector m_autonSelector;
-    private AutonomousMode m_autonMode = null;
+    private AutonomousModeBase m_autonMode = null;
     private Command m_autonomous = null;
 
     // Reset the autonomous routine if the robot is disabled for more than this
@@ -129,7 +129,7 @@ public final class GenericRobotMain {
     public void autonomousPeriodic() {
         if (faultInRobotInit || faultInAutoInit) return;
 
-        final AutonomousMode autonomousMode = m_autonSelector.getSelectedAutonMode();
+        final AutonomousModeBase autonomousMode = m_autonSelector.getSelectedAutonMode();
         if (autonomousMode != null && m_autonMode != autonomousMode) {
             m_autonomous = autonomousMode.instantiate();
             m_autonomous.schedule();

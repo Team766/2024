@@ -1,26 +1,21 @@
+/** Generated from the template in AutonomousMode.java.template */
 package com.team766.framework;
 
 import com.team766.framework.resources.ResourceManager;
-import com.team766.library.function.Function1;
-import com.team766.library.function.Function2;
-import com.team766.library.function.Function3;
-import com.team766.library.function.Function4;
-import com.team766.library.function.Function5;
-import com.team766.library.function.Function6;
-import com.team766.library.function.Function7;
-import com.team766.library.function.Function8;
+import com.team766.library.function.Functions.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.function.Supplier;
 
-public class AutonomousMode {
-    private final Supplier<Command> m_constructor;
-    private final String m_name;
+public class AutonomousMode extends AutonomousModeBase {
+    public AutonomousMode(final String name, final Supplier<Command> constructor) {
+        super(name, constructor);
+    }
 
     @SuppressWarnings("unchecked")
     public <Subsystem0 extends Subsystem> AutonomousMode(
             final String name, Function1<Subsystem0, Command> callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply((Subsystem0) subsystems[0]);
@@ -30,7 +25,7 @@ public class AutonomousMode {
     @SuppressWarnings("unchecked")
     public <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> AutonomousMode(
             final String name, Function2<Subsystem0, Subsystem1, Command> callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
@@ -45,7 +40,7 @@ public class AutonomousMode {
             AutonomousMode(
                     final String name,
                     Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
@@ -63,7 +58,7 @@ public class AutonomousMode {
             AutonomousMode(
                     final String name,
                     Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
@@ -85,7 +80,7 @@ public class AutonomousMode {
                     final String name,
                     Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
                             callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
@@ -116,7 +111,7 @@ public class AutonomousMode {
                                     Subsystem5,
                                     Command>
                             callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
@@ -150,7 +145,7 @@ public class AutonomousMode {
                                     Subsystem6,
                                     Command>
                             callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
@@ -187,7 +182,7 @@ public class AutonomousMode {
                                     Subsystem7,
                                     Command>
                             callback) {
-        this(
+        super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
@@ -200,27 +195,5 @@ public class AutonomousMode {
                             (Subsystem6) subsystems[6],
                             (Subsystem7) subsystems[7]);
                 }));
-    }
-
-    public AutonomousMode(final String name, final Supplier<Command> constructor) {
-        m_constructor = constructor;
-        m_name = name;
-    }
-
-    public Command instantiate() {
-        return m_constructor.get();
-    }
-
-    public String name() {
-        return m_name;
-    }
-
-    @Override
-    public String toString() {
-        return name();
-    }
-
-    public AutonomousMode clone() {
-        return new AutonomousMode(m_name, m_constructor);
     }
 }
