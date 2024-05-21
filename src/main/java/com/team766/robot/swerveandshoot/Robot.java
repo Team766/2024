@@ -10,27 +10,19 @@ import com.team766.robot.swerveandshoot.mechanisms.*;
 import com.team766.robot.swerveandshoot.procedures.*;
 
 public class Robot implements RobotConfigurator {
-    // Declare mechanisms here
-    private TempPickerUpper tempPickerUpper;
-    private TempShooter tempShooter;
-    private Drive drive;
-    private NoteCamera noteDetectorCamera;
-    private ForwardApriltagCamera forwardApriltagCamera;
-
     @Override
-    public void initializeMechanisms() {
+    public void initializeSubsystems() {
         SwerveConfig config = new SwerveConfig().withCanBus(SwerveDriveConstants.SWERVE_CANBUS);
-        tempPickerUpper = new TempPickerUpper();
-        tempShooter = new TempShooter();
-        drive = new Drive(config);
-        noteDetectorCamera = new NoteCamera();
-        forwardApriltagCamera = new ForwardApriltagCamera();
+        addSubsystem(new TempPickerUpper());
+        addSubsystem(new TempShooter());
+        addSubsystem(new Drive(config));
+        addSubsystem(new NoteCamera());
+        addSubsystem(new ForwardApriltagCamera());
     }
 
     @Override
     public OI createOI() {
-        return new OI(
-                drive, tempPickerUpper, tempShooter, forwardApriltagCamera, noteDetectorCamera);
+        return new OI();
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.team766.robot.common;
 
 import com.team766.framework.OIBase;
 import com.team766.framework.OIFragment;
-import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
@@ -11,20 +10,14 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 public class DriverOI extends OIFragment {
 
-    protected final Guarded<Drive> drive;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
 
     @AutoLogOutput
     protected boolean isCross = false;
 
-    public DriverOI(
-            OIBase oi,
-            Guarded<Drive> drive,
-            JoystickReader leftJoystick,
-            JoystickReader rightJoystick) {
+    public DriverOI(OIBase oi, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         super(oi);
-        this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
     }
@@ -44,11 +37,11 @@ public class DriverOI extends OIFragment {
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
         if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
-            tryRunning(() -> reserve(drive).resetGyro());
+            ifAvailable((Drive drive) -> drive.resetGyro());
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
-            tryRunning(() -> reserve(drive).resetCurrentPosition());
+            ifAvailable((Drive drive) -> drive.resetCurrentPosition());
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
@@ -57,7 +50,7 @@ public class DriverOI extends OIFragment {
         }
 
         if (isCross) {
-            tryRunning(() -> reserve(drive).setGoal(new Drive.SetCross()));
+            ifAvailable((Drive drive) -> drive.setGoal(new Drive.SetCross()));
         }
 
         // Moves the robot if there are joystick inputs
@@ -67,23 +60,19 @@ public class DriverOI extends OIFragment {
                     rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING).isTriggering()
                             ? ControlConstants.FINE_DRIVING_COEFFICIENT
                             : 1;
-            tryRunning(() -> reserve(drive)
-                    .setGoal(new Drive.FieldOrientedVelocity(
-                            (drivingCoefficient
-                                    * curvedJoystickPower(
-                                            leftJoystickX,
-                                            ControlConstants.TRANSLATIONAL_CURVE_POWER)),
-                            (drivingCoefficient
-                                    * curvedJoystickPower(
-                                            leftJoystickY,
-                                            ControlConstants.TRANSLATIONAL_CURVE_POWER)),
-                            (drivingCoefficient
-                                    * curvedJoystickPower(
-                                            rightJoystickY,
-                                            ControlConstants.ROTATIONAL_CURVE_POWER)))));
+            ifAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
+                    (drivingCoefficient
+                            * curvedJoystickPower(
+                                    leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
+                    (drivingCoefficient
+                            * curvedJoystickPower(
+                                    leftJoystickY, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
+                    (drivingCoefficient
+                            * curvedJoystickPower(
+                                    rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)))));
         }
 
-        byDefault(() -> reserve(drive).setGoal(new Drive.SetCross()));
+        byDefault((Drive drive) -> drive.setGoal(new Drive.SetCross()));
     }
 
     /**

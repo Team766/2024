@@ -7,10 +7,8 @@ import com.team766.robot.proximity_burrobot.mechanisms.*;
 import com.team766.robot.proximity_burrobot.procedures.*;
 
 public class Robot implements RobotConfigurator {
-    // Declare mechanisms (as static fields) here
-
     @Override
-    public void initializeMechanisms() {
+    public void initializeSubsystems() {
         // Initialize mechanisms here
     }
 

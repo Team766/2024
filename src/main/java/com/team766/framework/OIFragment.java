@@ -2,10 +2,8 @@ package com.team766.framework;
 
 import com.team766.framework.Statuses.StatusSource;
 import com.team766.framework.conditions.RuleEngine;
-import com.team766.framework.conditions.RuleEngineProvider;
 import com.team766.framework.conditions.RulesMixin;
 import com.team766.framework.resources.ResourceManager;
-import com.team766.framework.resources.ResourceManagerProvider;
 import com.team766.framework.resources.ResourcesMixin;
 import com.team766.logging.Category;
 import java.util.Optional;
@@ -23,6 +21,7 @@ import java.util.Optional;
 public abstract class OIFragment extends RulesMixin
         implements ResourcesMixin, LoggingBase, StatusSource {
     private final String name;
+    private final RuleEngine ruleEngine;
     private final ResourceManager resourceManager;
 
     protected Category loggerCategory = Category.OPERATOR_INTERFACE;
@@ -31,29 +30,33 @@ public abstract class OIFragment extends RulesMixin
      * Creates a new OIFragment.
      * @param name The name of this part of the OI (eg, "BoxOpOI").  Used for logging.
      */
-    public <ParentOI extends ResourceManagerProvider & RuleEngineProvider> OIFragment(
-            ParentOI oi, String name) {
-        super(oi);
+    public OIFragment(OIFragment oi, String name) {
         this.name = name;
-        this.resourceManager = oi.getResourceManager();
+        this.ruleEngine = oi.ruleEngine;
+        this.resourceManager = oi.resourceManager;
     }
 
     /**
      * Creates a new OIFragment, using the name of the sub-class.
      */
-    public <ParentOI extends ResourceManagerProvider & RuleEngineProvider> OIFragment(ParentOI oi) {
-        super(oi);
+    public OIFragment(OIFragment oi) {
         this.name = this.getClass().getSimpleName();
-        this.resourceManager = oi.getResourceManager();
+        this.ruleEngine = oi.ruleEngine;
+        this.resourceManager = oi.resourceManager;
     }
 
     /**
      * Creates a new OIFragment, using the name of the sub-class.
      */
-    public OIFragment(ResourceManager resourceManager, RuleEngine ruleEngine) {
-        super(() -> ruleEngine);
+    public OIFragment(RuleEngine ruleEngine, ResourceManager resourceManager) {
         this.name = this.getClass().getSimpleName();
+        this.ruleEngine = ruleEngine;
         this.resourceManager = resourceManager;
+    }
+
+    @Override
+    public final RuleEngine getRuleEngine() {
+        return ruleEngine;
     }
 
     @Override

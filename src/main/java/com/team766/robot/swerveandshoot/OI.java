@@ -1,7 +1,6 @@
 package com.team766.robot.swerveandshoot;
 
 import com.team766.framework.OIBase;
-import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.mechanisms.Drive;
@@ -16,28 +15,11 @@ import com.team766.robot.swerveandshoot.procedures.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends OIBase {
-    private final Guarded<Drive> drive;
-    private final Guarded<TempPickerUpper> tempPickerUpper;
-    private final Guarded<TempShooter> tempShooter;
-    private final Guarded<ForwardApriltagCamera> forwardApriltagCamera;
-    private final Guarded<NoteCamera> noteDetectorCamera;
-
     private final JoystickReader joystick0;
     private final JoystickReader joystick1;
     private final JoystickReader joystick2;
 
-    public OI(
-            Drive drive,
-            TempPickerUpper tempPickerUpper,
-            TempShooter tempShooter,
-            ForwardApriltagCamera forwardApriltagCamera,
-            NoteCamera noteDetectorCamera) {
-        this.drive = guard(drive);
-        this.tempPickerUpper = guard(tempPickerUpper);
-        this.tempShooter = guard(tempShooter);
-        this.forwardApriltagCamera = guard(forwardApriltagCamera);
-        this.noteDetectorCamera = guard(noteDetectorCamera);
-
+    public OI() {
         joystick0 = RobotProvider.instance.getJoystick(this, 0);
         joystick1 = RobotProvider.instance.getJoystick(this, 1);
         joystick2 = RobotProvider.instance.getJoystick(this, 2);
@@ -47,7 +29,7 @@ public class OI extends OIBase {
         // General drive util
 
         if (joystick0.getButton(2).isNewlyTriggering()) {
-            tryRunning(() -> reserve(drive).resetGyro());
+            ifAvailable((Drive drive) -> drive.resetGyro());
         }
 
         /*
@@ -60,11 +42,14 @@ public class OI extends OIBase {
          * This is used to drive into the area labled 1R in the maker space.
          */
         if (joystick0.getButton(1).isTriggering()) {
-            tryRunning(() -> new DriveToAndScoreAt(
-                    ScoringPositions.makerSpace1R,
-                    reserve(drive),
-                    reserve(tempShooter),
-                    reserve(forwardApriltagCamera)));
+            ifAvailable(
+                    (Drive drive,
+                            TempShooter tempShooter,
+                            ForwardApriltagCamera forwardApriltagCamera) -> new DriveToAndScoreAt(
+                            ScoringPositions.makerSpace1R,
+                            drive,
+                            tempShooter,
+                            forwardApriltagCamera));
         }
 
         /*
@@ -73,11 +58,14 @@ public class OI extends OIBase {
          */
         if (joystick0.getButton(2).isTriggering()) {
             // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
-            tryRunning(() -> new DriveToAndScoreAt(
-                    ScoringPositions.makerSpace1L,
-                    reserve(drive),
-                    reserve(tempShooter),
-                    reserve(forwardApriltagCamera)));
+            ifAvailable(
+                    (Drive drive,
+                            TempShooter tempShooter,
+                            ForwardApriltagCamera forwardApriltagCamera) -> new DriveToAndScoreAt(
+                            ScoringPositions.makerSpace1L,
+                            drive,
+                            tempShooter,
+                            forwardApriltagCamera));
         }
 
         /*
@@ -86,8 +74,9 @@ public class OI extends OIBase {
          */
 
         if (joystick1.getButton(1).isTriggering()) {
-            tryRunning(() -> new PickupNote(
-                    reserve(drive), reserve(tempPickerUpper), reserve(noteDetectorCamera)));
+            ifAvailable(
+                    (Drive drive, TempPickerUpper tempPickerUpper, NoteCamera noteDetectorCamera) ->
+                            new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
         }
 
         // if (joystick1.getButton(1)) {
@@ -136,13 +125,12 @@ public class OI extends OIBase {
                         + Math.abs(joystick0.getAxis(1))
                         + Math.abs(joystick1.getAxis(0))
                 > 0.05) {
-            tryRunning(() -> reserve(drive)
-                    .setGoal(new Drive.RobotOrientedVelocity(
-                            joystick0.getAxis(0) * .2,
-                            -joystick0.getAxis(1) * .2,
-                            joystick1.getAxis(0) * .2)));
+            ifAvailable((Drive drive) -> drive.setGoal(new Drive.RobotOrientedVelocity(
+                    joystick0.getAxis(0) * .2,
+                    -joystick0.getAxis(1) * .2,
+                    joystick1.getAxis(0) * .2)));
         }
 
-        byDefault(() -> reserve(drive).setGoal(new Drive.StopDrive()));
+        byDefault((Drive drive) -> drive.setGoal(new Drive.StopDrive()));
     }
 }

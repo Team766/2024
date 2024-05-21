@@ -4,14 +4,14 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class RulesMixin implements RuleEngineProvider {
+public abstract class RulesMixin {
     private class ConditionBase implements Condition {
         private boolean valid = false;
         private Boolean triggering = null;
         private ConditionState state = ConditionState.IsNotTriggering;
 
         protected ConditionBase() {
-            engine.registerStartFrameCallback(this::invalidate);
+            getRuleEngine().registerStartFrameCallback(this::invalidate);
         }
 
         protected void invalidate() {
@@ -77,7 +77,7 @@ public class RulesMixin implements RuleEngineProvider {
             this.valueSupplier = valueSupplier;
             prevValue = value = valueSupplier.get();
 
-            engine.registerStartFrameCallback(this::invalidate);
+            getRuleEngine().registerStartFrameCallback(this::invalidate);
         }
 
         protected void invalidate() {
@@ -98,14 +98,5 @@ public class RulesMixin implements RuleEngineProvider {
         }
     }
 
-    private final RuleEngine engine;
-
-    protected RulesMixin(RuleEngineProvider engine) {
-        this.engine = engine.getRuleEngine();
-    }
-
-    @Override
-    public final RuleEngine getRuleEngine() {
-        return engine;
-    }
+    protected abstract RuleEngine getRuleEngine();
 }

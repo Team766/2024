@@ -7,11 +7,10 @@ import com.team766.robot.example.mechanisms.*;
 import com.team766.robot.example.procedures.*;
 
 public class Robot implements RobotConfigurator {
-    // Declare mechanisms (as static fields) here
-
     @Override
-    public void initializeMechanisms() {
+    public void initializeSubsystems() {
         // Initialize mechanisms here
+        addSubsystem(new ExampleMechanism());
     }
 
     @Override

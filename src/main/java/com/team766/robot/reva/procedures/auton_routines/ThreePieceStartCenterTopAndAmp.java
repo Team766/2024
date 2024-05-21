@@ -2,7 +2,6 @@ package com.team766.robot.reva.procedures.auton_routines;
 
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.mechanisms.Climber;
-import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
@@ -14,19 +13,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceStartCenterTopAndAmp extends AutoBase {
     public ThreePieceStartCenterTopAndAmp(
-            Drive drive,
-            Shoulder shoulder,
-            Shooter shooter,
-            Intake intake,
-            Climber climber,
-            ForwardApriltagCamera forwardApriltagCamera) {
+            Drive drive, Shoulder shoulder, Shooter shooter, Intake intake, Climber climber) {
         super(drive, shooter, climber, new Pose2d(1.35, 5.55, Rotation2d.fromDegrees(0)));
         addProcedure(new ShootAtSubwoofer(shoulder, shooter, intake));
         addProcedure(new StartAutoIntake(shoulder, intake));
         addPath("Middle Start to Middle Piece");
-        addProcedure(new ShootNow(drive, shoulder, shooter, intake, forwardApriltagCamera));
+        addProcedure(new ShootNow(drive, shoulder, shooter, intake));
         addProcedure(new StartAutoIntake(shoulder, intake));
         addPath("Middle Piece to Top Piece");
-        addProcedure(new ShootNow(drive, shoulder, shooter, intake, forwardApriltagCamera));
+        addProcedure(new ShootNow(drive, shoulder, shooter, intake));
     }
 }

@@ -14,31 +14,21 @@ import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.auton_routines.*;
 
 public class Robot implements RobotConfigurator {
-    // Declare mechanisms (as static fields) here
-    private Drive drive;
-    private Climber climber;
-    private Shoulder shoulder;
-    private Intake intake;
-    private Shooter shooter;
-    // not yet initialized, until we have the camera on the robot and test it.
-    private ForwardApriltagCamera forwardApriltagCamera;
-    private NoteCamera noteCamera;
-
     @Override
-    public void initializeMechanisms() {
+    public void initializeSubsystems() {
         SwerveConfig config = new SwerveConfig();
-        drive = new Drive(config);
-        climber = new Climber();
-        shoulder = new Shoulder();
-        intake = new Intake();
-        shooter = new Shooter();
-        noteCamera = new NoteCamera();
-        forwardApriltagCamera = new ForwardApriltagCamera();
+        addSubsystem(new Drive(config));
+        addSubsystem(new Climber());
+        addSubsystem(new Shoulder());
+        addSubsystem(new Intake());
+        addSubsystem(new Shooter());
+        addSubsystem(new NoteCamera());
+        addSubsystem(new ForwardApriltagCamera());
     }
 
     @Override
     public OI createOI() {
-        return new OI(drive, shoulder, shooter, intake, climber, forwardApriltagCamera);
+        return new OI();
     }
 
     @Override
@@ -58,24 +48,44 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Center Pieces",
-                    () -> new ThreePieceAmpSide(
-                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
+                    (Drive drive,
+                            Shoulder shoulder,
+                            Shooter shooter,
+                            Intake intake,
+                            Climber climber) ->
+                            new ThreePieceAmpSide(drive, shoulder, shooter, intake, climber)),
             new AutonomousMode(
                     "4p Start Amp, All Close Pieces",
-                    () -> new FourPieceAmpSide(
-                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
+                    (Drive drive,
+                            Shoulder shoulder,
+                            Shooter shooter,
+                            Intake intake,
+                            Climber climber) ->
+                            new FourPieceAmpSide(drive, shoulder, shooter, intake, climber)),
             new AutonomousMode(
                     "2p Start Source, Bottom Midfield Piece",
-                    () -> new TwoPieceMidfieldSourceSide(
-                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
+                    (Drive drive,
+                            Shoulder shoulder,
+                            Shooter shooter,
+                            Intake intake,
+                            Climber climber) -> new TwoPieceMidfieldSourceSide(
+                            drive, shoulder, shooter, intake, climber)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Top Midfield Pieces",
-                    () -> new ThreePieceMidfieldAmpSide(
-                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera)),
+                    (Drive drive,
+                            Shoulder shoulder,
+                            Shooter shooter,
+                            Intake intake,
+                            Climber climber) -> new ThreePieceMidfieldAmpSide(
+                            drive, shoulder, shooter, intake, climber)),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
-                    () -> new ThreePieceStartCenterTopAndAmp(
-                            drive, shoulder, shooter, intake, climber, forwardApriltagCamera))
+                    (Drive drive,
+                            Shoulder shoulder,
+                            Shooter shooter,
+                            Intake intake,
+                            Climber climber) -> new ThreePieceStartCenterTopAndAmp(
+                            drive, shoulder, shooter, intake, climber))
         };
     }
 }

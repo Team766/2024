@@ -1,7 +1,6 @@
 package com.team766.framework3.example;
 
 import com.team766.framework.OIBase;
-import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.constants.ControlConstants;
@@ -20,17 +19,11 @@ public class OI extends OIBase {
     private final JoystickReader boxopGamepad =
             RobotProvider.instance.getJoystick(this, InputConstants.BOXOP_GAMEPAD);
 
-    private final Guarded<Drive> drive;
-
     @AutoLogOutput
     private PlacementPosition placementPosition = PlacementPosition.NONE;
 
     @AutoLogOutput
     private boolean isCross = false;
-
-    public OI(Drive drive) {
-        this.drive = guard(drive);
-    }
 
     @Override
     protected void dispatch() {
@@ -41,15 +34,15 @@ public class OI extends OIBase {
 
     public void dispatchDriver() {
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER).isTriggering()) {
-            tryRunning(() -> new DriverShootNow(null, null, null));
+            ifAvailable((Drive drive) -> new DriverShootNow(drive, null, null));
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
-            tryRunning(() -> reserve(drive).resetGyro());
+            ifAvailable((Drive drive) -> drive.resetGyro());
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
-            tryReserving(drive, drive -> drive.resetCurrentPosition());
+            ifAvailable((Drive drive) -> drive.resetCurrentPosition());
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
@@ -58,7 +51,7 @@ public class OI extends OIBase {
         }
 
         if (isCross) {
-            tryRunning(() -> reserve(drive).setGoal(new Drive.SetCross()));
+            ifAvailable((Drive drive) -> drive.setGoal(new Drive.SetCross()));
         }
 
         final double leftJoystickX =
@@ -76,12 +69,11 @@ public class OI extends OIBase {
         if (Math.abs(leftJoystickX) > 0
                 || Math.abs(leftJoystickY) > 0
                 || Math.abs(rightJoystickY) > 0) {
-            tryRunning(() -> reserve(drive)
-                    .setGoal(new Drive.FieldOrientedVelocity(
-                            leftJoystickX, leftJoystickY, rightJoystickY)));
+            ifAvailable((Drive drive) -> drive.setGoal(
+                    new Drive.FieldOrientedVelocity(leftJoystickX, leftJoystickY, rightJoystickY)));
         }
 
-        byDefault(() -> reserve(drive).setGoal(new Drive.StopDrive()));
+        byDefault((Drive drive) -> drive.setGoal(new Drive.StopDrive()));
     }
 
     public void dispatchBoxop() {}

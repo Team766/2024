@@ -1,7 +1,6 @@
 package com.team766.robot.gatorade;
 
 import com.team766.framework.OIBase;
-import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Severity;
@@ -25,11 +24,6 @@ public class OI extends OIBase {
     private final JoystickReader leftJoystick;
     private final JoystickReader rightJoystick;
     private final JoystickReader boxopGamepad;
-    private final Guarded<Drive> drive;
-    private final Guarded<Shoulder> shoulder;
-    private final Guarded<Elevator> elevator;
-    private final Guarded<Wrist> wrist;
-    private final Guarded<Intake> intake;
     private final DriverOI driverOI;
 
     @AutoLogOutput
@@ -38,18 +32,12 @@ public class OI extends OIBase {
     @AutoLogOutput(key = "Game Piece")
     GamePieceType gamePieceType = GamePieceType.CONE;
 
-    public OI(Drive drive, Shoulder shoulder, Elevator elevator, Wrist wrist, Intake intake) {
-        this.drive = guard(drive);
-        this.shoulder = guard(shoulder);
-        this.elevator = guard(elevator);
-        this.wrist = guard(wrist);
-        this.intake = guard(intake);
-
+    public OI() {
         leftJoystick = RobotProvider.instance.getJoystick(this, InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(this, InputConstants.RIGHT_JOYSTICK);
         boxopGamepad = RobotProvider.instance.getJoystick(this, InputConstants.BOXOP_GAMEPAD);
 
-        driverOI = new DriverOI(this, this.drive, leftJoystick, rightJoystick);
+        driverOI = new DriverOI(this, leftJoystick, rightJoystick);
     }
 
     private void updateStatus() {
@@ -63,10 +51,10 @@ public class OI extends OIBase {
         driverOI.run();
 
         switch (leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT)) {
-            case IsTriggering -> tryRunning(() -> reserve(intake)
-                    .setGoal(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
-            case IsFinishedTriggering -> tryRunning(() -> reserve(intake)
-                    .setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
+            case IsTriggering -> ifAvailable((Intake intake) ->
+                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
+            case IsFinishedTriggering -> ifAvailable((Intake intake) ->
+                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
             default -> {}
         }
 
@@ -103,16 +91,16 @@ public class OI extends OIBase {
 
         // look for button hold to start intake, release to idle intake
         switch (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN)) {
-            case IsTriggering -> tryRunning(() -> reserve(intake)
-                    .setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
-            case IsFinishedTriggering -> tryRunning(() -> reserve(intake)
-                    .setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
+            case IsTriggering -> ifAvailable((Intake intake) ->
+                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
+            case IsFinishedTriggering -> ifAvailable((Intake intake) ->
+                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
             default -> {}
         }
 
         if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP).isTriggering()) {
-            tryRunning(() -> reserve(intake)
-                    .setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
+            ifAvailable((Intake intake) ->
+                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         }
 
         // look for button hold to extend intake/wrist/elevator superstructure,
@@ -123,24 +111,24 @@ public class OI extends OIBase {
                     case NONE:
                         break;
                     case LOW_NODE:
-                        tryRunning(() -> new ExtendWristvatorToLow(
-                                reserve(shoulder), reserve(elevator), reserve(wrist)));
+                        ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
+                                new ExtendWristvatorToLow(shoulder, elevator, wrist));
                         break;
                     case MID_NODE:
-                        tryRunning(() -> new ExtendWristvatorToMid(
-                                reserve(shoulder), reserve(elevator), reserve(wrist)));
+                        ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
+                                new ExtendWristvatorToMid(shoulder, elevator, wrist));
                         break;
                     case HIGH_NODE:
-                        tryRunning(() -> new ExtendWristvatorToHigh(
-                                reserve(shoulder), reserve(elevator), reserve(wrist)));
+                        ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
+                                new ExtendWristvatorToHigh(shoulder, elevator, wrist));
                         break;
                     case HUMAN_PLAYER:
-                        tryRunning(() -> new ExtendToHumanWithIntake(
-                                gamePieceType,
-                                reserve(shoulder),
-                                reserve(elevator),
-                                reserve(wrist),
-                                reserve(intake)));
+                        ifAvailable(
+                                (Shoulder shoulder,
+                                        Elevator elevator,
+                                        Wrist wrist,
+                                        Intake intake) -> new ExtendToHumanWithIntake(
+                                        gamePieceType, shoulder, elevator, wrist, intake));
                         break;
                     default:
                         // warn, ignore
@@ -152,15 +140,15 @@ public class OI extends OIBase {
             }
             case IsFinishedTriggering -> {
                 if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
-                    tryRunning(() -> Commands.sequence(
-                            new RetractWristvator(
-                                    reserve(shoulder), reserve(elevator), reserve(wrist)),
-                            reserve(intake)
-                                    .setGoalBehavior(new Intake.Status(
-                                            gamePieceType, Intake.MotorState.IDLE))));
+                    ifAvailable(
+                            (Shoulder shoulder, Elevator elevator, Wrist wrist, Intake intake) ->
+                                    Commands.sequence(
+                                            new RetractWristvator(shoulder, elevator, wrist),
+                                            intake.setGoalBehavior(new Intake.Status(
+                                                    gamePieceType, Intake.MotorState.IDLE))));
                 } else {
-                    tryRunning(() -> new RetractWristvator(
-                            reserve(shoulder), reserve(elevator), reserve(wrist)));
+                    ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
+                            new RetractWristvator(shoulder, elevator, wrist));
                 }
             }
 
@@ -174,9 +162,11 @@ public class OI extends OIBase {
                     // tryUsing(() ->
                     //     reserve(elevator).setGoal(new Elevator.NudgeNoPID(elevatorNudgeAxis)));
                     if (elevatorNudgeAxis > 0) {
-                        tryRunning(() -> reserve(elevator).setGoal(new Elevator.NudgeUp()));
+                        ifAvailable(
+                                (Elevator elevator) -> elevator.setGoal(new Elevator.NudgeUp()));
                     } else {
-                        tryRunning(() -> reserve(elevator).setGoal(new Elevator.NudgeDown()));
+                        ifAvailable(
+                                (Elevator elevator) -> elevator.setGoal(new Elevator.NudgeDown()));
                     }
                 }
                 // look for wrist nudges
@@ -185,16 +175,16 @@ public class OI extends OIBase {
                 if (Math.abs(wristNudgeAxis) > 0.05) {
                     // tryUsing(() -> reserve(wrist).setGoal(new Wrist.NudgeNoPID(wristNudgeAxis)));
                     if (wristNudgeAxis > 0) {
-                        tryRunning(() -> reserve(wrist).setGoal(new Wrist.NudgeUp()));
+                        ifAvailable((Wrist wrist) -> wrist.setGoal(new Wrist.NudgeUp()));
                     } else {
-                        tryRunning(() -> reserve(wrist).setGoal(new Wrist.NudgeDown()));
+                        ifAvailable((Wrist wrist) -> wrist.setGoal(new Wrist.NudgeDown()));
                     }
                 }
             }
             default -> {}
         }
 
-        byDefault(() -> reserve(elevator).setGoal(new Elevator.StopElevator()));
-        byDefault(() -> reserve(wrist).setGoal(new Wrist.StopWrist()));
+        byDefault((Elevator elevator) -> elevator.setGoal(new Elevator.StopElevator()));
+        byDefault((Wrist wrist) -> wrist.setGoal(new Wrist.StopWrist()));
     }
 }

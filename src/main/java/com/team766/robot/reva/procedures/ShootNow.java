@@ -18,22 +18,15 @@ public class ShootNow extends VisionPIDProcedure {
     private final Shoulder shoulder;
     private final Shooter shooter;
     private final Intake intake;
-    private final ForwardApriltagCamera forwardApriltagCamera;
 
     private double angle;
 
-    public ShootNow(
-            Drive drive,
-            Shoulder shoulder,
-            Shooter shooter,
-            Intake intake,
-            ForwardApriltagCamera forwardApriltagCamera) {
+    public ShootNow(Drive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
         super(reservations(drive, shoulder, shooter, intake));
         this.drive = drive;
         this.shoulder = shoulder;
         this.shooter = shooter;
         this.intake = intake;
-        this.forwardApriltagCamera = forwardApriltagCamera;
     }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
@@ -119,10 +112,16 @@ public class ShootNow extends VisionPIDProcedure {
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        return forwardApriltagCamera.getStatus().speakerTagTransform().get();
+        return getStatus(ForwardApriltagCamera.Status.class)
+                .get()
+                .speakerTagTransform()
+                .get();
     }
 
     private boolean seesTarget() {
-        return forwardApriltagCamera.getStatus().speakerTagTransform().hasValue();
+        return getStatus(ForwardApriltagCamera.Status.class)
+                .get()
+                .speakerTagTransform()
+                .hasValue();
     }
 }

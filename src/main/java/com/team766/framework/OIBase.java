@@ -6,7 +6,7 @@ import com.team766.logging.LoggerExceptionUtils;
 
 public abstract class OIBase extends OIFragment {
     public OIBase() {
-        super(new ResourceManager(), new RuleEngine());
+        super(new RuleEngine(), new ResourceManager());
     }
 
     @Override

@@ -39,7 +39,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof Entry other) {
+            if (obj instanceof Entry<?> other) {
                 return status.equals(other.status) && source == other.source;
             }
             return false;
