@@ -28,7 +28,7 @@ public class OI extends OIBase {
     protected void dispatch() {
         // General drive util
 
-        if (joystick0.getButton(2).isNewlyTriggering()) {
+        if (joystick0.button(2).isNewlyTriggering()) {
             ifAvailable((Drive drive) -> drive.resetGyro());
         }
 
@@ -41,7 +41,7 @@ public class OI extends OIBase {
          * SCORE1R
          * This is used to drive into the area labled 1R in the maker space.
          */
-        if (joystick0.getButton(1).isTriggering()) {
+        if (joystick0.getButton(1)) {
             ifAvailable(
                     (Drive drive,
                             TempShooter tempShooter,
@@ -56,7 +56,7 @@ public class OI extends OIBase {
          * SCORE1L
          * This is used to drive into the area labled 1L in the maker space.
          */
-        if (joystick0.getButton(2).isTriggering()) {
+        if (joystick0.getButton(2)) {
             // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
             ifAvailable(
                     (Drive drive,
@@ -73,7 +73,7 @@ public class OI extends OIBase {
          * This is used to go to the ring and "pick" it up, or in reality right now just nudge it and pretend like it was picked up
          */
 
-        if (joystick1.getButton(1).isTriggering()) {
+        if (joystick1.getButton(1)) {
             ifAvailable(
                     (Drive drive, TempPickerUpper tempPickerUpper, NoteCamera noteDetectorCamera) ->
                             new PickupNote(drive, tempPickerUpper, noteDetectorCamera));

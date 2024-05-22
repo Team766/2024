@@ -34,20 +34,20 @@ public class OI extends OIBase {
     }
 
     public void dispatchDriver() {
-        if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER).isTriggering()) {
+        if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
             ifAvailable((Drive drive) -> new DriverShootNow(drive, null, null));
         }
 
-        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
+        if (leftJoystick.button(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
             ifAvailable((Drive drive) -> drive.resetGyro());
         }
 
-        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
+        if (leftJoystick.button(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
             ifAvailable((Drive drive) -> drive.resetCurrentPosition());
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
-        if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
+        if (rightJoystick.button(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
             isCross = !isCross;
         }
 

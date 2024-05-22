@@ -26,13 +26,12 @@ public class BoxOpOI extends OIFragment {
                         || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
                                 > InputConstants.XBOX_DEADZONE);
 
-        enableClimberControls = new DeclaredCondition(
-                () -> gamepad.getButton(InputConstants.XBOX_A).isTriggering()
-                        && gamepad.getButton(InputConstants.XBOX_B).isTriggering());
+        enableClimberControls = new DeclaredCondition(() -> gamepad.getButton(InputConstants.XBOX_A)
+                && gamepad.getButton(InputConstants.XBOX_B));
 
-        climberOverrideSoftLimits = new DeclaredCondition(
-                () -> gamepad.getButton(InputConstants.XBOX_X).isTriggering()
-                        && gamepad.getButton(InputConstants.XBOX_Y).isTriggering());
+        climberOverrideSoftLimits =
+                new DeclaredCondition(() -> gamepad.getButton(InputConstants.XBOX_X)
+                        && gamepad.getButton(InputConstants.XBOX_Y));
     }
 
     @Override
@@ -47,18 +46,18 @@ public class BoxOpOI extends OIFragment {
         switch (enableClimberControls.getState()) {
                 // shoulder positions
             case IsNotTriggering -> {
-                if (gamepad.getButton(InputConstants.XBOX_A).isTriggering()) {
+                if (gamepad.getButton(InputConstants.XBOX_A)) {
                     // intake
                     ifAvailable(
                             (Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.INTAKE_FLOOR));
-                } else if (gamepad.getButton(InputConstants.XBOX_B).isTriggering()) {
+                } else if (gamepad.getButton(InputConstants.XBOX_B)) {
                     // shoot closer to speaker
                     ifAvailable(
                             (Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.SHOOT_LOW));
-                } else if (gamepad.getButton(InputConstants.XBOX_X).isTriggering()) {
+                } else if (gamepad.getButton(InputConstants.XBOX_X)) {
                     // amp shot
                     ifAvailable((Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.AMP));
-                } else if (gamepad.getButton(InputConstants.XBOX_Y).isTriggering()) {
+                } else if (gamepad.getButton(InputConstants.XBOX_Y)) {
                     // shooter assist
                     ifAvailable((Shoulder shoulder) ->
                             shoulder.setGoal(RotateToPosition.SHOOTER_ASSIST));
@@ -109,10 +108,10 @@ public class BoxOpOI extends OIFragment {
         byDefault((Shooter shooter) -> shooter.setGoal(new Shooter.Stop()));
 
         // intake
-        if (gamepad.getButton(InputConstants.XBOX_RB).isTriggering()) {
+        if (gamepad.getButton(InputConstants.XBOX_RB)) {
             ifAvailable((Intake intake) -> intake.setGoal(new Intake.Out()));
         }
-        if (gamepad.getButton(InputConstants.XBOX_LB).isTriggering()) {
+        if (gamepad.getButton(InputConstants.XBOX_LB)) {
             ifAvailable((Intake intake) -> new IntakeUntilIn(intake));
         }
         byDefault((Intake intake) -> intake.setGoal(new Intake.Stop()));

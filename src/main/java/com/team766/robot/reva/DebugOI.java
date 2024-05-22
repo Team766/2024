@@ -44,18 +44,18 @@ public class DebugOI extends OIFragment {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
-        if (macropad.getButton(InputConstants.CONTROL_SHOULDER).isTriggering()) {
-            if (macropad.getButton(InputConstants.NUDGE_UP).isNewlyTriggering()) {
+        if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
+            if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
                 ifAvailable((Shoulder shoulder) -> shoulder.setGoal(new Shoulder.NudgeUp()));
-            } else if (macropad.getButton(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
+            } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
                 ifAvailable((Shoulder shoulder) -> shoulder.setGoal(new Shoulder.NudgeDown()));
-            } else if (macropad.getButton(InputConstants.MACROPAD_RESET_SHOULDER)
+            } else if (macropad.button(InputConstants.MACROPAD_RESET_SHOULDER)
                     .isNewlyTriggering()) {
                 ifAvailable((Shoulder shoulder) -> shoulder.reset());
             }
         }
 
-        if (macropad.getButton(16).isNewlyTriggering()) {
+        if (macropad.button(16).isNewlyTriggering()) {
             ifAvailable((Climber climber) -> {
                 climber.resetLeftPosition();
                 climber.resetRightPosition();
@@ -65,17 +65,17 @@ public class DebugOI extends OIFragment {
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-        switch (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
+        switch (macropad.button(InputConstants.CONTROL_CLIMBER)) {
             case IsNewlyTriggering -> {
                 ifAvailable((Climber climber) -> climber.enableSoftLimits(false));
             }
             case IsTriggering -> {
-                if (macropad.getButton(InputConstants.NUDGE_UP).isNewlyTriggering()) {
+                if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
                     ifAvailable((Climber climber) -> {
                         climber.setLeftPower(-0.25);
                         climber.setRightPower(-0.25);
                     });
-                } else if (macropad.getButton(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
+                } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
                     ifAvailable((Climber climber) -> {
                         climber.setLeftPower(0.25);
                         climber.setRightPower(0.25);
@@ -94,9 +94,9 @@ public class DebugOI extends OIFragment {
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        if (macropad.getButton(InputConstants.INTAKE_IN).isNewlyTriggering()) {
+        if (macropad.button(InputConstants.INTAKE_IN).isNewlyTriggering()) {
             ifAvailable((Intake intake) -> intake.setGoal(new Intake.In()));
-        } else if (macropad.getButton(InputConstants.INTAKE_OUT).isNewlyTriggering()) {
+        } else if (macropad.button(InputConstants.INTAKE_OUT).isNewlyTriggering()) {
             ifAvailable((Intake intake) -> intake.setGoal(new Intake.Out()));
         }
         byDefault((Intake intake) -> intake.setGoal(new Intake.Stop()));
@@ -104,14 +104,14 @@ public class DebugOI extends OIFragment {
         // fine-grained controls for shooter
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
-        switch (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
+        switch (macropad.button(InputConstants.CONTROL_SHOOTER)) {
             case IsNewlyTriggering -> {
                 ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.Shoot()));
             }
             case IsTriggering -> {
-                if (macropad.getButton(InputConstants.NUDGE_UP).isNewlyTriggering()) {
+                if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
                     ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.NudgeUp()));
-                } else if (macropad.getButton(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
+                } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
                     ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.NudgeDown()));
                 }
             }

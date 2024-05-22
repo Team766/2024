@@ -36,16 +36,16 @@ public class DriverOI extends OIFragment {
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
-        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
+        if (leftJoystick.button(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
             ifAvailable((Drive drive) -> drive.resetGyro());
         }
 
-        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
+        if (leftJoystick.button(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
             ifAvailable((Drive drive) -> drive.resetCurrentPosition());
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
-        if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
+        if (rightJoystick.button(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
             isCross = !isCross;
         }
 
@@ -56,10 +56,9 @@ public class DriverOI extends OIFragment {
         // Moves the robot if there are joystick inputs
         if (Math.abs(leftJoystickX) + Math.abs(leftJoystickY) + Math.abs(rightJoystickY) > 0) {
             // If a button is pressed, drive is just fine adjustment
-            double drivingCoefficient =
-                    rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING).isTriggering()
-                            ? ControlConstants.FINE_DRIVING_COEFFICIENT
-                            : 1;
+            double drivingCoefficient = rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
+                    ? ControlConstants.FINE_DRIVING_COEFFICIENT
+                    : 1;
             ifAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
                     (drivingCoefficient
                             * curvedJoystickPower(

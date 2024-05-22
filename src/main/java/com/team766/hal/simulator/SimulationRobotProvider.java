@@ -83,7 +83,7 @@ public class SimulationRobotProvider extends RobotProvider {
 
     @Override
     public JoystickReader getJoystick(OIBase oi, final int index) {
-        return ProgramInterface.joystickChannels[index];
+        return new Joystick(oi, index);
     }
 
     @Override

@@ -10,8 +10,6 @@ import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.Optional;
 
 public class Lights extends LightsBase {
 
@@ -25,18 +23,20 @@ public class Lights extends LightsBase {
             if (!isCameraPresent) {
                 signalCameraNotConnected();
             } else {
-                Optional<Alliance> alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    if (alliance.get().equals(Alliance.Blue)) {
+                switch (DriverStation.getAlliance().orElse(null)) {
+                    case Blue:
                         // Blue
                         m_candle.setLEDs(0, 0, 100);
-                    } else {
+                        break;
+                    case Red:
                         // Red
                         m_candle.setLEDs(100, 0, 0);
-                    }
-                } else {
-                    // Purple
-                    m_candle.setLEDs(100, 0, 100);
+                        break;
+                    case null:
+                    default:
+                        // Purple
+                        m_candle.setLEDs(100, 0, 100);
+                        break;
                 }
             }
         } else {

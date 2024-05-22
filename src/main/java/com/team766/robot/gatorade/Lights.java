@@ -50,10 +50,9 @@ public class Lights extends LightsBase {
     }
 
     private void setLightsForGamePiece(GamePieceType gamePieceType) {
-        if (gamePieceType == GamePieceType.CUBE) {
-            purple();
-        } else {
-            yellow();
+        switch (gamePieceType) {
+            case CUBE -> purple();
+            case CONE -> yellow();
         }
     }
 

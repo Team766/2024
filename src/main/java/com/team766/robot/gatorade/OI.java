@@ -50,7 +50,7 @@ public class OI extends OIBase {
         // Driver OI: take input from left, right joysticks.  control drive.
         driverOI.run();
 
-        switch (leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT)) {
+        switch (leftJoystick.button(InputConstants.BUTTON_INTAKE_OUT)) {
             case IsTriggering -> ifAvailable((Intake intake) ->
                     intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
             case IsFinishedTriggering -> ifAvailable((Intake intake) ->
@@ -70,27 +70,25 @@ public class OI extends OIBase {
         }
 
         // look for button presses to queue placement of intake/wrist/elevator superstructure
-        if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE).isTriggering()) {
+        if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
             placementPosition = Optional.empty();
             updateStatus();
-        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW).isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
             placementPosition = Optional.of(PlacementPosition.LOW_NODE);
             updateStatus();
-        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID).isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
             placementPosition = Optional.of(PlacementPosition.MID_NODE);
             updateStatus();
-        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH).isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
             placementPosition = Optional.of(PlacementPosition.HIGH_NODE);
             updateStatus();
-        } else if (boxopGamepad
-                .getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)
-                .isTriggering()) {
+        } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
             placementPosition = Optional.of(PlacementPosition.HUMAN_PLAYER);
             updateStatus();
         }
 
         // look for button hold to start intake, release to idle intake
-        switch (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN)) {
+        switch (boxopGamepad.button(InputConstants.BUTTON_INTAKE_IN)) {
             case IsTriggering -> ifAvailable((Intake intake) ->
                     intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
             case IsFinishedTriggering -> ifAvailable((Intake intake) ->
@@ -98,14 +96,14 @@ public class OI extends OIBase {
             default -> {}
         }
 
-        if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP).isTriggering()) {
+        if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
             ifAvailable((Intake intake) ->
                     intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         }
 
         // look for button hold to extend intake/wrist/elevator superstructure,
         // release to retract
-        switch (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
+        switch (boxopGamepad.button(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
             case IsNewlyTriggering -> {
                 if (placementPosition.isPresent()) {
                     ifAvailable((Superstructure ss) ->
