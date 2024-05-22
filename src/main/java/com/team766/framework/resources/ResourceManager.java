@@ -94,8 +94,11 @@ public final class ResourceManager {
             Class<?> handle,
             Subsystem[] subsystems,
             Function<Subsystem[], Command> commandSupplier) {
+        if (!handle.isAnonymousClass()) {
+            throw new IllegalArgumentException("Argument to ifAvailable should be a lambda");
+        }
         if (scheduledCommands.contains(handle)) {
-            throw new IllegalStateException(
+            throw new IllegalArgumentException(
                     "A single command supplier object was used in two different conditions. This is not supported.");
         }
         Command command = prevScheduledCommands.get(handle);

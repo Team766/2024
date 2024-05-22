@@ -2,8 +2,10 @@ package com.team766.robot.reva;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.CANdle;
+import com.team766.framework.Context;
 import com.team766.framework.LightsBase;
 import com.team766.framework.Statuses;
+import com.team766.logging.Severity;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus;
@@ -71,65 +73,60 @@ public class Lights extends LightsBase {
     }
 
     // Lime green
-    public boolean signalCameraConnected() {
-        ErrorCode e = m_candle.setLEDs(92, 250, 40);
-        return handleErrorCode(e);
+    public void signalCameraConnected() {
+        handleErrorCode(m_candle.setLEDs(92, 250, 40));
     }
 
-    public boolean signalFinishedShootingProcedure() {
-        ErrorCode e = m_candle.setLEDs(0, 150, 0);
-        return handleErrorCode(e);
+    public void signalFinishedShootingProcedure() {
+        handleErrorCode(m_candle.setLEDs(0, 150, 0));
     }
 
     // Purple
-    public boolean signalCameraNotConnected() {
-        ErrorCode e = m_candle.setLEDs(100, 0, 100);
-        return handleErrorCode(e);
+    public void signalCameraNotConnected() {
+        handleErrorCode(m_candle.setLEDs(100, 0, 100));
     }
 
-    public boolean signalShooterOutOfRange() {
-        ErrorCode e = m_candle.setLEDs(150, 0, 0);
-        return handleErrorCode(e);
+    public void signalShooterOutOfRange() {
+        runAnimation((Context context) -> {
+            while (true) {
+                handleErrorCode(m_candle.setLEDs(150, 0, 0));
+                context.waitForSeconds(0.5);
+                turnLightsOff();
+                context.waitForSeconds(0.5);
+            }
+        });
     }
 
     // Coral orange
-    public boolean signalNoteInIntake() {
-        ErrorCode e = m_candle.setLEDs(255, 127, 80);
-        return handleErrorCode(e);
+    public void signalNoteInIntake() {
+        handleErrorCode(m_candle.setLEDs(255, 127, 80));
     }
 
     // Off
-    public boolean turnLightsOff() {
-        ErrorCode e = m_candle.setLEDs(0, 0, 0);
-        return handleErrorCode(e);
+    public void turnLightsOff() {
+        handleErrorCode(m_candle.setLEDs(0, 0, 0));
     }
 
     // Blue
-    public boolean signalNoNoteInIntakeYet() {
-        ErrorCode e = m_candle.setLEDs(0, 0, 100);
-        return handleErrorCode(e);
+    public void signalNoNoteInIntakeYet() {
+        handleErrorCode(m_candle.setLEDs(0, 0, 100));
     }
 
-    public boolean isDoingShootingProcedure() {
-        ErrorCode e = m_candle.setLEDs(0, 227, 197);
-        return handleErrorCode(e);
+    public void isDoingShootingProcedure() {
+        handleErrorCode(m_candle.setLEDs(0, 227, 197));
     }
 
-    public boolean signalFinishingShootingProcedure() {
-        ErrorCode e = m_candle.setLEDs(0, 50, 100);
-        return handleErrorCode(e);
+    public void signalFinishingShootingProcedure() {
+        handleErrorCode(m_candle.setLEDs(0, 50, 100));
     }
 
-    public boolean signalStartingShootingProcedure() {
-        ErrorCode e = m_candle.setLEDs(50, 50, 2);
-        return handleErrorCode(e);
+    public void signalStartingShootingProcedure() {
+        handleErrorCode(m_candle.setLEDs(50, 50, 2));
     }
 
-    private boolean handleErrorCode(ErrorCode e) {
-        if (e.equals(ErrorCode.OK)) {
-            return true;
+    private void handleErrorCode(ErrorCode e) {
+        if (!e.equals(ErrorCode.OK)) {
+            log(Severity.ERROR, "CANdle error: " + e.toString());
         }
-
-        return false;
     }
 }
