@@ -40,7 +40,9 @@ public class Wrist extends Subsystem<Wrist.Status, Wrist.Goal> {
 
     public record NudgeNoPID(double value) implements Goal {}
 
-    public record StopWrist() implements Goal {}
+    public record Stop() implements Goal {}
+
+    public record HoldPosition() implements Goal {}
 
     public record NudgeUp() implements Goal {}
 
@@ -118,15 +120,19 @@ public class Wrist extends Subsystem<Wrist.Status, Wrist.Goal> {
     protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case NudgeNoPID nudge -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
                 clampedValue *=
                         NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
                 motor.set(clampedValue);
             }
-            case StopWrist s -> {
-                if (!goalChanged) return;
+            case Stop s -> {
+                if (!goalChanged) break;
                 motor.stopMotor();
+            }
+            case HoldPosition s -> {
+                if (!goalChanged) break;
+                applyPID(status.angle);
             }
             case NudgeUp n -> {
                 double targetAngle =
@@ -140,23 +146,27 @@ public class Wrist extends Subsystem<Wrist.Status, Wrist.Goal> {
                 setGoal(new RotateToPosition(targetAngle));
             }
             case RotateToPosition position -> {
-                // set the PID controller values with whatever the latest is in the config
-                pidController.setP(pGain.get());
-                pidController.setI(iGain.get());
-                pidController.setD(dGain.get());
-                // pidController.setFF(ffGain.get());
-                double ff = ffGain.get() * Math.cos(Math.toRadians(position.angle));
-                SmartDashboard.putNumber("[WRIST] ff", ff);
-                SmartDashboard.putNumber("[WRIST] reference", position.angle);
-
-                pidController.setOutputRange(-1, 1);
-
-                // convert the desired target degrees to rotations
-                double rotations = EncoderUtils.wristDegreesToRotations(position.angle);
-
-                // set the reference point for the wrist
-                pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+                applyPID(position.angle);
             }
         }
+    }
+
+    private void applyPID(double targetAngle) {
+        // set the PID controller values with whatever the latest is in the config
+        pidController.setP(pGain.get());
+        pidController.setI(iGain.get());
+        pidController.setD(dGain.get());
+        // pidController.setFF(ffGain.get());
+        double ff = ffGain.get() * Math.cos(Math.toRadians(targetAngle));
+        SmartDashboard.putNumber("[WRIST] ff", ff);
+        SmartDashboard.putNumber("[WRIST] reference", targetAngle);
+
+        pidController.setOutputRange(-1, 1);
+
+        // convert the desired target degrees to rotations
+        double rotations = EncoderUtils.wristDegreesToRotations(targetAngle);
+
+        // set the reference point for the wrist
+        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
     }
 }

@@ -93,7 +93,7 @@ public class Shooter extends Subsystem<Shooter.Status, Shooter.Goal> {
                 targetSpeed = com.team766.math.Math.clamp(g.speed(), MIN_SPEED, MAX_SPEED);
                 if (targetSpeed == 0.0) {
                     setGoal(new Stop());
-                    return;
+                    break;
                 }
                 shooterMotorTop.set(ControlMode.Velocity, targetSpeed);
                 shooterMotorBottom.set(ControlMode.Velocity, targetSpeed);

@@ -38,7 +38,9 @@ public class Elevator extends Subsystem<Elevator.Status, Elevator.Goal> {
 
     public sealed interface Goal {}
 
-    public record StopElevator() implements Goal {}
+    public record Stop() implements Goal {}
+
+    public record HoldPosition() implements Goal {}
 
     public record NudgeNoPID(double value) implements Goal {}
 
@@ -136,15 +138,19 @@ public class Elevator extends Subsystem<Elevator.Status, Elevator.Goal> {
     protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case NudgeNoPID nudge -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
                 clampedValue *=
                         NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
                 leftMotor.set(clampedValue);
             }
-            case StopElevator s -> {
-                if (!goalChanged) return;
+            case Stop s -> {
+                if (!goalChanged) break;
                 leftMotor.set(0);
+            }
+            case HoldPosition s -> {
+                if (!goalChanged) break;
+                applyPID(status.height());
             }
             case NudgeUp n -> {
                 // NOTE: this could artificially limit nudge range
@@ -160,29 +166,33 @@ public class Elevator extends Subsystem<Elevator.Status, Elevator.Goal> {
                 setGoal(new MoveToPosition(targetHeight));
             }
             case MoveToPosition position -> {
-                // set the PID controller values with whatever the latest is in the config
-                pidController.setP(pGain.get());
-                pidController.setI(iGain.get());
-                pidController.setD(dGain.get());
-                // pidController.setFF(ffGain.get());
-                double ff = ffGain.get();
-
-                pidController.setOutputRange(-0.4, 0.4);
-
-                // pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-                // pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
-                // pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
-                // pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
-
-                // convert the desired target degrees to encoder units
-                double rotations = EncoderUtils.elevatorHeightToRotations(position.height());
-
-                // SmartDashboard.putNumber("[ELEVATOR] ff", ff);
-                SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
-
-                // set the reference point for the wrist
-                pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+                applyPID(position.height);
             }
         }
+    }
+
+    private void applyPID(double targetHeight) {
+        // set the PID controller values with whatever the latest is in the config
+        pidController.setP(pGain.get());
+        pidController.setI(iGain.get());
+        pidController.setD(dGain.get());
+        // pidController.setFF(ffGain.get());
+        double ff = ffGain.get();
+
+        pidController.setOutputRange(-0.4, 0.4);
+
+        // pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+        // pidController.setSmartMotionMaxVelocity(maxVelocity.get(), 0);
+        // pidController.setSmartMotionMinOutputVelocity(minOutputVelocity.get(), 0);
+        // pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
+
+        // convert the desired target degrees to encoder units
+        double rotations = EncoderUtils.elevatorHeightToRotations(targetHeight);
+
+        // SmartDashboard.putNumber("[ELEVATOR] ff", ff);
+        SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
+
+        // set the reference point for the wrist
+        pidController.setReference(rotations, ControlType.kPosition, 0, ff);
     }
 }

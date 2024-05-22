@@ -4,9 +4,7 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.gatorade.constants.ChargeConstants;
-import com.team766.robot.gatorade.mechanisms.Elevator;
-import com.team766.robot.gatorade.mechanisms.Shoulder;
-import com.team766.robot.gatorade.mechanisms.Wrist;
+import com.team766.robot.gatorade.mechanisms.Superstructure;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
@@ -23,9 +21,7 @@ public class GyroBalance extends Procedure {
     }
 
     private final Drive drive;
-    private final Shoulder shoulder;
-    private final Elevator elevator;
-    private final Wrist wrist;
+    private final Superstructure superstructure;
 
     // absSpeed is unsigned speed value
     private Direction direction;
@@ -47,14 +43,11 @@ public class GyroBalance extends Procedure {
      * Constructor to create a new GyroBalance instance
      * @param alliance Alliance for setting direction towards charge station
      */
-    public GyroBalance(
-            Alliance alliance, Drive drive, Shoulder shoulder, Elevator elevator, Wrist wrist) {
-        super(reservations(drive, shoulder, elevator, wrist));
+    public GyroBalance(Alliance alliance, Drive drive, Superstructure superstructure) {
+        super(reservations(drive, superstructure));
         this.alliance = alliance;
         this.drive = drive;
-        this.shoulder = shoulder;
-        this.elevator = elevator;
-        this.wrist = wrist;
+        this.superstructure = superstructure;
     }
 
     private double getAbsoluteTilt() {
@@ -66,7 +59,9 @@ public class GyroBalance extends Procedure {
 
     public void run(Context context) {
         // extend wristvator to put CG in a place where robot can climb ramp
-        context.runSync(new ExtendWristvatorToMid(shoulder, elevator, wrist));
+        superstructure.setGoal(Superstructure.MoveToPosition.EXTENDED_TO_MID);
+        context.waitFor(() ->
+                superstructure.getStatus().isNearTo(Superstructure.MoveToPosition.EXTENDED_TO_MID));
 
         // initialY is robot y position when balancing starts
         final double initialY = drive.getStatus().currentPosition().getY();
@@ -110,7 +105,7 @@ public class GyroBalance extends Procedure {
         // State: RAMP_TILT
         setDriveSpeed(SPEED_TILT);
         log("Tilt, curState: RAMP_TILT");
-        context.startAsync(new RetractWristvator(shoulder, elevator, wrist));
+        superstructure.setGoal(Superstructure.MoveToPosition.RETRACTED);
 
         double overshootSpeed = -SPEED_OVERSHOOT;
         while (true) {

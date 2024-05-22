@@ -9,6 +9,7 @@ import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.constants.InputConstants;
 import com.team766.robot.gatorade.procedures.*;
 import com.team766.robot.reva.procedures.DriverShootNow;
+import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class OI extends OIBase {
@@ -20,7 +21,7 @@ public class OI extends OIBase {
             RobotProvider.instance.getJoystick(this, InputConstants.BOXOP_GAMEPAD);
 
     @AutoLogOutput
-    private PlacementPosition placementPosition = PlacementPosition.NONE;
+    private Optional<PlacementPosition> placementPosition = Optional.empty();
 
     @AutoLogOutput
     private boolean isCross = false;

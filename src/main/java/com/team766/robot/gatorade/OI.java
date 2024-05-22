@@ -3,14 +3,13 @@ package com.team766.robot.gatorade;
 import com.team766.framework.OIBase;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.logging.Severity;
 import com.team766.robot.common.DriverOI;
 import com.team766.robot.common.mechanisms.*;
 import com.team766.robot.gatorade.constants.InputConstants;
 import com.team766.robot.gatorade.mechanisms.*;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
-import edu.wpi.first.wpilibj2.command.Commands;
+import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
@@ -19,7 +18,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
  */
 public class OI extends OIBase {
 
-    public record Status(GamePieceType gamePieceType, PlacementPosition placementPosition) {}
+    public record Status(
+            GamePieceType gamePieceType, Optional<PlacementPosition> placementPosition) {}
 
     private final JoystickReader leftJoystick;
     private final JoystickReader rightJoystick;
@@ -27,7 +27,7 @@ public class OI extends OIBase {
     private final DriverOI driverOI;
 
     @AutoLogOutput
-    PlacementPosition placementPosition = PlacementPosition.NONE;
+    Optional<PlacementPosition> placementPosition = Optional.empty();
 
     @AutoLogOutput(key = "Game Piece")
     GamePieceType gamePieceType = GamePieceType.CONE;
@@ -71,21 +71,21 @@ public class OI extends OIBase {
 
         // look for button presses to queue placement of intake/wrist/elevator superstructure
         if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE).isTriggering()) {
-            placementPosition = PlacementPosition.NONE;
+            placementPosition = Optional.empty();
             updateStatus();
         } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW).isTriggering()) {
-            placementPosition = PlacementPosition.LOW_NODE;
+            placementPosition = Optional.of(PlacementPosition.LOW_NODE);
             updateStatus();
         } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID).isTriggering()) {
-            placementPosition = PlacementPosition.MID_NODE;
+            placementPosition = Optional.of(PlacementPosition.MID_NODE);
             updateStatus();
         } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH).isTriggering()) {
-            placementPosition = PlacementPosition.HIGH_NODE;
+            placementPosition = Optional.of(PlacementPosition.HIGH_NODE);
             updateStatus();
         } else if (boxopGamepad
                 .getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)
                 .isTriggering()) {
-            placementPosition = PlacementPosition.HUMAN_PLAYER;
+            placementPosition = Optional.of(PlacementPosition.HUMAN_PLAYER);
             updateStatus();
         }
 
@@ -107,48 +107,21 @@ public class OI extends OIBase {
         // release to retract
         switch (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
             case IsNewlyTriggering -> {
-                switch (placementPosition) {
-                    case NONE:
-                        break;
-                    case LOW_NODE:
-                        ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
-                                new ExtendWristvatorToLow(shoulder, elevator, wrist));
-                        break;
-                    case MID_NODE:
-                        ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
-                                new ExtendWristvatorToMid(shoulder, elevator, wrist));
-                        break;
-                    case HIGH_NODE:
-                        ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
-                                new ExtendWristvatorToHigh(shoulder, elevator, wrist));
-                        break;
-                    case HUMAN_PLAYER:
-                        ifAvailable(
-                                (Shoulder shoulder,
-                                        Elevator elevator,
-                                        Wrist wrist,
-                                        Intake intake) -> new ExtendToHumanWithIntake(
-                                        gamePieceType, shoulder, elevator, wrist, intake));
-                        break;
-                    default:
-                        // warn, ignore
-                        log(
-                                Severity.WARNING,
-                                "Unexpected placement position: " + placementPosition.toString());
-                        break;
+                if (placementPosition.isPresent()) {
+                    ifAvailable((Superstructure ss) ->
+                            ss.setGoal(Superstructure.MoveToPosition.Extended(
+                                    placementPosition.get(), gamePieceType)));
                 }
             }
             case IsFinishedTriggering -> {
-                if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
-                    ifAvailable(
-                            (Shoulder shoulder, Elevator elevator, Wrist wrist, Intake intake) ->
-                                    Commands.sequence(
-                                            new RetractWristvator(shoulder, elevator, wrist),
-                                            intake.setGoalBehavior(new Intake.Status(
-                                                    gamePieceType, Intake.MotorState.IDLE))));
+                if (placementPosition.orElse(null) == PlacementPosition.HUMAN_PLAYER) {
+                    ifAvailable((Superstructure ss, Intake intake) -> {
+                        ss.setGoal(Superstructure.MoveToPosition.RETRACTED);
+                        intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE));
+                    });
                 } else {
-                    ifAvailable((Shoulder shoulder, Elevator elevator, Wrist wrist) ->
-                            new RetractWristvator(shoulder, elevator, wrist));
+                    ifAvailable((Superstructure ss) ->
+                            ss.setGoal(Superstructure.MoveToPosition.RETRACTED));
                 }
             }
 
@@ -159,32 +132,32 @@ public class OI extends OIBase {
                 final double elevatorNudgeAxis =
                         -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
                 if (Math.abs(elevatorNudgeAxis) > 0.05) {
-                    // tryUsing(() ->
-                    //     reserve(elevator).setGoal(new Elevator.NudgeNoPID(elevatorNudgeAxis)));
+                    // ifAvailable((Elevator elevator) ->
+                    //     elevator.setGoal(new Elevator.NudgeNoPID(elevatorNudgeAxis)));
                     if (elevatorNudgeAxis > 0) {
-                        ifAvailable(
-                                (Elevator elevator) -> elevator.setGoal(new Elevator.NudgeUp()));
+                        ifAvailable((Superstructure ss) ->
+                                ss.setGoal(Superstructure.NUDGE_ELEVATOR_UP));
                     } else {
-                        ifAvailable(
-                                (Elevator elevator) -> elevator.setGoal(new Elevator.NudgeDown()));
+                        ifAvailable((Superstructure ss) ->
+                                ss.setGoal(Superstructure.NUDGE_ELEVATOR_DOWN));
                     }
                 }
                 // look for wrist nudges
                 final double wristNudgeAxis =
                         -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
                 if (Math.abs(wristNudgeAxis) > 0.05) {
-                    // tryUsing(() -> reserve(wrist).setGoal(new Wrist.NudgeNoPID(wristNudgeAxis)));
+                    // ifAvailable((Wrist wrist) ->
+                    //     wrist.setGoal(new Wrist.NudgeNoPID(wristNudgeAxis)));
                     if (wristNudgeAxis > 0) {
-                        ifAvailable((Wrist wrist) -> wrist.setGoal(new Wrist.NudgeUp()));
+                        ifAvailable(
+                                (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_WRIST_UP));
                     } else {
-                        ifAvailable((Wrist wrist) -> wrist.setGoal(new Wrist.NudgeDown()));
+                        ifAvailable(
+                                (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_WRIST_DOWN));
                     }
                 }
             }
             default -> {}
         }
-
-        byDefault((Elevator elevator) -> elevator.setGoal(new Elevator.StopElevator()));
-        byDefault((Wrist wrist) -> wrist.setGoal(new Wrist.StopWrist()));
     }
 }

@@ -3,11 +3,9 @@ package com.team766.robot.gatorade.procedures;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.gatorade.mechanisms.Elevator;
 import com.team766.robot.gatorade.mechanisms.Intake;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
-import com.team766.robot.gatorade.mechanisms.Shoulder;
-import com.team766.robot.gatorade.mechanisms.Wrist;
+import com.team766.robot.gatorade.mechanisms.Superstructure;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,24 +15,15 @@ import java.util.Optional;
 public class OnePieceExitCommunity extends Procedure {
     private final GamePieceType type;
     private final Drive drive;
-    private final Shoulder shoulder;
-    private final Elevator elevator;
-    private final Wrist wrist;
+    private final Superstructure superstructure;
     private final Intake intake;
 
     public OnePieceExitCommunity(
-            GamePieceType type,
-            Drive drive,
-            Shoulder shoulder,
-            Elevator elevator,
-            Wrist wrist,
-            Intake intake) {
-        super(reservations(drive, shoulder, elevator, wrist, intake));
+            GamePieceType type, Drive drive, Superstructure superstructure, Intake intake) {
+        super(reservations(drive, superstructure, intake));
         this.type = type;
         this.drive = drive;
-        this.shoulder = shoulder;
-        this.elevator = elevator;
-        this.wrist = wrist;
+        this.superstructure = superstructure;
         this.intake = intake;
     }
 
@@ -60,8 +49,10 @@ public class OnePieceExitCommunity extends Procedure {
             return;
         }
         log("exiting");
-        context.runSync(new ScoreHigh(type, shoulder, elevator, wrist, intake));
-        context.runSync(new RetractWristvator(shoulder, elevator, wrist));
+        context.runSync(new ScoreHigh(type, superstructure, intake));
+        superstructure.setGoal(Superstructure.MoveToPosition.RETRACTED);
+        context.waitFor(
+                () -> superstructure.getStatus().isNearTo(Superstructure.MoveToPosition.RETRACTED));
         context.runSync(new ExitCommunity(drive));
     }
 }

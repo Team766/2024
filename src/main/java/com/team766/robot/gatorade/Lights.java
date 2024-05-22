@@ -9,6 +9,7 @@ import com.team766.logging.Severity;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.Optional;
 
 public class Lights extends LightsBase {
     private final CANdle candle;
@@ -35,29 +36,16 @@ public class Lights extends LightsBase {
     }
 
     private void setLightsForPlacement(
-            PlacementPosition placementPosition, GamePieceType gamePieceType) {
-        switch (placementPosition) {
-            case NONE:
-                white();
-                break;
-            case LOW_NODE:
-                green();
-                break;
-            case MID_NODE:
-                red();
-                break;
-            case HIGH_NODE:
-                orange();
-                break;
-            case HUMAN_PLAYER:
-                setLightsForGamePiece(gamePieceType);
-                break;
-            default:
-                // warn, ignore
-                log(
-                        Severity.WARNING,
-                        "Unexpected placement position: " + placementPosition.toString());
-                break;
+            Optional<PlacementPosition> placementPosition, GamePieceType gamePieceType) {
+        switch (placementPosition.orElse(null)) {
+            case null -> white();
+            case LOW_NODE -> green();
+            case MID_NODE -> red();
+            case HIGH_NODE -> orange();
+            case HUMAN_PLAYER -> setLightsForGamePiece(gamePieceType);
+            default ->
+            // warn, ignore
+            log(Severity.WARNING, "Unexpected placement position: " + placementPosition.toString());
         }
     }
 

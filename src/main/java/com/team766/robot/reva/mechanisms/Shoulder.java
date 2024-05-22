@@ -137,7 +137,7 @@ public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
     protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case Stop g -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 leftMotor.stopMotor();
             }
             case NudgeUp g -> {

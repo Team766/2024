@@ -77,23 +77,23 @@ public class Intake extends Subsystem<Intake.Status, Intake.Goal> {
     protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case In g -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 intakeMotor.set(DEFAULT_POWER);
             }
             case Out g -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 intakeMotor.set(-1 * DEFAULT_POWER);
             }
             case Stop g -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 intakeMotor.set(0.0);
             }
             case NudgeUp g -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 intakeMotor.set(Math.min(intakeMotor.get() + NUDGE_INCREMENT, MAX_POWER));
             }
             case NudgeDown g -> {
-                if (!goalChanged) return;
+                if (!goalChanged) break;
                 intakeMotor.set(Math.max(intakeMotor.get() - NUDGE_INCREMENT, MIN_POWER));
             }
             case SetPowerForSensorDistance g -> {

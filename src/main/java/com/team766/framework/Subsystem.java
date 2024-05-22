@@ -1,7 +1,5 @@
 package com.team766.framework;
 
-import static com.team766.framework.InstantProcedure.reservations;
-
 import com.team766.framework.Statuses.StatusSource;
 import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
@@ -56,18 +54,8 @@ public abstract class Subsystem<StatusRecord extends Record, Goal> extends Subsy
 
     public final void setGoal(Goal newGoal) {
         Objects.requireNonNull(newGoal, "Goal object must be non-null");
+        goalChanged = !newGoal.equals(currentGoal);
         currentGoal = newGoal;
-        goalChanged = true;
-    }
-
-    public final InstantProcedure setGoalBehavior(Goal goal) {
-        Objects.requireNonNull(goal, "Goal object must be non-null");
-        return new InstantProcedure(reservations(this)) {
-            @Override
-            public void run() {
-                setGoal(goal);
-            }
-        };
     }
 
     public final Goal getGoal() {
