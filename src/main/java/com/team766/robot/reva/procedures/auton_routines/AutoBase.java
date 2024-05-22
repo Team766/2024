@@ -1,6 +1,7 @@
 package com.team766.robot.reva.procedures.auton_routines;
 
 import com.team766.framework.Context;
+import com.team766.framework.Procedure;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.common.procedures.PathSequenceAuto;
 import com.team766.robot.reva.mechanisms.Climber;
@@ -22,7 +23,7 @@ public abstract class AutoBase extends PathSequenceAuto {
             Climber climber,
             Pose2d initialPosition) {
         super(reservations, drive, initialPosition);
-        addReservations(shooter);
+        addReservations(shooter, climber);
         this.shooter = shooter;
         this.climber = climber;
     }
@@ -31,9 +32,11 @@ public abstract class AutoBase extends PathSequenceAuto {
 
     @Override
     protected final void runSequence(Context context) {
-        // TODO: Replace this with proper parallel execution
-        context.startAsync(new MoveClimbersToBottom(climber));
-        runAuto(context);
+        context.runParallel(new MoveClimbersToBottom(climber), new Procedure(getReservations()) {
+            protected void run(Context context) {
+                runAuto(context);
+            }
+        });
     }
 
     @Override

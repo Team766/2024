@@ -28,4 +28,9 @@ public class ControlConstants {
      * degrees
      */
     public static final double AT_ROTATION_ANGLE_THRESHOLD = 3.0;
+
+    /**
+     * degrees/second
+     */
+    public static final double AT_ROTATION_SPEED_THRESHOLD = 3.0;
 }

@@ -1,5 +1,6 @@
 package com.team766.robot.common.mechanisms;
 
+import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -38,9 +39,10 @@ public class Drive extends Subsystem<Drive.Status, Drive.Goal> {
             @AutoLogOutput SwerveModuleState[] swerveStates) {
 
         public boolean isAtRotationTarget(double targetHeading) {
-            // TODO: this should also check that rotational velocity is low
-            // TODO: this should use modular arithmetic
-            return Math.abs(targetHeading - heading) < ControlConstants.AT_ROTATION_ANGLE_THRESHOLD;
+            return Math.abs(normalizeAngleDegrees(targetHeading - heading))
+                            < ControlConstants.AT_ROTATION_ANGLE_THRESHOLD
+                    && Math.abs(Math.toDegrees(chassisSpeeds.omegaRadiansPerSecond))
+                            < ControlConstants.AT_ROTATION_SPEED_THRESHOLD;
         }
 
         public boolean isAtRotationTarget(Rotation2d targetHeading) {

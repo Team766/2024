@@ -7,10 +7,9 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.lang.StackWalker.StackFrame;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
@@ -24,9 +23,7 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedContextWithValue<T> {
-    private Optional<T> m_lastYieldedValue = Optional.empty();
-
+class ContextImpl extends Command implements Context {
     // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
     // TODO: Re-evaluate whether this should use the default Command behavior (return false).
     static final boolean RUNS_WHEN_DISABLED = true;
@@ -107,7 +104,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     /**
      * The top-level procedure being run by this Context.
      */
-    private final ProcedureWithValue<T> m_func;
+    private final ProcedureInterface m_procedure;
 
     /**
      * The OS thread that this Context is executing on.
@@ -151,34 +148,25 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
      * {@link Scheduler#startAsync}.
      */
 
-    ContextImpl(final ProcedureWithValue<T> func) {
-        m_func = func;
+    ContextImpl(final ProcedureInterface procedure) {
+        m_procedure = procedure;
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
                         Severity.DEBUG,
-                        "Starting context " + getContextName() + " for " + func.toString());
+                        "Starting context " + getContextName() + " for " + procedure.toString());
         m_threadSync = new Object();
         m_previousWaitPoint = null;
         m_controlOwner = ControlOwner.MAIN_THREAD;
         m_state = State.NEW;
         setName(getContextName());
-        addRequirements(func.getReservations().toArray(Subsystem[]::new));
-    }
-
-    ContextImpl(final ProcedureInterface func) {
-        this(new ProcedureWithValue<T>(ProcedureWithValue.reservations(func.getReservations())) {
-            @Override
-            public void run(ContextWithValue<T> context) {
-                func.execute(context);
-            }
-        });
+        addRequirements(procedure.getReservations().toArray(Subsystem[]::new));
     }
 
     /**
      * Returns a string meant to uniquely identify this Context (e.g. for use in logging).
      */
     public String getContextName() {
-        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
+        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_procedure.toString();
     }
 
     @Override
@@ -286,7 +274,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
             // the baton is passed to us before we can start running the user's code
             waitForControl(ControlOwner.SUBROUTINE);
             // Call into the user's code.
-            m_func.run(this);
+            m_procedure.execute(this);
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.DEBUG, "Context " + getContextName() + " finished");
         } catch (ContextStoppedException ex) {
@@ -322,16 +310,6 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     }
 
     @Override
-    public void waitFor(final LaunchedContext otherContext) {
-        waitFor(otherContext::isDone);
-    }
-
-    @Override
-    public void waitFor(final LaunchedContext... otherContexts) {
-        waitFor(() -> Arrays.stream(otherContexts).allMatch(LaunchedContext::isDone));
-    }
-
-    @Override
     public void waitForSeconds(final double seconds) {
         double startTime = RobotProvider.instance.getClock().getTime();
         waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
@@ -344,60 +322,23 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     }
 
     @Override
-    public void yield(final T valueToYield) {
-        m_lastYieldedValue = Optional.of(valueToYield);
-        this.yield();
-    }
-
-    @Override
-    public T lastYieldedValue() {
-        return m_lastYieldedValue.orElse(null);
-    }
-
-    @Override
-    public boolean hasYieldedValue() {
-        return m_lastYieldedValue.isPresent();
-    }
-
-    @Override
-    public T getAndClearLastYieldedValue() {
-        final var result = m_lastYieldedValue;
-        m_lastYieldedValue = Optional.empty();
-        return result.orElse(null);
-    }
-
-    @Override
-    public LaunchedContext startAsync(final Command cmd) {
+    public void startAsync(final Command cmd) {
+        checkAsyncProcedureReservations(cmd, cmd.getRequirements());
         cmd.schedule();
-        return new LaunchedContext() {
-            @Override
-            public String getName() {
-                return cmd.getName();
-            }
-
-            @Override
-            public boolean isDone() {
-                return cmd.isFinished();
-            }
-
-            @Override
-            public void cancel() {
-                cmd.cancel();
-            }
-        };
     }
 
     @Override
-    public <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValue<U> func) {
-        var newContext = new ContextImpl<U>(func);
-        newContext.schedule();
-        return newContext;
+    public void runSync(final ProcedureInterface procedure) {
+        checkProcedureReservations(procedure, procedure.getReservations());
+        procedure.execute(this);
     }
 
     @Override
-    public void runSync(final ProcedureInterface func) {
-        checkProcedureReservations(func, func.getReservations());
-        func.execute(this);
+    public void runParallel(Command... procedures) {
+        for (var procedure : procedures) {
+            checkProcedureReservations(procedure, procedure.getRequirements());
+        }
+        runSync(new WPILibCommandProcedure(Commands.parallel(procedures)));
     }
 
     private void checkProcedureReservations(Object procedure, Set<Subsystem> reservations) {
@@ -413,6 +354,19 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
         }
     }
 
+    private void checkAsyncProcedureReservations(Object procedure, Set<Subsystem> reservations) {
+        final var this_reservations = getRequirements();
+        for (var req : reservations) {
+            if (this_reservations.contains(req)) {
+                throw new IllegalArgumentException(getName()
+                        + " tried to start asynchronously running "
+                        + procedure
+                        + " but it conflicts with a reservation held by the current procedure "
+                        + req.getName());
+            }
+        }
+    }
+
     @Override
     public void initialize() {
         m_state = State.RUNNING;
@@ -422,7 +376,7 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
 
     @Override
     public boolean isFinished() {
-        return isDone();
+        return m_state == State.DONE;
     }
 
     @Override
@@ -460,10 +414,5 @@ class ContextImpl<T> extends Command implements ContextWithValue<T>, LaunchedCon
     @Override
     public boolean runsWhenDisabled() {
         return RUNS_WHEN_DISABLED;
-    }
-
-    @Override
-    public boolean isDone() {
-        return m_state == State.DONE;
     }
 }

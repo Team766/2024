@@ -1,8 +1,6 @@
 package com.team766.framework;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -61,17 +59,6 @@ public interface Context {
     void waitFor(final BooleanSupplier predicate);
 
     /**
-     * Pauses the execution of this Context until the given LaunchedContext has finished running.
-     */
-    void waitFor(final LaunchedContext otherContext);
-
-    /**
-     * Pauses the execution of this Context until all of the given LaunchedContexts have finished
-     * running.
-     */
-    void waitFor(final LaunchedContext... otherContexts);
-
-    /**
      * Momentarily pause execution of this Context to allow other Contexts to execute. Execution of
      * this Context will resume as soon as possible after the other Contexts have been given a
      * chance to run.
@@ -87,40 +74,15 @@ public interface Context {
     void waitForSeconds(final double seconds);
 
     /**
-     * Start running a new Context so the given procedure can run in parallel.
+     * Start running a new Context so the given procedure can run independently.
      */
-    LaunchedContext startAsync(final Command func);
-
-    /**
-     * Start running a new Context so the given procedure can run in parallel.
-     */
-    <U> LaunchedContextWithValue<U> startAsync(final ProcedureWithValue<U> func);
+    void startAsync(final Command procedure);
 
     /**
      * Run the given Procedure synchronously (the calling Procedure will not resume until this one
      * has finished).
      */
-    void runSync(final ProcedureInterface func);
+    void runSync(final ProcedureInterface procedure);
 
-    /**
-     * Run the given ProcedureWithValue synchronously (the calling Procedure will not resume until
-     * this one has finished).
-     *
-     * Any values yielded by the procedure will be discarded.
-     */
-    default void runSync(final ProcedureWithValue<?> func) {
-        this.runSync(YieldedValues.discard(func));
-    }
-
-    /**
-     * Run the given ProcedureWithValue synchronously (the calling Procedure will not resume until
-     * this one has finished).
-     *
-     * All values yielded by the procedure will be collected into a List and returned.
-     */
-    default <T> List<T> runSyncAndCollectValues(final ProcedureWithValue<T> func) {
-        ArrayList<T> values = new ArrayList<T>();
-        this.runSync(YieldedValues.collectInto(func, values));
-        return values;
-    }
+    void runParallel(Command... procedures);
 }

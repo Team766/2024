@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class LightsBase implements LoggingBase {
-    private final Map<Class<?>, ContextImpl<?>> prevScheduledCommands = new HashMap<>();
+    private final Map<Class<?>, ContextImpl> prevScheduledCommands = new HashMap<>();
     private final Set<Class<?>> scheduledCommands = new HashSet<>();
 
     protected abstract void dispatch(Statuses statuses);
@@ -34,9 +34,9 @@ public abstract class LightsBase implements LoggingBase {
             throw new IllegalStateException(
                     "A single animation lambda was used more than once. This is not supported.");
         }
-        ContextImpl<?> command = prevScheduledCommands.get(handle);
+        ContextImpl command = prevScheduledCommands.get(handle);
         if (command == null || command.isFinished()) {
-            command = new ContextImpl<>(new ProcedureInterface() {
+            command = new ContextImpl(new ProcedureInterface() {
                 @Override
                 public void execute(Context context) {
                     animation.accept(context);

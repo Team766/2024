@@ -96,13 +96,16 @@ public abstract class PathSequenceAuto extends Procedure {
                         ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                         : initialPosition.getRotation())
                 .getDegrees());
-        runSequence(context);
+        try {
+            runSequence(context);
+        } finally {
+            runAtEnd();
 
-        runAtEnd();
-
-        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
-        // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
-        // current angle
-        drive.resetGyro(180 + drive.getStatus().heading());
+            // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
+            // TODO: We should figure out why after EBR but for now we can just reset the gyro to
+            // 180 of
+            // current angle
+            drive.resetGyro(180 + drive.getStatus().heading());
+        }
     }
 }

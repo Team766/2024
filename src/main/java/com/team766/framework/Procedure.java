@@ -1,9 +1,10 @@
 package com.team766.framework;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collection;
 
-public abstract class Procedure extends ProcedureWithContextBase implements ProcedureInterface {
+public abstract class Procedure extends ProcedureBase implements ProcedureInterface {
     // A reusable Procedure that does nothing.
     private static final class NoOpProcedure extends Procedure {
         public NoOpProcedure() {
@@ -17,6 +18,8 @@ public abstract class Procedure extends ProcedureWithContextBase implements Proc
     public static Procedure noOp() {
         return new NoOpProcedure();
     }
+
+    private ContextImpl m_context = null;
 
     private boolean isStatusActive = false;
 
@@ -41,8 +44,35 @@ public abstract class Procedure extends ProcedureWithContextBase implements Proc
         return isStatusActive;
     }
 
+    private Command command() {
+        if (m_context == null) {
+            m_context = new ContextImpl(this);
+        }
+        return m_context;
+    }
+
     @Override
-    /* package */ final ContextImpl<?> makeContext() {
-        return new ContextImpl<>(this);
+    public final void initialize() {
+        command().initialize();
+    }
+
+    @Override
+    public final void execute() {
+        command().execute();
+    }
+
+    @Override
+    public final void end(boolean interrupted) {
+        command().end(interrupted);
+    }
+
+    @Override
+    public final boolean isFinished() {
+        return command().isFinished();
+    }
+
+    @Override
+    public final boolean runsWhenDisabled() {
+        return command().runsWhenDisabled();
     }
 }

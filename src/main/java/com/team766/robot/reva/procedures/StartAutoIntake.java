@@ -20,6 +20,6 @@ public class StartAutoIntake extends Procedure {
         final var armTarget = RotateToPosition.BOTTOM;
         shoulder.setGoal(armTarget);
         context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armTarget), 1.5);
-        context.startAsync(new IntakeUntilIn(intake));
+        intake.setGoal(new Intake.SetPowerForSensorDistance());
     }
 }
