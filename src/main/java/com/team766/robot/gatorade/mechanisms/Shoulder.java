@@ -14,7 +14,6 @@ import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
  * Basic shoulder mechanism.  Rotates the {@link Elevator} to different angles, to allow it (and the
@@ -26,7 +25,7 @@ public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
     /**
      * @param angle the current angle of the wrist.
      */
-    public record Status(@AutoLogOutput double rotations, @AutoLogOutput double angle) {
+    public record Status(double rotations, double angle) {
         public boolean isNearTo(RotateToPosition position) {
             return isNearTo(position.angle());
         }

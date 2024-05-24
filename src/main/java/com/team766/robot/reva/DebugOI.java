@@ -7,6 +7,7 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 
 /**
  * Programmer-centric controls to test each of our (non-drive) mechanisms.
@@ -46,47 +47,36 @@ public class DebugOI extends OIFragment {
         // press down the shoulder control button and nudge the angle up and down
         if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
             if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
-                ifAvailable((Shoulder shoulder) -> shoulder.setGoal(new Shoulder.NudgeUp()));
+                ifAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeUp()));
             } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
-                ifAvailable((Shoulder shoulder) -> shoulder.setGoal(new Shoulder.NudgeDown()));
+                ifAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeDown()));
             } else if (macropad.button(InputConstants.MACROPAD_RESET_SHOULDER)
                     .isNewlyTriggering()) {
-                ifAvailable((Shoulder shoulder) -> shoulder.reset());
+                ifAvailable((Superstructure ss) -> ss.resetShoulder());
             }
         }
 
         if (macropad.button(16).isNewlyTriggering()) {
-            ifAvailable((Climber climber) -> {
-                climber.resetLeftPosition();
-                climber.resetRightPosition();
-            });
+            ifAvailable((Superstructure ss) -> ss.resetClimberPositions());
         }
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
         switch (macropad.button(InputConstants.CONTROL_CLIMBER)) {
-            case IsNewlyTriggering -> {
-                ifAvailable((Climber climber) -> climber.enableSoftLimits(false));
-            }
             case IsTriggering -> {
                 if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
-                    ifAvailable((Climber climber) -> {
-                        climber.setLeftPower(-0.25);
-                        climber.setRightPower(-0.25);
+                    ifAvailable((Superstructure ss) -> {
+                        ss.setGoal(new Climber.MotorPowers(-0.25, -0.25, true));
                     });
                 } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
-                    ifAvailable((Climber climber) -> {
-                        climber.setLeftPower(0.25);
-                        climber.setRightPower(0.25);
+                    ifAvailable((Superstructure ss) -> {
+                        ss.setGoal(new Climber.MotorPowers(0.25, 0.25, true));
                     });
                 }
             }
             case IsFinishedTriggering -> {
-                ifAvailable((Climber climber) -> {
-                    climber.stop();
-                    climber.enableSoftLimits(true);
-                });
+                ifAvailable((Superstructure ss) -> ss.setGoal(new Climber.Stop()));
             }
             default -> {}
         }

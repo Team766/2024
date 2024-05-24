@@ -7,7 +7,7 @@ import com.team766.framework.resources.ResourceManager;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
- * Provides Robot-specific components: initializes {@link Mechanism}s, creates the Operator Interface (OI),
+ * Provides Robot-specific components: initializes {@link Subsystem}s, creates the Operator Interface (OI),
  * and returns the {@link AutonomousMode}s.
  *
  * @see RobotSelector
@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public interface RobotConfigurator {
 
     /**
-     * Initializes the {@link Mechanism}s for this robot.
+     * Initializes the {@link Subsystem}s for this robot.
      *
      * Will only be called once by the framework.
      */

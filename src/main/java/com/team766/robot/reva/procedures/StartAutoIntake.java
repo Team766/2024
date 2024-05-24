@@ -4,22 +4,23 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Shoulder.RotateToPosition;
+import com.team766.robot.reva.mechanisms.Superstructure;
 
 public class StartAutoIntake extends Procedure {
-    private final Shoulder shoulder;
+    private final Superstructure superstructure;
     private final Intake intake;
 
-    public StartAutoIntake(Shoulder shoulder, Intake intake) {
-        super(reservations(shoulder, intake));
-        this.shoulder = shoulder;
+    public StartAutoIntake(Superstructure superstructure, Intake intake) {
+        super(reservations(superstructure, intake));
+        this.superstructure = superstructure;
         this.intake = intake;
     }
 
     public void run(Context context) {
-        final var armTarget = RotateToPosition.BOTTOM;
-        shoulder.setGoal(armTarget);
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armTarget), 1.5);
+        final var armTarget = Shoulder.RotateToPosition.BOTTOM;
+        superstructure.setGoal(armTarget);
+        context.waitForConditionOrTimeout(
+                () -> getStatus(Shoulder.Status.class).get().isNearTo(armTarget), 1.5);
         intake.setGoal(new Intake.SetPowerForSensorDistance());
     }
 }

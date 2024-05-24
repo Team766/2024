@@ -5,7 +5,6 @@ import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 import com.team766.framework.Subsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
  * Basic intake.  Mounted on end of {@link Wrist}.  The intake can be controlled to attempt to
@@ -54,8 +53,7 @@ public class Intake extends Subsystem<Intake.Status, Intake.Status> {
         OUT
     }
 
-    public record Status(
-            @AutoLogOutput GamePieceType gamePieceType, @AutoLogOutput MotorState state) {}
+    public record Status(GamePieceType gamePieceType, MotorState state) {}
 
     private final MotorController motor;
 

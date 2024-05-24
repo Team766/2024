@@ -10,16 +10,14 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ForwardApriltagCamera
         extends Subsystem<ForwardApriltagCamera.Status, ForwardApriltagCamera.Goal> {
 
     public record Status(
-            @AutoLogOutput boolean isCameraConnected,
-            @AutoLogOutput Optional<Integer> tagId,
-            @AutoLogOutput
-                    Result<Transform3d, AprilTagGeneralCheckedException> speakerTagTransform) {}
+            boolean isCameraConnected,
+            Optional<Integer> tagId,
+            Result<Transform3d, AprilTagGeneralCheckedException> speakerTagTransform) {}
 
     public record Goal() {}
 

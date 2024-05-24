@@ -8,19 +8,20 @@ import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class DriverShootNow extends VisionPIDProcedure {
 
     private final Drive drive;
-    private final Shoulder shoulder;
+    private final Superstructure superstructure;
     private final Intake intake;
 
-    public DriverShootNow(Drive drive, Shoulder shoulder, Intake intake) {
-        super(reservations(drive, shoulder, intake));
+    public DriverShootNow(Drive drive, Superstructure superstructure, Intake intake) {
+        super(reservations(drive, superstructure, intake));
         this.drive = drive;
-        this.shoulder = shoulder;
+        this.superstructure = superstructure;
         this.intake = intake;
     }
 
@@ -65,7 +66,7 @@ public class DriverShootNow extends VisionPIDProcedure {
 
         // Robot.shooter.shoot(power);
 
-        shoulder.setGoal(new Shoulder.RotateToPosition(armAngle));
+        superstructure.setGoal(new Shoulder.RotateToPosition(armAngle));
 
         double angle = Math.atan2(y, x);
 
@@ -97,7 +98,8 @@ public class DriverShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 1);
+        context.waitForConditionOrTimeout(
+                () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 1);
 
         updateStatus(new ShootingProcedureStatus(Status.FINISHED));
         context.runSync(new DriverShootVelocityAndIntake(intake));

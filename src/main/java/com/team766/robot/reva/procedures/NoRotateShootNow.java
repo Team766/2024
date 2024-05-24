@@ -9,21 +9,26 @@ import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 
 public class NoRotateShootNow extends Procedure {
 
     private final Drive drive;
-    private final Shoulder shoulder;
+    private final Superstructure superstructure;
     private final Shooter shooter;
     private final Intake intake;
     private final VisionSpeakerHelper visionSpeakerHelper;
     private final boolean amp;
 
     public NoRotateShootNow(
-            boolean amp, Drive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
-        super(reservations(drive, shooter, shoulder, intake));
+            boolean amp,
+            Drive drive,
+            Superstructure superstructure,
+            Shooter shooter,
+            Intake intake) {
+        super(reservations(drive, shooter, superstructure, intake));
         this.drive = drive;
-        this.shoulder = shoulder;
+        this.superstructure = superstructure;
         this.shooter = shooter;
         this.intake = intake;
         this.amp = amp;
@@ -47,12 +52,13 @@ public class NoRotateShootNow extends Procedure {
                 return;
             }
 
-            shoulder.setGoal(new Shoulder.RotateToPosition(armAngle));
+            superstructure.setGoal(new Shoulder.RotateToPosition(armAngle));
 
             // start shooting now while waiting for shoulder, stopped in ShootVelocityAndIntake
             shooter.setGoal(new Shooter.ShootAtSpeed(power));
 
-            context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 0.5);
+            context.waitForConditionOrTimeout(
+                    () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 0.5);
 
             context.runSync(new ShootVelocityAndIntake(power, shooter, intake));
 

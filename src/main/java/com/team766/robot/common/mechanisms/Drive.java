@@ -24,19 +24,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Drive extends Subsystem<Drive.Status, Drive.Goal> {
     /**
      * @param heading current heading in degrees
      */
     public static record Status(
-            @AutoLogOutput double heading,
-            @AutoLogOutput double pitch,
-            @AutoLogOutput double roll,
-            @AutoLogOutput Pose2d currentPosition,
-            @AutoLogOutput ChassisSpeeds chassisSpeeds,
-            @AutoLogOutput SwerveModuleState[] swerveStates) {
+            double heading,
+            double pitch,
+            double roll,
+            Pose2d currentPosition,
+            ChassisSpeeds chassisSpeeds,
+            SwerveModuleState[] swerveStates) {
 
         public boolean isAtRotationTarget(double targetHeading) {
             return Math.abs(normalizeAngleDegrees(targetHeading - heading))

@@ -10,11 +10,9 @@ import com.team766.framework.Subsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Intake extends Subsystem<Intake.Status, Intake.Goal> {
-    public record Status(
-            @AutoLogOutput boolean hasNoteInIntake, @AutoLogOutput boolean isNoteClose) {}
+    public record Status(boolean hasNoteInIntake, boolean isNoteClose) {}
 
     public sealed interface Goal {}
 

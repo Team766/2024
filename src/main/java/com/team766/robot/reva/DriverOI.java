@@ -6,7 +6,7 @@ import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -43,8 +43,8 @@ public class DriverOI extends OIFragment {
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            ifAvailable((Drive drive, Shoulder shoulder, Intake intake) ->
-                    new DriverShootNow(drive, shoulder, intake));
+            ifAvailable((Drive drive, Superstructure ss, Intake intake) ->
+                    new DriverShootNow(drive, ss, intake));
         }
 
         if (rightJoystick.getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {

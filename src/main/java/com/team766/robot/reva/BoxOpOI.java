@@ -7,7 +7,7 @@ import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Shoulder.RotateToPosition;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 
 public class BoxOpOI extends OIFragment {
@@ -36,31 +36,24 @@ public class BoxOpOI extends OIFragment {
 
     @Override
     protected void dispatch() {
-        // check to see if we should also disable the climber's soft limits
-        if (climberOverrideSoftLimits.isNewlyTriggering()) {
-            ifAvailable((Climber climber) -> climber.enableSoftLimits(false));
-        } else if (climberOverrideSoftLimits.isFinishedTriggering()) {
-            ifAvailable((Climber climber) -> climber.enableSoftLimits(true));
-        }
-
         switch (enableClimberControls.getState()) {
                 // shoulder positions
             case IsNotTriggering -> {
                 if (gamepad.getButton(InputConstants.XBOX_A)) {
                     // intake
-                    ifAvailable(
-                            (Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.INTAKE_FLOOR));
+                    ifAvailable((Superstructure ss) ->
+                            ss.setGoal(Shoulder.RotateToPosition.INTAKE_FLOOR));
                 } else if (gamepad.getButton(InputConstants.XBOX_B)) {
                     // shoot closer to speaker
                     ifAvailable(
-                            (Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.SHOOT_LOW));
+                            (Superstructure ss) -> ss.setGoal(Shoulder.RotateToPosition.SHOOT_LOW));
                 } else if (gamepad.getButton(InputConstants.XBOX_X)) {
                     // amp shot
-                    ifAvailable((Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.AMP));
+                    ifAvailable((Superstructure ss) -> ss.setGoal(Shoulder.RotateToPosition.AMP));
                 } else if (gamepad.getButton(InputConstants.XBOX_Y)) {
                     // shooter assist
-                    ifAvailable((Shoulder shoulder) ->
-                            shoulder.setGoal(RotateToPosition.SHOOTER_ASSIST));
+                    ifAvailable((Superstructure ss) ->
+                            ss.setGoal(Shoulder.RotateToPosition.SHOOTER_ASSIST));
                     // Currently it will only modify the speed if the right trigger is already held.
                     // TODO: Make this more tolerant for when Y is pressed before right trigger.
                     if (getStatus(Shooter.Status.class).get().targetSpeed() != 0.0) {
@@ -68,9 +61,9 @@ public class BoxOpOI extends OIFragment {
                                 shooter.setGoal(Shooter.ShootAtSpeed.SHOOTER_ASSIST_SPEED));
                     }
                 } else if (gamepad.getPOV() == 0) {
-                    ifAvailable((Shoulder shoulder) -> shoulder.setGoal(new Shoulder.NudgeUp()));
+                    ifAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeUp()));
                 } else if (gamepad.getPOV() == 180) {
-                    ifAvailable((Shoulder shoulder) -> shoulder.setGoal(new Shoulder.NudgeDown()));
+                    ifAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeDown()));
                 }
             }
                 // climber
@@ -79,25 +72,26 @@ public class BoxOpOI extends OIFragment {
                 // NOTE: this happens asynchronously.
                 // the boxop needs to wait for the shoulder to be fully out of the way before moving
                 // the climbers.
-                ifAvailable((Shoulder shoulder) -> shoulder.setGoal(RotateToPosition.TOP));
+                ifAvailable((Superstructure ss) -> ss.setGoal(Shoulder.RotateToPosition.TOP));
             }
             case IsTriggering -> {
                 // if the sticks are being moving, move the corresponding climber(s)
                 if (climberClimb.isTriggering()) {
-                    ifAvailable((Climber climber) -> {
-                        climber.setLeftPower(gamepad.getAxis(InputConstants.XBOX_LS_Y));
-                        climber.setRightPower(gamepad.getAxis(InputConstants.XBOX_RS_Y));
+                    ifAvailable((Superstructure ss) -> {
+                        ss.setGoal(new Climber.MotorPowers(
+                                gamepad.getAxis(InputConstants.XBOX_LS_Y),
+                                gamepad.getAxis(InputConstants.XBOX_RS_Y),
+                                climberOverrideSoftLimits.isTriggering()));
                     });
                 } else {
-                    ifAvailable((Climber climber) -> climber.stop());
+                    ifAvailable((Superstructure ss) -> ss.setGoal(new Climber.Stop()));
                 }
             }
             case IsFinishedTriggering -> {
-                ifAvailable((Climber climber) -> climber.stop());
-
-                // restore the shoulder
-                ifAvailable(
-                        (Shoulder shoulder) -> shoulder.setGoal(new Shoulder.RotateToPosition(85)));
+                ifAvailable((Superstructure ss) -> {
+                    // restore the shoulder (and stop the climber)
+                    ss.setGoal(new Shoulder.RotateToPosition(85));
+                });
             }
         }
 

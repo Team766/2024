@@ -86,4 +86,22 @@ public class Math {
 
         return y0 + (targetX - x0) * slope;
     }
+
+    public static boolean inInterval(double x, double start, double end) {
+        validateInterval(start, end);
+        return start <= x && x <= end;
+    }
+
+    public static boolean intervalsIntersect(
+            double start1, double end1, double start2, double end2) {
+        validateInterval(start1, end1);
+        validateInterval(start2, end2);
+        return start1 <= end2 && start2 <= end1;
+    }
+
+    private static void validateInterval(double start, double end) {
+        if (!(start <= end)) {
+            throw new IllegalArgumentException("Invalid interval: [" + start + ", " + end + "]");
+        }
+    }
 }

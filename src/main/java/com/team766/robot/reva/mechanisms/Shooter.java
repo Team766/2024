@@ -11,10 +11,7 @@ import com.team766.hal.RobotProvider;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Shooter extends Subsystem<Shooter.Status, Shooter.Goal> {
-    public record Status(
-            double targetSpeed,
-            @AutoLogOutput double shooterSpeedTop,
-            @AutoLogOutput double shooterSpeedBottom) {
+    public record Status(double targetSpeed, double shooterSpeedTop, double shooterSpeedBottom) {
         @AutoLogOutput
         public boolean isCloseToTargetSpeed() {
             return isCloseToSpeed(targetSpeed());

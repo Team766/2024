@@ -15,7 +15,7 @@ public class Robot implements RobotConfigurator {
     public void initializeSubsystems() {
         SwerveConfig config = new SwerveConfig().withCanBus(SwerveDriveConstants.SWERVE_CANBUS);
         addSubsystem(new Intake());
-        addSubsystem(new Superstructure(new Shoulder(), new Elevator(), new Wrist()));
+        addSubsystem(new Superstructure());
         addSubsystem(new Drive(config));
     }
 

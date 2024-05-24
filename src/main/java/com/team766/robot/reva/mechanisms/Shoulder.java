@@ -13,10 +13,9 @@ import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
-    public record Status(@AutoLogOutput double angle) {
+    public record Status(double angle) {
         public boolean isNearTo(RotateToPosition target) {
             return isNearTo(target.angle());
         }
@@ -29,6 +28,8 @@ public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
     public sealed interface Goal {}
 
     public record Stop() implements Goal {}
+
+    public record HoldPosition() implements Goal {}
 
     public record NudgeUp() implements Goal {}
 
@@ -140,6 +141,10 @@ public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
                 if (!goalChanged) break;
                 leftMotor.stopMotor();
             }
+            case HoldPosition s -> {
+                if (!goalChanged) break;
+                applyPID(status, status.angle);
+            }
             case NudgeUp g -> {
                 setGoal(new RotateToPosition(status.angle() + NUDGE_AMOUNT));
             }
@@ -147,20 +152,24 @@ public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
                 setGoal(new RotateToPosition(status.angle() - NUDGE_AMOUNT));
             }
             case RotateToPosition g -> {
-                final double targetAngle = com.team766.math.Math.clamp(
-                        g.angle(), RotateToPosition.BOTTOM.angle(), RotateToPosition.TOP.angle());
-                final double targetRotations = degreesToRotations(targetAngle);
-
-                // SmartDashboard.putBoolean("Shoulder at angle", status.isNearTo(g));
-
-                TalonFX leftTalon = (TalonFX) leftMotor;
-                // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
-                double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(status.angle()));
-                // SmartDashboard.putNumber("[SHOULDER] FF", ff);
-                PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
-                positionRequest.FeedForward = ff;
-                leftTalon.setControl(positionRequest);
+                applyPID(status, g.angle);
             }
         }
+    }
+
+    private void applyPID(Status status, double targetAngle) {
+        targetAngle = com.team766.math.Math.clamp(
+                targetAngle, RotateToPosition.BOTTOM.angle(), RotateToPosition.TOP.angle());
+        final double targetRotations = degreesToRotations(targetAngle);
+
+        // SmartDashboard.putBoolean("Shoulder at angle", status.isNearTo(g));
+
+        TalonFX leftTalon = (TalonFX) leftMotor;
+        // SmartDashboard.putNumber("[SHOULDER] ffGain", ffGain.get());
+        double ff = ffGain.valueOr(0.0) * Math.cos(Math.toRadians(status.angle()));
+        // SmartDashboard.putNumber("[SHOULDER] FF", ff);
+        PositionDutyCycle positionRequest = new PositionDutyCycle(targetRotations);
+        positionRequest.FeedForward = ff;
+        leftTalon.setControl(positionRequest);
     }
 }

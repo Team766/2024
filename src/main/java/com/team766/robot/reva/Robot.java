@@ -5,12 +5,11 @@ import com.team766.framework.LightsBase;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.Drive;
-import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import com.team766.robot.reva.mechanisms.Shooter;
-import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.auton_routines.*;
 
 public class Robot implements RobotConfigurator {
@@ -18,8 +17,7 @@ public class Robot implements RobotConfigurator {
     public void initializeSubsystems() {
         SwerveConfig config = new SwerveConfig();
         addSubsystem(new Drive(config));
-        addSubsystem(new Climber());
-        addSubsystem(new Shoulder());
+        addSubsystem(new Superstructure());
         addSubsystem(new Intake());
         addSubsystem(new Shooter());
         addSubsystem(new NoteCamera());
@@ -48,44 +46,24 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Center Pieces",
-                    (Drive drive,
-                            Shoulder shoulder,
-                            Shooter shooter,
-                            Intake intake,
-                            Climber climber) ->
-                            new ThreePieceAmpSide(drive, shoulder, shooter, intake, climber)),
+                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
+                            new ThreePieceAmpSide(drive, ss, shooter, intake)),
             new AutonomousMode(
                     "4p Start Amp, All Close Pieces",
-                    (Drive drive,
-                            Shoulder shoulder,
-                            Shooter shooter,
-                            Intake intake,
-                            Climber climber) ->
-                            new FourPieceAmpSide(drive, shoulder, shooter, intake, climber)),
+                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
+                            new FourPieceAmpSide(drive, ss, shooter, intake)),
             new AutonomousMode(
                     "2p Start Source, Bottom Midfield Piece",
-                    (Drive drive,
-                            Shoulder shoulder,
-                            Shooter shooter,
-                            Intake intake,
-                            Climber climber) -> new TwoPieceMidfieldSourceSide(
-                            drive, shoulder, shooter, intake, climber)),
+                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
+                            new TwoPieceMidfieldSourceSide(drive, ss, shooter, intake)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Top Midfield Pieces",
-                    (Drive drive,
-                            Shoulder shoulder,
-                            Shooter shooter,
-                            Intake intake,
-                            Climber climber) -> new ThreePieceMidfieldAmpSide(
-                            drive, shoulder, shooter, intake, climber)),
+                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
+                            new ThreePieceMidfieldAmpSide(drive, ss, shooter, intake)),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
-                    (Drive drive,
-                            Shoulder shoulder,
-                            Shooter shooter,
-                            Intake intake,
-                            Climber climber) -> new ThreePieceStartCenterTopAndAmp(
-                            drive, shoulder, shooter, intake, climber))
+                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
+                            new ThreePieceStartCenterTopAndAmp(drive, ss, shooter, intake))
         };
     }
 }

@@ -9,22 +9,23 @@ import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 import edu.wpi.first.math.geometry.Transform3d;
 
 public class ShootNow extends VisionPIDProcedure {
 
     private final Drive drive;
-    private final Shoulder shoulder;
+    private final Superstructure superstructure;
     private final Shooter shooter;
     private final Intake intake;
 
     private double angle;
 
-    public ShootNow(Drive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
-        super(reservations(drive, shoulder, shooter, intake));
+    public ShootNow(Drive drive, Superstructure superstructure, Shooter shooter, Intake intake) {
+        super(reservations(drive, superstructure, shooter, intake));
         this.drive = drive;
-        this.shoulder = shoulder;
+        this.superstructure = superstructure;
         this.shooter = shooter;
         this.intake = intake;
     }
@@ -73,7 +74,7 @@ public class ShootNow extends VisionPIDProcedure {
 
         shooter.setGoal(new Shooter.ShootAtSpeed(power));
 
-        shoulder.setGoal(new Shoulder.RotateToPosition(armAngle));
+        superstructure.setGoal(new Shoulder.RotateToPosition(armAngle));
 
         angle = Math.atan2(y, x);
 
@@ -105,7 +106,8 @@ public class ShootNow extends VisionPIDProcedure {
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 1);
+        context.waitForConditionOrTimeout(
+                () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 1);
 
         updateStatus(new ShootingProcedureStatus(Status.FINISHED));
         context.runSync(new ShootVelocityAndIntake(power, shooter, intake));

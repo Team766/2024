@@ -14,7 +14,6 @@ import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 /**
  * Basic elevator mechanism.  Used in conjunction with the {@link Intake} and {@link Wrist}.
@@ -26,7 +25,7 @@ public class Elevator extends Subsystem<Elevator.Status, Elevator.Goal> {
     /**
      * @param height the current height of the elevator, in inches ('Murica).
      */
-    public record Status(@AutoLogOutput double rotations, @AutoLogOutput double height) {
+    public record Status(double rotations, double height) {
         public boolean isNearTo(MoveToPosition position) {
             return isNearTo(position.height());
         }

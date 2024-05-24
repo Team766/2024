@@ -32,5 +32,5 @@ public class ControlConstants {
     /**
      * degrees/second
      */
-    public static final double AT_ROTATION_SPEED_THRESHOLD = 3.0;
+    public static final double AT_ROTATION_SPEED_THRESHOLD = 3.0; // TODO: Find actual value
 }

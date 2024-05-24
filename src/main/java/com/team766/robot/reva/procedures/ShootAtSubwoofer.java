@@ -5,22 +5,22 @@ import com.team766.framework.Procedure;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Shoulder.RotateToPosition;
+import com.team766.robot.reva.mechanisms.Superstructure;
 
 public class ShootAtSubwoofer extends Procedure {
-    private final Shoulder shoulder;
+    private final Superstructure superstructure;
     private final Shooter shooter;
     private final Intake intake;
 
-    public ShootAtSubwoofer(Shoulder shoulder, Shooter shooter, Intake intake) {
-        super(reservations(shoulder, shooter, intake));
-        this.shoulder = shoulder;
+    public ShootAtSubwoofer(Superstructure superstructure, Shooter shooter, Intake intake) {
+        super(reservations(superstructure, shooter, intake));
+        this.superstructure = superstructure;
         this.shooter = shooter;
         this.intake = intake;
     }
 
     public void run(Context context) {
-        shoulder.setGoal(RotateToPosition.SHOOT_LOW);
+        superstructure.setGoal(Shoulder.RotateToPosition.SHOOT_LOW);
         context.runSync(new ShootVelocityAndIntake(shooter, intake));
     }
 }

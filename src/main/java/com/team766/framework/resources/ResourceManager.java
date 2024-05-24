@@ -25,7 +25,11 @@ public final class ResourceManager {
 
     @SuppressWarnings("unchecked")
     static <T extends Subsystem> T getSubsystem(Class<T> clazz) {
-        return (T) subsystems.get(clazz);
+        T subsystem = (T) subsystems.get(clazz);
+        if (subsystem == null) {
+            throw new IllegalArgumentException(clazz.getName() + " is not a registered Subsystem");
+        }
+        return subsystem;
     }
 
     private final List<Runnable> transientEndFrameCallbacks = new ArrayList<>();

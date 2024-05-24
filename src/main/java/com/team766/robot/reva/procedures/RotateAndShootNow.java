@@ -9,21 +9,23 @@ import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class RotateAndShootNow extends Procedure {
 
     private final Drive drive;
-    private final Shoulder shoulder;
+    private final Superstructure superstructure;
     private final Shooter shooter;
     private final Intake intake;
 
     private final VisionSpeakerHelper visionSpeakerHelper;
 
-    public RotateAndShootNow(Drive drive, Shoulder shoulder, Shooter shooter, Intake intake) {
-        super(reservations(drive, shoulder, shooter, intake));
+    public RotateAndShootNow(
+            Drive drive, Superstructure superstructure, Shooter shooter, Intake intake) {
+        super(reservations(drive, superstructure, shooter, intake));
         this.drive = drive;
-        this.shoulder = shoulder;
+        this.superstructure = superstructure;
         this.shooter = shooter;
         this.intake = intake;
         visionSpeakerHelper = new VisionSpeakerHelper();
@@ -48,11 +50,12 @@ public class RotateAndShootNow extends Procedure {
             return;
         }
 
-        shoulder.setGoal(new Shoulder.RotateToPosition(armAngle));
+        superstructure.setGoal(new Shoulder.RotateToPosition(armAngle));
         drive.setGoal(new Drive.FieldOrientedVelocityWithRotationTarget(0, 0, heading));
         // shooter.shoot(power);
 
-        context.waitForConditionOrTimeout(() -> shoulder.getStatus().isNearTo(armAngle), 0.5);
+        context.waitForConditionOrTimeout(
+                () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 0.5);
         context.waitForConditionOrTimeout(
                 () -> drive.getStatus().isAtRotationTarget(heading.getDegrees()), 3.0);
         drive.setGoal(new Drive.StopDrive());

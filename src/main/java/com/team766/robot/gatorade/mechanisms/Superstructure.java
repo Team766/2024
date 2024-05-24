@@ -4,8 +4,8 @@ import com.team766.framework.Subsystem;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 
-public class Superstructure extends Subsystem<Superstructure.State, Superstructure.Goal> {
-    public record State(Shoulder.Status shoulder, Elevator.Status elevator, Wrist.Status wrist) {
+public class Superstructure extends Subsystem<Superstructure.Status, Superstructure.Goal> {
+    public record Status(Shoulder.Status shoulder, Elevator.Status elevator, Wrist.Status wrist) {
         public boolean isNearTo(MoveToPosition position) {
             return shoulder.isNearTo(position.shoulderSetpoint)
                     && elevator.isNearTo(position.elevatorSetpoint)
@@ -87,23 +87,17 @@ public class Superstructure extends Subsystem<Superstructure.State, Superstructu
         }
     }
 
-    private final Shoulder shoulder;
-    private final Elevator elevator;
-    private final Wrist wrist;
+    private final Shoulder shoulder = new Shoulder();
+    private final Elevator elevator = new Elevator();
+    private final Wrist wrist = new Wrist();
 
-    public Superstructure(Shoulder shoulder, Elevator elevator, Wrist wrist) {
-        this.shoulder = shoulder;
-        this.elevator = elevator;
-        this.wrist = wrist;
+    @Override
+    protected Status updateState() {
+        return new Status(shoulder.updateState(), elevator.updateState(), wrist.updateState());
     }
 
     @Override
-    protected State updateState() {
-        return new State(shoulder.getStatus(), elevator.getStatus(), wrist.getStatus());
-    }
-
-    @Override
-    protected void dispatch(State status, Goal goal, boolean goalChanged) {
+    protected void dispatch(Status status, Goal goal, boolean goalChanged) {
         switch (goal) {
             case Stop g -> {
                 if (!goalChanged) break;
@@ -136,37 +130,60 @@ public class Superstructure extends Subsystem<Superstructure.State, Superstructu
                 wrist.setGoal(g.wristGoal());
             }
             case MoveToPosition g -> {
-                // If raising the shoulder, do that before the elevator;
-                // else, lower it after the elevator.
-                boolean raisingShoulder =
+                enum MovePhase {
+                    PREPARE_TO_MOVE_ELEVATOR,
+                    MOVING_ELEVATOR,
+                    ELEVATOR_IN_POSITION
+                }
+
+                final boolean raisingShoulder =
                         g.shoulderSetpoint.angle() > shoulder.getStatus().angle();
 
-                if (!elevator.getStatus().isNearTo(g.elevatorSetpoint)) {
+                MovePhase phase;
+                if (elevator.getStatus().isNearTo(g.elevatorSetpoint)) {
+                    phase = MovePhase.ELEVATOR_IN_POSITION;
+                } else {
+                    phase = MovePhase.MOVING_ELEVATOR;
                     // Always retract the wrist before moving the elevator.
                     // It might already be retracted, so it's possible that this step finishes
                     // instantaneously.
-                    wrist.setGoal(Wrist.RotateToPosition.RETRACTED);
-                    if (raisingShoulder) {
-                        shoulder.setGoal(g.shoulderSetpoint);
-                    } else {
-                        shoulder.setGoal(new Shoulder.HoldPosition());
+                    if (!wrist.getStatus().isNearTo(Wrist.RotateToPosition.RETRACTED)) {
+                        phase = MovePhase.PREPARE_TO_MOVE_ELEVATOR;
                     }
-                    if (wrist.getStatus().isNearTo(Wrist.RotateToPosition.RETRACTED)
-                            && (!raisingShoulder
-                                    || shoulder.getStatus().isNearTo(g.shoulderSetpoint))) {
+                    // If raising the shoulder, do that before the elevator
+                    // (else, lower it after the elevator).
+                    if (raisingShoulder && !shoulder.getStatus().isNearTo(g.shoulderSetpoint)) {
+                        phase = MovePhase.PREPARE_TO_MOVE_ELEVATOR;
+                    }
+                }
+
+                switch (phase) {
+                    case PREPARE_TO_MOVE_ELEVATOR -> {
+                        shoulder.setGoal(
+                                raisingShoulder ? g.shoulderSetpoint : new Shoulder.HoldPosition());
+
+                        elevator.setGoal(new Elevator.HoldPosition());
+
+                        wrist.setGoal(Wrist.RotateToPosition.RETRACTED);
+                    }
+                    case MOVING_ELEVATOR -> {
+                        shoulder.setGoal(
+                                raisingShoulder ? g.shoulderSetpoint : new Shoulder.HoldPosition());
+
                         // Move the elevator until it gets near the target position.
                         elevator.setGoal(g.elevatorSetpoint);
-                    } else {
-                        elevator.setGoal(new Elevator.HoldPosition());
+
+                        wrist.setGoal(Wrist.RotateToPosition.RETRACTED);
                     }
-                } else {
-                    elevator.setGoal(g.elevatorSetpoint);
+                    case ELEVATOR_IN_POSITION -> {
+                        // If lowering the shoulder, do that after the elevator.
+                        shoulder.setGoal(g.shoulderSetpoint);
 
-                    // If lowering the shoulder, do that after the elevator.
-                    shoulder.setGoal(g.shoulderSetpoint);
+                        elevator.setGoal(g.elevatorSetpoint);
 
-                    // Lastly, move the wrist.
-                    wrist.setGoal(g.wristSetpoint);
+                        // Lastly, move the wrist.
+                        wrist.setGoal(g.wristSetpoint);
+                    }
                 }
             }
         }
