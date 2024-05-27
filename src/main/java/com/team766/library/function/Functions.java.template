@@ -3,6 +3,14 @@
 package com.team766.library.function;
 
 public interface Functions {
+    public interface Runnable extends FunctionBase {
+        void run();
+    }
+
+    public interface Provider<R> extends FunctionBase {
+        R get();
+    }
+
 <% (1..functionArity).each{ i -> %>
     public interface Consumer${i}<<% (1..<i).each{ j -> %>Arg${j}, <%}%>Arg${i}> extends FunctionBase {
         void accept(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});

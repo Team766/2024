@@ -1,28 +1,12 @@
 package com.team766.hal.mock;
 
-import com.team766.framework.conditions.RulesMixin;
 import com.team766.hal.JoystickReader;
 
 public class MockJoystick implements JoystickReader {
 
-    private final Companion companion;
     private final double[] axisValues = new double[12];
     private final boolean[] buttonValues = new boolean[20];
     private int povValue = -1;
-
-    public MockJoystick(RulesMixin oi) {
-        companion = new Companion(this, oi);
-    }
-
-    @Override
-    public Companion getCompanion() {
-        return companion;
-    }
-
-    @Override
-    public int getMaxAxisCount() {
-        return axisValues.length;
-    }
 
     @Override
     public double getAxis(final int axis) {
@@ -31,11 +15,6 @@ public class MockJoystick implements JoystickReader {
 
     public void setAxis(final int axis, final double value) {
         axisValues[axis] = value;
-    }
-
-    @Override
-    public int getMaxButtonCount() {
-        return buttonValues.length;
     }
 
     @Override

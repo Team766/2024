@@ -15,9 +15,9 @@ public class OI extends OIBase {
     private JoystickReader joystick2;
 
     public OI() {
-        joystick0 = RobotProvider.instance.getJoystick(this, 0);
-        joystick1 = RobotProvider.instance.getJoystick(this, 1);
-        joystick2 = RobotProvider.instance.getJoystick(this, 2);
+        joystick0 = RobotProvider.instance.getJoystick(0);
+        joystick1 = RobotProvider.instance.getJoystick(1);
+        joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
     @Override

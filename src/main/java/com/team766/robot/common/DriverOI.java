@@ -36,21 +36,21 @@ public class DriverOI extends OIFragment {
                 -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
-        if (leftJoystick.button(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
-            ifAvailable((Drive drive) -> drive.resetGyro());
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO)) {
+            onceAvailable((Drive drive) -> drive.resetGyro());
         }
 
-        if (leftJoystick.button(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
-            ifAvailable((Drive drive) -> drive.resetCurrentPosition());
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS)) {
+            onceAvailable((Drive drive) -> drive.resetCurrentPosition());
         }
 
         // Sets the wheels to the cross position if the cross button is pressed
-        if (rightJoystick.button(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
-            isCross = !isCross;
+        if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS)) {
+            once(() -> isCross = !isCross);
         }
 
         if (isCross) {
-            ifAvailable((Drive drive) -> drive.setGoal(new Drive.SetCross()));
+            whileAvailable((Drive drive) -> drive.setGoal(new Drive.SetCross()));
         }
 
         // Moves the robot if there are joystick inputs
@@ -59,7 +59,7 @@ public class DriverOI extends OIFragment {
             double drivingCoefficient = rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)
                     ? ControlConstants.FINE_DRIVING_COEFFICIENT
                     : 1;
-            ifAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
+            whileAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
                     (drivingCoefficient
                             * curvedJoystickPower(
                                     leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),

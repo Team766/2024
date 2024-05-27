@@ -23,10 +23,10 @@ public class OI extends OIBase {
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
-        leftJoystick = RobotProvider.instance.getJoystick(this, InputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(this, InputConstants.RIGHT_JOYSTICK);
-        macropad = RobotProvider.instance.getJoystick(this, InputConstants.MACROPAD);
-        gamepad = RobotProvider.instance.getJoystick(this, InputConstants.BOXOP_GAMEPAD_X);
+        leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
+        rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
+        gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
         driverOI = new DriverOI(this, leftJoystick, rightJoystick);
         debugOI = new DebugOI(this, macropad);

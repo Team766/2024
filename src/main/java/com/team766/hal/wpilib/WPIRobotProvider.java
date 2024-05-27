@@ -1,7 +1,6 @@
 package com.team766.hal.wpilib;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.OIBase;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -258,8 +257,8 @@ public class WPIRobotProvider extends RobotProvider {
     }
 
     @Override
-    public JoystickReader getJoystick(OIBase oi, int index) {
-        return new Joystick(oi, index);
+    public JoystickReader getJoystick(int index) {
+        return new Joystick(index);
     }
 
     @Override

@@ -2,6 +2,13 @@
 package com.team766.library.function;
 
 public interface Functions {
+    public interface Runnable extends FunctionBase {
+        void run();
+    }
+
+    public interface Provider<R> extends FunctionBase {
+        R get();
+    }
 
     public interface Consumer1<Arg1> extends FunctionBase {
         void accept(Arg1 arg1);

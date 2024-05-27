@@ -3,6 +3,7 @@ package com.team766.simulator;
 import static com.team766.library.ArrayUtils.initializeArray;
 
 import com.team766.hal.BeaconReader;
+import com.team766.hal.mock.MockJoystick;
 
 public class ProgramInterface {
     public static Program program = null;
@@ -88,11 +89,5 @@ public class ProgramInterface {
     public static BeaconReader.BeaconPose[] beacons =
             initializeArray(NUM_BEACONS, BeaconReader.BeaconPose::new);
 
-    public static class Joystick {
-        public final double[] axisValues = new double[12];
-        public final boolean[] buttonValues = new boolean[20];
-        public int povValue = -1;
-    }
-
-    public static final Joystick[] joystickChannels = initializeArray(6, Joystick::new);
+    public static final MockJoystick[] joystickChannels = initializeArray(6, MockJoystick::new);
 }

@@ -20,16 +20,16 @@ public class OI extends OIBase {
     private final JoystickReader joystick2;
 
     public OI() {
-        joystick0 = RobotProvider.instance.getJoystick(this, 0);
-        joystick1 = RobotProvider.instance.getJoystick(this, 1);
-        joystick2 = RobotProvider.instance.getJoystick(this, 2);
+        joystick0 = RobotProvider.instance.getJoystick(0);
+        joystick1 = RobotProvider.instance.getJoystick(1);
+        joystick2 = RobotProvider.instance.getJoystick(2);
     }
 
     protected void dispatch() {
         // General drive util
 
-        if (joystick0.button(2).isNewlyTriggering()) {
-            ifAvailable((Drive drive) -> drive.resetGyro());
+        if (joystick0.getButton(2)) {
+            onceAvailable((Drive drive) -> drive.resetGyro());
         }
 
         /*
@@ -42,7 +42,7 @@ public class OI extends OIBase {
          * This is used to drive into the area labled 1R in the maker space.
          */
         if (joystick0.getButton(1)) {
-            ifAvailable(
+            whileAvailable(
                     (Drive drive,
                             TempShooter tempShooter,
                             ForwardApriltagCamera forwardApriltagCamera) -> new DriveToAndScoreAt(
@@ -58,7 +58,7 @@ public class OI extends OIBase {
          */
         if (joystick0.getButton(2)) {
             // Robot.speakerShooter.goToAndScore(SpeakerShooterPowerCalculator.makerSpace1R);
-            ifAvailable(
+            whileAvailable(
                     (Drive drive,
                             TempShooter tempShooter,
                             ForwardApriltagCamera forwardApriltagCamera) -> new DriveToAndScoreAt(
@@ -74,7 +74,7 @@ public class OI extends OIBase {
          */
 
         if (joystick1.getButton(1)) {
-            ifAvailable(
+            whileAvailable(
                     (Drive drive, TempPickerUpper tempPickerUpper, NoteCamera noteDetectorCamera) ->
                             new PickupNote(drive, tempPickerUpper, noteDetectorCamera));
         }
@@ -125,7 +125,7 @@ public class OI extends OIBase {
                         + Math.abs(joystick0.getAxis(1))
                         + Math.abs(joystick1.getAxis(0))
                 > 0.05) {
-            ifAvailable((Drive drive) -> drive.setGoal(new Drive.RobotOrientedVelocity(
+            whileAvailable((Drive drive) -> drive.setGoal(new Drive.RobotOrientedVelocity(
                     joystick0.getAxis(0) * .2,
                     -joystick0.getAxis(1) * .2,
                     joystick1.getAxis(0) * .2)));

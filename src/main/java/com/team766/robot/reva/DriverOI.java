@@ -27,28 +27,28 @@ public class DriverOI extends OIFragment {
     @Override
     protected void dispatch() {
 
-        if (leftJoystick.button(InputConstants.BUTTON_RESET_GYRO).isNewlyTriggering()) {
-            ifAvailable((Drive drive) -> drive.resetGyro());
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO)) {
+            onceAvailable((Drive drive) -> drive.resetGyro());
         }
 
-        if (leftJoystick.button(InputConstants.BUTTON_RESET_POS).isNewlyTriggering()) {
-            ifAvailable((Drive drive) -> drive.resetCurrentPosition());
+        if (leftJoystick.getButton(InputConstants.BUTTON_RESET_POS)) {
+            onceAvailable((Drive drive) -> drive.resetCurrentPosition());
         }
 
-        if (rightJoystick.button(InputConstants.BUTTON_CROSS_WHEELS).isNewlyTriggering()) {
-            isCross = !isCross;
+        if (rightJoystick.getButton(InputConstants.BUTTON_CROSS_WHEELS)) {
+            once(() -> isCross = !isCross);
         }
         if (isCross) {
-            ifAvailable((Drive drive) -> drive.setGoal(new Drive.SetCross()));
+            whileAvailable((Drive drive) -> drive.setGoal(new Drive.SetCross()));
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            ifAvailable((Drive drive, Superstructure ss, Intake intake) ->
+            whileAvailable((Drive drive, Superstructure ss, Intake intake) ->
                     new DriverShootNow(drive, ss, intake));
         }
 
         if (rightJoystick.getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            ifAvailable((Intake intake) -> new DriverShootVelocityAndIntake(intake));
+            whileAvailable((Intake intake) -> new DriverShootVelocityAndIntake(intake));
         }
 
         // Negative because forward is negative in driver station
@@ -72,7 +72,7 @@ public class DriverOI extends OIFragment {
                             ? ControlConstants.FINE_DRIVING_COEFFICIENT
                             : 1;
 
-            ifAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
+            whileAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
                     (drivingCoefficient
                             * curvedJoystickPower(
                                     leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),

@@ -46,69 +46,59 @@ public class DebugOI extends OIFragment {
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
         if (macropad.getButton(InputConstants.CONTROL_SHOULDER)) {
-            if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
-                ifAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeUp()));
-            } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
-                ifAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeDown()));
-            } else if (macropad.button(InputConstants.MACROPAD_RESET_SHOULDER)
-                    .isNewlyTriggering()) {
-                ifAvailable((Superstructure ss) -> ss.resetShoulder());
+            if (macropad.getButton(InputConstants.NUDGE_UP)) {
+                onceAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeUp()));
+            } else if (macropad.getButton(InputConstants.NUDGE_DOWN)) {
+                onceAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeDown()));
+            } else if (macropad.getButton(InputConstants.MACROPAD_RESET_SHOULDER)) {
+                onceAvailable((Superstructure ss) -> ss.resetShoulder());
             }
         }
 
-        if (macropad.button(16).isNewlyTriggering()) {
-            ifAvailable((Superstructure ss) -> ss.resetClimberPositions());
+        if (macropad.getButton(16)) {
+            onceAvailable((Superstructure ss) -> ss.resetClimberPositions());
         }
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-        switch (macropad.button(InputConstants.CONTROL_CLIMBER)) {
-            case IsTriggering -> {
-                if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
-                    ifAvailable((Superstructure ss) -> {
-                        ss.setGoal(new Climber.MotorPowers(-0.25, -0.25, true));
-                    });
-                } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
-                    ifAvailable((Superstructure ss) -> {
-                        ss.setGoal(new Climber.MotorPowers(0.25, 0.25, true));
-                    });
-                }
+        if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
+            if (macropad.getButton(InputConstants.NUDGE_UP)) {
+                whileAvailable((Superstructure ss) -> {
+                    ss.setGoal(new Climber.MotorPowers(-0.25, -0.25, true));
+                });
+            } else if (macropad.getButton(InputConstants.NUDGE_DOWN)) {
+                whileAvailable((Superstructure ss) -> {
+                    ss.setGoal(new Climber.MotorPowers(0.25, 0.25, true));
+                });
             }
-            case IsFinishedTriggering -> {
-                ifAvailable((Superstructure ss) -> ss.setGoal(new Climber.Stop()));
-            }
-            default -> {}
+        } else {
+            onceAvailable((Superstructure ss) -> ss.setGoal(new Climber.Stop()));
         }
 
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        if (macropad.button(InputConstants.INTAKE_IN).isNewlyTriggering()) {
-            ifAvailable((Intake intake) -> intake.setGoal(new Intake.In()));
-        } else if (macropad.button(InputConstants.INTAKE_OUT).isNewlyTriggering()) {
-            ifAvailable((Intake intake) -> intake.setGoal(new Intake.Out()));
+        if (macropad.getButton(InputConstants.INTAKE_IN)) {
+            whileAvailable((Intake intake) -> intake.setGoal(new Intake.In()));
+        } else if (macropad.getButton(InputConstants.INTAKE_OUT)) {
+            whileAvailable((Intake intake) -> intake.setGoal(new Intake.Out()));
         }
         byDefault((Intake intake) -> intake.setGoal(new Intake.Stop()));
 
         // fine-grained controls for shooter
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
-        switch (macropad.button(InputConstants.CONTROL_SHOOTER)) {
-            case IsNewlyTriggering -> {
-                ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.Shoot()));
+        if (macropad.getButton(InputConstants.CONTROL_SHOOTER)) {
+            onceAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.Shoot()));
+
+            if (macropad.getButton(InputConstants.NUDGE_UP)) {
+                onceAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.NudgeUp()));
+            } else if (macropad.getButton(InputConstants.NUDGE_DOWN)) {
+                onceAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.NudgeDown()));
             }
-            case IsTriggering -> {
-                if (macropad.button(InputConstants.NUDGE_UP).isNewlyTriggering()) {
-                    ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.NudgeUp()));
-                } else if (macropad.button(InputConstants.NUDGE_DOWN).isNewlyTriggering()) {
-                    ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.NudgeDown()));
-                }
-            }
-            case IsFinishedTriggering -> {
-                ifAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.Stop()));
-            }
-            default -> {}
+        } else {
+            onceAvailable((Shooter shooter) -> shooter.setGoal(new Shooter.Stop()));
         }
     }
 }

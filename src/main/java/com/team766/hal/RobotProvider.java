@@ -3,7 +3,6 @@ package com.team766.hal;
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
 import com.team766.controllers.TimeProviderI;
-import com.team766.framework.OIBase;
 import com.team766.hal.mock.MockAnalogInput;
 import com.team766.hal.mock.MockDigitalInput;
 import com.team766.hal.mock.MockEncoder;
@@ -350,7 +349,7 @@ public abstract class RobotProvider {
     }
 
     // Operator Devices
-    public abstract JoystickReader getJoystick(OIBase oi, int index);
+    public abstract JoystickReader getJoystick(int index);
 
     public abstract CameraInterface getCamServer();
 

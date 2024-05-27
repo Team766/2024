@@ -36,8 +36,11 @@ public final class ResourceManager {
 
     private final Set<Class<? extends Subsystem>> reservedSubsystems = new HashSet<>();
 
-    private final Map<Class<?>, Command> prevScheduledCommands = new HashMap<>();
-    private final Set<Class<?>> scheduledCommands = new HashSet<>();
+    private final Map<Class<? extends FunctionBase>, Command> prevScheduledCommands =
+            new HashMap<>();
+    private Map<Class<? extends FunctionBase>, Object> prevActiveRules = new HashMap<>();
+    private Map<Class<? extends FunctionBase>, Object> activeRules = new HashMap<>();
+    private boolean initializing = true;
 
     /* package */ void registerTransientEndFrameCallback(Runnable callback) {
         transientEndFrameCallbacks.add(callback);
@@ -52,25 +55,41 @@ public final class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    /* package */ boolean scheduleIfAvailable(
-            FunctionBase callback, Function<Subsystem[], Command> doCallback) {
-        var params = (Class<? extends Subsystem>[]) Reflection.findLambdaParams(callback);
-        Subsystem[] subsystems = tryReserve(params);
-        if (subsystems == null) {
-            return false;
-        }
-        return scheduleCommand(callback.getClass(), subsystems, doCallback);
-    }
-
-    @SuppressWarnings("unchecked")
     /* package */ boolean runIfAvailable(FunctionBase callback, Consumer<Subsystem[]> doCallback) {
         var params = (Class<? extends Subsystem>[]) Reflection.findLambdaParams(callback);
         Subsystem[] subsystems = tryReserve(params);
         if (subsystems == null) {
             return false;
         }
+        checkCallback(callback.getClass());
         doCallback.accept(subsystems);
         return true;
+    }
+
+    /* package */ void runOnceIfAvailable(FunctionBase callback, Consumer<Subsystem[]> doCallback) {
+        runIfAvailable(callback, subsystems -> {
+            if (activeRules.put(callback.getClass(), this) != null | initializing) {
+                return;
+            }
+            doCallback.accept(subsystems);
+        });
+    }
+
+    /* package */ boolean scheduleIfAvailable(
+            FunctionBase callback, Function<Subsystem[], Command> doCallback) {
+        return runIfAvailable(
+                callback,
+                subsystems -> scheduleCommand(callback.getClass(), subsystems, doCallback));
+    }
+
+    /* package */ void scheduleOnceIfAvailable(
+            FunctionBase callback, Function<Subsystem[], Command> doCallback) {
+        scheduleIfAvailable(callback, subsystems -> {
+            if (activeRules.put(callback.getClass(), this) != null | initializing) {
+                return null;
+            }
+            return doCallback.apply(subsystems);
+        });
     }
 
     private Subsystem[] tryReserve(Class<? extends Subsystem>[] resources) {
@@ -95,16 +114,9 @@ public final class ResourceManager {
     }
 
     private boolean scheduleCommand(
-            Class<?> handle,
+            Class<? extends FunctionBase> handle,
             Subsystem[] subsystems,
             Function<Subsystem[], Command> commandSupplier) {
-        if (!handle.isAnonymousClass()) {
-            throw new IllegalArgumentException("Argument to ifAvailable should be a lambda");
-        }
-        if (scheduledCommands.contains(handle)) {
-            throw new IllegalArgumentException(
-                    "A single command supplier object was used in two different conditions. This is not supported.");
-        }
         Command command = prevScheduledCommands.get(handle);
         if (command == null || command.isFinished()) {
             command = commandSupplier.apply(subsystems);
@@ -115,12 +127,26 @@ public final class ResourceManager {
             command.schedule();
         }
         prevScheduledCommands.put(handle, command);
-        scheduledCommands.add(handle);
         return true;
     }
 
+    private void checkCallback(Class<? extends FunctionBase> handle) {
+        if (!handle.isAnonymousClass()) {
+            throw new IllegalArgumentException(
+                    "Argument to whileAvailable/onceAvailable should be a lambda");
+        }
+        if (activeRules.containsKey(handle)) {
+            throw new IllegalArgumentException(
+                    "A single action runnable type was used in two different conditions. This is not supported.");
+        }
+        activeRules.put(handle, prevActiveRules.get(handle));
+    }
+
     public void startFrame() {
-        scheduledCommands.clear();
+        var temp = prevActiveRules;
+        prevActiveRules = activeRules;
+        activeRules = temp;
+        activeRules.clear();
 
         reservedSubsystems.clear();
     }
@@ -130,5 +156,6 @@ public final class ResourceManager {
             callback.run();
         }
         transientEndFrameCallbacks.clear();
+        initializing = false;
     }
 }
