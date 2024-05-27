@@ -59,8 +59,12 @@ import java.util.Set;
         return super.getRequirements();
     }
 
-    public void addReservations(Subsystem... reqs) {
-        addRequirements(reqs);
+    public void addReservations(Subsystem... reservations) {
+        addRequirements(reservations);
+    }
+
+    public void addReservations(Collection<Subsystem> reservations) {
+        getReservations().addAll(reservations);
     }
 
     @Override

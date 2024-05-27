@@ -7,7 +7,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSubsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Subsystem<Elevator.Status, Elevator.Goal> {
+public class Elevator extends RobotSubsystem<Elevator.Status, Elevator.Goal> {
     /**
      * @param height the current height of the elevator, in inches ('Murica).
      */

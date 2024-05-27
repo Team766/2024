@@ -3,11 +3,11 @@ package com.team766.robot.reva.mechanisms;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSubsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class Climber extends Subsystem<Climber.Status, Climber.Goal> {
+public class Climber extends RobotSubsystem<Climber.Status, Climber.Goal> {
 
     public record Status(double heightLeft, double heightRight) {
         public boolean isLeftNear(MoveToPosition position) {

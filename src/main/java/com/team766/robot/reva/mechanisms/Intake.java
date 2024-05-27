@@ -6,12 +6,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
 
-public class Intake extends Subsystem<Intake.Status, Intake.Goal> {
+public class Intake extends RobotSystem<Intake.Status, Intake.Goal> {
     public record Status(boolean hasNoteInIntake, boolean isNoteClose) {}
 
     public sealed interface Goal {}

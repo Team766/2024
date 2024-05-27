@@ -7,7 +7,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSubsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * attached {@link Wrist} and {@link Intake}) to reach different positions, from the floor to different
  * heights of nodes.
  */
-public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
+public class Shoulder extends RobotSubsystem<Shoulder.Status, Shoulder.Goal> {
 
     /**
      * @param angle the current angle of the wrist.

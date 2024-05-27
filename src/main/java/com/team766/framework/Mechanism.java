@@ -1,11 +1,12 @@
 package com.team766.framework;
 
+import com.team766.framework.resources.Reservable;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class Mechanism extends SubsystemBase implements LoggingBase {
+public abstract class Mechanism extends SubsystemBase implements Reservable, LoggingBase {
     private Thread m_runningPeriodic = null;
 
     protected Category loggerCategory = Category.MECHANISMS;

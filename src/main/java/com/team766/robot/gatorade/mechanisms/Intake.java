@@ -2,7 +2,7 @@ package com.team766.robot.gatorade.mechanisms;
 
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
@@ -17,7 +17,7 @@ import com.team766.hal.RobotProvider;
  * intake or outtake.  This is because the motor must spin in opposite directions to intake cubes
  * versus cones.
  */
-public class Intake extends Subsystem<Intake.Status, Intake.Status> {
+public class Intake extends RobotSystem<Intake.Status, Intake.Status> {
 
     private static final double POWER_IN = 0.3;
     private static final double POWER_OUT = 0.25;

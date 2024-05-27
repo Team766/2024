@@ -15,9 +15,9 @@ public interface ResourcesMixin {
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem,
+                    Subsystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem>
+                    Subsystem${i-1} extends Subsystem & Reservable>
             boolean ifAvailable(
                     Function${i}<
 <% (0..<i).each{ j -> %>\
@@ -37,9 +37,9 @@ public interface ResourcesMixin {
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem,
+                    Subsystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem>
+                    Subsystem${i-1} extends Subsystem & Reservable>
             boolean ifAvailable(
                     Consumer${i}<
 <% (0..<i-1).each{ j -> %>\
@@ -58,9 +58,9 @@ public interface ResourcesMixin {
 
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem,
+                    Subsystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem>
+                    Subsystem${i-1} extends Subsystem & Reservable>
             void byDefault(
                     Function${i}<
 <% (0..<i).each{ j -> %>\
@@ -73,9 +73,9 @@ public interface ResourcesMixin {
 
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem,
+                    Subsystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem>
+                    Subsystem${i-1} extends Subsystem & Reservable>
             void byDefault(
                     Consumer${i}<
 <% (0..<i-1).each{ j -> %>\

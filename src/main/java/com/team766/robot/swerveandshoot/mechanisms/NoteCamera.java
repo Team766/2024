@@ -1,10 +1,10 @@
 package com.team766.robot.swerveandshoot.mechanisms;
 
 import com.team766.ViSIONbase.ColorCamera;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import java.util.Optional;
 
-public class NoteCamera extends Subsystem<NoteCamera.Status, NoteCamera.Goal> {
+public class NoteCamera extends RobotSystem<NoteCamera.Status, NoteCamera.Goal> {
     public record Status(Optional<Double> yawOfRing, Optional<Double> pitchOfRing) {}
 
     public record Goal() {}

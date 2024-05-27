@@ -5,7 +5,7 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
-public class Drive extends Subsystem<Drive.Status, Drive.Goal> {
+public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
     /**
      * @param heading current heading in degrees
      */

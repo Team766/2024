@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSubsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * field, human player station), at which point the {@link Intake} can grab or release the game
  * piece as appropriate.
  */
-public class Wrist extends Subsystem<Wrist.Status, Wrist.Goal> {
+public class Wrist extends RobotSubsystem<Wrist.Status, Wrist.Goal> {
 
     /**
      * @param angle the current angle of the wrist.

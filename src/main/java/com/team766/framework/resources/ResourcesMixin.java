@@ -11,7 +11,7 @@ public interface ResourcesMixin {
     // 1 subsystems
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem> boolean ifAvailable(
+    default <Subsystem0 extends Subsystem & Reservable> boolean ifAvailable(
             Function1<Subsystem0, Command> callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply((Subsystem0) subsystems[0]);
@@ -19,45 +19,48 @@ public interface ResourcesMixin {
     }
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem> boolean ifAvailable(Consumer1<Subsystem0> callback) {
+    default <Subsystem0 extends Subsystem & Reservable> boolean ifAvailable(
+            Consumer1<Subsystem0> callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept((Subsystem0) subsystems[0]);
         });
     }
 
-    default <Subsystem0 extends Subsystem> void byDefault(Function1<Subsystem0, Command> callback) {
+    default <Subsystem0 extends Subsystem & Reservable> void byDefault(
+            Function1<Subsystem0, Command> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
-    default <Subsystem0 extends Subsystem> void byDefault(Consumer1<Subsystem0> callback) {
+    default <Subsystem0 extends Subsystem & Reservable> void byDefault(
+            Consumer1<Subsystem0> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
     // 2 subsystems
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> boolean ifAvailable(
-            Function2<Subsystem0, Subsystem1, Command> callback) {
+    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
+            boolean ifAvailable(Function2<Subsystem0, Subsystem1, Command> callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
         });
     }
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> boolean ifAvailable(
-            Consumer2<Subsystem0, Subsystem1> callback) {
+    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
+            boolean ifAvailable(Consumer2<Subsystem0, Subsystem1> callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
         });
     }
 
-    default <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> void byDefault(
-            Function2<Subsystem0, Subsystem1, Command> callback) {
+    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
+            void byDefault(Function2<Subsystem0, Subsystem1, Command> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
-    default <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> void byDefault(
-            Consumer2<Subsystem0, Subsystem1> callback) {
+    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
+            void byDefault(Consumer2<Subsystem0, Subsystem1> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
@@ -65,9 +68,9 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable>
             boolean ifAvailable(Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
@@ -78,9 +81,9 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable>
             boolean ifAvailable(Consumer3<Subsystem0, Subsystem1, Subsystem2> callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept((Subsystem0) subsystems[0], (Subsystem1) subsystems[1], (Subsystem2)
@@ -89,17 +92,17 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable>
             void byDefault(Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable>
             void byDefault(Consumer3<Subsystem0, Subsystem1, Subsystem2> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
@@ -108,10 +111,10 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
@@ -125,10 +128,10 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Consumer4<Subsystem0, Subsystem1, Subsystem2, Subsystem3> callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
@@ -141,20 +144,20 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable>
             void byDefault(
                     Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable>
             void byDefault(Consumer4<Subsystem0, Subsystem1, Subsystem2, Subsystem3> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> ifAvailable(callback));
     }
@@ -163,11 +166,11 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
                             callback) {
@@ -183,11 +186,11 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Consumer5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4>
                             callback) {
@@ -202,11 +205,11 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable>
             void byDefault(
                     Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
                             callback) {
@@ -214,11 +217,11 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable>
             void byDefault(
                     Consumer5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4>
                             callback) {
@@ -229,12 +232,12 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Function6<
                                     Subsystem0,
@@ -258,12 +261,12 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Consumer6<
                                     Subsystem0,
@@ -285,12 +288,12 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable>
             void byDefault(
                     Function6<
                                     Subsystem0,
@@ -305,12 +308,12 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable>
             void byDefault(
                     Consumer6<
                                     Subsystem0,
@@ -327,13 +330,13 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Function7<
                                     Subsystem0,
@@ -359,13 +362,13 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Consumer7<
                                     Subsystem0,
@@ -389,13 +392,13 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable>
             void byDefault(
                     Function7<
                                     Subsystem0,
@@ -411,13 +414,13 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable>
             void byDefault(
                     Consumer7<
                                     Subsystem0,
@@ -435,14 +438,14 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem,
-                    Subsystem7 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable,
+                    Subsystem7 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Function8<
                                     Subsystem0,
@@ -470,14 +473,14 @@ public interface ResourcesMixin {
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem,
-                    Subsystem7 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable,
+                    Subsystem7 extends Subsystem & Reservable>
             boolean ifAvailable(
                     Consumer8<
                                     Subsystem0,
@@ -503,14 +506,14 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem,
-                    Subsystem7 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable,
+                    Subsystem7 extends Subsystem & Reservable>
             void byDefault(
                     Function8<
                                     Subsystem0,
@@ -527,14 +530,14 @@ public interface ResourcesMixin {
     }
 
     default <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem,
-                    Subsystem7 extends Subsystem>
+                    Subsystem0 extends Subsystem & Reservable,
+                    Subsystem1 extends Subsystem & Reservable,
+                    Subsystem2 extends Subsystem & Reservable,
+                    Subsystem3 extends Subsystem & Reservable,
+                    Subsystem4 extends Subsystem & Reservable,
+                    Subsystem5 extends Subsystem & Reservable,
+                    Subsystem6 extends Subsystem & Reservable,
+                    Subsystem7 extends Subsystem & Reservable>
             void byDefault(
                     Consumer8<
                                     Subsystem0,

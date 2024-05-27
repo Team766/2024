@@ -4,13 +4,13 @@ import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class Shooter extends Subsystem<Shooter.Status, Shooter.Goal> {
+public class Shooter extends RobotSystem<Shooter.Status, Shooter.Goal> {
     public record Status(double targetSpeed, double shooterSpeedTop, double shooterSpeedBottom) {
         @AutoLogOutput
         public boolean isCloseToTargetSpeed() {

@@ -1,20 +1,13 @@
 package com.team766.framework;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import java.util.Objects;
 
-public class SetGoalCommand<Goal, SubsystemT extends Subsystem<?, Goal>> extends InstantProcedure {
-    private Goal goal;
-    private SubsystemT subsystem;
+public class SetGoalCommand<Goal, SubsystemT extends RobotSystem<?, Goal>> extends InstantCommand {
 
     public SetGoalCommand(SubsystemT subsystem, Goal goal) {
-        super(reservations(subsystem));
+        super(() -> subsystem.setGoal(goal), subsystem);
 
-        this.subsystem = subsystem;
-        this.goal = Objects.requireNonNull(goal, "Goal object must be non-null");
-    }
-
-    @Override
-    protected void run() {
-        subsystem.setGoal(goal);
+        Objects.requireNonNull(goal, "Goal object must be non-null");
     }
 }

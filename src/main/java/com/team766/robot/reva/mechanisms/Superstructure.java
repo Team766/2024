@@ -1,8 +1,8 @@
 package com.team766.robot.reva.mechanisms;
 
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 
-public class Superstructure extends Subsystem<Superstructure.Status, Superstructure.Goal> {
+public class Superstructure extends RobotSystem<Superstructure.Status, Superstructure.Goal> {
 
     public record Status() {}
 

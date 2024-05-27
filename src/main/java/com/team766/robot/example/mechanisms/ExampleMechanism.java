@@ -1,10 +1,10 @@
 package com.team766.robot.example.mechanisms;
 
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class ExampleMechanism extends Subsystem<ExampleMechanism.Status, ExampleMechanism.Goal> {
+public class ExampleMechanism extends RobotSystem<ExampleMechanism.Status, ExampleMechanism.Goal> {
     public record Status() {}
 
     public sealed interface Goal {}

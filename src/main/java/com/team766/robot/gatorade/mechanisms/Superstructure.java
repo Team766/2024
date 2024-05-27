@@ -1,10 +1,10 @@
 package com.team766.robot.gatorade.mechanisms;
 
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSystem;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 
-public class Superstructure extends Subsystem<Superstructure.Status, Superstructure.Goal> {
+public class Superstructure extends RobotSystem<Superstructure.Status, Superstructure.Goal> {
     public record Status(Shoulder.Status shoulder, Elevator.Status elevator, Wrist.Status wrist) {
         public boolean isNearTo(MoveToPosition position) {
             return shoulder.isNearTo(position.shoulderSetpoint)

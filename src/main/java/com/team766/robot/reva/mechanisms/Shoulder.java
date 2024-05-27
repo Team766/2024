@@ -8,13 +8,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Subsystem;
+import com.team766.framework.RobotSubsystem;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.ValueProvider;
 
-public class Shoulder extends Subsystem<Shoulder.Status, Shoulder.Goal> {
+public class Shoulder extends RobotSubsystem<Shoulder.Status, Shoulder.Goal> {
     public record Status(double angle) {
         public boolean isNearTo(RotateToPosition target) {
             return isNearTo(target.angle());

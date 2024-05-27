@@ -56,6 +56,7 @@ sourceSets {
             // to not automatically add generated classes to the classpath.
             srcDirs 'build/generated/source/proto/main/java'
             srcDirs 'build/generated/source/main/java'
+            srcDirs 'build/generated/sources/annotationProcessor/java/main'
         }
     }
 }
@@ -165,6 +166,9 @@ dependencies {
     implementation files('deps/json-20190722.jar')
 
     implementation 'com.github.meanbeanlib:meanmirror:1.0.0'
+
+    compileOnly project(':annotations')
+    annotationProcessor project(':annotations')
 }
 
 project.compileJava.dependsOn(createVersionFile)
