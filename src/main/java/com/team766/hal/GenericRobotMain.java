@@ -57,7 +57,7 @@ public final class GenericRobotMain {
 
     public void robotInit() {
         try {
-            configurator.initializeSubsystems();
+            configurator.initializeRobotSystems();
 
             m_oi = configurator.createOI();
             m_lights = configurator.createLights();

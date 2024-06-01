@@ -12,11 +12,11 @@ import com.team766.robot.gatorade.procedures.TestPathAuto;
 
 public class Robot implements RobotConfigurator {
     @Override
-    public void initializeSubsystems() {
+    public void initializeRobotSystems() {
         SwerveConfig config = new SwerveConfig().withCanBus(SwerveDriveConstants.SWERVE_CANBUS);
-        addSubsystem(new Intake());
-        addSubsystem(new Superstructure());
-        addSubsystem(new Drive(config));
+        addRobotSystem(new Intake());
+        addRobotSystem(new Superstructure());
+        addRobotSystem(new Drive(config));
     }
 
     @Override

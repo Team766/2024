@@ -11,13 +11,13 @@ import com.team766.robot.swerveandshoot.procedures.*;
 
 public class Robot implements RobotConfigurator {
     @Override
-    public void initializeSubsystems() {
+    public void initializeRobotSystems() {
         SwerveConfig config = new SwerveConfig().withCanBus(SwerveDriveConstants.SWERVE_CANBUS);
-        addSubsystem(new TempPickerUpper());
-        addSubsystem(new TempShooter());
-        addSubsystem(new Drive(config));
-        addSubsystem(new NoteCamera());
-        addSubsystem(new ForwardApriltagCamera());
+        addRobotSystem(new TempPickerUpper());
+        addRobotSystem(new TempShooter());
+        addRobotSystem(new Drive(config));
+        addRobotSystem(new NoteCamera());
+        addRobotSystem(new ForwardApriltagCamera());
     }
 
     @Override

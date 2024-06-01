@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public interface ResourcesMixin {
     ResourceManager getResourceManager();
 
-    // 0 subsystems
+    // 0 RobotSystems
 
     default void repeatedly(Provider<Command> callback) {
         getResourceManager().scheduleIfAvailable(callback, subsystems -> callback.get());
@@ -27,866 +27,904 @@ public interface ResourcesMixin {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> callback.run());
     }
 
-    // 1 subsystems
+    // 1 RobotSystems
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable> boolean whileAvailable(
-            Function1<Subsystem0, Command> callback) {
+    default <RobotSystem0 extends Subsystem & Reservable> boolean whileAvailable(
+            Function1<RobotSystem0, Command> callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply((Subsystem0) subsystems[0]);
+            return callback.apply((RobotSystem0) subsystems[0]);
         });
     }
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable> void onceAvailable(
-            Function1<Subsystem0, Command> callback) {
+    default <RobotSystem0 extends Subsystem & Reservable> void onceAvailable(
+            Function1<RobotSystem0, Command> callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply((Subsystem0) subsystems[0]);
+            return callback.apply((RobotSystem0) subsystems[0]);
         });
     }
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable> boolean whileAvailable(
-            Consumer1<Subsystem0> callback) {
+    default <RobotSystem0 extends Subsystem & Reservable> boolean whileAvailable(
+            Consumer1<RobotSystem0> callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept((Subsystem0) subsystems[0]);
+            callback.accept((RobotSystem0) subsystems[0]);
         });
     }
 
     @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable> void onceAvailable(
-            Consumer1<Subsystem0> callback) {
+    default <RobotSystem0 extends Subsystem & Reservable> void onceAvailable(
+            Consumer1<RobotSystem0> callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept((Subsystem0) subsystems[0]);
+            callback.accept((RobotSystem0) subsystems[0]);
         });
     }
 
-    default <Subsystem0 extends Subsystem & Reservable> void byDefault(
-            Function1<Subsystem0, Command> callback) {
+    default <RobotSystem0 extends Subsystem & Reservable> void byDefault(
+            Function1<RobotSystem0, Command> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
-    default <Subsystem0 extends Subsystem & Reservable> void byDefault(
-            Consumer1<Subsystem0> callback) {
+    default <RobotSystem0 extends Subsystem & Reservable> void byDefault(
+            Consumer1<RobotSystem0> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
-    // 2 subsystems
-
-    @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
-            boolean whileAvailable(Function2<Subsystem0, Subsystem1, Command> callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
-            void onceAvailable(Function2<Subsystem0, Subsystem1, Command> callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
-            boolean whileAvailable(Consumer2<Subsystem0, Subsystem1> callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
-            void onceAvailable(Consumer2<Subsystem0, Subsystem1> callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
-        });
-    }
-
-    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
-            void byDefault(Function2<Subsystem0, Subsystem1, Command> callback) {
-        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
-    }
-
-    default <Subsystem0 extends Subsystem & Reservable, Subsystem1 extends Subsystem & Reservable>
-            void byDefault(Consumer2<Subsystem0, Subsystem1> callback) {
-        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
-    }
-
-    // 3 subsystems
+    // 2 RobotSystems
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable>
+            boolean whileAvailable(Function2<RobotSystem0, RobotSystem1, Command> callback) {
+        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
+            return callback.apply((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable>
+            void onceAvailable(Function2<RobotSystem0, RobotSystem1, Command> callback) {
+        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
+            return callback.apply((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable>
+            boolean whileAvailable(Consumer2<RobotSystem0, RobotSystem1> callback) {
+        return getResourceManager().runIfAvailable(callback, subsystems -> {
+            callback.accept((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable>
+            void onceAvailable(Consumer2<RobotSystem0, RobotSystem1> callback) {
+        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
+            callback.accept((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+        });
+    }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable>
+            void byDefault(Function2<RobotSystem0, RobotSystem1, Command> callback) {
+        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
+    }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable>
+            void byDefault(Consumer2<RobotSystem0, RobotSystem1> callback) {
+        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
+    }
+
+    // 3 RobotSystems
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable>
             boolean whileAvailable(
-                    Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
+                    Function3<RobotSystem0, RobotSystem1, RobotSystem2, Command> callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0], (Subsystem1) subsystems[1], (Subsystem2)
+                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
                             subsystems[2]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable>
-            void onceAvailable(Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable>
+            void onceAvailable(
+                    Function3<RobotSystem0, RobotSystem1, RobotSystem2, Command> callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0], (Subsystem1) subsystems[1], (Subsystem2)
+                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
                             subsystems[2]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable>
-            boolean whileAvailable(Consumer3<Subsystem0, Subsystem1, Subsystem2> callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept((Subsystem0) subsystems[0], (Subsystem1) subsystems[1], (Subsystem2)
-                    subsystems[2]);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable>
-            void onceAvailable(Consumer3<Subsystem0, Subsystem1, Subsystem2> callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept((Subsystem0) subsystems[0], (Subsystem1) subsystems[1], (Subsystem2)
-                    subsystems[2]);
-        });
-    }
-
-    default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable>
-            void byDefault(Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
-        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
-    }
-
-    default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable>
-            void byDefault(Consumer3<Subsystem0, Subsystem1, Subsystem2> callback) {
-        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
-    }
-
-    // 4 subsystems
-
-    @SuppressWarnings("unchecked")
-    default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable>
-            boolean whileAvailable(
-                    Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3]);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable>
-            void onceAvailable(
-                    Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3]);
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable>
-            boolean whileAvailable(
-                    Consumer4<Subsystem0, Subsystem1, Subsystem2, Subsystem3> callback) {
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable>
+            boolean whileAvailable(Consumer3<RobotSystem0, RobotSystem1, RobotSystem2> callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3]);
+                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
+                            subsystems[2]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable>
-            void onceAvailable(Consumer4<Subsystem0, Subsystem1, Subsystem2, Subsystem3> callback) {
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable>
+            void onceAvailable(Consumer3<RobotSystem0, RobotSystem1, RobotSystem2> callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3]);
+                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
+                            subsystems[2]);
         });
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable>
-            void byDefault(
-                    Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable>
+            void byDefault(Function3<RobotSystem0, RobotSystem1, RobotSystem2, Command> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable>
-            void byDefault(Consumer4<Subsystem0, Subsystem1, Subsystem2, Subsystem3> callback) {
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable>
+            void byDefault(Consumer3<RobotSystem0, RobotSystem1, RobotSystem2> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
-    // 5 subsystems
+    // 4 RobotSystems
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable>
             boolean whileAvailable(
-                    Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
+                    Function4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, Command>
                             callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable>
             void onceAvailable(
-                    Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
+                    Function4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, Command>
                             callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable>
             boolean whileAvailable(
-                    Consumer5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4>
+                    Consumer4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3> callback) {
+        return getResourceManager().runIfAvailable(callback, subsystems -> {
+            callback.accept(
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3]);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable>
+            void onceAvailable(
+                    Consumer4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3> callback) {
+        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
+            callback.accept(
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3]);
+        });
+    }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable>
+            void byDefault(
+                    Function4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, Command>
+                            callback) {
+        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
+    }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable>
+            void byDefault(
+                    Consumer4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3> callback) {
+        getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
+    }
+
+    // 5 RobotSystems
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable>
+            boolean whileAvailable(
+                    Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    Command>
+                            callback) {
+        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
+            return callback.apply(
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4]);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable>
+            void onceAvailable(
+                    Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    Command>
+                            callback) {
+        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
+            return callback.apply(
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4]);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable>
+            boolean whileAvailable(
+                    Consumer5<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, RobotSystem4>
                             callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable>
             void onceAvailable(
-                    Consumer5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4>
+                    Consumer5<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, RobotSystem4>
                             callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4]);
         });
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable>
             void byDefault(
-                    Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
+                    Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    Command>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable>
             void byDefault(
-                    Consumer5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4>
+                    Consumer5<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, RobotSystem4>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
-    // 6 subsystems
+    // 6 RobotSystems
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Function6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
                                     Command>
                             callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable>
             void onceAvailable(
                     Function6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
                                     Command>
                             callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Consumer6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5>
                             callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable>
             void onceAvailable(
                     Consumer6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5>
                             callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5]);
         });
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable>
             void byDefault(
                     Function6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
                                     Command>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable>
             void byDefault(
                     Consumer6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
-    // 7 subsystems
+    // 7 RobotSystems
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Function7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
                                     Command>
                             callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable>
             void onceAvailable(
                     Function7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
                                     Command>
                             callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Consumer7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6>
                             callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable>
             void onceAvailable(
                     Consumer7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6>
                             callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6]);
         });
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable>
             void byDefault(
                     Function7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
                                     Command>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable>
             void byDefault(
                     Consumer7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
-    // 8 subsystems
+    // 8 RobotSystems
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable,
-                    Subsystem7 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Function8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
                                     Command>
                             callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6],
-                    (Subsystem7) subsystems[7]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6],
+                    (RobotSystem7) subsystems[7]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable,
-                    Subsystem7 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable>
             void onceAvailable(
                     Function8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
                                     Command>
                             callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
             return callback.apply(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6],
-                    (Subsystem7) subsystems[7]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6],
+                    (RobotSystem7) subsystems[7]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable,
-                    Subsystem7 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Consumer8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7>
                             callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6],
-                    (Subsystem7) subsystems[7]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6],
+                    (RobotSystem7) subsystems[7]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable,
-                    Subsystem7 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable>
             void onceAvailable(
                     Consumer8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7>
                             callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
             callback.accept(
-                    (Subsystem0) subsystems[0],
-                    (Subsystem1) subsystems[1],
-                    (Subsystem2) subsystems[2],
-                    (Subsystem3) subsystems[3],
-                    (Subsystem4) subsystems[4],
-                    (Subsystem5) subsystems[5],
-                    (Subsystem6) subsystems[6],
-                    (Subsystem7) subsystems[7]);
+                    (RobotSystem0) subsystems[0],
+                    (RobotSystem1) subsystems[1],
+                    (RobotSystem2) subsystems[2],
+                    (RobotSystem3) subsystems[3],
+                    (RobotSystem4) subsystems[4],
+                    (RobotSystem5) subsystems[5],
+                    (RobotSystem6) subsystems[6],
+                    (RobotSystem7) subsystems[7]);
         });
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable,
-                    Subsystem7 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable>
             void byDefault(
                     Function8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
                                     Command>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
     default <
-                    Subsystem0 extends Subsystem & Reservable,
-                    Subsystem1 extends Subsystem & Reservable,
-                    Subsystem2 extends Subsystem & Reservable,
-                    Subsystem3 extends Subsystem & Reservable,
-                    Subsystem4 extends Subsystem & Reservable,
-                    Subsystem5 extends Subsystem & Reservable,
-                    Subsystem6 extends Subsystem & Reservable,
-                    Subsystem7 extends Subsystem & Reservable>
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable>
             void byDefault(
                     Consumer8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7>
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }

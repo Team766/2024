@@ -14,14 +14,14 @@ import com.team766.robot.reva.procedures.auton_routines.*;
 
 public class Robot implements RobotConfigurator {
     @Override
-    public void initializeSubsystems() {
+    public void initializeRobotSystems() {
         SwerveConfig config = new SwerveConfig();
-        addSubsystem(new Drive(config));
-        addSubsystem(new Superstructure());
-        addSubsystem(new Intake());
-        addSubsystem(new Shooter());
-        addSubsystem(new NoteCamera());
-        addSubsystem(new ForwardApriltagCamera());
+        addRobotSystem(new Drive(config));
+        addRobotSystem(new Superstructure());
+        addRobotSystem(new Intake());
+        addRobotSystem(new Shooter());
+        addRobotSystem(new NoteCamera());
+        addRobotSystem(new ForwardApriltagCamera());
     }
 
     @Override

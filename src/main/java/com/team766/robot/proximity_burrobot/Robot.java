@@ -8,7 +8,7 @@ import com.team766.robot.proximity_burrobot.procedures.*;
 
 public class Robot implements RobotConfigurator {
     @Override
-    public void initializeSubsystems() {
+    public void initializeRobotSystems() {
         // Initialize mechanisms here
     }
 

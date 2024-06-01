@@ -18,7 +18,7 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes({
-    "com.team766.framework.annotations.EncapsulatesNonReservables",
+    "com.team766.framework.annotations.PreventReservableFields",
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
@@ -36,12 +36,12 @@ public class RobotSystemsProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        final Set<? extends Element> encapsulatesNonReservablesElements =
-                roundEnv.getElementsAnnotatedWith(EncapsulatesNonReservables.class);
+        final Set<? extends Element> preventReservableFieldsElements =
+                roundEnv.getElementsAnnotatedWith(PreventReservableFields.class);
         final var reservableType = elementUtils
                 .getTypeElement("com.team766.framework.resources.Reservable")
                 .asType();
-        for (var annotatedElement : encapsulatesNonReservablesElements) {
+        for (var annotatedElement : preventReservableFieldsElements) {
             final var annotatedClass = (TypeElement) annotatedElement;
             for (var element : annotatedClass.getEnclosedElements()) {
                 if (!element.getKind().isField()) {

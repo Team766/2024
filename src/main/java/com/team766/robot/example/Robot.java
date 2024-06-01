@@ -8,9 +8,9 @@ import com.team766.robot.example.procedures.*;
 
 public class Robot implements RobotConfigurator {
     @Override
-    public void initializeSubsystems() {
+    public void initializeRobotSystems() {
         // Initialize mechanisms here
-        addSubsystem(new ExampleMechanism());
+        addRobotSystem(new ExampleMechanism());
     }
 
     @Override

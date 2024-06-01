@@ -1,13 +1,13 @@
 package com.team766.framework;
 
 import com.team766.framework.Statuses.StatusSource;
-import com.team766.framework.annotations.EncapsulatesNonReservables;
+import com.team766.framework.annotations.PreventReservableFields;
 import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Objects;
 
-@EncapsulatesNonReservables
+@PreventReservableFields
 public abstract class RobotSubsystem<StatusRecord extends Record, Goal> extends SubsystemBase
         implements LoggingBase, StatusSource {
     private StatusRecord currentStatus;

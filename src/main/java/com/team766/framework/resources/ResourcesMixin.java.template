@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 public interface ResourcesMixin {
     ResourceManager getResourceManager();
 
-    // 0 subsystems
+    // 0 RobotSystems
 
     default void repeatedly(Provider<Command> callback) {
         getResourceManager().scheduleIfAvailable(callback, subsystems -> callback.get());
@@ -29,105 +29,105 @@ public interface ResourcesMixin {
     }
 
 <% (1..functionArity).each{ i -> %>
-    // ${i} subsystems
+    // ${i} RobotSystems
 
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem & Reservable,
+                    RobotSystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem & Reservable>
+                    RobotSystem${i-1} extends Subsystem & Reservable>
             boolean whileAvailable(
                     Function${i}<
 <% (0..<i).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
                                     Command>
                             callback) {
         return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
             return callback.apply(
 <% (0..<i-1).each{ j -> %>\
-                    (Subsystem${j}) subsystems[${j}],
+                    (RobotSystem${j}) subsystems[${j}],
 <%}%>\
-                    (Subsystem${i-1}) subsystems[${i-1}]);
+                    (RobotSystem${i-1}) subsystems[${i-1}]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem & Reservable,
+                    RobotSystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem & Reservable>
+                    RobotSystem${i-1} extends Subsystem & Reservable>
             void onceAvailable(
                     Function${i}<
 <% (0..<i).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
                                     Command>
                             callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
             return callback.apply(
 <% (0..<i-1).each{ j -> %>\
-                    (Subsystem${j}) subsystems[${j}],
+                    (RobotSystem${j}) subsystems[${j}],
 <%}%>\
-                    (Subsystem${i-1}) subsystems[${i-1}]);
+                    (RobotSystem${i-1}) subsystems[${i-1}]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem & Reservable,
+                    RobotSystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem & Reservable>
+                    RobotSystem${i-1} extends Subsystem & Reservable>
             boolean whileAvailable(
                     Consumer${i}<
 <% (0..<i-1).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
-                                    Subsystem${i-1}>
+                                    RobotSystem${i-1}>
                             callback) {
         return getResourceManager().runIfAvailable(callback, subsystems -> {
             callback.accept(
 <% (0..<i-1).each{ j -> %>\
-                    (Subsystem${j}) subsystems[${j}],
+                    (RobotSystem${j}) subsystems[${j}],
 <%}%>\
-                    (Subsystem${i-1}) subsystems[${i-1}]);
+                    (RobotSystem${i-1}) subsystems[${i-1}]);
         });
     }
 
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem & Reservable,
+                    RobotSystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem & Reservable>
+                    RobotSystem${i-1} extends Subsystem & Reservable>
             void onceAvailable(
                     Consumer${i}<
 <% (0..<i-1).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
-                                    Subsystem${i-1}>
+                                    RobotSystem${i-1}>
                             callback) {
         getResourceManager().runOnceIfAvailable(callback, subsystems -> {
             callback.accept(
 <% (0..<i-1).each{ j -> %>\
-                    (Subsystem${j}) subsystems[${j}],
+                    (RobotSystem${j}) subsystems[${j}],
 <%}%>\
-                    (Subsystem${i-1}) subsystems[${i-1}]);
+                    (RobotSystem${i-1}) subsystems[${i-1}]);
         });
     }
 
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem & Reservable,
+                    RobotSystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem & Reservable>
+                    RobotSystem${i-1} extends Subsystem & Reservable>
             void byDefault(
                     Function${i}<
 <% (0..<i).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
                                     Command>
                             callback) {
@@ -136,15 +136,15 @@ public interface ResourcesMixin {
 
     default <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem & Reservable,
+                    RobotSystem${j} extends Subsystem & Reservable,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem & Reservable>
+                    RobotSystem${i-1} extends Subsystem & Reservable>
             void byDefault(
                     Consumer${i}<
 <% (0..<i-1).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
-                                    Subsystem${i-1}>
+                                    RobotSystem${i-1}>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }

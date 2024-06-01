@@ -16,14 +16,14 @@ public class AutonomousMode extends AutonomousModeBase {
     @SuppressWarnings("unchecked")
     public <
 <% (0..<i-1).each{ j -> %>\
-                    Subsystem${j} extends Subsystem,
+                    RobotSystem${j} extends Subsystem,
 <%}%>\
-                    Subsystem${i-1} extends Subsystem>
+                    RobotSystem${i-1} extends Subsystem>
             AutonomousMode(
                     final String name,
                     Function${i}<
 <% (0..<i).each{ j -> %>\
-                                    Subsystem${j},
+                                    RobotSystem${j},
 <%}%>\
                                     Command>
                             callback) {
@@ -32,9 +32,9 @@ public class AutonomousMode extends AutonomousModeBase {
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
 <% (0..<i-1).each{ j -> %>\
-                            (Subsystem${j}) subsystems[${j}],
+                            (RobotSystem${j}) subsystems[${j}],
 <%}%>\
-                            (Subsystem${i-1}) subsystems[${i-1}]);
+                            (RobotSystem${i-1}) subsystems[${i-1}]);
                 }));
     }
 

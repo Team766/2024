@@ -13,187 +13,196 @@ public class AutonomousMode extends AutonomousModeBase {
     }
 
     @SuppressWarnings("unchecked")
-    public <Subsystem0 extends Subsystem> AutonomousMode(
-            final String name, Function1<Subsystem0, Command> callback) {
+    public <RobotSystem0 extends Subsystem> AutonomousMode(
+            final String name, Function1<RobotSystem0, Command> callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
-                    return callback.apply((Subsystem0) subsystems[0]);
+                    return callback.apply((RobotSystem0) subsystems[0]);
                 }));
     }
 
     @SuppressWarnings("unchecked")
-    public <Subsystem0 extends Subsystem, Subsystem1 extends Subsystem> AutonomousMode(
-            final String name, Function2<Subsystem0, Subsystem1, Command> callback) {
-        super(
-                name,
-                () -> ResourceManager.makeAutonomus(callback, subsystems -> {
-                    return callback.apply((Subsystem0) subsystems[0], (Subsystem1) subsystems[1]);
-                }));
-    }
-
-    @SuppressWarnings("unchecked")
-    public <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem>
-            AutonomousMode(
-                    final String name,
-                    Function3<Subsystem0, Subsystem1, Subsystem2, Command> callback) {
+    public <RobotSystem0 extends Subsystem, RobotSystem1 extends Subsystem> AutonomousMode(
+            final String name, Function2<RobotSystem0, RobotSystem1, Command> callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
-                            (Subsystem0) subsystems[0], (Subsystem1) subsystems[1], (Subsystem2)
-                                    subsystems[2]);
+                            (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
                 }));
     }
 
     @SuppressWarnings("unchecked")
     public <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem>
+                    RobotSystem0 extends Subsystem,
+                    RobotSystem1 extends Subsystem,
+                    RobotSystem2 extends Subsystem>
             AutonomousMode(
                     final String name,
-                    Function4<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Command> callback) {
+                    Function3<RobotSystem0, RobotSystem1, RobotSystem2, Command> callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
-                            (Subsystem0) subsystems[0],
-                            (Subsystem1) subsystems[1],
-                            (Subsystem2) subsystems[2],
-                            (Subsystem3) subsystems[3]);
+                            (RobotSystem0) subsystems[0],
+                            (RobotSystem1) subsystems[1],
+                            (RobotSystem2) subsystems[2]);
                 }));
     }
 
     @SuppressWarnings("unchecked")
     public <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem>
+                    RobotSystem0 extends Subsystem,
+                    RobotSystem1 extends Subsystem,
+                    RobotSystem2 extends Subsystem,
+                    RobotSystem3 extends Subsystem>
             AutonomousMode(
                     final String name,
-                    Function5<Subsystem0, Subsystem1, Subsystem2, Subsystem3, Subsystem4, Command>
+                    Function4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, Command>
                             callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
-                            (Subsystem0) subsystems[0],
-                            (Subsystem1) subsystems[1],
-                            (Subsystem2) subsystems[2],
-                            (Subsystem3) subsystems[3],
-                            (Subsystem4) subsystems[4]);
+                            (RobotSystem0) subsystems[0],
+                            (RobotSystem1) subsystems[1],
+                            (RobotSystem2) subsystems[2],
+                            (RobotSystem3) subsystems[3]);
                 }));
     }
 
     @SuppressWarnings("unchecked")
     public <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem>
+                    RobotSystem0 extends Subsystem,
+                    RobotSystem1 extends Subsystem,
+                    RobotSystem2 extends Subsystem,
+                    RobotSystem3 extends Subsystem,
+                    RobotSystem4 extends Subsystem>
+            AutonomousMode(
+                    final String name,
+                    Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    Command>
+                            callback) {
+        super(
+                name,
+                () -> ResourceManager.makeAutonomus(callback, subsystems -> {
+                    return callback.apply(
+                            (RobotSystem0) subsystems[0],
+                            (RobotSystem1) subsystems[1],
+                            (RobotSystem2) subsystems[2],
+                            (RobotSystem3) subsystems[3],
+                            (RobotSystem4) subsystems[4]);
+                }));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <
+                    RobotSystem0 extends Subsystem,
+                    RobotSystem1 extends Subsystem,
+                    RobotSystem2 extends Subsystem,
+                    RobotSystem3 extends Subsystem,
+                    RobotSystem4 extends Subsystem,
+                    RobotSystem5 extends Subsystem>
             AutonomousMode(
                     final String name,
                     Function6<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
                                     Command>
                             callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
-                            (Subsystem0) subsystems[0],
-                            (Subsystem1) subsystems[1],
-                            (Subsystem2) subsystems[2],
-                            (Subsystem3) subsystems[3],
-                            (Subsystem4) subsystems[4],
-                            (Subsystem5) subsystems[5]);
+                            (RobotSystem0) subsystems[0],
+                            (RobotSystem1) subsystems[1],
+                            (RobotSystem2) subsystems[2],
+                            (RobotSystem3) subsystems[3],
+                            (RobotSystem4) subsystems[4],
+                            (RobotSystem5) subsystems[5]);
                 }));
     }
 
     @SuppressWarnings("unchecked")
     public <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem>
+                    RobotSystem0 extends Subsystem,
+                    RobotSystem1 extends Subsystem,
+                    RobotSystem2 extends Subsystem,
+                    RobotSystem3 extends Subsystem,
+                    RobotSystem4 extends Subsystem,
+                    RobotSystem5 extends Subsystem,
+                    RobotSystem6 extends Subsystem>
             AutonomousMode(
                     final String name,
                     Function7<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
                                     Command>
                             callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
-                            (Subsystem0) subsystems[0],
-                            (Subsystem1) subsystems[1],
-                            (Subsystem2) subsystems[2],
-                            (Subsystem3) subsystems[3],
-                            (Subsystem4) subsystems[4],
-                            (Subsystem5) subsystems[5],
-                            (Subsystem6) subsystems[6]);
+                            (RobotSystem0) subsystems[0],
+                            (RobotSystem1) subsystems[1],
+                            (RobotSystem2) subsystems[2],
+                            (RobotSystem3) subsystems[3],
+                            (RobotSystem4) subsystems[4],
+                            (RobotSystem5) subsystems[5],
+                            (RobotSystem6) subsystems[6]);
                 }));
     }
 
     @SuppressWarnings("unchecked")
     public <
-                    Subsystem0 extends Subsystem,
-                    Subsystem1 extends Subsystem,
-                    Subsystem2 extends Subsystem,
-                    Subsystem3 extends Subsystem,
-                    Subsystem4 extends Subsystem,
-                    Subsystem5 extends Subsystem,
-                    Subsystem6 extends Subsystem,
-                    Subsystem7 extends Subsystem>
+                    RobotSystem0 extends Subsystem,
+                    RobotSystem1 extends Subsystem,
+                    RobotSystem2 extends Subsystem,
+                    RobotSystem3 extends Subsystem,
+                    RobotSystem4 extends Subsystem,
+                    RobotSystem5 extends Subsystem,
+                    RobotSystem6 extends Subsystem,
+                    RobotSystem7 extends Subsystem>
             AutonomousMode(
                     final String name,
                     Function8<
-                                    Subsystem0,
-                                    Subsystem1,
-                                    Subsystem2,
-                                    Subsystem3,
-                                    Subsystem4,
-                                    Subsystem5,
-                                    Subsystem6,
-                                    Subsystem7,
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
                                     Command>
                             callback) {
         super(
                 name,
                 () -> ResourceManager.makeAutonomus(callback, subsystems -> {
                     return callback.apply(
-                            (Subsystem0) subsystems[0],
-                            (Subsystem1) subsystems[1],
-                            (Subsystem2) subsystems[2],
-                            (Subsystem3) subsystems[3],
-                            (Subsystem4) subsystems[4],
-                            (Subsystem5) subsystems[5],
-                            (Subsystem6) subsystems[6],
-                            (Subsystem7) subsystems[7]);
+                            (RobotSystem0) subsystems[0],
+                            (RobotSystem1) subsystems[1],
+                            (RobotSystem2) subsystems[2],
+                            (RobotSystem3) subsystems[3],
+                            (RobotSystem4) subsystems[4],
+                            (RobotSystem5) subsystems[5],
+                            (RobotSystem6) subsystems[6],
+                            (RobotSystem7) subsystems[7]);
                 }));
     }
 }
