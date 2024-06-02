@@ -4,6 +4,8 @@ import com.team766.framework.Statuses.StatusSource;
 import com.team766.framework.resources.ResourceManager;
 import com.team766.framework.resources.ResourcesMixin;
 import com.team766.logging.Category;
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.ReflectionLogging;
 import java.util.Optional;
 
 /**
@@ -67,6 +69,12 @@ public abstract class OIFragment implements ResourcesMixin, LoggingBase, StatusS
     protected abstract void dispatch();
 
     protected final void updateStatus(Record status) {
+        try {
+            ReflectionLogging.recordOutput(
+                    status, getName() + "/" + status.getClass().getSimpleName());
+        } catch (Exception ex) {
+            LoggerExceptionUtils.logException(ex);
+        }
         Statuses.getInstance().add(status, this);
     }
 

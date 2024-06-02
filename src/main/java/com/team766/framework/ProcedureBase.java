@@ -1,6 +1,8 @@
 package com.team766.framework;
 
 import com.team766.logging.Category;
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.ReflectionLogging;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.ArrayList;
@@ -47,6 +49,12 @@ import java.util.Set;
     }
 
     protected final void updateStatus(Record status) {
+        try {
+            ReflectionLogging.recordOutput(
+                    status, getName() + "/" + status.getClass().getSimpleName());
+        } catch (Exception ex) {
+            LoggerExceptionUtils.logException(ex);
+        }
         Statuses.getInstance().add(status, this);
     }
 

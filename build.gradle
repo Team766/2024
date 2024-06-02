@@ -167,6 +167,8 @@ dependencies {
 
     implementation 'com.github.meanbeanlib:meanmirror:1.0.0'
 
+    implementation 'com.google.guava:guava:33.2.1-jre'
+
     compileOnly project(':annotations')
     annotationProcessor project(':annotations')
 }
