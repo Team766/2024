@@ -4,6 +4,9 @@ import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PIDConstants;
+import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
 import com.team766.framework.RobotSystem;
 import com.team766.hal.GyroReader;
@@ -14,6 +17,7 @@ import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
+import com.team766.robot.common.constants.PathPlannerConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,6 +26,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import java.util.Arrays;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -113,6 +118,8 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
 
     private PIDController rotationPID;
 
+    public final PPHolonomicDriveController controller;
+
     public Drive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
 
@@ -193,6 +200,40 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
                 config.wheelCircumference(),
                 config.driveGearRatio(),
                 config.encoderToRevolutionConstant());
+
+        double maxSpeed = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
+                .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
+
+        double translationP = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
+                .valueOr(PathPlannerConstants.TRANSLATION_P);
+        double translationI = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
+                .valueOr(PathPlannerConstants.TRANSLATION_I);
+        double translationD = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
+                .valueOr(PathPlannerConstants.TRANSLATION_D);
+        double rotationP = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
+                .valueOr(PathPlannerConstants.ROTATION_P);
+        double rotationI = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
+                .valueOr(PathPlannerConstants.ROTATION_I);
+        double rotationD = ConfigFileReader.getInstance()
+                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
+                .valueOr(PathPlannerConstants.ROTATION_D);
+
+        double maxWheelDistToCenter = Arrays.stream(wheelPositions)
+                .mapToDouble(Translation2d::getNorm)
+                .max()
+                .getAsDouble();
+
+        controller = new PPHolonomicDriveController(
+                new PIDConstants(translationP, translationI, translationD),
+                new PIDConstants(rotationP, rotationI, rotationD),
+                maxSpeed,
+                maxWheelDistToCenter);
     }
 
     /**
@@ -319,14 +360,6 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
 
     public void resetCurrentPosition() {
         swerveOdometry.setCurrentPosition(new Pose2d());
-    }
-
-    public double maxWheelDistToCenter() {
-        double max = 0;
-        for (Translation2d translation : wheelPositions) {
-            max = Math.max(max, translation.getNorm());
-        }
-        return max;
     }
 
     private static Translation2d getPositionForWheel(

@@ -1,13 +1,8 @@
 package com.team766.robot.common.procedures;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.GeometryUtil;
-import com.pathplanner.lib.util.PIDConstants;
-import com.team766.config.ConfigFileReader;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
-import com.team766.robot.common.constants.ConfigConstants;
-import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -20,7 +15,6 @@ public abstract class PathSequenceAuto extends Procedure {
 
     private final Drive drive;
     private final Pose2d initialPosition;
-    private final PPHolonomicDriveController controller;
 
     /**
      * Sequencer for using path following with other procedures
@@ -32,43 +26,11 @@ public abstract class PathSequenceAuto extends Procedure {
         super(reservations);
         addReservations(drive);
         this.drive = drive;
-        this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
     }
 
-    private PPHolonomicDriveController createDriveController(Drive drive) {
-        double maxSpeed = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
-                .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
-
-        double translationP = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
-                .valueOr(PathPlannerConstants.TRANSLATION_P);
-        double translationI = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
-                .valueOr(PathPlannerConstants.TRANSLATION_I);
-        double translationD = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
-                .valueOr(PathPlannerConstants.TRANSLATION_D);
-        double rotationP = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
-                .valueOr(PathPlannerConstants.ROTATION_P);
-        double rotationI = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
-                .valueOr(PathPlannerConstants.ROTATION_I);
-        double rotationD = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
-                .valueOr(PathPlannerConstants.ROTATION_D);
-
-        return new PPHolonomicDriveController(
-                new PIDConstants(translationP, translationI, translationD),
-                new PIDConstants(rotationP, rotationI, rotationD),
-                maxSpeed,
-                drive.maxWheelDistToCenter());
-    }
-
     protected void runPath(Context context, String pathName) {
-        context.runSync(new FollowPath(pathName, controller, drive));
+        context.runSync(new FollowPath(pathName, drive));
     }
 
     protected abstract void runSequence(Context context);

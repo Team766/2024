@@ -1,6 +1,5 @@
 package com.team766.robot.common.procedures;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -19,28 +18,18 @@ public class FollowPath extends Procedure {
     private final Drive drive;
     private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
-    private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
-    public FollowPath(
-            PathPlannerPath path,
-            ReplanningConfig replanningConfig,
-            PPHolonomicDriveController controller,
-            Drive drive) {
+    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, Drive drive) {
         super(reservations(drive));
         this.path = path;
         this.replanningConfig = replanningConfig;
-        this.controller = controller;
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive) {
-        this(
-                PathPlannerPath.fromPathFile(autoName),
-                PathPlannerConstants.REPLANNING_CONFIG,
-                controller,
-                drive);
+    public FollowPath(String autoName, Drive drive) {
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, drive);
     }
 
     @Override
@@ -61,7 +50,7 @@ public class FollowPath extends Procedure {
         Pose2d curPose = drive.getStatus().currentPosition();
         ChassisSpeeds currentSpeeds = drive.getStatus().chassisSpeeds();
 
-        controller.reset(curPose, currentSpeeds);
+        drive.controller.reset(curPose, currentSpeeds);
 
         if (replanningConfig.enableInitialReplanning
                 && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
@@ -83,7 +72,7 @@ public class FollowPath extends Procedure {
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
-                double previousError = Math.abs(controller.getPositionalError());
+                double previousError = Math.abs(drive.controller.getPositionalError());
                 double currentError =
                         curPose.getTranslation().getDistance(targetState.positionMeters);
 
@@ -98,7 +87,7 @@ public class FollowPath extends Procedure {
             }
 
             ChassisSpeeds targetSpeeds =
-                    controller.calculateRobotRelativeSpeeds(curPose, targetState);
+                    drive.controller.calculateRobotRelativeSpeeds(curPose, targetState);
 
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current heading", curPose.getRotation().getRadians());
