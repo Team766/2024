@@ -1,7 +1,5 @@
 package com.team766.library;
 
-import java.lang.reflect.UndeclaredThrowableException;
-
 public sealed interface Result<T, E extends Throwable> {
     final record Value<T, E extends Throwable>(T value) implements Result<T, E> {
         @Override
@@ -27,12 +25,8 @@ public sealed interface Result<T, E extends Throwable> {
         } catch (Throwable ex) {
             if (exceptionType.isInstance(ex)) {
                 return new Exception<T, E>((E) ex);
-            } else if (ex instanceof RuntimeException rex) {
-                throw rex;
-            } else if (ex instanceof Error err) {
-                throw err;
             } else {
-                throw new UndeclaredThrowableException(ex);
+                throw ReflectionUtils.sneakyThrow(ex);
             }
         }
     }

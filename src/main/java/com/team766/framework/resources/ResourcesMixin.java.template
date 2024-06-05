@@ -12,11 +12,11 @@ public interface ResourcesMixin {
 
     // 0 RobotSystems
 
-    default void repeatedly(Provider<Command> callback) {
+    default void whileAvailable(Provider<Command> callback) {
         getResourceManager().scheduleIfAvailable(callback, subsystems -> callback.get());
     }
 
-    default void once(Provider<Command> callback) {
+    default void onceAvailable(Provider<Command> callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> callback.get());
     }
 
@@ -53,6 +53,21 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+<% (0..<i).each{ j -> %>\
+                    RobotSystem${j} extends Subsystem & Reservable,
+<%}%>\
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function${i}<
+<% (0..<i).each{ j -> %>\
+                                    RobotSystem${j},
+<%}%>\
+                                    T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
 <% (0..<i-1).each{ j -> %>\
@@ -73,6 +88,20 @@ public interface ResourcesMixin {
 <%}%>\
                     (RobotSystem${i-1}) subsystems[${i-1}]);
         });
+    }
+
+    default <
+<% (0..<i).each{ j -> %>\
+                    RobotSystem${j} extends Subsystem & Reservable,
+<%}%>\
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function${i}<
+<% (0..<i).each{ j -> %>\
+                                    RobotSystem${j},
+<%}%>\
+                                    T>
+                            callback) {
     }
 
     @SuppressWarnings("unchecked")
@@ -132,6 +161,20 @@ public interface ResourcesMixin {
                                     Command>
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
+    }
+
+    default <
+<% (0..<i).each{ j -> %>\
+                    RobotSystem${j} extends Subsystem & Reservable,
+<%}%>\
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function${i}<
+<% (0..<i).each{ j -> %>\
+                                    RobotSystem${j},
+<%}%>\
+                                    T>
+                            callback) {
     }
 
     default <

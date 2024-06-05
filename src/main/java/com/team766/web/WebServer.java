@@ -3,6 +3,7 @@ package com.team766.web;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import com.team766.library.ReflectionUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -76,7 +77,7 @@ public class WebServer {
         try {
             server = HttpServer.create(new InetSocketAddress(5800), 0);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw ReflectionUtils.sneakyThrow(e);
         }
         for (Map.Entry<String, Handler> page : pages.entrySet()) {
             HttpHandler httpHandler = new HttpHandler() {

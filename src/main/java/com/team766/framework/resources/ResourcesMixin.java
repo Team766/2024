@@ -11,11 +11,11 @@ public interface ResourcesMixin {
 
     // 0 RobotSystems
 
-    default void repeatedly(Provider<Command> callback) {
+    default void whileAvailable(Provider<Command> callback) {
         getResourceManager().scheduleIfAvailable(callback, subsystems -> callback.get());
     }
 
-    default void once(Provider<Command> callback) {
+    default void onceAvailable(Provider<Command> callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> callback.get());
     }
 
@@ -37,6 +37,11 @@ public interface ResourcesMixin {
         });
     }
 
+    default <RobotSystem0 extends Subsystem & Reservable, T> boolean whileAvailable(
+            InvalidReturnType.Function1<RobotSystem0, T> callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <RobotSystem0 extends Subsystem & Reservable> void onceAvailable(
             Function1<RobotSystem0, Command> callback) {
@@ -44,6 +49,9 @@ public interface ResourcesMixin {
             return callback.apply((RobotSystem0) subsystems[0]);
         });
     }
+
+    default <RobotSystem0 extends Subsystem & Reservable, T> void onceAvailable(
+            InvalidReturnType.Function1<RobotSystem0, T> callback) {}
 
     @SuppressWarnings("unchecked")
     default <RobotSystem0 extends Subsystem & Reservable> boolean whileAvailable(
@@ -66,6 +74,9 @@ public interface ResourcesMixin {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
 
+    default <RobotSystem0 extends Subsystem & Reservable, T> void byDefault(
+            InvalidReturnType.Function1<RobotSystem0, T> callback) {}
+
     default <RobotSystem0 extends Subsystem & Reservable> void byDefault(
             Consumer1<RobotSystem0> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
@@ -83,6 +94,15 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function2<RobotSystem0, RobotSystem1, T> callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -92,6 +112,13 @@ public interface ResourcesMixin {
             return callback.apply((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function2<RobotSystem0, RobotSystem1, T> callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -122,6 +149,12 @@ public interface ResourcesMixin {
 
     default <
                     RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    T>
+            void byDefault(InvalidReturnType.Function2<RobotSystem0, RobotSystem1, T> callback) {}
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
                     RobotSystem1 extends Subsystem & Reservable>
             void byDefault(Consumer2<RobotSystem0, RobotSystem1> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
@@ -143,6 +176,17 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function3<RobotSystem0, RobotSystem1, RobotSystem2, T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -156,6 +200,15 @@ public interface ResourcesMixin {
                             subsystems[2]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function3<RobotSystem0, RobotSystem1, RobotSystem2, T>
+                            callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -194,6 +247,15 @@ public interface ResourcesMixin {
     default <
                     RobotSystem0 extends Subsystem & Reservable,
                     RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function3<RobotSystem0, RobotSystem1, RobotSystem2, T>
+                            callback) {}
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
                     RobotSystem2 extends Subsystem & Reservable>
             void byDefault(Consumer3<RobotSystem0, RobotSystem1, RobotSystem2> callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
@@ -219,6 +281,19 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function4<
+                                    RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -236,6 +311,17 @@ public interface ResourcesMixin {
                     (RobotSystem3) subsystems[3]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function4<
+                                    RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, T>
+                            callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -281,6 +367,17 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function4<
+                                    RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, T>
+                            callback) {}
 
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -320,6 +417,25 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -345,6 +461,23 @@ public interface ResourcesMixin {
                     (RobotSystem4) subsystems[4]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    T>
+                            callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -403,6 +536,23 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function5<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    T>
+                            callback) {}
 
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -447,6 +597,27 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function6<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -475,6 +646,25 @@ public interface ResourcesMixin {
                     (RobotSystem5) subsystems[5]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function6<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    T>
+                            callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -551,6 +741,25 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function6<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    T>
+                            callback) {}
 
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -605,6 +814,29 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function7<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -636,6 +868,27 @@ public interface ResourcesMixin {
                     (RobotSystem6) subsystems[6]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function7<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    T>
+                            callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -720,6 +973,27 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function7<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    T>
+                            callback) {}
 
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -779,6 +1053,31 @@ public interface ResourcesMixin {
         });
     }
 
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable,
+                    T>
+            boolean whileAvailable(
+                    InvalidReturnType.Function8<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
+                                    T>
+                            callback) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     default <
                     RobotSystem0 extends Subsystem & Reservable,
@@ -813,6 +1112,29 @@ public interface ResourcesMixin {
                     (RobotSystem7) subsystems[7]);
         });
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable,
+                    T>
+            void onceAvailable(
+                    InvalidReturnType.Function8<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
+                                    T>
+                            callback) {}
 
     @SuppressWarnings("unchecked")
     default <
@@ -905,6 +1227,29 @@ public interface ResourcesMixin {
                             callback) {
         getResourceManager().registerTransientEndFrameCallback(() -> whileAvailable(callback));
     }
+
+    default <
+                    RobotSystem0 extends Subsystem & Reservable,
+                    RobotSystem1 extends Subsystem & Reservable,
+                    RobotSystem2 extends Subsystem & Reservable,
+                    RobotSystem3 extends Subsystem & Reservable,
+                    RobotSystem4 extends Subsystem & Reservable,
+                    RobotSystem5 extends Subsystem & Reservable,
+                    RobotSystem6 extends Subsystem & Reservable,
+                    RobotSystem7 extends Subsystem & Reservable,
+                    T>
+            void byDefault(
+                    InvalidReturnType.Function8<
+                                    RobotSystem0,
+                                    RobotSystem1,
+                                    RobotSystem2,
+                                    RobotSystem3,
+                                    RobotSystem4,
+                                    RobotSystem5,
+                                    RobotSystem6,
+                                    RobotSystem7,
+                                    T>
+                            callback) {}
 
     default <
                     RobotSystem0 extends Subsystem & Reservable,

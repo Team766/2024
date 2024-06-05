@@ -1,5 +1,6 @@
 package com.team766.web;
 
+import com.team766.library.ReflectionUtils;
 import com.team766.logging.Category;
 import com.team766.logging.LogEntry;
 import com.team766.logging.LogEntryRenderer;
@@ -98,7 +99,7 @@ public class ReadLogs implements WebServer.Handler {
         try {
             reader = new LogReader(new File(logFilePathBase, logFile).getAbsolutePath());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw ReflectionUtils.sneakyThrow(e);
         }
         String id = Integer.toString(logReaders.size());
         logReaders.put(id, reader);
@@ -111,7 +112,7 @@ public class ReadLogs implements WebServer.Handler {
                                     } catch (EOFException e) {
                                         return null;
                                     } catch (IOException e) {
-                                        throw new RuntimeException(e);
+                                        throw ReflectionUtils.sneakyThrow(e);
                                     }
                                 })
                                 .takeWhile(e -> e != null))

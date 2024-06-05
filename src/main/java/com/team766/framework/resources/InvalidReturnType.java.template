@@ -1,0 +1,24 @@
+/** Generated from the template in InvalidReturnType.java.template */
+
+package com.team766.framework.resources;
+
+class InvalidReturnType {
+    interface Runnable {
+        void run();
+    }
+
+    interface Provider<R> {
+        R get();
+    }
+
+<% (1..functionArity).each{ i -> %>
+    interface Consumer${i}<<% (1..<i).each{ j -> %>Arg${j}, <%}%>Arg${i}> {
+        void accept(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
+    }
+<%}%>\
+<% (1..functionArity).each{ i -> %>
+    interface Function${i}<<% (1..i).each{ j -> %>Arg${j}, <%}%>R> {
+        R apply(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
+    }
+<%}%>
+}

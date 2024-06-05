@@ -112,4 +112,9 @@ public class ReflectionUtils {
         return (Class<?>)
                 ClassDesc.ofDescriptor(classDesc).resolveConstantDesc(MethodHandles.lookup());
     }
+
+    @SuppressWarnings("unchecked")
+    public static <E extends Throwable> E sneakyThrow(Throwable e) throws E {
+        throw (E) e;
+    }
 }

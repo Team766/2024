@@ -32,12 +32,10 @@ public abstract class AutoBase extends PathSequenceAuto {
     @Override
     protected final void runSequence(Context context) {
         superstructure.setGoal(Climber.MoveToPosition.BOTTOM);
-        runAuto(context);
-    }
-
-    @Override
-    public void runAtEnd() {
-        super.runAtEnd();
-        shooter.setGoal(new Shooter.Stop());
+        try {
+            runAuto(context);
+        } finally {
+            shooter.setGoal(new Shooter.Stop());
+        }
     }
 }

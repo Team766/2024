@@ -73,8 +73,6 @@ public abstract class PathSequenceAuto extends Procedure {
 
     protected abstract void runSequence(Context context);
 
-    public void runAtEnd() {}
-
     @Override
     public final void run(Context context) {
         boolean shouldFlipAuton = false;
@@ -99,8 +97,6 @@ public abstract class PathSequenceAuto extends Procedure {
         try {
             runSequence(context);
         } finally {
-            runAtEnd();
-
             // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
             // TODO: We should figure out why after EBR but for now we can just reset the gyro to
             // 180 of
