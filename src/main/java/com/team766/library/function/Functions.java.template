@@ -11,6 +11,10 @@ public interface Functions {
         R get();
     }
 
+    public interface ProviderB<R> extends FunctionBase {
+        R get();
+    }
+
 <% (1..functionArity).each{ i -> %>
     public interface Consumer${i}<<% (1..<i).each{ j -> %>Arg${j}, <%}%>Arg${i}> extends FunctionBase {
         void accept(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
@@ -18,6 +22,10 @@ public interface Functions {
 <%}%>\
 <% (1..functionArity).each{ i -> %>
     public interface Function${i}<<% (1..i).each{ j -> %>Arg${j}, <%}%>R> extends FunctionBase {
+        R apply(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
+    }
+
+    public interface FunctionB${i}<<% (1..i).each{ j -> %>Arg${j}, <%}%>R> extends FunctionBase {
         R apply(<% (1..<i).each{ j -> %>Arg${j} arg${j}, <%}%>Arg${i} arg${i});
     }
 <%}%>

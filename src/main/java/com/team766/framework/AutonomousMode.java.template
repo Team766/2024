@@ -12,6 +12,15 @@ public class AutonomousMode extends AutonomousModeBase {
         super(name, constructor);
     }
 
+    @SuppressWarnings("unchecked")
+    public <Reservations> AutonomousMode(
+            final String name,
+            ProviderB<MagicProcedure<Reservations>> callback,
+            Reservations... typeHint) {
+        super(name, () -> ResourceManager.makeAutonomus(
+                callback, (Class<Reservations>)typeHint.getClass().getComponentType()));
+    }
+
 <% (1..functionArity).each{ i -> %>\
     @SuppressWarnings("unchecked")
     public <

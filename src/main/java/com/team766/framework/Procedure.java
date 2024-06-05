@@ -1,10 +1,14 @@
 package com.team766.framework;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import com.team766.logging.Category;
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.logging.ReflectionLogging;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collection;
+import java.util.Optional;
 
-public abstract class Procedure extends ProcedureBase implements ProcedureInterface {
+public abstract class Procedure extends ProcedureBase
+        implements LoggingBase, Statuses.StatusSource {
     // A reusable Procedure that does nothing.
     private static final class NoOpProcedure extends Procedure {
         public NoOpProcedure() {
@@ -19,12 +23,20 @@ public abstract class Procedure extends ProcedureBase implements ProcedureInterf
         return new NoOpProcedure();
     }
 
-    private ContextImpl m_context = null;
+    private static int c_idCounter = 0;
+
+    private static synchronized int createNewId() {
+        return c_idCounter++;
+    }
+
+    protected Category loggerCategory = Category.PROCEDURES;
 
     private boolean isStatusActive = false;
 
     public Procedure(Collection<Subsystem> reservations) {
         super(reservations);
+        final var id = createNewId();
+        setName(this.getClass().getName() + "/" + id);
     }
 
     protected abstract void run(Context context);
@@ -40,39 +52,27 @@ public abstract class Procedure extends ProcedureBase implements ProcedureInterf
     }
 
     @Override
+    public Category getLoggerCategory() {
+        return loggerCategory;
+    }
+
+    protected final void updateStatus(Record status) {
+        try {
+            ReflectionLogging.recordOutput(
+                    status, getName() + "/" + status.getClass().getSimpleName());
+        } catch (Exception ex) {
+            LoggerExceptionUtils.logException(ex);
+        }
+        Statuses.getInstance().add(status, this);
+    }
+
+    protected final <StatusRecord extends Record> Optional<StatusRecord> getStatus(
+            Class<StatusRecord> c) {
+        return Statuses.getStatus(c);
+    }
+
+    @Override
     public final boolean isStatusActive() {
         return isStatusActive;
-    }
-
-    private Command command() {
-        if (m_context == null) {
-            m_context = new ContextImpl(this);
-        }
-        return m_context;
-    }
-
-    @Override
-    public final void initialize() {
-        command().initialize();
-    }
-
-    @Override
-    public final void execute() {
-        command().execute();
-    }
-
-    @Override
-    public final void end(boolean interrupted) {
-        command().end(interrupted);
-    }
-
-    @Override
-    public final boolean isFinished() {
-        return command().isFinished();
-    }
-
-    @Override
-    public final boolean runsWhenDisabled() {
-        return command().runsWhenDisabled();
     }
 }

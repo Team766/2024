@@ -13,6 +13,17 @@ public class AutonomousMode extends AutonomousModeBase {
     }
 
     @SuppressWarnings("unchecked")
+    public <Reservations> AutonomousMode(
+            final String name,
+            ProviderB<MagicProcedure<Reservations>> callback,
+            Reservations... typeHint) {
+        super(
+                name,
+                () -> ResourceManager.makeAutonomus(
+                        callback, (Class<Reservations>) typeHint.getClass().getComponentType()));
+    }
+
+    @SuppressWarnings("unchecked")
     public <RobotSystem0 extends Subsystem> AutonomousMode(
             final String name, Function1<RobotSystem0, Command> callback) {
         super(

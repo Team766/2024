@@ -1,28 +1,14 @@
 package com.team766.framework;
 
-import com.team766.logging.Category;
-import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.ReflectionLogging;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-/* package */ abstract class ProcedureBase extends Command
-        implements LoggingBase, Statuses.StatusSource {
-    private static int c_idCounter = 0;
-
-    private static synchronized int createNewId() {
-        return c_idCounter++;
-    }
-
-    protected final int m_id;
-    protected Category loggerCategory = Category.PROCEDURES;
-
+/* package */ abstract class ProcedureBase extends Command implements ProcedureInterface {
     public static final List<Subsystem> NO_RESERVATIONS = List.of();
 
     public static Collection<Subsystem> reservations(Collection<Subsystem> reqs) {
@@ -42,25 +28,10 @@ import java.util.Set;
         return list;
     }
 
+    private ContextImpl m_context = null;
+
     ProcedureBase(Collection<Subsystem> reservations) {
-        m_id = createNewId();
-        setName(this.getClass().getName() + "/" + m_id);
         m_requirements.addAll(reservations);
-    }
-
-    protected final void updateStatus(Record status) {
-        try {
-            ReflectionLogging.recordOutput(
-                    status, getName() + "/" + status.getClass().getSimpleName());
-        } catch (Exception ex) {
-            LoggerExceptionUtils.logException(ex);
-        }
-        Statuses.getInstance().add(status, this);
-    }
-
-    protected final <StatusRecord extends Record> Optional<StatusRecord> getStatus(
-            Class<StatusRecord> c) {
-        return Statuses.getStatus(c);
     }
 
     public Set<Subsystem> getReservations() {
@@ -76,12 +47,39 @@ import java.util.Set;
     }
 
     @Override
-    public final Category getLoggerCategory() {
-        return loggerCategory;
+    public String toString() {
+        return getName();
+    }
+
+    private Command command() {
+        if (m_context == null) {
+            m_context = new ContextImpl(this);
+        }
+        return m_context;
     }
 
     @Override
-    public String toString() {
-        return getName();
+    public final void initialize() {
+        command().initialize();
+    }
+
+    @Override
+    public final void execute() {
+        command().execute();
+    }
+
+    @Override
+    public final void end(boolean interrupted) {
+        command().end(interrupted);
+    }
+
+    @Override
+    public final boolean isFinished() {
+        return command().isFinished();
+    }
+
+    @Override
+    public final boolean runsWhenDisabled() {
+        return command().runsWhenDisabled();
     }
 }

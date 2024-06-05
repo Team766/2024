@@ -10,6 +10,10 @@ public interface Functions {
         R get();
     }
 
+    public interface ProviderB<R> extends FunctionBase {
+        R get();
+    }
+
     public interface Consumer1<Arg1> extends FunctionBase {
         void accept(Arg1 arg1);
     }
@@ -55,7 +59,15 @@ public interface Functions {
         R apply(Arg1 arg1);
     }
 
+    public interface FunctionB1<Arg1, R> extends FunctionBase {
+        R apply(Arg1 arg1);
+    }
+
     public interface Function2<Arg1, Arg2, R> extends FunctionBase {
+        R apply(Arg1 arg1, Arg2 arg2);
+    }
+
+    public interface FunctionB2<Arg1, Arg2, R> extends FunctionBase {
         R apply(Arg1 arg1, Arg2 arg2);
     }
 
@@ -63,7 +75,15 @@ public interface Functions {
         R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3);
     }
 
+    public interface FunctionB3<Arg1, Arg2, Arg3, R> extends FunctionBase {
+        R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3);
+    }
+
     public interface Function4<Arg1, Arg2, Arg3, Arg4, R> extends FunctionBase {
+        R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4);
+    }
+
+    public interface FunctionB4<Arg1, Arg2, Arg3, Arg4, R> extends FunctionBase {
         R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4);
     }
 
@@ -71,7 +91,15 @@ public interface Functions {
         R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5);
     }
 
+    public interface FunctionB5<Arg1, Arg2, Arg3, Arg4, Arg5, R> extends FunctionBase {
+        R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5);
+    }
+
     public interface Function6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, R> extends FunctionBase {
+        R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6);
+    }
+
+    public interface FunctionB6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, R> extends FunctionBase {
         R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6);
     }
 
@@ -79,7 +107,24 @@ public interface Functions {
         R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7);
     }
 
+    public interface FunctionB7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, R> extends FunctionBase {
+        R apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7);
+    }
+
     public interface Function8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, R>
+            extends FunctionBase {
+        R apply(
+                Arg1 arg1,
+                Arg2 arg2,
+                Arg3 arg3,
+                Arg4 arg4,
+                Arg5 arg5,
+                Arg6 arg6,
+                Arg7 arg7,
+                Arg8 arg8);
+    }
+
+    public interface FunctionB8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, R>
             extends FunctionBase {
         R apply(
                 Arg1 arg1,

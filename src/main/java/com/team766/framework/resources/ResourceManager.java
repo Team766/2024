@@ -1,6 +1,9 @@
 package com.team766.framework.resources;
 
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.ReservationsInterface;
 import com.team766.library.function.FunctionBase;
+import com.team766.library.function.Functions.ProviderB;
 import com.team766.library.function.Reflection;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -54,6 +57,14 @@ public final class ResourceManager {
         return doCallback.apply(subsystems);
     }
 
+    public static <R, P, EntryPoint extends ReservationsInterface.EntryPoint<R, P>>
+            Command makeAutonomus(
+                    ProviderB<MagicProcedure<R>> callback, Class<R> reservationsType) {
+        var entryPoint = ReservationsInterface.<R, P>makeEntryPoint(reservationsType);
+        return callback.get()
+                .prepareProcedure(entryPoint.makeImplementation(ResourceManager::getSubsystem));
+    }
+
     @SuppressWarnings("unchecked")
     /* package */ boolean runIfAvailable(FunctionBase callback, Consumer<Subsystem[]> doCallback) {
         var params = (Class<? extends Subsystem>[]) Reflection.findLambdaParams(callback);
@@ -82,6 +93,41 @@ public final class ResourceManager {
                 subsystems -> scheduleCommand(callback.getClass(), subsystems, doCallback));
     }
 
+    private record CallbackReservations(
+            Object implementation, Class<? extends Subsystem>[] subsystems) {}
+
+    private static final Map<Class<?>, CallbackReservations> callbackReservations = new HashMap<>();
+
+    /* package */ @SuppressWarnings("unchecked")
+    <Reservations> boolean scheduleIfAvailable(
+            ProviderB<MagicProcedure<Reservations>> callback,
+            ProviderB<MagicProcedure<Reservations>> doCallback,
+            Class<Reservations> reservationsType) {
+        var reservations = callbackReservations.computeIfAbsent(callback.getClass(), __ -> {
+            var entryPoint = ReservationsInterface.makeEntryPoint(reservationsType);
+            var implementation = entryPoint.makeImplementation(ResourceManager::getSubsystem);
+
+            ArrayList<Subsystem> subsystems = new ArrayList<>();
+            entryPoint.addReservations(implementation, subsystems::add);
+            return new CallbackReservations(
+                    implementation,
+                    subsystems.stream().map(Subsystem::getClass).toArray(Class[]::new));
+        });
+        Subsystem[] subsystems = tryReserve(reservations.subsystems());
+        if (subsystems == null) {
+            return false;
+        }
+        checkCallback(callback.getClass());
+        scheduleCommand(callback.getClass(), subsystems, __ -> {
+            var proc = doCallback.get();
+            if (proc == null) {
+                return null;
+            }
+            return proc.prepareProcedure((Reservations) reservations.implementation());
+        });
+        return true;
+    }
+
     /* package */ void scheduleOnceIfAvailable(
             FunctionBase callback, Function<Subsystem[], Command> doCallback) {
         scheduleIfAvailable(callback, subsystems -> {
@@ -90,6 +136,21 @@ public final class ResourceManager {
             }
             return doCallback.apply(subsystems);
         });
+    }
+
+    /* package */ <Reservations> void scheduleOnceIfAvailable(
+            ProviderB<MagicProcedure<Reservations>> callback,
+            ProviderB<MagicProcedure<Reservations>> doCallback,
+            Class<Reservations> reservationsType) {
+        scheduleIfAvailable(
+                callback,
+                () -> {
+                    if (activeRules.put(callback.getClass(), this) != null | initializing) {
+                        return null;
+                    }
+                    return doCallback.get();
+                },
+                reservationsType);
     }
 
     private Subsystem[] tryReserve(Class<? extends Subsystem>[] resources) {

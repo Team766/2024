@@ -1,6 +1,7 @@
 /** Generated from the template in ResourcesMixin.java.template */
 package com.team766.framework.resources;
 
+import com.team766.framework.MagicProcedure;
 import com.team766.library.function.Functions.*;
 import com.team766.library.function.Functions.Runnable;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +18,20 @@ public interface ResourcesMixin {
 
     default void onceAvailable(Provider<Command> callback) {
         getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> callback.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    default <Reservations> boolean whileAvailable(
+            ProviderB<MagicProcedure<Reservations>> callback, Reservations... typeHint) {
+        return getResourceManager().scheduleIfAvailable(callback, callback, (Class<Reservations>)
+                typeHint.getClass().getComponentType());
+    }
+
+    @SuppressWarnings("unchecked")
+    default <Reservations> void onceAvailable(
+            ProviderB<MagicProcedure<Reservations>> callback, Reservations... typeHint) {
+        getResourceManager().scheduleOnceIfAvailable(callback, callback, (Class<Reservations>)
+                typeHint.getClass().getComponentType());
     }
 
     default void repeatedly(Runnable callback) {
