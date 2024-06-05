@@ -1,21 +1,22 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.gatorade.mechanisms.Intake;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.mechanisms.Superstructure;
 
-public class ScoreHigh extends Procedure {
+@CollectReservations
+public class ScoreHigh extends MagicProcedure<ScoreHigh_Reservations> {
     private final GamePieceType type;
-    private final Superstructure superstructure;
-    private final Intake intake;
 
-    public ScoreHigh(GamePieceType type, Superstructure superstructure, Intake intake) {
-        super(reservations(superstructure, intake));
+    @Reserve Superstructure superstructure;
+
+    @Reserve Intake intake;
+
+    public ScoreHigh(GamePieceType type) {
         this.type = type;
-        this.superstructure = superstructure;
-        this.intake = intake;
     }
 
     public void run(Context context) {

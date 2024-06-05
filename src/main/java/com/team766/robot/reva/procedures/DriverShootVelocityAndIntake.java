@@ -1,17 +1,15 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 
-public class DriverShootVelocityAndIntake extends Procedure {
-    private final Intake intake;
-
-    public DriverShootVelocityAndIntake(Intake intake) {
-        super(reservations(intake));
-        this.intake = intake;
-    }
+@CollectReservations
+public class DriverShootVelocityAndIntake
+        extends MagicProcedure<DriverShootVelocityAndIntake_Reservations> {
+    @Reserve Intake intake;
 
     public void run(Context context) {
 

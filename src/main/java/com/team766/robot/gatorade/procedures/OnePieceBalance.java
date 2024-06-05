@@ -1,7 +1,8 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.gatorade.mechanisms.Intake;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
@@ -12,19 +13,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
-public class OnePieceBalance extends Procedure {
+@CollectReservations
+public class OnePieceBalance extends MagicProcedure<OnePieceBalance_Reservations> {
     private final GamePieceType type;
-    private final Drive drive;
-    private final Superstructure superstructure;
-    private final Intake intake;
 
-    public OnePieceBalance(
-            GamePieceType type, Drive drive, Superstructure superstructure, Intake intake) {
-        super(reservations(drive, superstructure, intake));
+    @Reserve Drive drive;
+
+    @Reserve Superstructure superstructure;
+
+    @Reserve Intake intake;
+
+    public OnePieceBalance(GamePieceType type) {
         this.type = type;
-        this.drive = drive;
-        this.superstructure = superstructure;
-        this.intake = intake;
     }
 
     public void run(Context context) {
@@ -49,7 +49,7 @@ public class OnePieceBalance extends Procedure {
             log("invalid alliance");
             return;
         }
-        context.runSync(new ScoreHigh(type, superstructure, intake));
-        context.runSync(new GyroBalance(alliance.get(), drive, superstructure));
+        context.runSync(new ScoreHigh(type));
+        context.runSync(new GyroBalance(alliance.get()));
     }
 }

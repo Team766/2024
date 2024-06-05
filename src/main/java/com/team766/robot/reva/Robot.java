@@ -45,25 +45,17 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
             new AutonomousMode(
-                    "3p Start Amp, Amp and Center Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new ThreePieceAmpSide(drive, ss, shooter, intake)),
-            new AutonomousMode(
-                    "4p Start Amp, All Close Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new FourPieceAmpSide(drive, ss, shooter, intake)),
+                    "3p Start Amp, Amp and Center Pieces", () -> new ThreePieceAmpSide()),
+            new AutonomousMode("4p Start Amp, All Close Pieces", () -> new FourPieceAmpSide()),
             new AutonomousMode(
                     "2p Start Source, Bottom Midfield Piece",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new TwoPieceMidfieldSourceSide(drive, ss, shooter, intake)),
+                    () -> new TwoPieceMidfieldSourceSide()),
             new AutonomousMode(
                     "3p Start Amp, Amp and Top Midfield Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new ThreePieceMidfieldAmpSide(drive, ss, shooter, intake)),
+                    () -> new ThreePieceMidfieldAmpSide()),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new ThreePieceStartCenterTopAndAmp(drive, ss, shooter, intake))
+                    () -> new ThreePieceStartCenterTopAndAmp())
         };
     }
 }

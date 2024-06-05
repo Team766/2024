@@ -1,27 +1,28 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 
-public class ShootVelocityAndIntake extends Procedure {
+@CollectReservations
+public final class ShootVelocityAndIntake
+        extends MagicProcedure<ShootVelocityAndIntake_Reservations> {
 
     private final double speed;
 
-    private final Shooter shooter;
-    private final Intake intake;
+    @Reserve Shooter shooter;
 
-    public ShootVelocityAndIntake(Shooter shooter, Intake intake) {
-        this(4800, shooter, intake);
+    @Reserve Intake intake;
+
+    public ShootVelocityAndIntake() {
+        this(4800);
     }
 
-    public ShootVelocityAndIntake(double speed, Shooter shooter, Intake intake) {
-        super(reservations(shooter, intake));
+    public ShootVelocityAndIntake(double speed) {
         this.speed = speed;
-        this.shooter = shooter;
-        this.intake = intake;
     }
 
     public void run(Context context) {

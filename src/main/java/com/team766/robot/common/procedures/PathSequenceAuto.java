@@ -1,19 +1,21 @@
 package com.team766.robot.common.procedures;
 
 import com.pathplanner.lib.util.GeometryUtil;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.Collection;
 import java.util.Optional;
 
-public abstract class PathSequenceAuto extends Procedure {
+@CollectReservations
+public abstract class PathSequenceAuto<Reservations extends PathSequenceAuto_Reservations>
+        extends MagicProcedure<Reservations> {
 
-    private final Drive drive;
+    @Reserve Drive drive;
+
     private final Pose2d initialPosition;
 
     /**
@@ -21,16 +23,12 @@ public abstract class PathSequenceAuto extends Procedure {
      * @param drive The instantiation of drive for the robot (pass in Robot.drive)
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
-    public PathSequenceAuto(
-            Collection<Subsystem> reservations, Drive drive, Pose2d initialPosition) {
-        super(reservations);
-        addReservations(drive);
-        this.drive = drive;
+    public PathSequenceAuto(Pose2d initialPosition) {
         this.initialPosition = initialPosition;
     }
 
     protected void runPath(Context context, String pathName) {
-        context.runSync(new FollowPath(pathName, drive));
+        context.runSync(new FollowPath(pathName));
     }
 
     protected abstract void runSequence(Context context);

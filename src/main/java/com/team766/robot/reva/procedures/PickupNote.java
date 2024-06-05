@@ -1,13 +1,15 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.NoteCamera;
 import java.util.Optional;
 
-public class PickupNote extends VisionPIDProcedure {
+@CollectReservations
+public class PickupNote extends VisionPIDProcedure<PickupNote_Reservations> {
 
     public enum status {
         RING_IN_VIEW,
@@ -15,14 +17,9 @@ public class PickupNote extends VisionPIDProcedure {
         RING_IN_INTAKE
     }
 
-    private final Drive drive;
-    private final Intake intake;
+    @Reserve Drive drive;
 
-    public PickupNote(Drive drive, Intake intake) {
-        super(reservations(drive, intake));
-        this.drive = drive;
-        this.intake = intake;
-    }
+    @Reserve Intake intake;
 
     // button needs to be held down
     public void run(Context context) {

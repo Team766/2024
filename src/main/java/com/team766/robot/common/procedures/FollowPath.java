@@ -3,8 +3,9 @@ package com.team766.robot.common.procedures;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,22 +15,22 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 
-public class FollowPath extends Procedure {
-    private final Drive drive;
+@CollectReservations
+public class FollowPath extends MagicProcedure<FollowPath_Reservations> {
+    @Reserve Drive drive;
+
     private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
-    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, Drive drive) {
-        super(reservations(drive));
+    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig) {
         this.path = path;
         this.replanningConfig = replanningConfig;
-        this.drive = drive;
     }
 
-    public FollowPath(String autoName, Drive drive) {
-        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, drive);
+    public FollowPath(String autoName) {
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG);
     }
 
     @Override

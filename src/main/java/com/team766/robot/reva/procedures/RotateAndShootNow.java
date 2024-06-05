@@ -1,35 +1,24 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Superstructure;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class RotateAndShootNow extends Procedure {
+@CollectReservations
+public class RotateAndShootNow extends MagicProcedure<RotateAndShootNow_Reservations> {
 
-    private final Drive drive;
-    private final Superstructure superstructure;
-    private final Shooter shooter;
-    private final Intake intake;
+    @Reserve Drive drive;
 
-    private final VisionSpeakerHelper visionSpeakerHelper;
+    @Reserve Superstructure superstructure;
 
-    public RotateAndShootNow(
-            Drive drive, Superstructure superstructure, Shooter shooter, Intake intake) {
-        super(reservations(drive, superstructure, shooter, intake));
-        this.drive = drive;
-        this.superstructure = superstructure;
-        this.shooter = shooter;
-        this.intake = intake;
-        visionSpeakerHelper = new VisionSpeakerHelper();
-    }
+    private final VisionSpeakerHelper visionSpeakerHelper = new VisionSpeakerHelper();
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
@@ -60,6 +49,6 @@ public class RotateAndShootNow extends Procedure {
                 () -> drive.getStatus().isAtRotationTarget(heading.getDegrees()), 3.0);
         drive.setGoal(new Drive.StopDrive());
 
-        context.runSync(new ShootVelocityAndIntake(shooter, intake));
+        context.runSync(new ShootVelocityAndIntake());
     }
 }

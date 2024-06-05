@@ -1,38 +1,30 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Superstructure;
 
-public class NoRotateShootNow extends Procedure {
+@CollectReservations
+public class NoRotateShootNow extends MagicProcedure<NoRotateShootNow_Reservations> {
 
-    private final Drive drive;
-    private final Superstructure superstructure;
-    private final Shooter shooter;
-    private final Intake intake;
-    private final VisionSpeakerHelper visionSpeakerHelper;
+    @Reserve Drive drive;
+
+    @Reserve Superstructure superstructure;
+
+    @Reserve Shooter shooter;
+
+    private final VisionSpeakerHelper visionSpeakerHelper = new VisionSpeakerHelper();
     private final boolean amp;
 
-    public NoRotateShootNow(
-            boolean amp,
-            Drive drive,
-            Superstructure superstructure,
-            Shooter shooter,
-            Intake intake) {
-        super(reservations(drive, shooter, superstructure, intake));
-        this.drive = drive;
-        this.superstructure = superstructure;
-        this.shooter = shooter;
-        this.intake = intake;
+    public NoRotateShootNow(boolean amp) {
         this.amp = amp;
-        visionSpeakerHelper = new VisionSpeakerHelper();
     }
 
     public void run(Context context) {
@@ -60,7 +52,7 @@ public class NoRotateShootNow extends Procedure {
             context.waitForConditionOrTimeout(
                     () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 0.5);
 
-            context.runSync(new ShootVelocityAndIntake(power, shooter, intake));
+            context.runSync(new ShootVelocityAndIntake(power));
 
         } else {
             // Robot.shooter.shoot(3000);
@@ -68,7 +60,7 @@ public class NoRotateShootNow extends Procedure {
 
             // context.waitFor(Robot.shoulder::isFinished);
 
-            context.runSync(new ShootVelocityAndIntake(3000, shooter, intake));
+            context.runSync(new ShootVelocityAndIntake(3000));
         }
     }
 }

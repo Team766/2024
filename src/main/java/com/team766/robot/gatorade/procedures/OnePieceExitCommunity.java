@@ -1,7 +1,8 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework.MagicProcedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.gatorade.mechanisms.Intake;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
@@ -12,19 +13,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
-public class OnePieceExitCommunity extends Procedure {
+@CollectReservations
+public class OnePieceExitCommunity extends MagicProcedure<OnePieceExitCommunity_Reservations> {
     private final GamePieceType type;
-    private final Drive drive;
-    private final Superstructure superstructure;
-    private final Intake intake;
 
-    public OnePieceExitCommunity(
-            GamePieceType type, Drive drive, Superstructure superstructure, Intake intake) {
-        super(reservations(drive, superstructure, intake));
+    @Reserve Drive drive;
+
+    @Reserve Superstructure superstructure;
+
+    @Reserve Intake intake;
+
+    public OnePieceExitCommunity(GamePieceType type) {
         this.type = type;
-        this.drive = drive;
-        this.superstructure = superstructure;
-        this.intake = intake;
     }
 
     public void run(Context context) {
@@ -49,10 +49,10 @@ public class OnePieceExitCommunity extends Procedure {
             return;
         }
         log("exiting");
-        context.runSync(new ScoreHigh(type, superstructure, intake));
+        context.runSync(new ScoreHigh(type));
         superstructure.setGoal(Superstructure.MoveToPosition.RETRACTED);
         context.waitFor(
                 () -> superstructure.getStatus().isNearTo(Superstructure.MoveToPosition.RETRACTED));
-        context.runSync(new ExitCommunity(drive));
+        context.runSync(new ExitCommunity());
     }
 }

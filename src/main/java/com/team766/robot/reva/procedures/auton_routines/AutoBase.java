@@ -1,30 +1,23 @@
 package com.team766.robot.reva.procedures.auton_routines;
 
-import com.team766.framework.Context;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.procedures.PathSequenceAuto;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Superstructure;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.Collection;
 
-public abstract class AutoBase extends PathSequenceAuto {
+@CollectReservations
+public abstract class AutoBase<Reservations extends AutoBase_Reservations>
+        extends PathSequenceAuto<Reservations> {
 
-    private final Shooter shooter;
-    private final Superstructure superstructure;
+    @Reserve Shooter shooter;
 
-    public AutoBase(
-            Collection<Subsystem> reservations,
-            Drive drive,
-            Superstructure superstructure,
-            Shooter shooter,
-            Pose2d initialPosition) {
-        super(reservations, drive, initialPosition);
-        addReservations(superstructure, shooter);
-        this.shooter = shooter;
-        this.superstructure = superstructure;
+    @Reserve Superstructure superstructure;
+
+    public AutoBase(Pose2d initialPosition) {
+        super(initialPosition);
     }
 
     protected abstract void runAuto(Context context);

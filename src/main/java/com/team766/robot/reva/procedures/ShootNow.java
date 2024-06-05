@@ -1,34 +1,28 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.Context;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
-import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 import edu.wpi.first.math.geometry.Transform3d;
 
-public class ShootNow extends VisionPIDProcedure {
+@CollectReservations
+public class ShootNow extends VisionPIDProcedure<ShootNow_Reservations> {
 
-    private final Drive drive;
-    private final Superstructure superstructure;
-    private final Shooter shooter;
-    private final Intake intake;
+    @Reserve Drive drive;
+
+    @Reserve Superstructure superstructure;
+
+    @Reserve Shooter shooter;
 
     private double angle;
-
-    public ShootNow(Drive drive, Superstructure superstructure, Shooter shooter, Intake intake) {
-        super(reservations(drive, superstructure, shooter, intake));
-        this.drive = drive;
-        this.superstructure = superstructure;
-        this.shooter = shooter;
-        this.intake = intake;
-    }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
@@ -110,7 +104,7 @@ public class ShootNow extends VisionPIDProcedure {
                 () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 1);
 
         updateStatus(new ShootingProcedureStatus(Status.FINISHED));
-        context.runSync(new ShootVelocityAndIntake(power, shooter, intake));
+        context.runSync(new ShootVelocityAndIntake(power));
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {

@@ -5,8 +5,6 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.constants.InputConstants;
-import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -43,12 +41,11 @@ public class DriverOI extends OIFragment {
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            whileAvailable((Drive drive, Superstructure ss, Intake intake) ->
-                    new DriverShootNow(drive, ss, intake));
+            whileAvailable(() -> new DriverShootNow());
         }
 
         if (rightJoystick.getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-            whileAvailable((Intake intake) -> new DriverShootVelocityAndIntake(intake));
+            whileAvailable(() -> new DriverShootVelocityAndIntake());
         }
 
         // Negative because forward is negative in driver station

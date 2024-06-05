@@ -1,7 +1,8 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.Context;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
@@ -12,18 +13,14 @@ import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 import edu.wpi.first.math.geometry.Transform3d;
 
-public class DriverShootNow extends VisionPIDProcedure {
+@CollectReservations
+public class DriverShootNow extends VisionPIDProcedure<DriverShootNow_Reservations> {
 
-    private final Drive drive;
-    private final Superstructure superstructure;
-    private final Intake intake;
+    @Reserve Drive drive;
 
-    public DriverShootNow(Drive drive, Superstructure superstructure, Intake intake) {
-        super(reservations(drive, superstructure, intake));
-        this.drive = drive;
-        this.superstructure = superstructure;
-        this.intake = intake;
-    }
+    @Reserve Superstructure superstructure;
+
+    @Reserve Intake intake;
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
@@ -102,7 +99,7 @@ public class DriverShootNow extends VisionPIDProcedure {
                 () -> getStatus(Shoulder.Status.class).get().isNearTo(armAngle), 1);
 
         updateStatus(new ShootingProcedureStatus(Status.FINISHED));
-        context.runSync(new DriverShootVelocityAndIntake(intake));
+        context.runSync(new DriverShootVelocityAndIntake());
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {

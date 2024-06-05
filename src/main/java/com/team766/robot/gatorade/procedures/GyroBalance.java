@@ -1,7 +1,9 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework.Context;
+import com.team766.framework.MagicProcedure;
 import com.team766.framework.Procedure;
+import com.team766.framework.annotations.CollectReservations;
+import com.team766.framework.annotations.Reserve;
 import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.gatorade.constants.ChargeConstants;
 import com.team766.robot.gatorade.mechanisms.Superstructure;
@@ -11,7 +13,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * {@link Procedure} to use the gyro to automatically balance on the charge station.
  * See GyroBalance.md for more details
  */
-public class GyroBalance extends Procedure {
+@CollectReservations
+public class GyroBalance extends MagicProcedure<GyroBalance_Reservations> {
 
     // Direction determines which direction the robot moves
     private enum Direction {
@@ -20,8 +23,9 @@ public class GyroBalance extends Procedure {
         STOP,
     }
 
-    private final Drive drive;
-    private final Superstructure superstructure;
+    @Reserve Drive drive;
+
+    @Reserve Superstructure superstructure;
 
     // absSpeed is unsigned speed value
     private Direction direction;
@@ -43,11 +47,8 @@ public class GyroBalance extends Procedure {
      * Constructor to create a new GyroBalance instance
      * @param alliance Alliance for setting direction towards charge station
      */
-    public GyroBalance(Alliance alliance, Drive drive, Superstructure superstructure) {
-        super(reservations(drive, superstructure));
+    public GyroBalance(Alliance alliance) {
         this.alliance = alliance;
-        this.drive = drive;
-        this.superstructure = superstructure;
     }
 
     private double getAbsoluteTilt() {

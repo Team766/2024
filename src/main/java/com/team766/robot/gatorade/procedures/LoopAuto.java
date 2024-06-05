@@ -1,14 +1,14 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework.Context;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.framework.annotations.CollectReservations;
 import com.team766.robot.common.procedures.PathSequenceAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class LoopAuto extends PathSequenceAuto {
-    public LoopAuto(Drive drive) {
-        super(reservations(drive), drive, new Pose2d(2.00, 7.00, new Rotation2d(0)));
+@CollectReservations
+public class LoopAuto extends PathSequenceAuto<LoopAuto_Reservations> {
+    public LoopAuto() {
+        super(new Pose2d(2.00, 7.00, new Rotation2d(0)));
     }
 
     @Override

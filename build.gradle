@@ -265,6 +265,7 @@ spotless {
         palantirJavaFormat('2.39.0').style("AOSP")
         removeUnusedImports()
         importOrder()
+        formatAnnotations().addTypeAnnotation("Reserve")
         trimTrailingWhitespace()
         endWithNewline()
     }
