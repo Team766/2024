@@ -1,5 +1,4 @@
 {
-	"logFilePath": "sim_robot_logs",
 	"drive": {
 		"leftMotor": {
 			"deviceId": 6,

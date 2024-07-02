@@ -1,0 +1,36 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
+{
+	"name": "Java",
+	"image": "mcr.microsoft.com/devcontainers/java:1-17-bookworm",
+
+	"features": {
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "17"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "3.12"
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [8000],
+
+	"portsAttributes": {
+		"5800": {
+			"label": "Robot code HTML dashboard",
+			"onAutoForward": "silent"
+		},
+		"7778": {
+			// This port is only used locally; the HTTP server exposes this to the client via a proxy.
+			"label": "Simulation WebSockets",
+			"onAutoForward": "silent"
+		},
+		"8000": {
+			// This port is only used locally; the HTTP server exposes this to the client via a proxy.
+			"label": "Simulation HTTP",
+			"onAutoForward": "openBrowser"
+		}
+	}
+}
