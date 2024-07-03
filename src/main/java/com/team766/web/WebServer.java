@@ -94,6 +94,7 @@ public class WebServer {
                                 throw ex;
                             }
                             response += "</body></html>";
+                            exchange.getResponseHeaders().set("Content-Type", "text/html");
                             exchange.sendResponseHeaders(200, response.getBytes().length);
                             try (OutputStream os = exchange.getResponseBody()) {
                                 os.write(response.getBytes());

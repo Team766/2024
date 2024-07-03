@@ -3,58 +3,27 @@
 set -euo pipefail
 
 builtin cd "$(dirname -- "${BASH_SOURCE[0]}")"
-
-if [ $# -gt 0 ]; then
-    server="$1"
-elif [ -f sim_robots.lst ]; then
-    PS3="Which sim robot would you like to use? "
-    COLUMNS=1
-    cancel_option="Cancel Deployment"
-    select name in $(cat sim_robots.lst) "$cancel_option"
-    do
-        server="${name-"$REPLY"}"
-        break
-    done
-    if [ "$server" == "$cancel_option" ]; then
-        echo "Canceled"
-        exit
-    fi
-fi
-
-if [ -z "${server-}" ]; then
-    # Sleep here is necessary to allow Theia to finish opening the task terminal
-    # before displaying the error message.
-    sleep 1
-    echo "Please supply the URL of the sim robot"
-    exit 1
-fi
-
-echo -e "Deploying to $server\n"
-
-set -x
-
-user="root"
+project_base="$(pwd)"
 
 ./gradlew jar
 
-jar_file=( build/libs/*.jar )
+jar_file=( $(readlink -f build/libs/*.jar) )
 [ "${#jar_file[@]}" -eq 1 ] || (echo "Output jar file could not be determined"; exit 1)
 
-version="$(md5sum < "$jar_file" | awk '{ print $1 }')"
-deployed_code="/tmp/project-$(date +%s)-$version"
+mkdir -p buildSim
+cd buildSim
 
-rm -rf "$deployed_code"
-mkdir -p "$deployed_code"
+sim_package="sim.tar.gz"
+t1="$(stat -c %y "$sim_package" || true)"
+wget -N "https://github.com/Team766/2020Sim/releases/latest/download/$sim_package" || [ -f "$sim_package" ] || exit 1
+t2="$(stat -c %y "$sim_package")"
 
-cp "$jar_file" "$deployed_code/project.jar"
-cp -R src/main/deploy "$deployed_code"
-cp simConfig.txt "$deployed_code"
+extracted_dir="files"
+if [ "$t1" != "$t2" -o ! -d "$extracted_dir" ]; then
+    rm -rf "$extracted_dir"
+    mkdir -p "$extracted_dir"
+    tar --directory="$extracted_dir" -xf "$sim_package"
+fi
+cd "$extracted_dir"
 
-deployed_package=${deployed_code}.tgz
-tar cfz ${deployed_package} -C ${deployed_code} .
-
-curl --fail -F "package=@${deployed_package}" ${server}:4000/uploadrobotcode
-
-set +x
-echo -e "\nDeploy finished. Your code is running"
-echo -e "\nOpen simulation viewer at http://$server"
+exec ./run.sh "$project_base" "$jar_file"
