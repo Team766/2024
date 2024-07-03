@@ -204,7 +204,6 @@ task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
 compileJava.finalizedBy checkAkitInstall
 
 spotless {
-    ratchetFrom 'origin/main' // only check files that have changed relative to main
     java {
         target fileTree('.') {
             include '**/*.java'
