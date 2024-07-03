@@ -25,7 +25,7 @@ public class ShootVelocityAndIntake extends Procedure {
         context.runSync(new IntakeIn());
 
         // FIXME: change this value back to 1.5s if doesn't intake for long enough
-        context.waitForSeconds(1.2);
+        context.waitForSeconds(1.0);
 
         context.runSync(new IntakeStop());
         Robot.lights.signalFinishedShootingProcedure();
