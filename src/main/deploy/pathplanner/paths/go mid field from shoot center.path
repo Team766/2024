@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.269781465488856,
-        "y": 0.7617828013433814
+        "x": 4.02,
+        "y": 5.511817049731372
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.920007478903846,
-        "y": 0.739038584558651
+        "x": 4.436793071117007,
+        "y": 4.336698056112161
       },
       "isLocked": false,
-      "linkedName": "Bottom Midfield"
+      "linkedName": "shoot center"
     },
     {
       "anchor": {
-        "x": 6.981912459195289,
-        "y": 0.7617828013433814
+        "x": 7.00790537383544,
+        "y": 3.232140785269224
       },
       "prevControl": {
-        "x": 7.541372684597221,
-        "y": 0.7143940676770252
+        "x": 5.903348102992503,
+        "y": 3.4920366137028567
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -36.158185439808314,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
 }
