@@ -8,36 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.169369445295337,
-        "y": 6.815379992548742
+        "x": 1.6190709486994308,
+        "y": 7.069927876510557
       },
       "isLocked": false,
       "linkedName": "Amp Side Start"
     },
     {
       "anchor": {
-        "x": 2.157158138540042,
-        "y": 6.896978962609695
-      },
-      "prevControl": {
-        "x": 1.1573338734550485,
-        "y": 6.87823225763935
-      },
-      "nextControl": {
-        "x": 2.4691504014794377,
-        "y": 6.902828817539809
-      },
-      "isLocked": false,
-      "linkedName": "top-close-note"
-    },
-    {
-      "anchor": {
         "x": 2.63,
-        "y": 7.0
+        "y": 7.030975105841078
       },
       "prevControl": {
         "x": 2.57913866074763,
-        "y": 7.034124153758996
+        "y": 7.065099259600074
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,9 +30,9 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 0.5518015530194741,
-      "rotateFast": false
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": 6.910721834794728,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
@@ -65,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "amp side autons",
+  "folder": null,
   "previewStartingState": {
     "rotation": 60.0,
     "velocity": 0

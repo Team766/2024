@@ -3,48 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.990112683313254,
-        "y": 5.586611458258547
+        "x": 2.8558214174602794,
+        "y": 6.300610655793204
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.165608331220829,
-        "y": 6.2105959841385205
+        "x": 3.294040087491925,
+        "y": 7.391288234538633
       },
       "isLocked": false,
       "linkedName": "shoot center"
     },
     {
       "anchor": {
-        "x": 7.7925183878913,
-        "y": 5.791356380813708
+        "x": 7.510677512458228,
+        "y": 6.164275958445155
       },
       "prevControl": {
-        "x": 4.834866234228793,
-        "y": 7.025032444137628
+        "x": 7.361435202302666,
+        "y": 6.213093536533423
       },
       "nextControl": {
-        "x": 8.290360971455648,
-        "y": 5.5836996156710805
+        "x": 9.594650743275382,
+        "y": 5.482602471729262
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.990112683313254,
-        "y": 5.586611458258547
+        "x": 2.8558214174602794,
+        "y": 6.300610655793204
       },
       "prevControl": {
-        "x": 3.9413638922331393,
-        "y": 7.614561167365799
+        "x": 2.7194867201171,
+        "y": 7.68343401455973
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "shoot center"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": -15.751173663453049,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -55,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 18.649538754051388,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "amp side autons",
+  "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.990112683313254,
-        "y": 5.586611458258547
+        "x": 2.8558214174602794,
+        "y": 6.300610655793204
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.350853737336929,
-        "y": 4.07539893464585
+        "x": 3.2165624714839547,
+        "y": 4.789398132180507
       },
       "isLocked": false,
       "linkedName": "shoot center"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.990112683313254,
-        "y": 5.586611458258547
+        "x": 2.8558214174602794,
+        "y": 6.300610655793204
       },
       "prevControl": {
-        "x": 4.087610265481815,
-        "y": 3.7926559463570237
+        "x": 2.9533189996288405,
+        "y": 4.50665514389168
       },
       "nextControl": null,
       "isLocked": false,
@@ -59,7 +59,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "amp side autons",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

@@ -25,6 +25,8 @@ public class Amp4NoteAuton1close1top1midfarCrazy extends PathSequenceAuto {
         addPath("get-mid-far-notee-then-shoot-center");
 		addProcedure(new ShootNow());
 
+		
+		addProcedure(new StartAutoIntake());
 		addPath("from-shotcenter-understage-midnote-far");
     }
 }
