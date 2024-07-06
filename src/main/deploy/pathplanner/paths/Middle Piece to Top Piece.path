@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.7642557785115573,
-        "y": 5.544778760853818
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.1919685274555736,
-        "y": 5.721625438621247
+        "y": 5.726846677767429
       },
       "isLocked": false,
       "linkedName": "Middle Piece"

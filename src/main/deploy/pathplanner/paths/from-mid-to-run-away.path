@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.84799774692142,
+        "x": 2.34799774692142,
         "y": 5.545847679658323
       },
       "isLocked": false,
@@ -16,16 +16,32 @@
     },
     {
       "anchor": {
-        "x": 2.7642557785115573,
-        "y": 5.55
+        "x": 4.56320958225962,
+        "y": 6.326537553360007
       },
       "prevControl": {
-        "x": 2.2642557785115573,
-        "y": 5.55
+        "x": 3.691372557074392,
+        "y": 5.836741471795271
+      },
+      "nextControl": {
+        "x": 5.603989327636775,
+        "y": 6.911245275482004
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.995593706287126,
+        "y": 6.0458778467414485
+      },
+      "prevControl": {
+        "x": 6.3320253392643515,
+        "y": 6.022489537856568
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Middle Piece"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,7 +55,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -11.309932474020213,
     "rotateFast": false
   },
   "reversed": false,
@@ -48,5 +64,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
