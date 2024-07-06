@@ -1,4 +1,4 @@
-package com.team766.robot.reva.procedures.auton_routines;
+package com.team766.robot.reva.procedures.auton_routines.amp_side_auto;
 
 import com.team766.robot.common.procedures.PathSequenceAuto;
 import com.team766.robot.reva.Robot;

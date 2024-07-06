@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8646653920386238,
-        "y": 5.966852028715935
+        "x": 1.356139746680443,
+        "y": 5.531293435066112
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9329136995566167,
-        "y": 5.537862667174266
+        "x": 1.424388054198436,
+        "y": 5.102304073524443
       },
       "isLocked": false,
       "linkedName": "btw-top-mid-note-whiteline"
@@ -65,7 +65,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "amp side autons",
+  "folder": null,
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

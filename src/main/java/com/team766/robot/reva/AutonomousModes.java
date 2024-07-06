@@ -1,6 +1,7 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
+import com.team766.robot.reva.procedures.auton_routines.amp_side_auto.*;
 import com.team766.robot.reva.procedures.auton_routines.FourPieceAmpSide;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSideCrazy;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSide;
@@ -30,6 +31,14 @@ public class AutonomousModes {
                 new AutonomousMode(
                         "3p Start Center, Amp and Center Pieces",
                         () -> new ThreePieceStartCenterTopAndAmp()),
-                new AutonomousMode("Just Shoot Amp", () -> new ThreePieceAmpSideCrazy())
+                new AutonomousMode(
+                        "4p Start Amp, All close pieces OG",
+                        () -> new FourPieceAmpSide()),
+                new AutonomousMode("Just Shoot Amp", () -> new ThreePieceAmpSideCrazy()),
+                new AutonomousMode("3p Start Amp, Amp and Center Pieces, run away", () -> new Amp3NotesAutoncloseCrazy()),
+                new AutonomousMode("4p Start Amp, 1 Close and 2 Midfield Amp Side Pieces", () -> new Amp4NoteAuton1close1top1midfarCrazy()),
+                new AutonomousMode("4p Start Amp, 1 Close and 2 Midfield Amp Side and Under Stage Pieces", () -> new Amp4NoteAuton1close2farCrazy()),
+                new AutonomousMode("4p Start Amp, 4 close", () -> new Amp4NotesAutoncloseCrazy()),
+                new AutonomousMode("1p run away", () -> new OneNoteAutoMoveOutCrazy()),
             };
 }

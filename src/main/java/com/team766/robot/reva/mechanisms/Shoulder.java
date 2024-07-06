@@ -73,7 +73,7 @@ public class Shoulder extends Mechanism {
                 (REVThroughBoreDutyCycleEncoder)
                         RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
         leftMotor.setSensorPosition(DEFAULT_POSITION);
-        targetAngle = -1;
+        targetAngle = ShoulderPosition.SHOOT_LOW.getAngle();
     }
 
     public void stop() {

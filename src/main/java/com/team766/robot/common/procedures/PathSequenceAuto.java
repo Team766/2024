@@ -103,7 +103,7 @@ public class PathSequenceAuto extends Procedure {
             return;
         }
 
-        context.startAsync(new MoveClimbersToBottom());
+        // context.startAsync(new MoveClimbersToBottom());
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
@@ -127,8 +127,8 @@ public class PathSequenceAuto extends Procedure {
         // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
         // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
         // current angle
-        context.takeOwnership(drive);
-        drive.resetGyro(180 + drive.getHeading());
-        context.releaseOwnership(drive);
+        // context.takeOwnership(drive);
+        // drive.resetGyro(180 + drive.getHeading());
+        // context.releaseOwnership(drive);
     }
 }

@@ -24,9 +24,9 @@ public class Intake extends Mechanism {
 
     IntakePosition[] positions =
             new IntakePosition[] {
-                new IntakePosition(0, 150),
+                new IntakePosition(0, 135),
                 new IntakePosition(0.2, 200),
-                new IntakePosition(0.4, 400),
+                new IntakePosition(0.5, 300),
                 new IntakePosition(1.0, 480)
             };
 
@@ -77,7 +77,7 @@ public class Intake extends Mechanism {
     }
 
     public void out() {
-        intakePower = -1 * DEFAULT_POWER;
+        intakePower = -0.5 * DEFAULT_POWER;
         runIntake();
     }
 
