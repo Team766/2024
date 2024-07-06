@@ -20,7 +20,7 @@ public class Shoulder extends Mechanism {
         // TODO: Find actual values.
         BOTTOM(0),
         INTAKE_FLOOR(0),
-        SHOOT_LOW(15),
+        SHOOT_LOW(18.5),
         SHOOTER_ASSIST(18.339),
         SHOOT_MEDIUM(30),
         SHOOT_HIGH(80),
@@ -39,7 +39,7 @@ public class Shoulder extends Mechanism {
     }
 
     private double targetAngle;
-    private static final double NUDGE_AMOUNT = 1; // degrees
+    private static final double NUDGE_AMOUNT = 3; // degrees
     private static final double ENCODER_INITIALIZATION_LOOPS = 350;
 
     private final REVThroughBoreDutyCycleEncoder absoluteEncoder;

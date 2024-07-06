@@ -124,11 +124,13 @@ public class PathSequenceAuto extends Procedure {
         Robot.shooter.stop();
         context.releaseOwnership(Robot.shooter);
 
-        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
+        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop when on blue
         // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
         // current angle
-        // context.takeOwnership(drive);
-        // drive.resetGyro(180 + drive.getHeading());
-        // context.releaseOwnership(drive);
+        if (!shouldFlipAuton) {
+            context.takeOwnership(drive);
+            drive.resetGyro(180 + drive.getHeading());
+            context.releaseOwnership(drive);
+        }
     }
 }

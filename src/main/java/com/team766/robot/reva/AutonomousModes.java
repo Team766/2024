@@ -2,6 +2,9 @@ package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
 import com.team766.robot.reva.procedures.auton_routines.amp_side_auto.*;
+import com.team766.robot.reva.procedures.auton_routines.middle_side_auto.FivePieceMidStart;
+import com.team766.robot.reva.procedures.auton_routines.middle_side_auto.FourPieceMidStart;
+import com.team766.robot.reva.procedures.auton_routines.source_side_auto.FivePieceSourceSide;
 import com.team766.robot.reva.procedures.auton_routines.FourPieceAmpSide;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSideCrazy;
 import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSide;
@@ -40,5 +43,8 @@ public class AutonomousModes {
                 new AutonomousMode("4p Start Amp, 1 Close and 2 Midfield Amp Side and Under Stage Pieces", () -> new Amp4NoteAuton1close2farCrazy()),
                 new AutonomousMode("4p Start Amp, 4 close", () -> new Amp4NotesAutoncloseCrazy()),
                 new AutonomousMode("1p run away", () -> new OneNoteAutoMoveOutCrazy()),
+                new AutonomousMode("5p center start", () -> new FivePieceMidStart()),
+                new AutonomousMode("4p close center start", () -> new FourPieceMidStart()),
+                new AutonomousMode("5p source start", () -> new FivePieceSourceSide()),
             };
 }

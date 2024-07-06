@@ -384,7 +384,7 @@ public class Drive extends Mechanism {
     public void run() {
         swerveOdometry.run();
         // log(currentPosition.toString());
-        // SmartDashboard.putString("pos", getCurrentPosition().toString());
+        // SmartDashboard.put("pos", getCurrentPosition().toString());
 
         // SmartDashboard.putNumber("Yaw", getHeading());
         // SmartDashboard.putNumber("Pitch", getPitch());

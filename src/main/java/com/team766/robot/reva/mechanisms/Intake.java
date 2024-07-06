@@ -27,7 +27,7 @@ public class Intake extends Mechanism {
                 new IntakePosition(0, 135),
                 new IntakePosition(0.2, 200),
                 new IntakePosition(0.5, 300),
-                new IntakePosition(1.0, 480)
+                new IntakePosition(1.0, 400)
             };
 
     private static final double DEFAULT_POWER = 1.0;
@@ -35,7 +35,7 @@ public class Intake extends Mechanism {
     private static final double CURRENT_LIMIT = 30.0; // a little lower than max efficiency
     private static final double MAX_POWER = 1.0;
     private static final double MIN_POWER = -1 * MAX_POWER;
-    private static final double IS_CLOSE_THRESHOLD = 350;
+    private static final double IS_CLOSE_THRESHOLD = 335;
 
     // This should be the amount that getRange() should return less than for a note to be classified
     // as in

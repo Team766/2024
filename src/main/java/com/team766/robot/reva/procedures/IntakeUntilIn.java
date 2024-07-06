@@ -19,14 +19,14 @@ public class IntakeUntilIn extends Procedure {
                 stopwatch.startIfNecessary();
             }
             context.yield();
-            if (stopwatch.elapsedSeconds() > 1) {
+            if (stopwatch.elapsedSeconds() > 0.6) {
                 Robot.intake.out();
                 context.waitForSeconds(0.1);
                 Robot.intake.setIntakePowerForSensorDistance();
                 stopwatch.reset();
             }
         }
-        
+
         Robot.intake.stop();
 
         context.releaseOwnership(Robot.intake);
