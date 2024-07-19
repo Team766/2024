@@ -12,7 +12,7 @@
         "y": 4.007150627127858
       },
       "isLocked": false,
-      "linkedName": "white-line-note-in-stage"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -65,7 +65,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "amp side autons",
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": -37.30000000000001,
     "velocity": 0.0

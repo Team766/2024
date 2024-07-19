@@ -12,7 +12,7 @@
         "y": 0.7677806235242103
       },
       "isLocked": false,
-      "linkedName": "Bottom Midfield"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Bottom Start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -65,7 +65,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "First Auton Pass",
   "previewStartingState": null,
   "useDefaultConstraints": true
 }

@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "btw-top-mid-note-whiteline"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -59,7 +59,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": 60.0,
     "velocity": 0

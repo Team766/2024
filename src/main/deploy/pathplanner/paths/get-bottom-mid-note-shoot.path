@@ -12,7 +12,7 @@
         "y": 2.7884308500202657
       },
       "isLocked": false,
-      "linkedName": "Bottom Start"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Bottom Start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -65,7 +65,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": -60.0,
     "velocity": 0

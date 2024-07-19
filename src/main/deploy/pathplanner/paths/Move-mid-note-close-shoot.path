@@ -12,7 +12,7 @@
         "y": 5.102304073524443
       },
       "isLocked": false,
-      "linkedName": "btw-top-mid-note-whiteline"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -28,7 +28,7 @@
         "y": 5.5768617000416905
       },
       "isLocked": false,
-      "linkedName": "mid-note-close"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -41,7 +41,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shoot center"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -65,7 +65,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

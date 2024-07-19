@@ -12,7 +12,7 @@
         "y": 5.125491662173993
       },
       "isLocked": false,
-      "linkedName": "shoot center"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

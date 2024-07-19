@@ -12,7 +12,7 @@
         "y": 6.244678472262928
       },
       "isLocked": false,
-      "linkedName": "Middle Start"
+      "linkedName": "Center Start"
     },
     {
       "anchor": {
@@ -43,7 +43,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

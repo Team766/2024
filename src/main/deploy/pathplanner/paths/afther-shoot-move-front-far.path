@@ -59,7 +59,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": "amp side autons",
+  "folder": "First Auton Pass",
   "previewStartingState": {
     "rotation": -47.79000000000002,
     "velocity": 0

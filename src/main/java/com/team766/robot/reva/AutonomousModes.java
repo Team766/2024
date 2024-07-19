@@ -1,16 +1,10 @@
 package com.team766.robot.reva;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.robot.reva.procedures.auton_routines.amp_side_auto.*;
-import com.team766.robot.reva.procedures.auton_routines.middle_side_auto.FivePieceMidStart;
-import com.team766.robot.reva.procedures.auton_routines.middle_side_auto.FourPieceMidStart;
-import com.team766.robot.reva.procedures.auton_routines.source_side_auto.FivePieceSourceSide;
-import com.team766.robot.reva.procedures.auton_routines.FourPieceAmpSide;
-import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSideCrazy;
-import com.team766.robot.reva.procedures.auton_routines.ThreePieceAmpSide;
-import com.team766.robot.reva.procedures.auton_routines.ThreePieceMidfieldAmpSide;
-import com.team766.robot.reva.procedures.auton_routines.ThreePieceStartCenterTopAndAmp;
-import com.team766.robot.reva.procedures.auton_routines.TwoPieceMidfieldSourceSide;
+import com.team766.robot.reva.procedures.auton_routines.autons_v1.*;
+import com.team766.robot.reva.procedures.auton_routines.autons_v1.amp_side_auto.*;
+import com.team766.robot.reva.procedures.auton_routines.autons_v1.source_side_auto.*;
+import com.team766.robot.reva.procedures.auton_routines.autons_v1.middle_side_auto.*;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES =

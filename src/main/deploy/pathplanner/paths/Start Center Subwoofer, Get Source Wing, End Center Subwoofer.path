@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.34799774692142,
+        "y": 5.545847679658323
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.271633160550272,
+        "y": 4.336698056112161
+      },
+      "isLocked": false,
+      "linkedName": "Center Start"
+    },
+    {
+      "anchor": {
+        "x": 2.3854724252658386,
+        "y": 4.132494190914308
+      },
+      "prevControl": {
+        "x": 2.159590742940818,
+        "y": 3.8860778101961038
+      },
+      "nextControl": {
+        "x": 2.793880155661547,
+        "y": 4.578029896800534
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.34799774692142,
+        "y": 5.545847679658323
+      },
+      "prevControl": {
+        "x": 2.1162946029595764,
+        "y": 5.561921247299285
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Center Start"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "4 Piece Center Start",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

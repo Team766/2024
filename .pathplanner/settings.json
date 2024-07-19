@@ -1,8 +1,12 @@
 {
   "robotWidth": 0.97,
-  "robotLength": 1.14,
+  "robotLength": 0.97,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "4 Piece Center Start",
+    "First Auton Pass",
+    "New Folder"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
