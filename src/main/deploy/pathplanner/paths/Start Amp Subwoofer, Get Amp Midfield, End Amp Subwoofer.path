@@ -3,77 +3,77 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7132975145579924,
-        "y": 4.40352978391142
+        "x": 0.7128224395337682,
+        "y": 6.718986067601764
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7147028464357956,
-        "y": 5.391175128381637
+        "x": 1.7128224395337681,
+        "y": 6.718986067601764
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp Side Start"
     },
     {
       "anchor": {
-        "x": 2.438709374557476,
-        "y": 5.342985792021931
+        "x": 8.075334669187857,
+        "y": 7.39047404020734
       },
       "prevControl": {
-        "x": 1.8013577456817904,
-        "y": 4.999891061411909
+        "x": 8.084108785866112,
+        "y": 7.7326645906592795
       },
       "nextControl": {
-        "x": 2.6236942551852476,
-        "y": 5.442565576414844
+        "x": 8.066052675315227,
+        "y": 7.028476279174781
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.34799774692142,
-        "y": 5.545847679658323
+        "x": 0.7128224395337682,
+        "y": 6.718986067601764
       },
       "prevControl": {
-        "x": 1.547666012549162,
-        "y": 5.326628384690653
+        "x": 1.2221044334063957,
+        "y": 6.686499089047561
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center Start"
+      "linkedName": "Amp Side Start"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.95,
-      "rotationDegrees": 29.565547424215307,
+      "waypointRelativePos": 1.45,
+      "rotationDegrees": 0,
       "rotateFast": true
     },
     {
       "waypointRelativePos": 0.05,
-      "rotationDegrees": -60.0,
-      "rotateFast": true
+      "rotationDegrees": 60.0,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 60.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "First Auton Pass",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -60.0,
-    "velocity": 0
+    "rotation": 60.0,
+    "velocity": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

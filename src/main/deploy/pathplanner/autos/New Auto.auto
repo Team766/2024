@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.34799774692142,
+      "y": 5.545847679658323
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start Center Subwoofer, Get Center Wing, End Center Wing"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start Center Wing, Get Center Amp Midfield, End Center Wing"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start Center Wing, Get Source Wing, End Center Wing"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start Center Wing, Get Amp Wing, End Center Wing"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -7,8 +7,8 @@ import com.team766.robot.reva.procedures.StartAutoIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class FourPieceCenterStartWingPiecesSafe extends PathSequenceAuto {
-    public FourPieceCenterStartWingPiecesSafe() {
+public class Center123Grab6Auto extends PathSequenceAuto {
+    public Center123Grab6Auto() {
         super(Robot.drive, new Pose2d(1.35, 5.55, Rotation2d.fromDegrees(0)));
         addProcedure(new ShootAtSubwoofer());
 
@@ -18,6 +18,10 @@ public class FourPieceCenterStartWingPiecesSafe extends PathSequenceAuto {
 
 		addProcedure(new StartAutoIntake());
 		addPath("Start Center Subwoofer, Get Amp Wing, End Center Subwoofer");
+		addProcedure(new ShootAtSubwoofer());
+
+		addProcedure(new StartAutoIntake());
+		addPath("Start Center Subwoofer, Get Source Wing, End Center Subwoofer");
 		addProcedure(new ShootAtSubwoofer());
 
 		addProcedure(new StartAutoIntake());

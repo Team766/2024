@@ -3,48 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.34799774692142,
+        "x": 2.5,
         "y": 5.545847679658323
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6150669338375714,
-        "y": 5.543357259554025
+        "x": 1.6893228848186093,
+        "y": 5.580485235044544
       },
       "isLocked": false,
-      "linkedName": "Center Start"
+      "linkedName": "Center Wing Note"
     },
     {
       "anchor": {
-        "x": 2.2131007014089956,
-        "y": 5.55
+        "x": 2.728906198553138,
+        "y": 6.768580450741148
       },
       "prevControl": {
-        "x": 1.6480071399586662,
-        "y": 5.528688215138294
+        "x": 2.3204984681574303,
+        "y": 6.638632536524332
       },
       "nextControl": {
-        "x": 2.7753161679162868,
-        "y": 5.571203241171914
+        "x": 3.100924469694856,
+        "y": 6.886949900649875
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.34799774692142,
+        "x": 2.5,
         "y": 5.545847679658323
       },
       "prevControl": {
-        "x": 2.348344449775319,
-        "y": 5.116385541413059
+        "x": 3.100185953458327,
+        "y": 5.404127351464579
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center Start"
+      "linkedName": "Center Wing Note"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 50.41158432437282,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -61,7 +67,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true

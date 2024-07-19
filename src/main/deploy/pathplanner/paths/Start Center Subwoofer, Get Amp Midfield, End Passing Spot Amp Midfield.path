@@ -3,77 +3,77 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.34799774692142,
-        "y": 5.545847679658323
+        "x": 0.7128224395337682,
+        "y": 6.718986067601764
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.135195160070036,
-        "y": 6.388254389794664
+        "x": 3.0444939902271906,
+        "y": 6.471556646812356
       },
       "isLocked": false,
-      "linkedName": "Center Start"
+      "linkedName": "Amp Side Start"
     },
     {
       "anchor": {
-        "x": 2.592890215436422,
-        "y": 6.82647305982631
+        "x": 7.843284822372115,
+        "y": 7.2790901137357835
       },
       "prevControl": {
-        "x": 2.9337269587943684,
-        "y": 6.904378601165269
+        "x": 7.97323273658893,
+        "y": 6.722170481378
       },
       "nextControl": {
-        "x": 2.2633461676636744,
-        "y": 6.751148706049682
+        "x": 7.770191497945351,
+        "y": 7.592347218421917
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.34799774692142,
-        "y": 5.545847679658323
+        "x": 6.163243931426135,
+        "y": 6.852118395594816
       },
       "prevControl": {
-        "x": 1.6304053342751483,
-        "y": 5.8818153266825846
+        "x": 6.163243931426135,
+        "y": 7.452118395594816
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Center Start"
+      "linkedName": "Passing Spot Amp Midfield"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 0.05,
-      "rotationDegrees": 0.0,
+      "rotationDegrees": 60.0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 44.67840494776765,
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 23.954492675459147,
       "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0,
-    "rotateFast": false
+    "velocity": 1.0,
+    "rotation": -7.949999999999989,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 60.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

@@ -1,0 +1,18 @@
+package com.team766.robot.reva.procedures.auton_routines.autons_v2;
+
+import com.team766.robot.common.procedures.PathSequenceAuto;
+import com.team766.robot.reva.Robot;
+import com.team766.robot.reva.procedures.ShootAtSubwoofer;
+import com.team766.robot.reva.procedures.StartAutoIntake;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
+public class SourceGrab8BumpMidAuto extends PathSequenceAuto {
+    public SourceGrab8BumpMidAuto() {
+        super(Robot.drive, new Pose2d(0.71, 4.40, Rotation2d.fromDegrees(-60)));
+        addProcedure(new ShootAtSubwoofer());
+
+		addProcedure(new StartAutoIntake());
+		addPath("Start Source Subwoofer, Get Source Midfield, Bump Midfield");
+    }
+}
