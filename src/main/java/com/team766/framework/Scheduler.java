@@ -90,8 +90,14 @@ public class Scheduler implements Runnable {
         ++m_iterationCount;
         for (Runnable runnable : new LinkedList<Runnable>(m_runnables)) {
             try {
+                var startTime = System.currentTimeMillis();
                 m_running = runnable;
                 runnable.run();
+                var endTime = System.currentTimeMillis();
+                var duration = endTime - startTime;
+                if (duration > 100) {
+                    Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, runnable + " took " + duration + "ms");
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
                 LoggerExceptionUtils.logException(ex);

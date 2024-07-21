@@ -108,7 +108,7 @@ public class RobotMain extends LoggedRobot {
                 // set up AdvantageKit logging
                 DataLogManager.log("Initializing logging.");
                 Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
-                Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                // Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
                 new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             } else {

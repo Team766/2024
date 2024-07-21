@@ -109,6 +109,7 @@ public class DriverShootNow extends VisionPIDProcedure {
         context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
 
         Robot.lights.signalFinishingShootingProcedure();
+        context.releaseOwnership(Robot.shoulder);
         context.runSync(new DriverShootVelocityAndIntake());
     }
 

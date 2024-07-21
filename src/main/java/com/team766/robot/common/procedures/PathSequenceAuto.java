@@ -25,7 +25,7 @@ public class PathSequenceAuto extends Procedure {
     private final Drive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
-    private VisionSpeakerHelper visionSpeakerHelper;
+    // private VisionSpeakerHelper visionSpeakerHelper;
 
     /**
      * Sequencer for using path following with other procedures
@@ -33,11 +33,13 @@ public class PathSequenceAuto extends Procedure {
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
     public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
+        log("started constructing");
         pathItems = new LinkedList<RunnableWithContext>();
         this.drive = drive;
         this.controller = createDriveController(drive);
         this.initialPosition = initialPosition;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
+        log("finished constructing");
+        // visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
     private PPHolonomicDriveController createDriveController(Drive drive) {
@@ -92,6 +94,7 @@ public class PathSequenceAuto extends Procedure {
 
     @Override
     public final void run(Context context) {
+        log("started running");
         boolean shouldFlipAuton = false;
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -102,8 +105,11 @@ public class PathSequenceAuto extends Procedure {
             log("Skipping auton");
             return;
         }
+        log("finished alliancing");
 
         context.startAsync(new MoveClimbersToBottom());
+        log("started moving climbers");
+
         context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
@@ -115,6 +121,8 @@ public class PathSequenceAuto extends Procedure {
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
+
+        log("starting running path items");
         for (RunnableWithContext pathItem : pathItems) {
             context.runSync(pathItem);
             context.yield();

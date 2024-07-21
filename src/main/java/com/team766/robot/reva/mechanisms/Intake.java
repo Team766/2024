@@ -25,9 +25,9 @@ public class Intake extends Mechanism {
     IntakePosition[] positions =
             new IntakePosition[] {
                 new IntakePosition(0, 135),
-                new IntakePosition(0.2, 200),
-                new IntakePosition(0.5, 300),
-                new IntakePosition(1.0, 400)
+                new IntakePosition(0.4, 200),
+                new IntakePosition(0.75, 300),
+                new IntakePosition(1.0, 350)
             };
 
     private static final double DEFAULT_POWER = 1.0;
