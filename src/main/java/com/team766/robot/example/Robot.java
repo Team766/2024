@@ -7,15 +7,17 @@ import com.team766.robot.example.mechanisms.*;
 import com.team766.robot.example.procedures.*;
 
 public class Robot implements RobotConfigurator {
+    private ExampleMechanism exampleMechanism;
+
     @Override
     public void initializeRobotSystems() {
         // Initialize mechanisms here
-        addRobotSystem(new ExampleMechanism());
+        exampleMechanism = new ExampleMechanism();
     }
 
     @Override
     public OI createOI() {
-        return new OI();
+        return new OI(exampleMechanism);
     }
 
     @Override

@@ -13,20 +13,27 @@ import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.auton_routines.*;
 
 public class Robot implements RobotConfigurator {
+    private Drive drive;
+    private Superstructure superstructure;
+    private Intake intake;
+    private Shooter shooter;
+    private NoteCamera noteCamera;
+    private ForwardApriltagCamera forwardApriltagCamera;
+
     @Override
     public void initializeRobotSystems() {
         SwerveConfig config = new SwerveConfig();
-        addRobotSystem(new Drive(config));
-        addRobotSystem(new Superstructure());
-        addRobotSystem(new Intake());
-        addRobotSystem(new Shooter());
-        addRobotSystem(new NoteCamera());
-        addRobotSystem(new ForwardApriltagCamera());
+        drive = new Drive(config);
+        superstructure = new Superstructure();
+        intake = new Intake();
+        shooter = new Shooter();
+        noteCamera = new NoteCamera();
+        forwardApriltagCamera = new ForwardApriltagCamera();
     }
 
     @Override
     public OI createOI() {
-        return new OI();
+        return new OI(drive, superstructure, intake, shooter);
     }
 
     @Override
@@ -46,24 +53,20 @@ public class Robot implements RobotConfigurator {
             //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Center Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new ThreePieceAmpSide(drive, ss, shooter, intake)),
+                    () -> new ThreePieceAmpSide(drive, superstructure, shooter, intake)),
             new AutonomousMode(
                     "4p Start Amp, All Close Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new FourPieceAmpSide(drive, ss, shooter, intake)),
+                    () -> new FourPieceAmpSide(drive, superstructure, shooter, intake)),
             new AutonomousMode(
                     "2p Start Source, Bottom Midfield Piece",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new TwoPieceMidfieldSourceSide(drive, ss, shooter, intake)),
+                    () -> new TwoPieceMidfieldSourceSide(drive, superstructure, shooter, intake)),
             new AutonomousMode(
                     "3p Start Amp, Amp and Top Midfield Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new ThreePieceMidfieldAmpSide(drive, ss, shooter, intake)),
+                    () -> new ThreePieceMidfieldAmpSide(drive, superstructure, shooter, intake)),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
-                    (Drive drive, Superstructure ss, Shooter shooter, Intake intake) ->
-                            new ThreePieceStartCenterTopAndAmp(drive, ss, shooter, intake))
+                    () -> new ThreePieceStartCenterTopAndAmp(
+                            drive, superstructure, shooter, intake))
         };
     }
 }

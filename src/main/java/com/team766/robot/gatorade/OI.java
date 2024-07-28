@@ -1,6 +1,9 @@
 package com.team766.robot.gatorade;
 
+import static com.team766.framework.resources.Guarded.guard;
+
 import com.team766.framework.OIBase;
+import com.team766.framework.resources.Guarded;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.DriverOI;
@@ -25,6 +28,8 @@ public class OI extends OIBase {
     private final JoystickReader rightJoystick;
     private final JoystickReader boxopGamepad;
     private final DriverOI driverOI;
+    private final Guarded<Superstructure> ss;
+    private final Guarded<Intake> intake;
 
     @AutoLogOutput
     Optional<PlacementPosition> placementPosition = Optional.empty();
@@ -32,12 +37,14 @@ public class OI extends OIBase {
     @AutoLogOutput(key = "Game Piece")
     GamePieceType gamePieceType = GamePieceType.CONE;
 
-    public OI() {
+    public OI(Drive drive, Superstructure ss, Intake intake) {
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
         boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
+        this.ss = guard(ss);
+        this.intake = guard(intake);
 
-        driverOI = new DriverOI(this, leftJoystick, rightJoystick);
+        driverOI = new DriverOI(this, leftJoystick, rightJoystick, drive);
     }
 
     private void updateStatus() {
@@ -51,11 +58,15 @@ public class OI extends OIBase {
         driverOI.run();
 
         if (leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT)) {
-            whileAvailable((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
+            whileAvailable(
+                    intake,
+                    (Intake intake) -> intake.setGoal(
+                            new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
         } else {
-            byDefault((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
+            byDefault(
+                    intake,
+                    (Intake intake) -> intake.setGoal(
+                            new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         }
 
         // Respond to boxop commands
@@ -89,22 +100,28 @@ public class OI extends OIBase {
 
         // look for button hold to start intake, release to idle intake
         if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN)) {
-            whileAvailable((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
+            whileAvailable(
+                    intake,
+                    (Intake intake) ->
+                            intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
         } else {
-            byDefault((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
+            byDefault(
+                    intake,
+                    (Intake intake) -> intake.setGoal(
+                            new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
         }
 
         if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
-            whileAvailable((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
+            whileAvailable(
+                    intake,
+                    (Intake intake) -> intake.setGoal(
+                            new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         }
 
         // look for button hold to extend intake/wrist/elevator superstructure,
         // release to retract
         if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-            onceAvailable((Superstructure ss) -> {
+            onceAvailable(ss, (Superstructure ss) -> {
                 if (placementPosition.isPresent()) {
                     ss.setGoal(Superstructure.MoveToPosition.Extended(
                             placementPosition.get(), gamePieceType));
@@ -122,9 +139,11 @@ public class OI extends OIBase {
                 //     elevator.setGoal(new Elevator.NudgeNoPID(elevatorNudgeAxis)));
                 if (elevatorNudgeAxis > 0) {
                     whileAvailable(
+                            ss,
                             (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_ELEVATOR_UP));
                 } else {
                     whileAvailable(
+                            ss,
                             (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_ELEVATOR_DOWN));
                 }
             }
@@ -136,14 +155,14 @@ public class OI extends OIBase {
                 //     wrist.setGoal(new Wrist.NudgeNoPID(wristNudgeAxis)));
                 if (wristNudgeAxis > 0) {
                     whileAvailable(
-                            (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_WRIST_UP));
+                            ss, (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_WRIST_UP));
                 } else {
                     whileAvailable(
-                            (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_WRIST_DOWN));
+                            ss, (Superstructure ss) -> ss.setGoal(Superstructure.NUDGE_WRIST_DOWN));
                 }
             }
         } else {
-            byDefault((Superstructure ss, Intake intake) -> {
+            byDefault(ss, intake, (Superstructure ss, Intake intake) -> {
                 ss.setGoal(Superstructure.MoveToPosition.RETRACTED);
                 if (placementPosition.orElse(null) == PlacementPosition.HUMAN_PLAYER) {
                     intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE));

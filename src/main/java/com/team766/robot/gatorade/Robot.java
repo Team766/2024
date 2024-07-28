@@ -11,17 +11,21 @@ import com.team766.robot.gatorade.procedures.LoopAuto;
 import com.team766.robot.gatorade.procedures.TestPathAuto;
 
 public class Robot implements RobotConfigurator {
+    private Drive drive;
+    private Intake intake;
+    private Superstructure superstructure;
+
     @Override
     public void initializeRobotSystems() {
         SwerveConfig config = new SwerveConfig().withCanBus(SwerveDriveConstants.SWERVE_CANBUS);
-        addRobotSystem(new Intake());
-        addRobotSystem(new Superstructure());
-        addRobotSystem(new Drive(config));
+        drive = new Drive(config);
+        superstructure = new Superstructure();
+        intake = new Intake();
     }
 
     @Override
     public OI createOI() {
-        return new OI();
+        return new OI(drive, superstructure, intake);
     }
 
     @Override
@@ -55,8 +59,8 @@ public class Robot implements RobotConfigurator {
             // PointDir(2, 1), new PointDir(0, 1)})),
             // new AutonomousMode("DoNothing", () -> new DoNothing()),
             // new AutonomousMode("FollowExamplePath", () -> new FollowPath()),
-            new AutonomousMode("RotationTestAuto", (Drive drive) -> new TestPathAuto(drive)),
-            new AutonomousMode("LoopAuto", (Drive drive) -> new LoopAuto(drive))
+            new AutonomousMode("RotationTestAuto", () -> new TestPathAuto(drive)),
+            new AutonomousMode("LoopAuto", () -> new LoopAuto(drive))
         };
     }
 }

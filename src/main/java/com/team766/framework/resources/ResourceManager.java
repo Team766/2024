@@ -1,7 +1,6 @@
 package com.team766.framework.resources;
 
 import com.team766.library.function.FunctionBase;
-import com.team766.library.function.Reflection;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -17,24 +16,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class ResourceManager {
-    private static final Map<Class<? extends Subsystem>, Subsystem> subsystems = new HashMap<>();
-
-    public static void addSubsystem(Subsystem subsystem) {
-        subsystems.put(subsystem.getClass(), subsystem);
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T extends Subsystem> T getSubsystem(Class<T> clazz) {
-        T subsystem = (T) subsystems.get(clazz);
-        if (subsystem == null) {
-            throw new IllegalArgumentException(clazz.getName() + " is not a registered Subsystem");
-        }
-        return subsystem;
-    }
-
     private final List<Runnable> transientEndFrameCallbacks = new ArrayList<>();
 
-    private final Set<Class<? extends Subsystem>> reservedSubsystems = new HashSet<>();
+    private final Set<Subsystem> reservedSubsystems = new HashSet<>();
 
     private final Map<Class<? extends FunctionBase>, Command> prevScheduledCommands =
             new HashMap<>();
@@ -46,18 +30,18 @@ public final class ResourceManager {
         transientEndFrameCallbacks.add(callback);
     }
 
-    @SuppressWarnings("unchecked")
-    public static Command makeAutonomus(
-            FunctionBase callback, Function<Subsystem[], Command> doCallback) {
-        var params = (Class<? extends Subsystem>[]) Reflection.findLambdaParams(callback);
-        Subsystem[] subsystems = acquireSubsytems(params);
+    public static Command makeAutonomous(
+            List<Guarded<? extends Subsystem>> resources,
+            Function<Subsystem[], Command> doCallback) {
+        Subsystem[] subsystems = acquireSubsytems(resources);
         return doCallback.apply(subsystems);
     }
 
-    @SuppressWarnings("unchecked")
-    /* package */ boolean runIfAvailable(FunctionBase callback, Consumer<Subsystem[]> doCallback) {
-        var params = (Class<? extends Subsystem>[]) Reflection.findLambdaParams(callback);
-        Subsystem[] subsystems = tryReserve(params);
+    /* package */ boolean runIfAvailable(
+            FunctionBase callback,
+            List<Guarded<? extends Subsystem>> resources,
+            Consumer<Subsystem[]> doCallback) {
+        Subsystem[] subsystems = tryReserve(resources);
         if (subsystems == null) {
             return false;
         }
@@ -66,8 +50,11 @@ public final class ResourceManager {
         return true;
     }
 
-    /* package */ void runOnceIfAvailable(FunctionBase callback, Consumer<Subsystem[]> doCallback) {
-        runIfAvailable(callback, subsystems -> {
+    /* package */ void runOnceIfAvailable(
+            FunctionBase callback,
+            List<Guarded<? extends Subsystem>> resources,
+            Consumer<Subsystem[]> doCallback) {
+        runIfAvailable(callback, resources, subsystems -> {
             if (activeRules.put(callback.getClass(), this) != null | initializing) {
                 return;
             }
@@ -76,15 +63,20 @@ public final class ResourceManager {
     }
 
     /* package */ boolean scheduleIfAvailable(
-            FunctionBase callback, Function<Subsystem[], Command> doCallback) {
+            FunctionBase callback,
+            List<Guarded<? extends Subsystem>> resources,
+            Function<Subsystem[], Command> doCallback) {
         return runIfAvailable(
                 callback,
+                resources,
                 subsystems -> scheduleCommand(callback.getClass(), subsystems, doCallback));
     }
 
     /* package */ void scheduleOnceIfAvailable(
-            FunctionBase callback, Function<Subsystem[], Command> doCallback) {
-        scheduleIfAvailable(callback, subsystems -> {
+            FunctionBase callback,
+            List<Guarded<? extends Subsystem>> resources,
+            Function<Subsystem[], Command> doCallback) {
+        scheduleIfAvailable(callback, resources, subsystems -> {
             if (activeRules.put(callback.getClass(), this) != null | initializing) {
                 return null;
             }
@@ -92,19 +84,19 @@ public final class ResourceManager {
         });
     }
 
-    private Subsystem[] tryReserve(Class<? extends Subsystem>[] resources) {
-        var resourcesList = Arrays.asList(resources);
-        if (!Collections.disjoint(reservedSubsystems, resourcesList)) {
+    private Subsystem[] tryReserve(List<Guarded<? extends Subsystem>> resources) {
+        if (!Collections.disjoint(reservedSubsystems, resources)) {
             return null;
         }
-        reservedSubsystems.addAll(resourcesList);
-        return acquireSubsytems(resources);
+        var subsystems = acquireSubsytems(resources);
+        reservedSubsystems.addAll(Arrays.asList(subsystems));
+        return subsystems;
     }
 
-    private static Subsystem[] acquireSubsytems(Class<? extends Subsystem>[] resources) {
-        var subsystems = new Subsystem[resources.length];
+    private static Subsystem[] acquireSubsytems(List<Guarded<? extends Subsystem>> resources) {
+        var subsystems = new Subsystem[resources.size()];
         for (int i = 0; i < subsystems.length; ++i) {
-            subsystems[i] = getSubsystem(resources[i]);
+            subsystems[i] = resources.get(i).get();
             Command prevOwner = CommandScheduler.getInstance().requiring(subsystems[i]);
             if (prevOwner != null) {
                 prevOwner.cancel();

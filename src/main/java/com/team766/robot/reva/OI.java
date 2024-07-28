@@ -4,7 +4,9 @@ import com.team766.framework.OIBase;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.common.mechanisms.Drive;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -20,7 +22,7 @@ public class OI extends OIBase {
     private final DebugOI debugOI;
     private final BoxOpOI boxOpOI;
 
-    public OI() {
+    public OI(Drive drive, Superstructure ss, Intake intake, Shooter shooter) {
         loggerCategory = Category.OPERATOR_INTERFACE;
 
         leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
@@ -28,9 +30,9 @@ public class OI extends OIBase {
         macropad = RobotProvider.instance.getJoystick(InputConstants.MACROPAD);
         gamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD_X);
 
-        driverOI = new DriverOI(this, leftJoystick, rightJoystick);
-        debugOI = new DebugOI(this, macropad);
-        boxOpOI = new BoxOpOI(this, gamepad);
+        driverOI = new DriverOI(this, leftJoystick, rightJoystick, drive, ss, intake);
+        debugOI = new DebugOI(this, macropad, ss, intake, shooter);
+        boxOpOI = new BoxOpOI(this, gamepad, ss, intake, shooter);
     }
 
     @Override
