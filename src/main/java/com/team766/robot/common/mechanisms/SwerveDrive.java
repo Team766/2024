@@ -38,7 +38,6 @@ public class SwerveDrive extends Mechanism {
     private final SwerveModule swerveBL;
 
     private final GyroReader gyro;
-    private Optional<Alliance> alliance = DriverStation.getAlliance();
 
     // declaration of odometry object
     private Odometry swerveOdometry;
@@ -202,6 +201,7 @@ public class SwerveDrive extends Mechanism {
     private void controlFieldOrientedBase(double x, double y, double turn) {
         checkContextOwnership();
 
+        Optional<Alliance> alliance = DriverStation.getAlliance();
         double yawRad =
                 Math.toRadians(
                         getHeading()
@@ -316,6 +316,7 @@ public class SwerveDrive extends Mechanism {
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
     public void resetGyro() {
+        Optional<Alliance> alliance = DriverStation.getAlliance();
         resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
 
