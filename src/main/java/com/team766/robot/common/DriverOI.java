@@ -5,13 +5,13 @@ import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.constants.InputConstants;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 
 public class DriverOI extends OIFragment {
 
     protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
-    protected final Drive drive;
+    protected final SwerveDrive drive;
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
     protected double rightJoystickY = 0;
@@ -21,7 +21,7 @@ public class DriverOI extends OIFragment {
 
     private final OICondition movingJoysticks;
 
-    public DriverOI(Drive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
+    public DriverOI(SwerveDrive drive, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         this.drive = drive;
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;

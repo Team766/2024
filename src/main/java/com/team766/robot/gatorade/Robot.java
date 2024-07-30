@@ -4,7 +4,7 @@ import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import com.team766.robot.gatorade.mechanisms.*;
 
@@ -14,7 +14,7 @@ public class Robot implements RobotConfigurator {
     public static Wrist wrist;
     public static Elevator elevator;
     public static Shoulder shoulder;
-    public static Drive drive;
+    public static SwerveDrive drive;
     public static Lights lights;
 
     @Override
@@ -24,7 +24,7 @@ public class Robot implements RobotConfigurator {
         wrist = new Wrist();
         elevator = new Elevator();
         shoulder = new Shoulder();
-        drive = new Drive(config);
+        drive = new SwerveDrive(config);
         lights = new Lights();
     }
 
