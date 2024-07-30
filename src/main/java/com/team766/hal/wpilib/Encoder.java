@@ -6,4 +6,9 @@ public class Encoder extends edu.wpi.first.wpilibj.Encoder implements EncoderRea
     public Encoder(final int channelA, final int channelB) {
         super(channelA, channelB);
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
 }

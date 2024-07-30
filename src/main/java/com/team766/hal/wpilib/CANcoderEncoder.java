@@ -21,6 +21,11 @@ public class CANcoderEncoder implements EncoderReader {
     }
 
     @Override
+    public boolean isConnected() {
+        return cancoder.getPosition().getStatus().isOK();
+    }
+
+    @Override
     public double getDistance() {
         StatusSignal<Double> position = cancoder.getPosition();
         if (!position.getStatus().isOK()) {
