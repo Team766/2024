@@ -1,4 +1,4 @@
-package com.team766.robot.example;
+package com.team766.robot.nathan_elevator;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
@@ -32,6 +32,9 @@ public class OI extends Procedure {
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
+            Robot.drive.drive(
+                    -joystick0.getAxis(1), -joystick0.getAxis(0));
+            
             double elevatorY = joystick0.getAxis(4);
             Robot.testElevator.setMotorPower(elevatorY);
         }

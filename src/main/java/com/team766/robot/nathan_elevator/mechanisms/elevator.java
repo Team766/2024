@@ -8,13 +8,15 @@ public class elevator extends Mechanism {
     private MotorController elevatorMotor;
     final double ELEVATOR_UPPER_CONSTANT = 10;
     final double ELEVATOR_LOWER_CONSTANT = -10;
+
     public elevator() {
         elevatorMotor = RobotProvider.instance.getMotor("elevator.motor");
     }
 
     public void setMotorPower(final double elevatorPower) {
         checkContextOwnership();
-        if(elevatorMotor.getSensorPosition() < ELEVATOR_UPPER_CONSTANT && elevatorMotor.getSensorPosition() > ELEVATOR_LOWER_CONSTANT) {
+        if (elevatorMotor.getSensorPosition() < ELEVATOR_UPPER_CONSTANT
+                && elevatorMotor.getSensorPosition() > ELEVATOR_LOWER_CONSTANT) {
             elevatorMotor.set(elevatorPower);
         }
     }

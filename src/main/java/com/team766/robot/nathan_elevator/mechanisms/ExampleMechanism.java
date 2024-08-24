@@ -1,4 +1,4 @@
-package com.team766.robot.example.mechanisms;
+package com.team766.robot.nathan_elevator.mechanisms;
 
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;

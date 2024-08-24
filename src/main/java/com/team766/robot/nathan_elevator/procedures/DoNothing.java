@@ -1,4 +1,4 @@
-package com.team766.robot.example.procedures;
+package com.team766.robot.nathan_elevator.procedures;
 
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
