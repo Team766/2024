@@ -3,9 +3,9 @@ package com.team766.robot.burro_arm.mechanisms;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.EncoderReader;
-import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.CANSparkMaxMotorController;
 import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,7 +16,7 @@ public class Arm extends Mechanism {
     private static final double MOTOR_ROTATIONS_TO_ARM_ANGLE =
             ABSOLUTE_ENCODER_TO_ARM_ANGLE * (1. / (5. * 5. * 5.) /*planetary gearbox*/);
 
-    private final MotorController motor;
+    private final CANSparkMaxMotorController motor;
     private final EncoderReader absoluteEncoder;
 
     private final ValueProvider<Double> absoluteEncoderOffset;
@@ -25,7 +25,8 @@ public class Arm extends Mechanism {
     private boolean initialized = false;
 
     public Arm() {
-        motor = RobotProvider.instance.getMotor("arm.Motor");
+        motor = (CANSparkMaxMotorController)RobotProvider.instance.getMotor("arm.Motor");
+        motor.setSmartCurrentLimit(5, 80, 200);
         absoluteEncoder = RobotProvider.instance.getEncoder("arm.AbsoluteEncoder");
         absoluteEncoderOffset = ConfigFileReader.instance.getDouble("arm.AbsoluteEncoderOffset");
     }
