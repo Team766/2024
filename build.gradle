@@ -1,4 +1,5 @@
 plugins {
+    id "eclipse"
     id "java"
     id 'java-library'
     id 'maven-publish'
@@ -13,6 +14,36 @@ def protobufVersion = '3.21.6'
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Enable support for pattern matching switch statements.
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add '--enable-preview'
+
+    // When VSCode/EclipseJDT imports a Gradle project, it ignores the file.withProperties clause.
+    // This forces generation of .settings/org.eclipse.jdt.core.prefs with all of the properties
+    // specified below, which are the only way to simultaneously get bytecode that is compatible
+    // with JDK 17 and have VSCode not show errors when using pattern matching switch statements.
+    dependsOn tasks.withType(GenerateEclipseJdt)
+}
+eclipse {
+    jdt {
+        // Use JDK 21 in VSCode (pattern matching is no longer a preview feature in JDK 21).
+        // Eclipse JDT (used as the Java engine for VSCode) doesn't support enabling previews for
+        // source versions that are prior to its release version (i.e. we can't have JDK 17 with
+        // preview features for the JDK 21 version of Eclipse JDT). NB: Downgrading to an earlier
+        // version of JDT is not really a viable option, since modern VSCode expects a modern JDT.
+        sourceCompatibility = 21
+
+        file {
+            withProperties { properties ->
+                // This specific setting is required to get bytecode that is compatible with JDK 17.
+                // Without this (and with sourceCompatibility = 21), the generated code tries to
+                // depend on java.lang.MatchException, which was not added until JDK 19.
+                properties['org.eclipse.jdt.core.compiler.compliance'] = '17'
+            }
+        }
+    }
 }
 
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
@@ -130,6 +161,7 @@ dependencies {
     // implementation "org.java-websocket:Java-WebSocket:1.4.0"
     //implementation files('deps/Java-WebSocket-1.3.9.jar')
     implementation files('deps/json-20190722.jar')
+    implementation("com.google.guava:guava:33.3.0-jre")
 }
 
 javadoc {
