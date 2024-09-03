@@ -1,6 +1,6 @@
 package com.team766.framework;
 
-class StackTraceUtils {
+public class StackTraceUtils {
     public static String getStackTrace(final Thread thread) {
         StackTraceElement[] stackTrace;
         try {
