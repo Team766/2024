@@ -7,9 +7,13 @@ import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
-public abstract class Mechanism extends LoggingBase {
+// TODO: add javadoc
+public abstract class Mechanism<R extends Request> extends LoggingBase {
     private ContextImpl m_owningContext = null;
     private Thread m_runningPeriodic = null;
+
+    private R request = null;
+    private boolean isRequestNew = false;
 
     public Mechanism() {
         loggerCategory = Category.MECHANISMS;
@@ -43,6 +47,13 @@ public abstract class Mechanism extends LoggingBase {
 
     public String getName() {
         return this.getClass().getName();
+    }
+
+    public final void setRequest(R request) {
+        checkContextOwnership();
+        this.request = request;
+        isRequestNew = true;
+        log(this.getClass().getName() + " processing request: " + request);
     }
 
     protected void checkContextOwnership() {
@@ -123,5 +134,10 @@ public abstract class Mechanism extends LoggingBase {
         m_owningContext = null;
     }
 
-    public void run() {}
+    /* package */ void run() {
+        run(request, isRequestNew);
+        isRequestNew = false;
+    }
+
+    protected abstract void run(R request, boolean isRequestNew);
 }
