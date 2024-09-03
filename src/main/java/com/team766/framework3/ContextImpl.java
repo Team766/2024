@@ -164,7 +164,7 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      * takeOwnership. These will be automatically released when the Context
      * finishes executing.
      */
-    private Set<Mechanism> m_ownedMechanisms = new HashSet<Mechanism>();
+    private Set<Mechanism<?>> m_ownedMechanisms = new HashSet<Mechanism<?>>();
 
     /*
      * Constructors are intentionally private or package-private. New contexts
@@ -328,7 +328,7 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.WARNING, "Context " + getContextName() + " died");
         } finally {
-            for (Mechanism m : m_ownedMechanisms) {
+            for (Mechanism<?> m : m_ownedMechanisms) {
                 // Don't use this.releaseOwnership here, because that would cause a
                 // ConcurrentModificationException since we're iterating over m_ownedMechanisms
                 try {
@@ -444,12 +444,12 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
         return m_state == State.DONE;
     }
 
-    /* package */ void takeOwnership(final Mechanism mechanism) {
+    /* package */ void takeOwnership(final Mechanism<?> mechanism) {
         mechanism.takeOwnership(this, m_parentContext);
         m_ownedMechanisms.add(mechanism);
     }
 
-    /* package */ void releaseOwnership(final Mechanism mechanism) {
+    /* package */ void releaseOwnership(final Mechanism<?> mechanism) {
         mechanism.releaseOwnership(this);
         m_ownedMechanisms.remove(mechanism);
     }

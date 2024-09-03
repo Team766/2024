@@ -27,9 +27,10 @@ public class StatusBus extends LoggingBase {
         return s_instance;
     }
 
-    private void clear() {
-        statuses.clear();
-    }
+	// TODO: would this be helpful?
+    // private void clear() {
+    //     statuses.clear();
+    // }
 
     /**
      * Publish a new {@link Status} for the given specific class of {@link Status}.  Each producer will
