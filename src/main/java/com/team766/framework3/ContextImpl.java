@@ -13,6 +13,7 @@ import java.lang.StackWalker.StackFrame;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -311,10 +312,25 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      * This is the entry point for this Context's worker thread.
      */
     private void threadFunction() {
+        var inheritedReservations = new TreeSet<Mechanism>();
+
         try {
             // OS threads run independently of one another, so we need to wait until
             // the baton is passed to us before we can start running the user's code
             waitForControl(ControlOwner.SUBROUTINE);
+
+            // automatically take ownership of mechanisms reserved by the RunnableWithContext we
+            // will be running.
+            for (Mechanism<?> m : m_func.reservations()) {
+                // keep track of mechanisms we move from parent to child, so we can subsequently
+                // restore
+                if (m_parentContext.ownedMechanisms().contains(m)) {
+                    inheritedReservations.add(m);
+                }
+                m.takeOwnership(this, m_parentContext);
+                m_ownedMechanisms.add(m);
+            }
+
             // Call into the user's code.
             m_func.run(this);
             Logger.get(Category.FRAMEWORK)
@@ -337,6 +353,14 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
                     LoggerExceptionUtils.logException(ex);
                 }
             }
+
+            // restore ownership of inherited mechanisms
+            if (m_parentContext != null) {
+                for (Mechanism<?> inherited : inheritedReservations) {
+                    inherited.takeOwnership(m_parentContext, null);
+                }
+            }
+
             synchronized (m_threadSync) {
                 m_state = State.DONE;
                 c_currentContext = null;
@@ -396,7 +420,34 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
 
     @Override
     public void runSync(final RunnableWithContext func) {
-        func.run(this);
+        // TODO: think through this auto-take/release logic!
+        // this requires careful thought and testing.
+        var inheritedReservations = new TreeSet<Mechanism<?>>();
+
+        // automatically take ownership of mechanisms reserved by the RunnableWithContext we
+        // will be running.
+        // TODO: pay attention to what *this* Context already owned - we need to restore those.
+        for (Mechanism<?> m : func.reservations()) {
+            // keep track of mechanisms we move from parent to child, so we can subsequently
+            // restore
+            if (m_parentContext.ownedMechanisms().contains(m)) {
+                inheritedReservations.add(m);
+            }
+            m.takeOwnership(this, m_parentContext);
+            m_ownedMechanisms.add(m);
+        }
+
+        try {
+            func.run(this);
+        } finally {
+            for (Mechanism<?> m : func.reservations()) {
+                m_ownedMechanisms.remove(m);
+                m.releaseOwnership(this);
+                if (inheritedReservations.contains(m)) {
+                    m_parentContext.takeOwnership(m);
+                }
+            }
+        }
     }
 
     /**
@@ -452,5 +503,9 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
     /* package */ void releaseOwnership(final Mechanism<?> mechanism) {
         mechanism.releaseOwnership(this);
         m_ownedMechanisms.remove(mechanism);
+    }
+
+    /* package */ Set<Mechanism<?>> ownedMechanisms() {
+        return m_ownedMechanisms;
     }
 }
