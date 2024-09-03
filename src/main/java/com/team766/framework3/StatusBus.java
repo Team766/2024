@@ -27,7 +27,7 @@ public class StatusBus extends LoggingBase {
         return s_instance;
     }
 
-	// TODO: would this be helpful?
+    // TODO: would this be helpful?
     // private void clear() {
     //     statuses.clear();
     // }
