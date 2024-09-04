@@ -354,7 +354,7 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
                 }
             }
 
-            // restore ownership of inherited mechanisms
+            // restore ownership of mechanisms inherited from the parent context
             if (m_parentContext != null) {
                 for (Mechanism<?> inherited : inheritedReservations) {
                     inherited.takeOwnership(m_parentContext, null);
@@ -441,10 +441,8 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
             func.run(this);
         } finally {
             for (Mechanism<?> m : func.reservations()) {
-                m_ownedMechanisms.remove(m);
-                m.releaseOwnership(this);
                 if (inheritedReservations.contains(m)) {
-                    m_parentContext.takeOwnership(m);
+                    m.takeOwnership(m_parentContext, null);
                 }
             }
         }
