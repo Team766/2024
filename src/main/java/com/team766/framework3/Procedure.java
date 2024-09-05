@@ -1,8 +1,8 @@
 package com.team766.framework3;
 
+import com.google.common.collect.Sets;
 import com.team766.framework.LoggingBase;
 import java.util.Set;
-import java.util.TreeSet;
 
 public abstract class Procedure extends LoggingBase implements RunnableWithContext {
     // A reusable Procedure that does nothing.
@@ -20,7 +20,7 @@ public abstract class Procedure extends LoggingBase implements RunnableWithConte
     }
 
     protected final int m_id;
-    private final Set<Mechanism<?>> reservations = new TreeSet<Mechanism<?>>();
+    private final Set<Mechanism<?>> reservations = Sets.newHashSet();
 
     Procedure() {
         m_id = createNewId();

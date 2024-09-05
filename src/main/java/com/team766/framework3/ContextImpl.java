@@ -208,6 +208,10 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
         return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
     }
 
+    /* package */ RunnableWithContext getRunnable() {
+        return m_func;
+    }
+
     @Override
     public String toString() {
         String repr = getContextName();
@@ -312,7 +316,7 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      * This is the entry point for this Context's worker thread.
      */
     private void threadFunction() {
-        var inheritedReservations = new TreeSet<Mechanism>();
+        var inheritedReservations = new TreeSet<Mechanism<?>>();
 
         try {
             // OS threads run independently of one another, so we need to wait until
