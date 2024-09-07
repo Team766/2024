@@ -1,6 +1,6 @@
 package com.team766.robot.common.procedures;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -19,14 +19,14 @@ public class FollowPath extends Procedure {
     private final Drive drive;
     private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
-    private final PPHolonomicDriveController controller;
+    private final PathFollowingController controller;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
     public FollowPath(
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
-            PPHolonomicDriveController controller,
+            PathFollowingController controller,
             Drive drive) {
         this.path = path;
         this.replanningConfig = replanningConfig;
@@ -34,7 +34,7 @@ public class FollowPath extends Procedure {
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive) {
+    public FollowPath(String autoName, PathFollowingController controller, Drive drive) {
         this(
                 PathPlannerPath.fromPathFile(autoName),
                 PathPlannerConstants.REPLANNING_CONFIG,
@@ -79,6 +79,10 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
+            if (!controller.isHolonomic() && path.isReversed()) {
+                targetState = targetState.reverse();
+              }
+              
             curPose = drive.getCurrentPosition();
             currentSpeeds = drive.getChassisSpeeds();
 
