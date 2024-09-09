@@ -66,7 +66,7 @@ public class Conditions {
 
     public static class AwaitRequest<S extends Status> extends StatusCheck<S> {
 
-        public AwaitRequest(Class<S> clazz, Request request) {
+        public AwaitRequest(Class<S> clazz, Request<S> request) {
             super(clazz, request::isDone);
         }
     }
