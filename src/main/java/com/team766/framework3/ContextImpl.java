@@ -193,14 +193,6 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
         this(func, null);
     }
 
-    ContextImpl(final Runnable func, final ContextImpl parentContext) {
-        this((context) -> func.run());
-    }
-
-    ContextImpl(final Runnable func) {
-        this(func, null);
-    }
-
     /**
      * Returns a string meant to uniquely identify this Context (e.g. for use in logging).
      */
@@ -414,11 +406,6 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
 
     @Override
     public LaunchedContext startAsync(final RunnableWithContext func) {
-        return new ContextImpl(func::run, this);
-    }
-
-    @Override
-    public LaunchedContext startAsync(final Runnable func) {
         return new ContextImpl(func, this);
     }
 

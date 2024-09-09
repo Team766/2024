@@ -90,11 +90,6 @@ public interface Context {
     LaunchedContext startAsync(final RunnableWithContext func);
 
     /**
-     * Start running a new Context so the given procedure can run in parallel.
-     */
-    LaunchedContext startAsync(final Runnable func);
-
-    /**
      * Run the given Procedure synchronously (the calling Procedure will not resume until this one
      * has finished).
      */
