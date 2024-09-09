@@ -23,7 +23,7 @@ import java.util.function.BooleanSupplier;
  *   public class MyRules extends RuleEngine {
  *     public MyRules() {
  *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
- *       rules.add(Rule.create(gamepad.getButton(InputConstants.XBOX_RT)).
+ *       rules.add(Rule.create("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT)).
  *         withNewlyTriggeringRunnable(() -> new ShooterSpin(shooter)));
  *       ...
  *     }
@@ -63,13 +63,14 @@ public class Rule {
      * Instances of this Builder are created via {@link Rule#create} to simplify syntax.
      */
     public static class Builder {
-        private BooleanSupplier predicate;
+        private final String name;
+        private final BooleanSupplier predicate;
         private RunnableCreator newlyTriggeringRunnable;
         private RunnableCreator continuingTriggeringRunnable;
         private RunnableCreator finishedTriggeringRunnable;
 
-        // TODO: make the newly triggering runnable a ctor argument as well?
-        private Builder(BooleanSupplier predicate) {
+        private Builder(String name, BooleanSupplier predicate) {
+            this.name = name;
             this.predicate = predicate;
         }
 
@@ -94,6 +95,7 @@ public class Rule {
         // called by {@link RuleEngine#addRule}.
         /* package */ Rule build() {
             return new Rule(
+                    name,
                     predicate,
                     newlyTriggeringRunnable,
                     continuingTriggeringRunnable,
@@ -101,6 +103,7 @@ public class Rule {
         }
     }
 
+    private final String name;
     private final BooleanSupplier predicate;
     private final Map<TriggerType, RunnableCreator> triggerRunnables =
             Maps.newEnumMap(TriggerType.class);
@@ -109,16 +112,16 @@ public class Rule {
 
     private TriggerType currentTriggerType = TriggerType.NONE;
 
-    public static Builder create(BooleanSupplier predicate) {
-        return new Builder(predicate);
+    public static Builder create(String name, BooleanSupplier predicate) {
+        return new Builder(name, predicate);
     }
 
     private Rule(
+            String name,
             BooleanSupplier predicate,
             RunnableCreator newlyTriggeringRunnable,
             RunnableCreator continuingTriggeringRunnable,
             RunnableCreator finishedTriggeringRunnable) {
-
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
@@ -127,6 +130,7 @@ public class Rule {
             throw new IllegalArgumentException("Newly triggering rule is not defined.");
         }
 
+        this.name = name;
         this.predicate = predicate;
         if (newlyTriggeringRunnable != null) {
             triggerRunnables.put(TriggerType.NEWLY, newlyTriggeringRunnable);
@@ -156,6 +160,10 @@ public class Rule {
             }
         }
         return Collections.emptySet();
+    }
+
+    public String getName() {
+        return name;
     }
 
     /* package */ TriggerType getCurrentTriggerType() {

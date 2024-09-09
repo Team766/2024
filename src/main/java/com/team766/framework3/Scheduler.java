@@ -6,7 +6,9 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Scheduler implements Runnable {
@@ -63,6 +65,7 @@ public class Scheduler implements Runnable {
     private LinkedList<Runnable> m_runnables = new LinkedList<Runnable>();
     private int m_iterationCount = 0;
     private Runnable m_running = null;
+    private Map<Mechanism<?>, RunnableWithContext> reservedMechanisms = new HashMap<>();
 
     public void add(final Runnable runnable) {
         m_runnables.add(runnable);
