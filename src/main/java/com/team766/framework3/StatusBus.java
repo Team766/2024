@@ -14,11 +14,7 @@ import java.util.Map;
 public class StatusBus extends LoggingBase {
 
     private static StatusBus s_instance = new StatusBus();
-    private final Map<String, Status> statuses = new LinkedHashMap<String, Status>();
-
-    private static String computeKey(Class<? extends Status> statusClass) {
-        return statusClass.toString();
-    }
+    private final Map<Class<? extends Status>, Status> statuses = new LinkedHashMap<>();
 
     /**
      * Get the Singleton instance of the {@link StatusBus}.
@@ -39,8 +35,7 @@ public class StatusBus extends LoggingBase {
      * This method also logs the Status to diagnostic logs.
      */
     public void publish(Status status) {
-        String key = computeKey(status.getClass());
-        statuses.put(key, status);
+        statuses.put(status.getClass(), status);
         // TODO: also publish to data logs
         log("StatusBus received Status (" + status.getClass().getName() + "): " + status);
     }
@@ -56,8 +51,7 @@ public class StatusBus extends LoggingBase {
      */
     @SuppressWarnings("unchecked")
     public <S extends Status> S getStatus(Class<S> statusClass) {
-        String key = computeKey(statusClass);
-        return (S) statuses.get(key);
+        return (S) statuses.get(statusClass);
     }
 
     @Override
