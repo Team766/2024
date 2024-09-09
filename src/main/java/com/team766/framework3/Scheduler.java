@@ -67,6 +67,11 @@ public class Scheduler implements Runnable {
     private Runnable m_running = null;
     private Map<Mechanism<?>, RunnableWithContext> reservedMechanisms = new HashMap<>();
 
+    public RunnableWithContext getRunnableForMechanism(Mechanism<?> mechanism) {
+        // TODO: implement this!
+        return null;
+    }
+
     public void add(final Runnable runnable) {
         m_runnables.add(runnable);
     }

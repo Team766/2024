@@ -69,9 +69,7 @@ public class RuleEngine extends LoggingBase {
                         continue;
                     }
                     // see if a previously triggered rule is still using the mechanism
-                    // TODO
-                    RunnableWithContext existingRunnable =
-                            null; // Scheduler.getRunnableForMechanism(mechanism)
+                    RunnableWithContext existingRunnable = Scheduler.getInstance().getRunnableForMechanism(mechanism);
                     if (existingRunnable != null) {
                         // look up the rule
                         Rule existingRule = getRuleForTriggeredRunnable(existingRunnable);
