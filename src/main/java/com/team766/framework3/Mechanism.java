@@ -8,7 +8,7 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 // TODO: add javadoc
-public abstract class Mechanism<R extends Request> extends LoggingBase {
+public abstract class Mechanism<R extends Request<?>> extends LoggingBase {
     private ContextImpl m_owningContext = null;
     private Thread m_runningPeriodic = null;
 

@@ -9,13 +9,13 @@ package com.team766.framework3;
  *
  * Each Mechanism will have its own implementation of the {@link Request} marker interface.
  */
-public interface Request {
+public interface Request<S extends Status> {
 
     /**
      * Checks whether or not this request has been fulfilled, via the supplied {@link Status}.  This
      * {@link Status} should be the latest one retrieved via {@link StatusBus#getStatus(Class)}.
      */
-    boolean isDone(Status status);
+    boolean isDone(S status);
 
     // TODO: do we need any way of checking if the request has been bumped/canceled?
 }
