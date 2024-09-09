@@ -12,7 +12,7 @@ import com.team766.robot.example.Robot;
  * Utility class that reads the name of a {@link RobotConfigurator} from the config file, under the key
  * 'robotConfigurator', and creates an instance of that configurator.
  */
-/* package */ final class RobotSelector {
+public final class RobotSelector {
 
     private static final String ROBOT_CONFIGURATOR_KEY = "robotConfigurator";
     private static final String DEFAULT_CONFIGURATOR = Robot.class.getName();
@@ -23,7 +23,7 @@ import com.team766.robot.example.Robot;
      * Creates a configurator specified by the 'robotConfigurator' key in the config file.
      * If unable to create this configurator, backs off to the example one.
      */
-    /* package */ static RobotConfigurator createConfigurator() {
+    public static RobotConfiguratorBase createConfigurator() {
         ValueProvider<String> configuratorProvider =
                 ConfigFileReader.instance.getString(ROBOT_CONFIGURATOR_KEY);
         String robotConfigurator =
@@ -36,8 +36,9 @@ import com.team766.robot.example.Robot;
                         robotConfigurator.toString());
 
         try {
-            Class<RobotConfigurator> clazz =
-                    (Class<RobotConfigurator>) Class.forName(robotConfigurator);
+            @SuppressWarnings("unchecked")
+            Class<RobotConfiguratorBase> clazz =
+                    (Class<RobotConfiguratorBase>) Class.forName(robotConfigurator);
             return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             Logger.get(Category.CONFIGURATION)

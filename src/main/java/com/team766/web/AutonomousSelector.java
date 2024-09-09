@@ -1,6 +1,5 @@
 package com.team766.web;
 
-import com.team766.framework.AutonomousMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -10,7 +9,16 @@ import java.util.Optional;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
-public class AutonomousSelector implements WebServer.Handler {
+public class AutonomousSelector<
+                AutonomousMode extends AutonomousSelector.Selectable<AutonomousMode>>
+        implements WebServer.Handler {
+    // TODO: Remove this after migration to MF3 is complete.
+    public interface Selectable<S extends Selectable<S>> {
+        String name();
+
+        S clone();
+    }
+
     private static final String ENDPOINT = "/auton";
 
     private final AutonomousMode[] m_autonModes;

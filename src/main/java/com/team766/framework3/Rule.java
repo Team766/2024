@@ -1,6 +1,8 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Maps;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -33,11 +35,37 @@ import java.util.function.BooleanSupplier;
 public class Rule {
 
     /**
+     * Functional interface for creating new {@link Command}s.
+     */
+    @FunctionalInterface
+    private interface CommandCreator {
+        Command createCommand();
+    }
+
+    /**
      * Functional interface for creating new {@link RunnableWithContext}s.
      */
     @FunctionalInterface
-    public interface RunnableCreator {
-        RunnableWithContext create();
+    public interface RunnableWithContextCreator extends CommandCreator {
+        RunnableWithContext createRunnable();
+
+        @Override
+        default Command createCommand() {
+            return new ContextImpl(createRunnable());
+        }
+    }
+
+    /**
+     * Functional interface for creating new {@link InstantRunnable}s.
+     */
+    @FunctionalInterface
+    public interface InstantRunnableCreator extends CommandCreator {
+        InstantRunnable createRunnable();
+
+        @Override
+        default Command createCommand() {
+            return new InstantCommand(createRunnable());
+        }
     }
 
     /**
@@ -65,30 +93,62 @@ public class Rule {
     public static class Builder {
         private final String name;
         private final BooleanSupplier predicate;
-        private RunnableCreator newlyTriggeringRunnable;
-        private RunnableCreator continuingTriggeringRunnable;
-        private RunnableCreator finishedTriggeringRunnable;
+        private CommandCreator newlyTriggeringRunnable;
+        private CommandCreator continuingTriggeringRunnable;
+        private CommandCreator finishedTriggeringRunnable;
 
         private Builder(String name, BooleanSupplier predicate) {
             this.name = name;
             this.predicate = predicate;
         }
 
-        /** Specify a creator for the RunnableWithAction that should be run when this rule starts triggering. */
-        public Builder withNewlyTriggeringRunnable(RunnableCreator action) {
+        /** Specify a creator for the Command that should be run when this rule starts triggering. */
+        public Builder withNewlyTriggeringRunnable(RunnableWithContextCreator action) {
             this.newlyTriggeringRunnable = action;
             return this;
         }
 
-        /** Specify a creator for the RunnableWithAction that should be run when this rule was triggering before and is continuing to trigger. */
-        public Builder withContinuingTriggeringRunnable(RunnableCreator action) {
+        public Builder withNewlyTriggeringRunnable(InstantRunnableCreator action) {
+            this.newlyTriggeringRunnable = action;
+            return this;
+        }
+
+        public Builder withNewlyTriggeringRunnable(Set<Subsystem> reservations, Runnable action) {
+            this.newlyTriggeringRunnable = () -> new InstantCommand(reservations, action);
+            return this;
+        }
+
+        /** Specify a creator for the Command that should be run when this rule was triggering before and is continuing to trigger. */
+        public Builder withContinuingTriggeringRunnable(RunnableWithContextCreator action) {
             this.continuingTriggeringRunnable = action;
             return this;
         }
 
-        /** Specify a creator for the RunnableWithAction that should be run when this rule was triggering before and is no longer triggering. */
-        public Builder withFinishedTriggeringRunnable(RunnableCreator action) {
+        public Builder withContinuingTriggeringRunnable(InstantRunnableCreator action) {
+            this.continuingTriggeringRunnable = action;
+            return this;
+        }
+
+        public Builder withContinuingTriggeringRunnable(
+                Set<Subsystem> reservations, Runnable action) {
+            this.continuingTriggeringRunnable = () -> new InstantCommand(reservations, action);
+            return this;
+        }
+
+        /** Specify a creator for the Command that should be run when this rule was triggering before and is no longer triggering. */
+        public Builder withFinishedTriggeringRunnable(RunnableWithContextCreator action) {
             this.finishedTriggeringRunnable = action;
+            return this;
+        }
+
+        public Builder withFinishedTriggeringRunnable(InstantRunnableCreator action) {
+            this.finishedTriggeringRunnable = action;
+            return this;
+        }
+
+        public Builder withFinishedTriggeringRunnable(
+                Set<Subsystem> reservations, Runnable action) {
+            this.finishedTriggeringRunnable = () -> new InstantCommand(reservations, action);
             return this;
         }
 
@@ -105,9 +165,9 @@ public class Rule {
 
     private final String name;
     private final BooleanSupplier predicate;
-    private final Map<TriggerType, RunnableCreator> triggerRunnables =
+    private final Map<TriggerType, CommandCreator> triggerRunnables =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
+    private final Map<TriggerType, Set<Subsystem>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
 
     private TriggerType currentTriggerType = TriggerType.NONE;
@@ -119,9 +179,9 @@ public class Rule {
     private Rule(
             String name,
             BooleanSupplier predicate,
-            RunnableCreator newlyTriggeringRunnable,
-            RunnableCreator continuingTriggeringRunnable,
-            RunnableCreator finishedTriggeringRunnable) {
+            CommandCreator newlyTriggeringRunnable,
+            CommandCreator continuingTriggeringRunnable,
+            CommandCreator finishedTriggeringRunnable) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
@@ -152,11 +212,11 @@ public class Rule {
         }
     }
 
-    private Set<Mechanism<?>> getReservationsForRunnable(RunnableCreator creator) {
+    private Set<Subsystem> getReservationsForRunnable(CommandCreator creator) {
         if (creator != null) {
-            RunnableWithContext runnable = creator.create();
+            Command runnable = creator.createCommand();
             if (runnable != null) {
-                return runnable.reservations();
+                return runnable.getRequirements();
             }
         }
         return Collections.emptySet();
@@ -190,19 +250,19 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
+    /* package */ Set<Subsystem> getMechanismsToReserve() {
         if (triggerReservations.containsKey(currentTriggerType)) {
             return triggerReservations.get(currentTriggerType);
         }
         return Collections.emptySet();
     }
 
-    /* package */ RunnableWithContext getRunnableToRun() {
+    /* package */ Command getRunnableToRun() {
         if (currentTriggerType != TriggerType.NONE) {
             if (triggerRunnables.containsKey(currentTriggerType)) {
-                RunnableCreator creator = triggerRunnables.get(currentTriggerType);
+                CommandCreator creator = triggerRunnables.get(currentTriggerType);
                 if (creator != null) {
-                    return creator.create();
+                    return creator.createCommand();
                 }
             }
         }

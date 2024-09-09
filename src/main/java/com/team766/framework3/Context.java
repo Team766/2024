@@ -1,6 +1,5 @@
 package com.team766.framework3;
 
-import com.team766.framework.LaunchedContext;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -86,6 +85,9 @@ public interface Context {
 
     /**
      * Start running a new Context so the given procedure can run in parallel.
+     * The given procedure must only reserve Mechanisms that aren't reserved by the
+     * calling Procedure.
+     * In most cases, you want to use runParallel instead of startAsync.
      */
     LaunchedContext startAsync(final RunnableWithContext func);
 
@@ -94,4 +96,16 @@ public interface Context {
      * has finished).
      */
     void runSync(final RunnableWithContext func);
+
+    /**
+     * Run the given Procedures at the same time. The calling Procedure will resume after all
+     * Procedures in the group finish.
+     */
+    void runParallel(RunnableWithContext... procedures);
+
+    /**
+     * Run the given Procedures at the same time. The calling Procedure will resume once any
+     * Procedure in the group finishes, and the others will be cancelled.
+     */
+    void runParallelRace(RunnableWithContext... procedures);
 }
