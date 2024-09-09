@@ -85,10 +85,6 @@ public class Scheduler implements Runnable {
     }
 
     public LaunchedContext startAsync(final RunnableWithContext func) {
-        return new ContextImpl(func::run);
-    }
-
-    public LaunchedContext startAsync(final Runnable func) {
         return new ContextImpl(func);
     }
 

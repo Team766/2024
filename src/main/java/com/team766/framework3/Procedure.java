@@ -31,15 +31,9 @@ public abstract class Procedure extends LoggingBase implements RunnableWithConte
         return this.getClass().getName() + "/" + m_id;
     }
 
-    @Override
-    public <M extends Mechanism<?>> M reserve(M m) {
+    protected <M extends Mechanism<?>> M reserve(M m) {
         reservations.add(m);
         return m;
-    }
-
-    @Override
-    public void release(Mechanism<?> m) {
-        reservations.remove(m);
     }
 
     @Override
