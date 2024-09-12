@@ -89,23 +89,23 @@ public interface Context {
      * calling Procedure.
      * In most cases, you want to use runParallel instead of startAsync.
      */
-    LaunchedContext startAsync(final RunnableWithContext func);
+    LaunchedContext startAsync(final Procedure func);
 
     /**
      * Run the given Procedure synchronously (the calling Procedure will not resume until this one
      * has finished).
      */
-    void runSync(final RunnableWithContext func);
+    void runSync(final Procedure func);
 
     /**
      * Run the given Procedures at the same time. The calling Procedure will resume after all
      * Procedures in the group finish.
      */
-    void runParallel(RunnableWithContext... procedures);
+    void runParallel(Procedure... procedures);
 
     /**
      * Run the given Procedures at the same time. The calling Procedure will resume once any
      * Procedure in the group finishes, and the others will be cancelled.
      */
-    void runParallelRace(RunnableWithContext... procedures);
+    void runParallelRace(Procedure... procedures);
 }

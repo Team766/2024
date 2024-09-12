@@ -1,6 +1,8 @@
 package com.team766.framework3;
 
 class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest> {
+    record FakeStatus(int currentState) implements Status {}
+
     public record FakeRequest(int targetState) implements Request<FakeStatus> {
         @Override
         public boolean isDone(FakeStatus status) {

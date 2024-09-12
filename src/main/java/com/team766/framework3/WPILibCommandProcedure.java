@@ -1,22 +1,21 @@
 package com.team766.framework3;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.Set;
 
 /**
  * This wraps a class that confroms to WPILib's Command interface, and allows
  * it to be used in the Maroon Framework as a Procedure.
  */
-public final class WPILibCommandProcedure implements RunnableWithContext {
+public final class WPILibCommandProcedure extends Procedure {
 
     private final Command command;
 
     /**
      * @param command The WPILib Command to adapt
      */
-    public WPILibCommandProcedure(final Command command_) {
-        this.command = command_;
+    public WPILibCommandProcedure(final Command command) {
+        super(command.getName(), command.getRequirements());
+        this.command = command;
     }
 
     @Override
@@ -37,10 +36,5 @@ public final class WPILibCommandProcedure implements RunnableWithContext {
         } finally {
             this.command.end(interrupted);
         }
-    }
-
-    @Override
-    public Set<Subsystem> reservations() {
-        return this.command.getRequirements();
     }
 }

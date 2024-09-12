@@ -28,7 +28,7 @@ public class MechanismTest extends TestCase3 {
 
         var cmd =
                 new ContextImpl(
-                        new FunctionalRunnableWithContext(
+                        new FunctionalProcedure(
                                 Set.of(mech),
                                 context -> {
                                     // Step 1
@@ -89,7 +89,7 @@ public class MechanismTest extends TestCase3 {
         var thrownException = new AtomicReference<String>(null);
         var cmd =
                 new ContextImpl(
-                        new FunctionalRunnableWithContext(
+                        new FunctionalProcedure(
                                 Set.of(),
                                 context -> {
                                     try {

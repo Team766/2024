@@ -105,7 +105,7 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     /**
      * The top-level procedure being run by this Context.
      */
-    private final RunnableWithContext m_func;
+    private final Procedure m_procedure;
 
     /**
      * The OS thread that this Context is executing on.
@@ -149,29 +149,25 @@ class ContextImpl extends Command implements Context, LaunchedContext {
      * {@link Scheduler#startAsync}.
      */
 
-    ContextImpl(final RunnableWithContext func) {
-        m_func = func;
+    ContextImpl(final Procedure procedure) {
+        m_procedure = procedure;
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
                         Severity.DEBUG,
-                        "Starting context " + getContextName() + " for " + func.toString());
+                        "Starting context " + getContextName() + " for " + procedure.getName());
         m_threadSync = new Object();
         m_previousWaitPoint = null;
         m_controlOwner = ControlOwner.MAIN_THREAD;
         m_state = State.NEW;
         setName(getContextName());
-        m_requirements.addAll(func.reservations());
+        m_requirements.addAll(procedure.reservations());
     }
 
     /**
      * Returns a string meant to uniquely identify this Context (e.g. for use in logging).
      */
     public String getContextName() {
-        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
-    }
-
-    /* package */ RunnableWithContext getRunnable() {
-        return m_func;
+        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_procedure.getName();
     }
 
     @Override
@@ -290,7 +286,7 @@ class ContextImpl extends Command implements Context, LaunchedContext {
             waitForControl(ControlOwner.SUBROUTINE);
 
             // Call into the user's code.
-            m_func.run(this);
+            m_procedure.run(this);
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.DEBUG, "Context " + getContextName() + " finished");
         } catch (ContextStoppedException ex) {
@@ -349,21 +345,21 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     }
 
     @Override
-    public LaunchedContext startAsync(final RunnableWithContext func) {
-        checkProcedureReservationsDisjoint(func);
-        var context = new ContextImpl(func);
+    public LaunchedContext startAsync(final Procedure procedure) {
+        checkProcedureReservationsDisjoint(procedure);
+        var context = new ContextImpl(procedure);
         context.schedule();
         return context;
     }
 
     @Override
-    public void runSync(final RunnableWithContext func) {
-        checkProcedureReservationsSubset(func);
-        func.run(this);
+    public void runSync(final Procedure procedure) {
+        checkProcedureReservationsSubset(procedure);
+        procedure.run(this);
     }
 
     @Override
-    public void runParallel(RunnableWithContext... procedures) {
+    public void runParallel(Procedure... procedures) {
         var contexts = new ContextImpl[procedures.length];
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
@@ -375,7 +371,7 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     }
 
     @Override
-    public void runParallelRace(RunnableWithContext... procedures) {
+    public void runParallelRace(Procedure... procedures) {
         var contexts = new ContextImpl[procedures.length];
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
@@ -386,28 +382,28 @@ class ContextImpl extends Command implements Context, LaunchedContext {
         runSync(new WPILibCommandProcedure(Commands.race(contexts)));
     }
 
-    private void checkProcedureReservationsSubset(RunnableWithContext procedure) {
+    private void checkProcedureReservationsSubset(Procedure procedure) {
         final var this_reservations = getRequirements();
         for (var req : procedure.reservations()) {
             if (!this_reservations.contains(req)) {
                 throw new IllegalArgumentException(
                         getName()
                                 + " tried to run "
-                                + procedure.toString()
+                                + procedure.getName()
                                 + " but is missing the reservation on "
                                 + req.getName());
             }
         }
     }
 
-    private void checkProcedureReservationsDisjoint(RunnableWithContext procedure) {
+    private void checkProcedureReservationsDisjoint(Procedure procedure) {
         final var this_reservations = getRequirements();
         for (var req : procedure.reservations()) {
             if (this_reservations.contains(req)) {
                 throw new IllegalArgumentException(
                         getName()
                                 + " tried to launch "
-                                + procedure.toString()
+                                + procedure.getName()
                                 + " asynchronously, but both have a reservation on "
                                 + req.getName());
             }

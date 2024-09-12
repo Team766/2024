@@ -4,7 +4,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id "edu.wpi.first.GradleRIO" version "2024.3.2"
-    id 'com.diffplug.spotless' version "7.0.0.BETA2"
+    id 'com.diffplug.spotless' version '6.22.0'
     id 'com.google.protobuf' version '0.8.19'
 }
 
@@ -244,7 +244,7 @@ spotless {
         }
         toggleOffOn()
         googleJavaFormat().formatJavadoc(false).aosp()
-        // removeUnusedImports()  // https://github.com/diffplug/spotless/issues/2159
+        removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
     }

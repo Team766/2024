@@ -197,18 +197,18 @@ public class OI extends Procedure {
 
     private void setLightsForPlacement() {
         switch (placementPosition) {
-            // case NONE:
-            //     Robot.lights.white();
-            //     break;
-            // case LOW_NODE:
-            //     Robot.lights.green();
-            //     break;
-            // case MID_NODE:
-            //     Robot.lights.red();
-            //     break;
-            // case HIGH_NODE:
-            //     Robot.lights.orange();
-            //     break;
+                // case NONE:
+                // 	Robot.lights.white();
+                // 	break;
+                // case LOW_NODE:
+                // 	Robot.lights.green();
+                // 	break;
+                // case MID_NODE:
+                // 	Robot.lights.red();
+                // 	break;
+                // case HIGH_NODE:
+                // 	Robot.lights.orange();
+                // 	break;
             case HUMAN_PLAYER:
                 setLightsForGamePiece();
                 break;

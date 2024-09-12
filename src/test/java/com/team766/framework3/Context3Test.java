@@ -104,7 +104,7 @@ public class Context3Test extends TestCase3 {
         var proc2 = new FakeProcedure(1, Set.of(mech1, mech2));
 
         var proc =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(mech1, mech2),
                         context -> {
                             context.runSync(proc1);
@@ -154,7 +154,7 @@ public class Context3Test extends TestCase3 {
         var proc2 = new FakeProcedure(2, Set.of(mech2));
 
         var proc =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(mech1, mech2),
                         context -> {
                             context.runParallel(proc1, proc2);
@@ -203,7 +203,7 @@ public class Context3Test extends TestCase3 {
         var proc2 = new FakeProcedure(3, Set.of(mech2));
 
         var proc =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(mech1, mech2),
                         context -> {
                             context.runParallelRace(proc1, proc2);
@@ -239,13 +239,13 @@ public class Context3Test extends TestCase3 {
     /// is not reserved by the parent Procedure. Should raise an exception.
     @ParameterizedTest
     @MethodSource("paramsRunWithMissingReservation")
-    public void testRunWithMissingReservation(BiConsumer<Context, RunnableWithContext> runMethod) {
+    public void testRunWithMissingReservation(BiConsumer<Context, Procedure> runMethod) {
         var mech = new FakeMechanism();
         var proc1 = new FakeProcedure(1, Set.of(mech));
 
         AtomicReference<String> thrownException = new AtomicReference<>(null);
         var proc =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(),
                         context -> {
                             try {
@@ -264,7 +264,7 @@ public class Context3Test extends TestCase3 {
                         ".*Context3Test\\$\\$Lambda.* tried to run .*FakeProcedure.* but is missing the reservation on FakeMechanism");
     }
 
-    static Stream<BiConsumer<Context, RunnableWithContext>> paramsRunWithMissingReservation() {
+    static Stream<BiConsumer<Context, Procedure>> paramsRunWithMissingReservation() {
         return Stream.of(Context::runSync, Context::runParallel, Context::runParallelRace);
     }
 
@@ -272,19 +272,18 @@ public class Context3Test extends TestCase3 {
     /// Should raise an exception.
     @ParameterizedTest
     @MethodSource("paramsRunWithConflictingReservation")
-    public void testRunWithConflictingReservation(
-            BiConsumer<Context, RunnableWithContext[]> runMethod) {
+    public void testRunWithConflictingReservation(BiConsumer<Context, Procedure[]> runMethod) {
         var mech = new FakeMechanism();
         var proc1 = new FakeProcedure(1, Set.of(mech));
         var proc2 = new FakeProcedure(1, Set.of(mech));
 
         AtomicReference<String> thrownException = new AtomicReference<>(null);
         var proc =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(mech),
                         context -> {
                             try {
-                                runMethod.accept(context, new RunnableWithContext[] {proc1, proc2});
+                                runMethod.accept(context, new Procedure[] {proc1, proc2});
                             } catch (IllegalArgumentException ex) {
                                 thrownException.set(ex.getMessage());
                             }
@@ -299,8 +298,7 @@ public class Context3Test extends TestCase3 {
                         "Multiple commands in a parallel composition cannot require the same subsystems");
     }
 
-    static Stream<BiConsumer<Context, RunnableWithContext[]>>
-            paramsRunWithConflictingReservation() {
+    static Stream<BiConsumer<Context, Procedure[]>> paramsRunWithConflictingReservation() {
         return Stream.of(Context::runParallel, Context::runParallelRace);
     }
 
@@ -312,7 +310,7 @@ public class Context3Test extends TestCase3 {
 
         var proc1age = new AtomicInteger(0);
         var proc1 =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(),
                         context -> {
                             var lc = context.startAsync(proc2);
@@ -368,7 +366,7 @@ public class Context3Test extends TestCase3 {
 
         AtomicReference<String> thrownException = new AtomicReference<>(null);
         var proc1 =
-                new FunctionalRunnableWithContext(
+                new FunctionalProcedure(
                         Set.of(mech),
                         context -> {
                             try {

@@ -38,15 +38,15 @@ public class RuleEngine implements LoggingBase {
         rulePriorities.put(rule, priority);
     }
 
-    protected Rule getRuleForTriggeredRunnable(Command runnable) {
-        RuleAction ruleAction = ruleMap.get(runnable);
+    protected Rule getRuleForTriggeredProcedure(Command command) {
+        RuleAction ruleAction = ruleMap.get(command);
         return (ruleAction == null) ? null : ruleAction.rule;
     }
 
     public final void run() {
         Set<Subsystem> mechanismsToUse = new HashSet<>();
 
-        // TODO: when creating a Command, check that the reservations are the same as
+        // TODO: when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
 
         // evaluate each rule
@@ -61,11 +61,11 @@ public class RuleEngine implements LoggingBase {
 
                     int priority = rulePriorities.get(rule);
 
-                    // see if there are mechanisms a potential runnable would want to reserve
+                    // see if there are mechanisms a potential procedure would want to reserve
                     Set<Subsystem> reservations = rule.getMechanismsToReserve();
                     for (Subsystem mechanism : reservations) {
                         // see if any of the mechanisms higher priority rules will use would also be
-                        // used by this lower priority rule's runnable.
+                        // used by this lower priority rule's procedure.
                         if (mechanismsToUse.contains(mechanism)) {
                             log(
                                     "RULE CONFLICT!  Ignoring rule: "
@@ -76,11 +76,11 @@ public class RuleEngine implements LoggingBase {
                             continue;
                         }
                         // see if a previously triggered rule is still using the mechanism
-                        Command existingRunnable =
+                        Command existingCommand =
                                 CommandScheduler.getInstance().requiring(mechanism);
-                        if (existingRunnable != null) {
+                        if (existingCommand != null) {
                             // look up the rule
-                            Rule existingRule = getRuleForTriggeredRunnable(existingRunnable);
+                            Rule existingRule = getRuleForTriggeredProcedure(existingCommand);
                             if (existingRule != null) {
                                 // look up the priority
                                 int existingPriority = rulePriorities.get(existingRule);
@@ -100,13 +100,14 @@ public class RuleEngine implements LoggingBase {
                     }
 
                     // we're good to proceed
-                    Command runnable = rule.getRunnableToRun();
-                    if (runnable == null) {
+                    Procedure procedure = rule.getProcedureToRun();
+                    if (procedure == null) {
                         continue;
                     }
+                    Command command = procedure.createCommand();
                     mechanismsToUse.addAll(reservations);
-                    ruleMap.put(runnable, new RuleAction(rule, triggerType));
-                    runnable.schedule();
+                    ruleMap.put(command, new RuleAction(rule, triggerType));
+                    command.schedule();
                 }
             } catch (Exception ex) {
                 log(Severity.ERROR, LoggerExceptionUtils.exceptionToString(ex));
