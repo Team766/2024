@@ -13,7 +13,7 @@ public interface LaunchedContext {
     /**
      * Returns true if this Context has finished running, false otherwise.
      */
-    boolean isDone();
+    boolean isFinished();
 
     /**
      * Interrupt the running of this Context and force it to terminate.

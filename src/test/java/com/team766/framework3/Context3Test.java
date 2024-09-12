@@ -29,25 +29,25 @@ public class Context3Test extends TestCase3 {
         context.schedule();
         assertEquals(0, proc.age());
         assertFalse(proc.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // First step. The procedure does one step of work and then yields.
         step();
         assertEquals(1, proc.age());
         assertFalse(proc.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Second step. The procedure does another step of work and then yields.
         step();
         assertEquals(2, proc.age());
         assertFalse(proc.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Third step. The procedure finishes successfully and the Context ends.
         step();
         assertEquals(2, proc.age());
         assertTrue(proc.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Test early termination of a procedure running in a Context.
@@ -61,16 +61,16 @@ public class Context3Test extends TestCase3 {
         step();
         assertEquals(1, proc.age());
         assertFalse(proc.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // After calling cancel(), the procedure should not run again, but should clean up.
         context.cancel();
         assertTrue(proc.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
         step();
         assertEquals(1, proc.age());
         assertTrue(proc.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Regression test: calling cancel() on a Context before it is allowed to
@@ -82,17 +82,17 @@ public class Context3Test extends TestCase3 {
 
         context.schedule();
         assertFalse(proc.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // When calling cancel() before the procedure has started running, the procedure should
         // not run but the Context should end.
         context.cancel();
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
         step();
         assertEquals(0, proc.age());
         assertFalse(proc.isEnded()); /* False because proc never started running, so it didn't
                                         enter the try-finally in FakeProcedure. */
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Test Context.runSync
@@ -118,7 +118,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // First step. proc1 does one step of work and then yields.
         step();
@@ -126,7 +126,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Second step. proc1 finishes and proc2 does one step of work and then yields.
         step();
@@ -134,7 +134,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(1, proc2.age());
         assertTrue(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Third step. proc2 finishes and the Context ends.
         step();
@@ -142,7 +142,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(1, proc2.age());
         assertTrue(proc1.isEnded());
         assertTrue(proc2.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Test Context.runParallel
@@ -167,7 +167,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // First step. proc1 and proc2 each do one step of work and then yield.
         step();
@@ -175,7 +175,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(1, proc2.age());
         assertFalse(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Second step. proc1 finishes; proc2 does one step of work and then yields.
         step();
@@ -183,7 +183,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(2, proc2.age());
         assertTrue(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Third step. proc2 finishes and the Context ends.
         step();
@@ -191,7 +191,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(2, proc2.age());
         assertTrue(proc1.isEnded());
         assertTrue(proc2.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Test Context.runParallelRace
@@ -216,7 +216,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(0, proc2.age());
         assertFalse(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // First step. proc1 and proc2 each do one step of work and then yield.
         step();
@@ -224,7 +224,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(1, proc2.age());
         assertFalse(proc1.isEnded());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Second step. proc1 finishes; proc2 is canceled; the Context ends.
         step();
@@ -232,7 +232,7 @@ public class Context3Test extends TestCase3 {
         assertEquals(2, proc2.age());
         assertTrue(proc1.isEnded());
         assertTrue(proc2.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Test calling Context.run* with a Procedure that tries to reserve a Mechanism which
@@ -314,7 +314,7 @@ public class Context3Test extends TestCase3 {
                         Set.of(),
                         context -> {
                             var lc = context.startAsync(proc2);
-                            while (!lc.isDone()) {
+                            while (!lc.isFinished()) {
                                 proc1age.incrementAndGet();
                                 context.yield();
                             }
@@ -326,35 +326,35 @@ public class Context3Test extends TestCase3 {
         assertEquals(0, proc1age.get());
         assertEquals(0, proc2.age());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // First step. proc1 launches proc2; proc1age incremented.
         step();
         assertEquals(1, proc1age.get());
         assertEquals(0, proc2.age());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Second step. proc1 and proc2 each do one step of work and then yield.
         step();
         assertEquals(2, proc1age.get());
         assertEquals(1, proc2.age());
         assertFalse(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Third step. proc1 does one step of work; proc2 finishes and the Context ends.
         step();
         assertEquals(3, proc1age.get());
         assertEquals(1, proc2.age());
         assertTrue(proc2.isEnded());
-        assertFalse(context.isDone());
+        assertFalse(context.isFinished());
 
         // Fourth step. proc1 finishes and the Context ends.
         step();
         assertEquals(3, proc1age.get());
         assertEquals(1, proc2.age());
         assertTrue(proc2.isEnded());
-        assertTrue(context.isDone());
+        assertTrue(context.isFinished());
     }
 
     /// Test calling Context.startAsync with a Procedure that tries to reserve a Mechanism which

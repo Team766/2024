@@ -13,21 +13,19 @@ public abstract class Mechanism<R extends Request<?>> extends SubsystemBase impl
     private R request = null;
     private boolean isRequestNew = false;
 
-    protected Category loggerCategory = Category.MECHANISMS;
-
     @Override
     public Category getLoggerCategory() {
-        return loggerCategory;
+        return Category.MECHANISMS;
     }
 
     public final void setRequest(R request) {
-        checkContextOwnership();
+        checkContextReservation();
         this.request = request;
         isRequestNew = true;
         log(this.getClass().getName() + " processing request: " + request);
     }
 
-    protected void checkContextOwnership() {
+    protected void checkContextReservation() {
         var owningCommand = CommandScheduler.getInstance().requiring(this);
         if ((owningCommand == null || SchedulerMonitor.currentCommand != owningCommand)
                 && m_runningPeriodic == null) {

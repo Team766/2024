@@ -3,11 +3,11 @@ package com.team766.framework3;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.team766.logging.Category;
+import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,8 +27,7 @@ public class RuleEngine implements LoggingBase {
 
     @Override
     public Category getLoggerCategory() {
-        // TODO: Is this the right default for RuleEngine?
-        return Category.OPERATOR_INTERFACE;
+        return Category.RULES;
     }
 
     protected void addRule(Rule.Builder builder) {
@@ -44,7 +43,7 @@ public class RuleEngine implements LoggingBase {
     }
 
     public final void run() {
-        Set<Subsystem> mechanismsToUse = new HashSet<>();
+        Set<Mechanism<?>> mechanismsToUse = new HashSet<>();
 
         // TODO: when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
@@ -57,22 +56,27 @@ public class RuleEngine implements LoggingBase {
                 // see if the rule is triggering/just finished triggering
                 Rule.TriggerType triggerType = rule.getCurrentTriggerType();
                 if (triggerType != Rule.TriggerType.NONE) {
-                    log("Rule " + rule.getName() + " triggering: " + triggerType);
+                    Logger.get(Category.FRAMEWORK)
+                            .logRaw(
+                                    Severity.DEBUG,
+                                    "Rule " + rule.getName() + " triggering: " + triggerType);
 
                     int priority = rulePriorities.get(rule);
 
                     // see if there are mechanisms a potential procedure would want to reserve
-                    Set<Subsystem> reservations = rule.getMechanismsToReserve();
-                    for (Subsystem mechanism : reservations) {
+                    Set<Mechanism<?>> reservations = rule.getMechanismsToReserve();
+                    for (Mechanism<?> mechanism : reservations) {
                         // see if any of the mechanisms higher priority rules will use would also be
                         // used by this lower priority rule's procedure.
                         if (mechanismsToUse.contains(mechanism)) {
-                            log(
-                                    "RULE CONFLICT!  Ignoring rule: "
-                                            + rule.getName()
-                                            + "; mechanism "
-                                            + mechanism.getName()
-                                            + " already reserved by higher priority rule.");
+                            Logger.get(Category.FRAMEWORK)
+                                    .logRaw(
+                                            Severity.DEBUG,
+                                            "RULE CONFLICT!  Ignoring rule: "
+                                                    + rule.getName()
+                                                    + "; mechanism "
+                                                    + mechanism.getName()
+                                                    + " already reserved by higher priority rule.");
                             continue;
                         }
                         // see if a previously triggered rule is still using the mechanism
@@ -87,12 +91,14 @@ public class RuleEngine implements LoggingBase {
                                 if (existingPriority < priority /* less is more */) {
                                     // existing rule takes priority.
                                     // don't proceed with this new rule.
-                                    log(
-                                            "RULE CONFLICT!  Ignoring rule: "
-                                                    + rule
-                                                    + "; mechanism "
-                                                    + mechanism.getName()
-                                                    + " already reserved by higher priority rule.");
+                                    Logger.get(Category.FRAMEWORK)
+                                            .logRaw(
+                                                    Severity.DEBUG,
+                                                    "RULE CONFLICT!  Ignoring rule: "
+                                                            + rule
+                                                            + "; mechanism "
+                                                            + mechanism.getName()
+                                                            + " already reserved by higher priority rule.");
                                     continue;
                                 }
                             }

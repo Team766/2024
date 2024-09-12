@@ -1,7 +1,6 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Maps;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +36,7 @@ public class Rule {
      * Functional interface for creating new {@link Procedure}s.
      */
     @FunctionalInterface
-    private interface ProcedureCreator {
+    public interface ProcedureCreator {
         Procedure create();
     }
 
@@ -81,7 +80,8 @@ public class Rule {
             return this;
         }
 
-        public Builder withNewlyTriggeringProcedure(Set<Subsystem> reservations, Runnable action) {
+        public Builder withNewlyTriggeringProcedure(
+                Set<Mechanism<?>> reservations, Runnable action) {
             this.newlyTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;
@@ -94,7 +94,7 @@ public class Rule {
         }
 
         public Builder withContinuingTriggeringProcedure(
-                Set<Subsystem> reservations, Runnable action) {
+                Set<Mechanism<?>> reservations, Runnable action) {
             this.continuingTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;
@@ -107,7 +107,7 @@ public class Rule {
         }
 
         public Builder withFinishedTriggeringProcedure(
-                Set<Subsystem> reservations, Runnable action) {
+                Set<Mechanism<?>> reservations, Runnable action) {
             this.finishedTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;
@@ -128,7 +128,7 @@ public class Rule {
     private final BooleanSupplier predicate;
     private final Map<TriggerType, ProcedureCreator> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Subsystem>> triggerReservations =
+    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
 
     private TriggerType currentTriggerType = TriggerType.NONE;
@@ -173,7 +173,7 @@ public class Rule {
         }
     }
 
-    private Set<Subsystem> getReservationsForProcedure(ProcedureCreator creator) {
+    private Set<Mechanism<?>> getReservationsForProcedure(ProcedureCreator creator) {
         if (creator != null) {
             Procedure procedure = creator.create();
             if (procedure != null) {
@@ -211,7 +211,7 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Subsystem> getMechanismsToReserve() {
+    /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
         if (triggerReservations.containsKey(currentTriggerType)) {
             return triggerReservations.get(currentTriggerType);
         }

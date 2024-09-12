@@ -94,18 +94,23 @@ public interface Context {
     /**
      * Run the given Procedure synchronously (the calling Procedure will not resume until this one
      * has finished).
+     * The given procedure must only reserve Mechanisms that were reserved by the calling Procedure.
      */
     void runSync(final Procedure func);
 
     /**
      * Run the given Procedures at the same time. The calling Procedure will resume after all
      * Procedures in the group finish.
+     * The given procedures must only reserve Mechanisms that were reserved by the calling Procedure,
+     * and their reservations must not overlap with each other.
      */
     void runParallel(Procedure... procedures);
 
     /**
      * Run the given Procedures at the same time. The calling Procedure will resume once any
      * Procedure in the group finishes, and the others will be cancelled.
+     * The given procedures must only reserve Mechanisms that were reserved by the calling Procedure,
+     * and their reservations must not overlap with each other.
      */
     void runParallelRace(Procedure... procedures);
 }

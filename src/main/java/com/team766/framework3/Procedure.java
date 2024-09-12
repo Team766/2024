@@ -3,7 +3,6 @@ package com.team766.framework3;
 import com.google.common.collect.Sets;
 import com.team766.logging.Category;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Collection;
 import java.util.Set;
 
@@ -23,22 +22,21 @@ public abstract class Procedure implements LoggingBase {
     }
 
     private final String name;
-    private final Set<Subsystem> reservations;
-    protected Category loggerCategory = Category.PROCEDURES;
+    private final Set<Mechanism<?>> reservations;
 
     protected Procedure() {
         this.name = this.getClass().getName() + "/" + createNewId();
         this.reservations = Sets.newHashSet();
     }
 
-    protected Procedure(String name, Set<Subsystem> reservations) {
+    protected Procedure(String name, Set<Mechanism<?>> reservations) {
         this.name = name;
         this.reservations = reservations;
     }
 
     public abstract void run(Context context);
 
-    Command createCommand() {
+    /* package */ Command createCommand() {
         return new ContextImpl(this);
     }
 
@@ -49,25 +47,25 @@ public abstract class Procedure implements LoggingBase {
 
     @Override
     public Category getLoggerCategory() {
-        return loggerCategory;
+        return Category.PROCEDURES;
     }
 
-    protected final <M extends Subsystem> M reserve(M m) {
+    protected final <M extends Mechanism<?>> M reserve(M m) {
         reservations.add(m);
         return m;
     }
 
-    protected final void reserve(Subsystem... ms) {
+    protected final void reserve(Mechanism<?>... ms) {
         for (var m : ms) {
             reservations.add(m);
         }
     }
 
-    protected final void reserve(Collection<? extends Subsystem> ms) {
+    protected final void reserve(Collection<? extends Mechanism<?>> ms) {
         reservations.addAll(ms);
     }
 
-    public final Set<Subsystem> reservations() {
+    public final Set<Mechanism<?>> reservations() {
         return reservations;
     }
 

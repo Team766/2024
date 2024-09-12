@@ -27,7 +27,7 @@ import java.util.function.BooleanSupplier;
 class ContextImpl extends Command implements Context, LaunchedContext {
     // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
     // TODO: Re-evaluate whether this should use the default Command behavior (return false).
-    static final boolean RUNS_WHEN_DISABLED = true;
+    private static final boolean RUNS_WHEN_DISABLED = true;
 
     /**
      * Represents the baton-passing state (see class comments). Instead of
@@ -324,12 +324,12 @@ class ContextImpl extends Command implements Context, LaunchedContext {
 
     @Override
     public void waitFor(final LaunchedContext otherContext) {
-        waitFor(otherContext::isDone);
+        waitFor(otherContext::isFinished);
     }
 
     @Override
     public void waitFor(final LaunchedContext... otherContexts) {
-        waitFor(() -> Arrays.stream(otherContexts).allMatch(LaunchedContext::isDone));
+        waitFor(() -> Arrays.stream(otherContexts).allMatch(LaunchedContext::isFinished));
     }
 
     @Override
@@ -360,11 +360,11 @@ class ContextImpl extends Command implements Context, LaunchedContext {
 
     @Override
     public void runParallel(Procedure... procedures) {
-        var contexts = new ContextImpl[procedures.length];
+        var contexts = new Command[procedures.length];
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
             checkProcedureReservationsSubset(procedure);
-            contexts[i] = new ContextImpl(procedure);
+            contexts[i] = procedure.createCommand();
         }
         // NOTE: Commands.parallel will ensure procedures' reservations are disjoint.
         runSync(new WPILibCommandProcedure(Commands.parallel(contexts)));
@@ -372,20 +372,20 @@ class ContextImpl extends Command implements Context, LaunchedContext {
 
     @Override
     public void runParallelRace(Procedure... procedures) {
-        var contexts = new ContextImpl[procedures.length];
+        var contexts = new Command[procedures.length];
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
             checkProcedureReservationsSubset(procedure);
-            contexts[i] = new ContextImpl(procedure);
+            contexts[i] = procedure.createCommand();
         }
         // NOTE: Commands.race will ensure procedures' reservations are disjoint.
         runSync(new WPILibCommandProcedure(Commands.race(contexts)));
     }
 
     private void checkProcedureReservationsSubset(Procedure procedure) {
-        final var this_reservations = getRequirements();
+        final var thisReservations = getRequirements();
         for (var req : procedure.reservations()) {
-            if (!this_reservations.contains(req)) {
+            if (!thisReservations.contains(req)) {
                 throw new IllegalArgumentException(
                         getName()
                                 + " tried to run "
@@ -397,9 +397,9 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     }
 
     private void checkProcedureReservationsDisjoint(Procedure procedure) {
-        final var this_reservations = getRequirements();
+        final var thisReservations = getRequirements();
         for (var req : procedure.reservations()) {
-            if (this_reservations.contains(req)) {
+            if (thisReservations.contains(req)) {
                 throw new IllegalArgumentException(
                         getName()
                                 + " tried to launch "
@@ -419,7 +419,7 @@ class ContextImpl extends Command implements Context, LaunchedContext {
 
     @Override
     public boolean isFinished() {
-        return isDone();
+        return m_state == State.DONE;
     }
 
     @Override
@@ -454,10 +454,5 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     @Override
     public boolean runsWhenDisabled() {
         return RUNS_WHEN_DISABLED;
-    }
-
-    @Override
-    public boolean isDone() {
-        return m_state == State.DONE;
     }
 }

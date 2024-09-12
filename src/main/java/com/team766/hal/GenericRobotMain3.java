@@ -4,6 +4,7 @@ import com.team766.framework3.AutonomousMode;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.SchedulerMonitor;
 import com.team766.framework3.SchedulerUtils;
+import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -33,6 +34,8 @@ public final class GenericRobotMain3 implements GenericRobotMain {
     // number of seconds.
     private static final double RESET_IN_DISABLED_PERIOD = 10.0;
     private double m_disabledModeStartTime;
+
+    private RateLimiter m_lightUpdateLimiter = new RateLimiter(0.05);
 
     private boolean faultInRobotInit = false;
     private boolean faultInAutoInit = false;
@@ -96,7 +99,7 @@ public final class GenericRobotMain3 implements GenericRobotMain {
             resetAutonomousMode("time in disabled mode");
         }
         CommandScheduler.getInstance().run();
-        if (m_lights != null) {
+        if (m_lights != null && m_lightUpdateLimiter.next()) {
             m_lights.run();
         }
     }
@@ -139,7 +142,7 @@ public final class GenericRobotMain3 implements GenericRobotMain {
                             "Starting new autonomus procedure " + m_autonomous.getName());
         }
         CommandScheduler.getInstance().run();
-        if (m_lights != null) {
+        if (m_lights != null && m_lightUpdateLimiter.next()) {
             m_lights.run();
         }
     }
@@ -164,7 +167,7 @@ public final class GenericRobotMain3 implements GenericRobotMain {
             m_oi.run();
         }
         CommandScheduler.getInstance().run();
-        if (m_lights != null) {
+        if (m_lights != null && m_lightUpdateLimiter.next()) {
             m_lights.run();
         }
     }

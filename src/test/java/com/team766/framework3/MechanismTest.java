@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 public class MechanismTest extends TestCase3 {
-    /// Test sending requests to a Mechanism. Also test that checkContextOwnership succeeds when
+    /// Test sending requests to a Mechanism. Also test that checkContextReservation succeeds when
     /// called from a Procedure which reserves the Mechanism.
     @Test
     public void testRequests() {
@@ -74,13 +74,13 @@ public class MechanismTest extends TestCase3 {
 
         // Poke the Procedure to ensure it has finished.
         step();
-        assertTrue(cmd.isDone());
+        assertTrue(cmd.isFinished());
     }
 
-    /// Test that checkContextOwnership throws an exception when called from a Procedure which has
+    /// Test that checkContextReservation throws an exception when called from a Procedure which has
     /// not reserved the Mechanism.
     @Test
-    public void testFailedCheckContextOwnershipInProcedure() {
+    public void testFailedCheckContextReservationInProcedure() {
         class DummyMechanism extends Mechanism<FakeRequest> {
             protected void run(FakeRequest request, boolean isRequestNew) {}
         }
@@ -113,10 +113,10 @@ public class MechanismTest extends TestCase3 {
                         "DummyMechanism tried to be used by .*MechanismTest\\$\\$Lambda.* while reserved by .*FakeProcedure.*");
     }
 
-    /// Test that checkContextOwnership succeeds when called from within the Mechanism's own run()
+    /// Test that checkContextReservation succeeds when called from within the Mechanism's own run()
     /// method.
     @Test
-    public void testCheckContextOwnershipInRun() {
+    public void testCheckContextReservationInRun() {
         var thrownException = new AtomicReference<Throwable>();
         @SuppressWarnings("unused")
         var mech =
@@ -124,7 +124,7 @@ public class MechanismTest extends TestCase3 {
                     @Override
                     protected void run(FakeRequest request, boolean isRequestNew) {
                         try {
-                            checkContextOwnership();
+                            checkContextReservation();
                         } catch (Throwable ex) {
                             thrownException.set(ex);
                         }

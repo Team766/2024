@@ -1,6 +1,8 @@
 package com.team766.framework3;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.Set;
 
 /**
  * This wraps a class that confroms to WPILib's Command interface, and allows
@@ -14,27 +16,43 @@ public final class WPILibCommandProcedure extends Procedure {
      * @param command The WPILib Command to adapt
      */
     public WPILibCommandProcedure(final Command command) {
-        super(command.getName(), command.getRequirements());
+        super(command.getName(), checkSubsystemsAreMechanisms(command.getRequirements()));
         this.command = command;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Set<Mechanism<?>> checkSubsystemsAreMechanisms(Set<Subsystem> requirements) {
+        for (var s : requirements) {
+            if (!(s instanceof Mechanism<?>)) {
+                throw new IllegalArgumentException(
+                        "Maroon Framework requires the use of Mechanism instead of Subsystem");
+            }
+        }
+        return (Set<Mechanism<?>>) (Set<?>) requirements;
     }
 
     @Override
     public void run(final Context context) {
         boolean interrupted = false;
         try {
-            this.command.initialize();
-            if (!this.command.isFinished()) {
-                this.command.execute();
-                while (!this.command.isFinished()) {
+            command.initialize();
+            if (!command.isFinished()) {
+                command.execute();
+                while (!command.isFinished()) {
                     context.yield();
-                    this.command.execute();
+                    command.execute();
                 }
             }
         } catch (Throwable ex) {
             interrupted = true;
             throw ex;
         } finally {
-            this.command.end(interrupted);
+            command.end(interrupted);
         }
+    }
+
+    @Override
+    Command createCommand() {
+        return command;
     }
 }

@@ -8,14 +8,14 @@ public class AutonomousMode implements AutonomousSelector.Selectable<AutonomousM
     private final Supplier<Command> m_constructor;
     private final String m_name;
 
-    public AutonomousMode(final String name, final Supplier<Command> constructor) {
+    /* package */ AutonomousMode(final String name, final Supplier<Command> constructor) {
         m_constructor = constructor;
         m_name = name;
     }
 
     public AutonomousMode(
             final String name, final com.google.common.base.Supplier<Procedure> constructor) {
-        this(name, () -> new ContextImpl(constructor.get()));
+        this(name, () -> constructor.get().createCommand());
     }
 
     public Command instantiate() {
