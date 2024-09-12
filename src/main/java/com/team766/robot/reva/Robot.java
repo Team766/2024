@@ -6,7 +6,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.SwerveConfig;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
@@ -17,7 +17,7 @@ import com.team766.robot.reva.mechanisms.Shoulder;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
-    public static Drive drive;
+    public static SwerveDrive drive;
     public static Climber climber;
     public static Shoulder shoulder;
     public static Intake intake;
@@ -31,7 +31,7 @@ public class Robot implements RobotConfigurator {
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
         lights = new Lights();
-        drive = new Drive(config);
+        drive = new SwerveDrive(config);
         climber = new Climber();
         shoulder = new Shoulder();
         intake = new Intake();

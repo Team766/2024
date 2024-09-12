@@ -118,7 +118,9 @@ public class FollowPath extends Procedure {
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
             drive.stopDrive();
-            drive.setCross();
+            if (controller.isHolonomic()){
+                drive.setCross(); //FIXME: figure out how to do this without erroring
+            }
         }
     }
 

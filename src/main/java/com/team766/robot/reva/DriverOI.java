@@ -5,7 +5,7 @@ import com.team766.framework.LaunchedContext;
 import com.team766.framework.OIFragment;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.Intake;
@@ -19,7 +19,7 @@ public class DriverOI extends OIFragment {
     protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
 
     protected VisionSpeakerHelper visionSpeakerHelper;
-    protected final Drive drive;
+    protected final SwerveDrive drive;
     protected final Shoulder shoulder;
     protected final Intake intake;
     protected final Shooter shooter;
@@ -35,7 +35,7 @@ public class DriverOI extends OIFragment {
     private LaunchedContext visionContext;
 
     public DriverOI(
-            Drive drive,
+            SwerveDrive drive,
             Shoulder shoulder,
             Intake intake,
             Shooter shooter,

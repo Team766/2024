@@ -4,7 +4,7 @@ import com.team766.framework.AutonomousMode;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.swerveandshoot.constants.SwerveDriveConstants;
 import com.team766.robot.swerveandshoot.mechanisms.*;
 
@@ -13,7 +13,7 @@ public class Robot implements RobotConfigurator {
     public static TempPickerUpper tempPickerUpper;
     public static TempShooter tempShooter;
     public static Lights lights;
-    public static Drive drive;
+    public static SwerveDrive drive;
     public static NoteCamera noteDetectorCamera;
     public static ForwardApriltagCamera forwardApriltagCamera;
 
@@ -23,7 +23,7 @@ public class Robot implements RobotConfigurator {
         tempPickerUpper = new TempPickerUpper();
         tempShooter = new TempShooter();
         lights = new Lights();
-        drive = new Drive(config);
+        drive = new SwerveDrive(config);
         noteDetectorCamera = new NoteCamera();
         forwardApriltagCamera = new ForwardApriltagCamera();
     }
