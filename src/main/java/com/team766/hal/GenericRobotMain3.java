@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
 
-public final class GenericRobotMain3 implements GenericRobotMain {
+public final class GenericRobotMain3 implements GenericRobotMainBase {
     private RobotConfigurator3 configurator;
     private RuleEngine m_oi;
     private RuleEngine m_lights;

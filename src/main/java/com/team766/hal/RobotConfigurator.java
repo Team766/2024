@@ -32,8 +32,8 @@ public interface RobotConfigurator extends RobotConfiguratorBase {
     AutonomousMode[] getAutonomousModes();
 
     @Override
-    default GenericRobotMain createRobotMain() {
-        Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Instantiating GenericRobotMain2");
-        return new GenericRobotMain2(this);
+    default GenericRobotMainBase createRobotMain() {
+        Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Instantiating GenericRobotMain");
+        return new GenericRobotMain(this);
     }
 }
