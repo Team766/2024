@@ -11,7 +11,6 @@ import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.lang.StackWalker.StackFrame;
-import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -24,7 +23,7 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-class ContextImpl extends Command implements Context, LaunchedContext {
+/* package */ class ContextImpl extends Command implements Context, LaunchedContext {
     // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
     // TODO: Re-evaluate whether this should use the default Command behavior (return false).
     private static final boolean RUNS_WHEN_DISABLED = true;
@@ -145,11 +144,10 @@ class ContextImpl extends Command implements Context, LaunchedContext {
 
     /*
      * Constructors are intentionally private or package-private. New contexts
-     * should be created with {@link Context#startAsync} or
-     * {@link Scheduler#startAsync}.
+     * should be created by the framwork.
      */
 
-    ContextImpl(final Procedure procedure) {
+    /* package */ ContextImpl(final Procedure procedure) {
         m_procedure = procedure;
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
@@ -323,16 +321,6 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     }
 
     @Override
-    public void waitFor(final LaunchedContext otherContext) {
-        waitFor(otherContext::isFinished);
-    }
-
-    @Override
-    public void waitFor(final LaunchedContext... otherContexts) {
-        waitFor(() -> Arrays.stream(otherContexts).allMatch(LaunchedContext::isFinished));
-    }
-
-    @Override
     public void waitForSeconds(final double seconds) {
         double startTime = RobotProvider.instance.getClock().getTime();
         waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
@@ -342,14 +330,6 @@ class ContextImpl extends Command implements Context, LaunchedContext {
     public void yield() {
         m_blockingPredicate = null;
         transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
-    }
-
-    @Override
-    public LaunchedContext startAsync(final Procedure procedure) {
-        checkProcedureReservationsDisjoint(procedure);
-        var context = new ContextImpl(procedure);
-        context.schedule();
-        return context;
     }
 
     @Override
@@ -396,7 +376,7 @@ class ContextImpl extends Command implements Context, LaunchedContext {
         }
     }
 
-    private void checkProcedureReservationsDisjoint(Procedure procedure) {
+    /* package */ void checkProcedureReservationsDisjoint(Procedure procedure) {
         final var thisReservations = getRequirements();
         for (var req : procedure.reservations()) {
             if (thisReservations.contains(req)) {

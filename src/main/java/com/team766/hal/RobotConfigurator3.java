@@ -2,6 +2,9 @@ package com.team766.hal;
 
 import com.team766.framework3.AutonomousMode;
 import com.team766.framework3.RuleEngine;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 
 /**
  * Provides Robot-specific components: initializes {@link Mechanism}s, creates the Operator Interface (OI),
@@ -35,6 +38,7 @@ public interface RobotConfigurator3 extends RobotConfiguratorBase {
 
     @Override
     default GenericRobotMain createRobotMain() {
+        Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Instantiating GenericRobotMain3");
         return new GenericRobotMain3(this);
     }
 }
