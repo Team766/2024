@@ -5,6 +5,7 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2024.3.2"
     id 'com.diffplug.spotless' version '6.22.0'
     id 'com.google.protobuf' version '0.8.19'
+    id "com.peterabeles.gversion" version "1.10"
 }
 
 
@@ -23,6 +24,7 @@ sourceSets {
             // NOTE(rcahoon, 2022-10-16): Gradle doesn't need this, but VSCode seems
             // to not automatically add generated classes to the classpath.
             srcDirs 'build/generated/source/proto/main/java'
+            srcDirs 'build/generated/source/main/java'
         }
     }
 }
@@ -130,6 +132,16 @@ dependencies {
     // implementation "org.java-websocket:Java-WebSocket:1.4.0"
     //implementation files('deps/Java-WebSocket-1.3.9.jar')
     implementation files('deps/json-20190722.jar')
+}
+
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+    srcDir       = "build/generated/source/main/java/"
+    classPackage = "com.team766"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/Los_Angeles"
+    indent       = "  "
 }
 
 javadoc {

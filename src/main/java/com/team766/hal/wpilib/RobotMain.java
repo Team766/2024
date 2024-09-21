@@ -1,5 +1,6 @@
 package com.team766.hal.wpilib;
 
+import com.team766.BuildConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
@@ -113,6 +114,8 @@ public class RobotMain extends LoggedRobot {
             } else {
                 // TODO: add support for simulation logging/replay
             }
+
+            Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
 
             Logger.start();
 
