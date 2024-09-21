@@ -8,16 +8,12 @@ import com.team766.robot.common.mechanisms.BurroDrive;
 
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
-    public static BurroDrive drive;
-    public static Arm arm;
-    public static Gripper gripper;
+    public static Drive drive;
 
     @Override
     public void initializeMechanisms() {
-        // Initialize mechanisms here
-        drive = new BurroDrive();
-        arm = new Arm();
-        gripper = new Gripper();
+    // Initialize mechanisms here
+    drive = new Drive();
     }
 
     @Override
