@@ -18,6 +18,11 @@ public class Encoder implements EncoderReader {
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     public double getDistance() {
         int distance = (int) ProgramInterface.encoderChannels[channel].distance;
         return distance * distancePerPulse;

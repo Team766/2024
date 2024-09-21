@@ -7,12 +7,18 @@ public class MockEncoder implements EncoderReader {
     private double distance = 0;
     private double rate = 0;
     private double distancePerPulse = 1;
+    private boolean isConnected = false;
 
     public MockEncoder() {}
 
     @Override
     public void reset() {
         distance = 0;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return isConnected;
     }
 
     @Override
@@ -27,10 +33,16 @@ public class MockEncoder implements EncoderReader {
 
     public void setDistance(final double distance_) {
         this.distance = distance_;
+        this.isConnected = true;
     }
 
     public void setRate(final double rate_) {
         this.rate = rate_;
+        this.isConnected = true;
+    }
+
+    public void disconnect() {
+        isConnected = false;
     }
 
     @Override
