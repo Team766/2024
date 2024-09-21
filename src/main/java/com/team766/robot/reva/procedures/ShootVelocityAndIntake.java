@@ -1,34 +1,43 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.robot.reva.Robot;
+import static com.team766.framework3.Conditions.waitForRequestOrTimeout;
+import static com.team766.framework3.StatusBus.publishStatus;
+
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.procedures.ShootingProcedureStatus.Status;
 
 public class ShootVelocityAndIntake extends Procedure {
 
-    double speed;
+    private final double speed;
 
-    public ShootVelocityAndIntake() {
-        this(4800);
+    private final Shooter shooter;
+    private final Intake intake;
+
+    public ShootVelocityAndIntake(Shooter shooter, Intake intake) {
+        this(4800, shooter, intake);
     }
 
-    public ShootVelocityAndIntake(double speed) {
+    public ShootVelocityAndIntake(double speed, Shooter shooter, Intake intake) {
         this.speed = speed;
+        this.shooter = reserve(shooter);
+        this.intake = reserve(intake);
     }
 
     public void run(Context context) {
-        context.takeOwnership(Robot.shooter);
+        var speedRequest = new Shooter.ShootAtSpeed(speed);
+        shooter.setRequest(speedRequest);
+        waitForRequestOrTimeout(context, speedRequest, 1.5);
 
-        Robot.shooter.shoot(speed);
-        context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1.5);
-
-        context.runSync(new IntakeIn());
+        intake.setRequest(new Intake.In());
 
         // FIXME: change this value back to 1.5s if doesn't intake for long enough
         context.waitForSeconds(1.0);
 
-        context.runSync(new IntakeStop());
-        Robot.lights.signalFinishedShootingProcedure();
+        intake.setRequest(new Intake.Stop());
+        publishStatus(new ShootingProcedureStatus(Status.FINISHED));
 
         // Shooter stopped at the end of auton
     }

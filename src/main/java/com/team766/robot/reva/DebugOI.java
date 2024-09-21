@@ -1,13 +1,16 @@
 package com.team766.robot.reva;
 
-import com.team766.framework.Context;
-import com.team766.framework.OIFragment;
+import static com.team766.framework3.RulePersistence.*;
+
+import com.team766.framework3.Rule;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
+import java.util.Set;
 
 /**
  * Programmer-centric controls to test each of our (non-drive) mechanisms.
@@ -32,120 +35,119 @@ import com.team766.robot.reva.mechanisms.Shoulder;
  *  3        = Intake In
  * 7        = Intake Out
  */
-public class DebugOI extends OIFragment {
-    private final JoystickReader macropad;
-
-    private final Shoulder shoulder;
-    private final Climber climber;
-    private final Intake intake;
-    private final Shooter shooter;
-    private final OICondition controlShoulder;
-    private final OICondition controlClimber;
-    private final OICondition controlShooter;
-    private final OICondition intakeIn;
-    private final OICondition intakeOut;
-
+public class DebugOI {
     public DebugOI(
-            JoystickReader macropad,
-            Shoulder shoulder,
-            Climber climber,
-            Intake intake,
-            Shooter shooter) {
-        this.macropad = macropad;
-        this.shoulder = shoulder;
-        this.climber = climber;
-        this.intake = intake;
-        this.shooter = shooter;
-
-        controlShoulder =
-                new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOULDER));
-        controlClimber = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_CLIMBER));
-        controlShooter = new OICondition(() -> macropad.getButton(InputConstants.CONTROL_SHOOTER));
-        intakeIn = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_IN));
-        intakeOut = new OICondition(() -> macropad.getButton(InputConstants.INTAKE_OUT));
-    }
-
-    @Override
-    protected void handleOI(Context context) {
+            OI oi, JoystickReader macropad, ArmAndClimber ss, Intake intake, Shooter shooter) {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
-        if (controlShoulder.isTriggering()) {
-            if (controlShoulder.isNewlyTriggering()) {
-                context.takeOwnership(shoulder);
-            }
+        oi.addRule(
+                Rule.create(
+                                "Debug Control Shoulder",
+                                () -> macropad.getButton(InputConstants.CONTROL_SHOULDER))
+                        .whenTriggering(
+                                Rule.create(
+                                                "Debug Shoulder Nudge Up",
+                                                () -> macropad.getButton(InputConstants.NUDGE_UP))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                Set.of(ss),
+                                                () -> ss.setRequest(Shoulder.makeNudgeUp())),
+                                Rule.create(
+                                                "Debug Shoulder Nudge Down",
+                                                () -> macropad.getButton(InputConstants.NUDGE_DOWN))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                Set.of(ss),
+                                                () -> ss.setRequest(Shoulder.makeNudgeDown())),
+                                Rule.create(
+                                                "Debug Shoulder Reset",
+                                                () ->
+                                                        macropad.getButton(
+                                                                InputConstants
+                                                                        .MACROPAD_RESET_SHOULDER))
+                                        .withOnTriggeringProcedure(
+                                                ONCE, Set.of(ss), () -> ss.resetShoulder())));
 
-            if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                shoulder.nudgeUp();
-            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                shoulder.nudgeDown();
-            } else if (macropad.getButtonPressed(InputConstants.MACROPAD_RESET_SHOULDER)) {
-                shoulder.reset();
-            }
-        } else if (controlShoulder.isFinishedTriggering()) {
-            context.releaseOwnership(shoulder);
-        }
+        oi.addRule(
+                Rule.create("Debug Climber Reset", () -> macropad.getButton(16))
+                        .withOnTriggeringProcedure(
+                                ONCE, Set.of(ss), () -> ss.resetClimberPositions()));
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-        if (controlClimber.isTriggering()) {
-            if (controlClimber.isNewlyTriggering()) {
-                context.takeOwnership(climber);
-                climber.enableSoftLimits(false);
-            }
-
-            if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                climber.setLeftPower(-0.25);
-                climber.setRightPower(-0.25);
-            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                climber.setLeftPower(0.25);
-                climber.setRightPower(0.25);
-            }
-
-        } else if (controlClimber.isFinishedTriggering()) {
-            climber.stop();
-            climber.enableSoftLimits(true);
-            context.releaseOwnership(climber);
-        }
-
-        if (macropad.getButtonPressed(16)) {
-            climber.resetLeftPosition();
-            climber.resetRightPosition();
-        }
+        oi.addRule(
+                Rule.create(
+                                "Debug Control Climber",
+                                () -> macropad.getButton(InputConstants.CONTROL_CLIMBER))
+                        .whenTriggering(
+                                Rule.create(
+                                                "Debug Climber Nudge Up",
+                                                () -> macropad.getButton(InputConstants.NUDGE_UP))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                Set.of(ss),
+                                                () ->
+                                                        ss.setRequest(
+                                                                new Climber.MotorPowers(
+                                                                        -0.25, -0.25, true))),
+                                Rule.create(
+                                                "Debug Climber Nudge Down",
+                                                () -> macropad.getButton(InputConstants.NUDGE_DOWN))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                Set.of(ss),
+                                                () ->
+                                                        ss.setRequest(
+                                                                new Climber.MotorPowers(
+                                                                        0.25, 0.25, true))))
+                        .withFinishedTriggeringProcedure(
+                                Set.of(ss), () -> ss.setRequest(new Climber.Stop())));
 
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        if (intakeIn.isNewlyTriggering()) {
-            context.takeOwnership(intake);
-            intake.in();
-        } else if (intakeOut.isNewlyTriggering()) {
-            context.takeOwnership(intake);
-            intake.out();
-        } else if (intakeIn.isFinishedTriggering() || intakeOut.isFinishedTriggering()) {
-            intake.stop();
-            context.releaseOwnership(intake);
-        }
+        oi.addRule(
+                Rule.create("Debug Intake In", () -> macropad.getButton(InputConstants.INTAKE_IN))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                Set.of(intake),
+                                () -> intake.setRequest(new Intake.In())));
+        oi.addRule(
+                Rule.create("Debug Intake Out", () -> macropad.getButton(InputConstants.INTAKE_OUT))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                Set.of(intake),
+                                () -> intake.setRequest(new Intake.Out())));
 
         // fine-grained controls for shooter
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
-        if (controlShooter.isTriggering()) {
-            if (controlShooter.isNewlyTriggering()) {
-                context.takeOwnership(shooter);
-                Robot.shooter.shoot();
-            }
-
-            if (macropad.getButtonPressed(InputConstants.NUDGE_UP)) {
-                shooter.nudgeUp();
-            } else if (macropad.getButtonPressed(InputConstants.NUDGE_DOWN)) {
-                shooter.nudgeDown();
-            }
-
-        } else if (controlShooter.isFinishedTriggering()) {
-            shooter.stop();
-            context.releaseOwnership(shooter);
-        }
+        oi.addRule(
+                Rule.create(
+                                "Debug Control Shooter",
+                                () -> macropad.getButton(InputConstants.CONTROL_SHOOTER))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                Set.of(shooter),
+                                () -> shooter.setRequest(Shooter.makeShoot()))
+                        .whenTriggering(
+                                Rule.create(
+                                                "Debug Shooter Nudge Up",
+                                                () -> macropad.getButton(InputConstants.NUDGE_UP))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                Set.of(shooter),
+                                                () -> shooter.setRequest(Shooter.makeNudgeUp())),
+                                Rule.create(
+                                                "Debug Shooter Nudge Down",
+                                                () -> macropad.getButton(InputConstants.NUDGE_DOWN))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                Set.of(shooter),
+                                                () -> shooter.setRequest(Shooter.makeNudgeDown())))
+                        .withFinishedTriggeringProcedure(
+                                Set.of(shooter), () -> shooter.setRequest(new Shooter.Stop())));
     }
 }

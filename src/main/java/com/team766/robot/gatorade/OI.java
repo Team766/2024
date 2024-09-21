@@ -1,246 +1,261 @@
 package com.team766.robot.gatorade;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import static com.team766.framework3.RulePersistence.*;
+import static com.team766.framework3.StatusBus.publishStatus;
+
+import com.team766.framework3.Rule;
+import com.team766.framework3.RuleEngine;
+import com.team766.framework3.Status;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
-import com.team766.library.RateLimiter;
-import com.team766.logging.Category;
-import com.team766.logging.Severity;
 import com.team766.robot.common.DriverOI;
-import com.team766.robot.gatorade.constants.ControlConstants;
+import com.team766.robot.common.mechanisms.*;
 import com.team766.robot.gatorade.constants.InputConstants;
+import com.team766.robot.gatorade.mechanisms.*;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 import com.team766.robot.gatorade.procedures.*;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Set;
 
 /**
- * This class is the glue that binds the controls on the physical operator
- * interface to the code that allow control of the robot.
+ * This class is the glue that binds the controls on the physical operator interface to the code
+ * that allow control of the robot.
  */
-public class OI extends Procedure {
+public class OI extends RuleEngine {
 
-    private JoystickReader leftJoystick;
-    private JoystickReader rightJoystick;
-    private JoystickReader boxopGamepad;
-    private double rightJoystickY = 0;
-    private double leftJoystickX = 0;
-    private double leftJoystickY = 0;
-    private boolean isCross = false;
-    private final DriverOI driverOI;
+    public record OIStatus(GamePieceType gamePieceType, PlacementPosition placementPosition)
+            implements Status {}
 
-    double turningValue = 0;
-    boolean manualControl = true;
     PlacementPosition placementPosition = PlacementPosition.NONE;
 
-    private RateLimiter lightsRateLimit = new RateLimiter(1.3);
+    GamePieceType gamePieceType = GamePieceType.CONE;
 
-    public OI() {
-        loggerCategory = Category.OPERATOR_INTERFACE;
+    public OI(SwerveDrive drive, Arm arm, Intake intake) {
+        final JoystickReader leftJoystick =
+                RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
+        final JoystickReader rightJoystick =
+                RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
+        final JoystickReader boxopGamepad =
+                RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
 
-        leftJoystick = RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
-        rightJoystick = RobotProvider.instance.getJoystick(InputConstants.RIGHT_JOYSTICK);
-        boxopGamepad = RobotProvider.instance.getJoystick(InputConstants.BOXOP_GAMEPAD);
+        // Driver OI: take input from left, right joysticks.  control drive.
+        new DriverOI(this, leftJoystick, rightJoystick, drive);
 
-        driverOI = new DriverOI(Robot.drive, leftJoystick, rightJoystick);
+        addRule(
+                Rule.create(
+                                "Intake Out",
+                                () -> leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                Set.of(intake),
+                                () ->
+                                        intake.setRequest(
+                                                new Intake.IntakeState(
+                                                        gamePieceType, Intake.MotorState.OUT)))
+                        .withFinishedTriggeringProcedure(
+                                Set.of(intake),
+                                () ->
+                                        intake.setRequest(
+                                                new Intake.IntakeState(
+                                                        gamePieceType, Intake.MotorState.STOP))));
+
+        // Respond to boxop commands
+
+        // first, check if the boxop is making a cone or cube selection
+        addRule(
+                Rule.create("Select Cone", () -> boxopGamepad.getPOV() == InputConstants.POV_UP)
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    gamePieceType = GamePieceType.CONE;
+                                    updateStatus();
+                                }));
+        addRule(
+                Rule.create("Select Cube", () -> boxopGamepad.getPOV() == InputConstants.POV_DOWN)
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    gamePieceType = GamePieceType.CUBE;
+                                    updateStatus();
+                                }));
+
+        // look for button presses to queue placement of intake/wrist/elevator superstructure
+        addRule(
+                Rule.create(
+                                "Select none",
+                                () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    placementPosition = PlacementPosition.NONE;
+                                    updateStatus();
+                                }));
+        addRule(
+                Rule.create(
+                                "Select low",
+                                () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    placementPosition = PlacementPosition.LOW_NODE;
+                                    updateStatus();
+                                }));
+        addRule(
+                Rule.create(
+                                "Select mid",
+                                () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    placementPosition = PlacementPosition.MID_NODE;
+                                    updateStatus();
+                                }));
+        addRule(
+                Rule.create(
+                                "Select high",
+                                () -> boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    placementPosition = PlacementPosition.HIGH_NODE;
+                                    updateStatus();
+                                }));
+        addRule(
+                Rule.create(
+                                "Select human",
+                                () ->
+                                        boxopGamepad.getButton(
+                                                InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(),
+                                () -> {
+                                    placementPosition = PlacementPosition.HUMAN_PLAYER;
+                                    updateStatus();
+                                }));
+
+        // look for button hold to start intake, release to idle intake
+        addRule(
+                Rule.create(
+                                "Intake In",
+                                () -> boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                Set.of(intake),
+                                () ->
+                                        intake.setRequest(
+                                                new Intake.IntakeState(
+                                                        gamePieceType, Intake.MotorState.IN)))
+                        .withFinishedTriggeringProcedure(
+                                Set.of(intake),
+                                () ->
+                                        intake.setRequest(
+                                                new Intake.IntakeState(
+                                                        gamePieceType, Intake.MotorState.IDLE))));
+
+        addRule(
+                Rule.create(
+                                "Intake Stop",
+                                () -> boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(intake),
+                                () ->
+                                        intake.setRequest(
+                                                new Intake.IntakeState(
+                                                        gamePieceType, Intake.MotorState.STOP))));
+
+        // look for button hold to extend intake/wrist/elevator superstructure,
+        // release to retract
+        addRule(
+                Rule.create(
+                                "Extend Wristvator",
+                                () ->
+                                        boxopGamepad.getButton(
+                                                InputConstants.BUTTON_EXTEND_WRISTVATOR))
+                        .withOnTriggeringProcedure(
+                                ONCE,
+                                Set.of(arm),
+                                () -> {
+                                    if (placementPosition != PlacementPosition.NONE) {
+                                        arm.setRequest(
+                                                Arm.MoveToPosition.Extended(
+                                                        placementPosition, gamePieceType));
+                                    }
+                                })
+                        .withFinishedTriggeringProcedure(
+                                Set.of(arm, intake),
+                                () -> {
+                                    arm.setRequest(Arm.MoveToPosition.RETRACTED);
+                                    if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
+                                        intake.setRequest(
+                                                new Intake.IntakeState(
+                                                        gamePieceType, Intake.MotorState.IDLE));
+                                    }
+                                }));
+
+        // look for manual nudges
+        // we only allow these if the extend elevator trigger is extended
+
+        boxopGamepad.setAllAxisDeadzone(0.05);
+
+        // look for elevator nudges
+        addRule(
+                Rule.create(
+                                "Elevator nudge",
+                                () ->
+                                        boxopGamepad.getButton(
+                                                        InputConstants.BUTTON_EXTEND_WRISTVATOR)
+                                                && boxopGamepad.isAxisMoved(
+                                                        InputConstants.AXIS_ELEVATOR_MOVEMENT))
+                        .withOnTriggeringProcedure(
+                                REPEATEDLY,
+                                Set.of(arm),
+                                () -> {
+                                    final double elevatorNudgeAxis =
+                                            -1
+                                                    * boxopGamepad.getAxis(
+                                                            InputConstants.AXIS_ELEVATOR_MOVEMENT);
+                                    // elevator.setRequest(new
+                                    // Elevator.NudgeNoPID(elevatorNudgeAxis)));
+                                    if (elevatorNudgeAxis > 0) {
+                                        arm.setRequest(Arm.makeNudgeElevatorUp());
+                                    } else {
+                                        arm.setRequest(Arm.makeNudgeElevatorDown());
+                                    }
+                                }));
+        // look for wrist nudges
+        addRule(
+                Rule.create(
+                                "Elevator nudge",
+                                () ->
+                                        boxopGamepad.getButton(
+                                                        InputConstants.BUTTON_EXTEND_WRISTVATOR)
+                                                && boxopGamepad.isAxisMoved(
+                                                        InputConstants.AXIS_WRIST_MOVEMENT))
+                        .withOnTriggeringProcedure(
+                                REPEATEDLY,
+                                Set.of(arm),
+                                () -> {
+                                    final double wristNudgeAxis =
+                                            -1
+                                                    * boxopGamepad.getAxis(
+                                                            InputConstants.AXIS_WRIST_MOVEMENT);
+                                    // wrist.setRequest(new Wrist.NudgeNoPID(wristNudgeAxis));
+                                    if (wristNudgeAxis > 0) {
+                                        arm.setRequest(Arm.makeNudgeWristUp());
+                                    } else {
+                                        arm.setRequest(Arm.makeNudgeWristDown());
+                                    }
+                                }));
     }
 
-    public void run(Context context) {
-        context.takeOwnership(Robot.lights);
-
-        boolean elevatorManual = false;
-        boolean wristManual = false;
-
-        while (true) {
-            context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
-            RobotProvider.instance.refreshDriverStationData();
-
-            SmartDashboard.putString("Alliance", DriverStation.getAlliance().toString());
-
-            // Add driver controls here - make sure to take/release ownership
-            // of mechanisms when appropriate.
-
-            // Driver OI: take input from left, right joysticks.  control drive.
-            driverOI.handleOI(context);
-
-            if (leftJoystick.getButtonPressed(InputConstants.INTAKE_OUT)) {
-                context.runSync(new IntakeOut());
-            } else if (leftJoystick.getButtonReleased(InputConstants.INTAKE_OUT)) {
-                context.runSync(new IntakeStop());
-            }
-
-            // Respond to boxop commands
-
-            // first, check if the boxop is making a cone or cube selection
-            if (boxopGamepad.getPOV() == InputConstants.POV_UP) {
-                context.runSync(new GoForCones());
-                setLightsForGamePiece();
-                SmartDashboard.putBoolean("Game Piece", true);
-            } else if (boxopGamepad.getPOV() == InputConstants.POV_DOWN) {
-                context.runSync(new GoForCubes());
-                setLightsForGamePiece();
-                SmartDashboard.putBoolean("Game Piece", false);
-            }
-
-            // look for button presses to queue placement of intake/wrist/elevator superstructure
-            if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_NONE)) {
-                placementPosition = PlacementPosition.NONE;
-                // setLightsForPlacement();
-            } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_LOW)) {
-                placementPosition = PlacementPosition.LOW_NODE;
-                // setLightsForPlacement();
-            } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_MID)) {
-                placementPosition = PlacementPosition.MID_NODE;
-                // setLightsForPlacement();
-            } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HIGH)) {
-                placementPosition = PlacementPosition.HIGH_NODE;
-                // setLightsForPlacement();
-            } else if (boxopGamepad.getButton(InputConstants.BUTTON_PLACEMENT_HUMAN_PLAYER)) {
-                placementPosition = PlacementPosition.HUMAN_PLAYER;
-                // setLightsForPlacement();
-            }
-
-            // look for button hold to start intake, release to idle intake
-            if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_INTAKE_IN)) {
-                context.runSync(new IntakeIn());
-            } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_INTAKE_IN)) {
-                context.runSync(new IntakeIdle());
-            } else if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
-                context.runSync(new IntakeStop());
-            }
-
-            // look for button hold to extend intake/wrist/elevator superstructure,
-            // release to retract
-            if (boxopGamepad.getButtonPressed(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-                switch (placementPosition) {
-                    case NONE:
-                        break;
-                    case LOW_NODE:
-                        context.startAsync(new ExtendWristvatorToLow());
-                        break;
-                    case MID_NODE:
-                        context.startAsync(new ExtendWristvatorToMid());
-                        break;
-                    case HIGH_NODE:
-                        context.startAsync(new ExtendWristvatorToHigh());
-                        break;
-                    case HUMAN_PLAYER:
-                        context.startAsync(
-                                new ExtendToHumanWithIntake(Robot.intake.getGamePieceType()));
-                        break;
-                    default:
-                        // warn, ignore
-                        log(
-                                Severity.WARNING,
-                                "Unexpected placement position: " + placementPosition.toString());
-                        break;
-                }
-            } else if (boxopGamepad.getButtonReleased(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-                if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
-                    context.startAsync(new RetractWristvatorIdleIntake());
-                } else {
-                    context.startAsync(new RetractWristvator());
-                }
-            }
-
-            // look for manual nudges
-            // we only allow these if the extend elevator trigger is extended
-            if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-
-                // look for elevator nudges
-                double elevatorNudgeAxis =
-                        -1 * boxopGamepad.getAxis(InputConstants.AXIS_ELEVATOR_MOVEMENT);
-                if (Math.abs(elevatorNudgeAxis) > 0.05) {
-                    // elevatorManual = true;
-                    context.takeOwnership(Robot.elevator);
-                    // Robot.elevator.nudgeNoPID(elevatorNudgeAxis);
-                    if (elevatorNudgeAxis > 0) {
-                        Robot.elevator.nudgeUp();
-                    } else {
-                        Robot.elevator.nudgeDown();
-                    }
-                    context.releaseOwnership(Robot.elevator);
-                } else if (false && elevatorManual) {
-                    Robot.elevator.stopElevator();
-                    elevatorManual = false;
-                }
-
-                // look for wrist nudges
-                double wristNudgeAxis =
-                        -1 * boxopGamepad.getAxis(InputConstants.AXIS_WRIST_MOVEMENT);
-                if (Math.abs(wristNudgeAxis) > 0.05) {
-                    // wristManual = true;
-                    context.takeOwnership(Robot.wrist);
-                    // Robot.wrist.nudgeNoPID(wristNudgeAxis);
-                    if (wristNudgeAxis > 0) {
-                        Robot.wrist.nudgeUp();
-                    } else {
-                        Robot.wrist.nudgeDown();
-                    }
-                    context.releaseOwnership(Robot.wrist);
-                } else if (false && wristManual) {
-                    Robot.wrist.stopWrist();
-                    wristManual = true;
-                }
-            }
-
-            if (lightsRateLimit.next()) {
-                if (DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17) {
-                    Robot.lights.rainbow();
-                } else {
-                    setLightsForGamePiece();
-                }
-            }
-        }
-    }
-
-    private void setLightsForPlacement() {
-        switch (placementPosition) {
-                // case NONE:
-                // 	Robot.lights.white();
-                // 	break;
-                // case LOW_NODE:
-                // 	Robot.lights.green();
-                // 	break;
-                // case MID_NODE:
-                // 	Robot.lights.red();
-                // 	break;
-                // case HIGH_NODE:
-                // 	Robot.lights.orange();
-                // 	break;
-            case HUMAN_PLAYER:
-                setLightsForGamePiece();
-                break;
-            default:
-                // warn, ignore
-                log(
-                        Severity.WARNING,
-                        "Unexpected placement position: " + placementPosition.toString());
-                break;
-        }
-
-        lightsRateLimit.reset();
-        lightsRateLimit.next();
-    }
-
-    private void setLightsForGamePiece() {
-        if (Robot.intake.getGamePieceType() == GamePieceType.CUBE) {
-            Robot.lights.purple();
-        } else {
-            Robot.lights.yellow();
-        }
-
-        lightsRateLimit.reset();
-        lightsRateLimit.next();
-    }
-
-    /**
-     * Helper method to ignore joystick values below JOYSTICK_DEADZONE
-     * @param joystickValue the value to trim
-     * @return the trimmed joystick value
-     */
-    private double createJoystickDeadzone(double joystickValue) {
-        return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
+    private void updateStatus() {
+        publishStatus(new OIStatus(gamePieceType, placementPosition));
     }
 }
