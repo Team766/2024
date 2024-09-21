@@ -1,20 +1,20 @@
 package com.team766.robot.burro_arm.mechanisms;
 
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
 public class Gripper extends Mechanism {
-    private static final double INTAKE_POWER = -1.0;
-    private static final double OUTTAKE_POWER = 0.5;
-    private static final double IDLE_POWER = -0.1;
-
-    private MotorController leftMotor;
-    private MotorController rightMotor;
+    private final MotorController leftMotor;
+    private final MotorController rightMotor;
+    private final double intakePower = -ConfigFileReader.instance.getDouble("gripper.intakePower").valueOr(0.3);
+    private final double outtakePower = ConfigFileReader.instance.getDouble("gripper.outtakePower").valueOr(0.1);
+    private final double idlePower = -ConfigFileReader.instance.getDouble("gripper.idlePower").valueOr(0.05);
 
     public Gripper() {
-        leftMotor = RobotProvider.instance.getMotor("exampleMechanism.leftMotor");
-        rightMotor = RobotProvider.instance.getMotor("exampleMechanism.rightMotor");
+        leftMotor = RobotProvider.instance.getMotor("gripper.leftMotor");
+        rightMotor = RobotProvider.instance.getMotor("gripper.rightMotor");
     }
 
     public void setMotorPower(final double power) {
@@ -25,14 +25,14 @@ public class Gripper extends Mechanism {
     }
 
     public void intake() {
-        setMotorPower(INTAKE_POWER);
+        setMotorPower(intakePower);
     }
 
     public void outtake() {
-        setMotorPower(OUTTAKE_POWER);
+        setMotorPower(outtakePower);
     }
 
     public void idle() {
-        setMotorPower(IDLE_POWER);
+        setMotorPower(idlePower);
     }
 }

@@ -40,13 +40,20 @@ public class OI extends Procedure {
             // of mechanisms when appropriate.
 
             Robot.drive.drive(
-                    -joystick0.getAxis(AXIS_FORWARD_BACKWARD), -joystick0.getAxis(AXIS_TURN));
+                    -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5, -joystick0.getAxis(AXIS_TURN) * 0.5);
 
             if (joystick0.getButton(BUTTON_ELEVATOR_UP)) {
                 Robot.elevator.setPosition(Robot.elevator.getPosition() + NUDGE_UP_INCREMENT);
             } else if (joystick0.getButton(BUTTON_ELEVATOR_DOWN)) {
                 Robot.elevator.setPosition(Robot.elevator.getPosition() - NUDGE_DOWN_INCREMENT);
             }
+            // if (joystick0.getButton(BUTTON_ELEVATOR_UP)) {
+            //     Robot.elevator.setPower(0.2);
+            // } else if (joystick0.getButton(BUTTON_ELEVATOR_DOWN)) {
+            //     Robot.elevator.setPower(-0.2);
+            // } else {
+            //     Robot.elevator.setPower(0);
+            // }
 
             if (joystick0.getButton(BUTTON_INTAKE)) {
                 Robot.gripper.intake();

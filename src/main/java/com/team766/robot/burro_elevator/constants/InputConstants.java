@@ -8,7 +8,7 @@ package com.team766.robot.burro_elevator.constants;
 public final class InputConstants {
     // navigation
     public static final int AXIS_FORWARD_BACKWARD = 1;
-    public static final int AXIS_TURN = 3;
+    public static final int AXIS_TURN = 2;
 
     // buttons
     public static final int BUTTON_ELEVATOR_UP = 5;
