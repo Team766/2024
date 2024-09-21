@@ -1,31 +1,18 @@
 package com.team766.robot.common.procedures;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.GeometryUtil;
-import com.pathplanner.lib.util.PIDConstants;
-import com.team766.config.ConfigFileReader;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.framework.RunnableWithContext;
-import com.team766.robot.common.constants.ConfigConstants;
-import com.team766.robot.common.constants.PathPlannerConstants;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva.Robot;
-import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import com.team766.robot.reva.procedures.MoveClimbersToBottom;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import java.util.LinkedList;
 import java.util.Optional;
 
-public class PathSequenceAuto extends Procedure {
+public abstract class PathSequenceAuto extends Procedure {
 
-    private final LinkedList<RunnableWithContext> pathItems;
     private final SwerveDrive drive;
     private final Pose2d initialPosition;
-    private final PPHolonomicDriveController controller;
-    private VisionSpeakerHelper visionSpeakerHelper;
 
     /**
      * Sequencer for using path following with other procedures
@@ -33,62 +20,15 @@ public class PathSequenceAuto extends Procedure {
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
     public PathSequenceAuto(SwerveDrive drive, Pose2d initialPosition) {
-        pathItems = new LinkedList<RunnableWithContext>();
-        this.drive = drive;
-        this.controller = createDriveController(drive);
+        this.drive = reserve(drive);
         this.initialPosition = initialPosition;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
-    private PPHolonomicDriveController createDriveController(SwerveDrive drive) {
-        double maxSpeed =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
-                        .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
-
-        double translationP =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
-                        .valueOr(PathPlannerConstants.TRANSLATION_P);
-        double translationI =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
-                        .valueOr(PathPlannerConstants.TRANSLATION_I);
-        double translationD =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
-                        .valueOr(PathPlannerConstants.TRANSLATION_D);
-        double rotationP =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
-                        .valueOr(PathPlannerConstants.ROTATION_P);
-        double rotationI =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
-                        .valueOr(PathPlannerConstants.ROTATION_I);
-        double rotationD =
-                ConfigFileReader.getInstance()
-                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
-                        .valueOr(PathPlannerConstants.ROTATION_D);
-
-        return new PPHolonomicDriveController(
-                new PIDConstants(translationP, translationI, translationD),
-                new PIDConstants(rotationP, rotationI, rotationD),
-                maxSpeed,
-                drive.maxWheelDistToCenter());
+    protected void runPath(Context context, String pathName) {
+        context.runSync(new FollowPath(pathName, drive));
     }
 
-    protected void addPath(String pathName) {
-        pathItems.add(new FollowPath(pathName, controller, drive));
-    }
-
-    protected void addProcedure(Procedure procedure) {
-        pathItems.add(procedure);
-    }
-
-    protected void addWait(double waitForSeconds) {
-        pathItems.add((context) -> context.waitForSeconds(waitForSeconds));
-    }
+    protected abstract void runSequence(Context context);
 
     @Override
     public final void run(Context context) {
@@ -103,32 +43,23 @@ public class PathSequenceAuto extends Procedure {
             return;
         }
 
-        context.startAsync(new MoveClimbersToBottom());
-        context.takeOwnership(drive);
         // if (!visionSpeakerHelper.updateTarget(context)) {
         drive.setCurrentPosition(
                 shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
-        // context.takeOwnership(drive);
         drive.resetGyro(
                 (shouldFlipAuton
                                 ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
                                 : initialPosition.getRotation())
                         .getDegrees());
-        for (RunnableWithContext pathItem : pathItems) {
-            context.runSync(pathItem);
-            context.yield();
+        try {
+            runSequence(context);
+        } finally {
+            // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
+            // TODO: We should figure out why after EBR but for now we can just reset the gyro to
+            // 180 of
+            // current angle
+            drive.resetGyro(180 + drive.getMechanismStatus().heading());
         }
-
-        context.takeOwnership(Robot.shooter);
-        Robot.shooter.stop();
-        context.releaseOwnership(Robot.shooter);
-
-        // TODO: For some reason, the gyro is consistenty 180 degrees from expected in teleop
-        // TODO: We should figure out why after EBR but for now we can just reset the gyro to 180 of
-        // current angle
-        context.takeOwnership(drive);
-        drive.resetGyro(180 + drive.getHeading());
-        context.releaseOwnership(drive);
     }
 }

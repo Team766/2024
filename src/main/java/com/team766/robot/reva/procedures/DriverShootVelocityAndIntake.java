@@ -1,16 +1,25 @@
 package com.team766.robot.reva.procedures;
 
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
-import com.team766.robot.reva.Robot;
+import static com.team766.framework3.Conditions.waitForStatusWithOrTimeout;
+
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shooter;
 
 public class DriverShootVelocityAndIntake extends Procedure {
+    private final Intake intake;
+
+    public DriverShootVelocityAndIntake(Intake intake) {
+        this.intake = reserve(intake);
+    }
 
     public void run(Context context) {
 
-        context.waitForConditionOrTimeout(Robot.shooter::isCloseToExpectedSpeed, 1);
+        waitForStatusWithOrTimeout(
+                context, Shooter.ShooterStatus.class, s -> s.isCloseToTargetSpeed(), 1);
 
-        context.runSync(new IntakeIn());
+        intake.setRequest(new Intake.In());
 
         // Does not stop intake here so driver can stop when button released
     }
