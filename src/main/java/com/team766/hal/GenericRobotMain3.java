@@ -1,9 +1,10 @@
 package com.team766.hal;
 
-import com.team766.framework.AutonomousMode;
-import com.team766.framework.LaunchedContext;
-import com.team766.framework.Procedure;
-import com.team766.framework.Scheduler;
+import com.team766.framework3.AutonomousMode;
+import com.team766.framework3.RuleEngine;
+import com.team766.framework3.SchedulerMonitor;
+import com.team766.framework3.SchedulerUtils;
+import com.team766.library.RateLimiter;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -14,30 +15,35 @@ import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.ReadLogs;
 import com.team766.web.WebServer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
 
-public final class GenericRobotMain implements GenericRobotMainBase {
-    private RobotConfigurator configurator;
-    private Procedure m_oi;
+public final class GenericRobotMain3 implements GenericRobotMainBase {
+    private RobotConfigurator3 configurator;
+    private RuleEngine m_oi;
+    private RuleEngine m_lights;
 
     private WebServer m_webServer;
     private AutonomousSelector<AutonomousMode> m_autonSelector;
     private AutonomousMode m_autonMode = null;
-    private LaunchedContext m_autonomous = null;
-    private LaunchedContext m_oiContext = null;
+    private Command m_autonomous = null;
 
     // Reset the autonomous routine if the robot is disabled for more than this
     // number of seconds.
     private static final double RESET_IN_DISABLED_PERIOD = 10.0;
     private double m_disabledModeStartTime;
 
+    private RateLimiter m_lightUpdateLimiter = new RateLimiter(0.05);
+
     private boolean faultInRobotInit = false;
     private boolean faultInAutoInit = false;
     private boolean faultInTeleopInit = false;
 
-    public GenericRobotMain(RobotConfigurator configurator) {
-        Scheduler.getInstance().reset();
+    public GenericRobotMain3(RobotConfigurator3 configurator) {
+        SchedulerUtils.reset();
+        SchedulerMonitor.start();
 
         this.configurator = configurator;
         m_autonSelector = new AutonomousSelector<>(configurator.getAutonomousModes());
@@ -56,6 +62,7 @@ public final class GenericRobotMain implements GenericRobotMainBase {
             configurator.initializeMechanisms();
 
             m_oi = configurator.createOI();
+            m_lights = configurator.createLights();
         } catch (Throwable ex) {
             faultInRobotInit = true;
             throw ex;
@@ -91,12 +98,15 @@ public final class GenericRobotMain implements GenericRobotMainBase {
         if (timeInState > RESET_IN_DISABLED_PERIOD) {
             resetAutonomousMode("time in disabled mode");
         }
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
+        if (m_lights != null && m_lightUpdateLimiter.next()) {
+            m_lights.run();
+        }
     }
 
     public void resetAutonomousMode(final String reason) {
         if (m_autonomous != null) {
-            m_autonomous.stop();
+            m_autonomous.cancel();
             m_autonomous = null;
             m_autonMode = null;
             Logger.get(Category.AUTONOMOUS)
@@ -107,17 +117,11 @@ public final class GenericRobotMain implements GenericRobotMainBase {
     public void autonomousInit() {
         faultInAutoInit = true;
 
-        if (m_oiContext != null) {
-            m_oiContext.stop();
-            m_oiContext = null;
-        }
-
         if (m_autonomous != null) {
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(
                             Severity.INFO,
-                            "Continuing previous autonomus procedure "
-                                    + m_autonomous.getContextName());
+                            "Continuing previous autonomus procedure " + m_autonomous.getName());
         } else if (m_autonSelector.getSelectedAutonMode() == null) {
             Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
         }
@@ -129,28 +133,27 @@ public final class GenericRobotMain implements GenericRobotMainBase {
 
         final AutonomousMode autonomousMode = m_autonSelector.getSelectedAutonMode();
         if (autonomousMode != null && m_autonMode != autonomousMode) {
-            final Procedure autonProcedure = autonomousMode.instantiate();
-            m_autonomous = Scheduler.getInstance().startAsync(autonProcedure);
+            m_autonomous = autonomousMode.instantiate();
+            m_autonomous.schedule();
             m_autonMode = autonomousMode;
             Logger.get(Category.AUTONOMOUS)
                     .logRaw(
                             Severity.INFO,
-                            "Starting new autonomus procedure " + autonProcedure.getName());
+                            "Starting new autonomus procedure " + m_autonomous.getName());
         }
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
+        if (m_lights != null && m_lightUpdateLimiter.next()) {
+            m_lights.run();
+        }
     }
 
     public void teleopInit() {
         faultInTeleopInit = true;
 
         if (m_autonomous != null) {
-            m_autonomous.stop();
+            m_autonomous.cancel();
             m_autonomous = null;
             m_autonMode = null;
-        }
-
-        if (m_oiContext == null && m_oi != null) {
-            m_oiContext = Scheduler.getInstance().startAsync(m_oi);
         }
 
         faultInTeleopInit = false;
@@ -159,11 +162,13 @@ public final class GenericRobotMain implements GenericRobotMainBase {
     public void teleopPeriodic() {
         if (faultInRobotInit || faultInTeleopInit) return;
 
-        if (m_oiContext != null && m_oiContext.isDone()) {
-            m_oiContext = Scheduler.getInstance().startAsync(m_oi);
-            Logger.get(Category.OPERATOR_INTERFACE)
-                    .logRaw(Severity.WARNING, "Restarting OI context");
+        if (m_oi != null && RobotProvider.instance.hasNewDriverStationData()) {
+            RobotProvider.instance.refreshDriverStationData();
+            m_oi.run();
         }
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
+        if (m_lights != null && m_lightUpdateLimiter.next()) {
+            m_lights.run();
+        }
     }
 }

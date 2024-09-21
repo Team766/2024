@@ -35,7 +35,6 @@ public class WPILibCommandProcedure extends Procedure {
             }
         } catch (Throwable ex) {
             interrupted = true;
-            this.command.cancel();
             throw ex;
         } finally {
             this.command.end(interrupted);

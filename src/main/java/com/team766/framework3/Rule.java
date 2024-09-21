@@ -12,7 +12,7 @@ import java.util.function.BooleanSupplier;
  * in an OperatorInterface loop or Display (LED lights, etc) loop.  The Rule keeps track of
  * when the predicate starts triggering, continues triggering, and has finished triggering, via
  * a {@link TriggerType}, eg when a driver or boxop starts pressing a button, continues holding down
- * the button, and releases the button.  Each Rule has optional {@link RunnableWithContext} actions
+ * the button, and releases the button.  Each Rule has optional {@link Procedure} actions
  * for each of these trigger types, which the {@link RuleEngine} will consider running, after checking
  * if higher priority rules have reserved the same {@link Mechanism}s that the candidate rule would use.
  *
@@ -24,7 +24,7 @@ import java.util.function.BooleanSupplier;
  *     public MyRules() {
  *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
  *       rules.add(Rule.create("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT)).
- *         withNewlyTriggeringRunnable(() -> new ShooterSpin(shooter)));
+ *         withNewlyTriggeringProcedure(() -> new ShooterSpin(shooter)));
  *       ...
  *     }
  * }
@@ -33,11 +33,11 @@ import java.util.function.BooleanSupplier;
 public class Rule {
 
     /**
-     * Functional interface for creating new {@link RunnableWithContext}s.
+     * Functional interface for creating new {@link Procedure}s.
      */
     @FunctionalInterface
-    public interface RunnableCreator {
-        RunnableWithContext create();
+    public interface ProcedureCreator {
+        Procedure create();
     }
 
     /**
@@ -65,30 +65,51 @@ public class Rule {
     public static class Builder {
         private final String name;
         private final BooleanSupplier predicate;
-        private RunnableCreator newlyTriggeringRunnable;
-        private RunnableCreator continuingTriggeringRunnable;
-        private RunnableCreator finishedTriggeringRunnable;
+        private ProcedureCreator newlyTriggeringProcedure;
+        private ProcedureCreator continuingTriggeringProcedure;
+        private ProcedureCreator finishedTriggeringProcedure;
 
         private Builder(String name, BooleanSupplier predicate) {
             this.name = name;
             this.predicate = predicate;
         }
 
-        /** Specify a creator for the RunnableWithAction that should be run when this rule starts triggering. */
-        public Builder withNewlyTriggeringRunnable(RunnableCreator action) {
-            this.newlyTriggeringRunnable = action;
+        /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
+        public Builder withNewlyTriggeringProcedure(ProcedureCreator action) {
+            this.newlyTriggeringProcedure = action;
             return this;
         }
 
-        /** Specify a creator for the RunnableWithAction that should be run when this rule was triggering before and is continuing to trigger. */
-        public Builder withContinuingTriggeringRunnable(RunnableCreator action) {
-            this.continuingTriggeringRunnable = action;
+        public Builder withNewlyTriggeringProcedure(
+                Set<Mechanism<?>> reservations, Runnable action) {
+            this.newlyTriggeringProcedure =
+                    () -> new FunctionalInstantProcedure(reservations, action);
             return this;
         }
 
-        /** Specify a creator for the RunnableWithAction that should be run when this rule was triggering before and is no longer triggering. */
-        public Builder withFinishedTriggeringRunnable(RunnableCreator action) {
-            this.finishedTriggeringRunnable = action;
+        /** Specify a creator for the Procedure that should be run when this rule was triggering before and is continuing to trigger. */
+        public Builder withContinuingTriggeringProcedure(ProcedureCreator action) {
+            this.continuingTriggeringProcedure = action;
+            return this;
+        }
+
+        public Builder withContinuingTriggeringProcedure(
+                Set<Mechanism<?>> reservations, Runnable action) {
+            this.continuingTriggeringProcedure =
+                    () -> new FunctionalInstantProcedure(reservations, action);
+            return this;
+        }
+
+        /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
+        public Builder withFinishedTriggeringProcedure(ProcedureCreator action) {
+            this.finishedTriggeringProcedure = action;
+            return this;
+        }
+
+        public Builder withFinishedTriggeringProcedure(
+                Set<Mechanism<?>> reservations, Runnable action) {
+            this.finishedTriggeringProcedure =
+                    () -> new FunctionalInstantProcedure(reservations, action);
             return this;
         }
 
@@ -97,15 +118,15 @@ public class Rule {
             return new Rule(
                     name,
                     predicate,
-                    newlyTriggeringRunnable,
-                    continuingTriggeringRunnable,
-                    finishedTriggeringRunnable);
+                    newlyTriggeringProcedure,
+                    continuingTriggeringProcedure,
+                    finishedTriggeringProcedure);
         }
     }
 
     private final String name;
     private final BooleanSupplier predicate;
-    private final Map<TriggerType, RunnableCreator> triggerRunnables =
+    private final Map<TriggerType, ProcedureCreator> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
@@ -119,44 +140,44 @@ public class Rule {
     private Rule(
             String name,
             BooleanSupplier predicate,
-            RunnableCreator newlyTriggeringRunnable,
-            RunnableCreator continuingTriggeringRunnable,
-            RunnableCreator finishedTriggeringRunnable) {
+            ProcedureCreator newlyTriggeringProcedure,
+            ProcedureCreator continuingTriggeringProcedure,
+            ProcedureCreator finishedTriggeringProcedure) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
 
-        if (newlyTriggeringRunnable == null) {
+        if (newlyTriggeringProcedure == null) {
             throw new IllegalArgumentException("Newly triggering rule is not defined.");
         }
 
         this.name = name;
         this.predicate = predicate;
-        if (newlyTriggeringRunnable != null) {
-            triggerRunnables.put(TriggerType.NEWLY, newlyTriggeringRunnable);
+        if (newlyTriggeringProcedure != null) {
+            triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
             triggerReservations.put(
-                    TriggerType.NEWLY, getReservationsForRunnable(finishedTriggeringRunnable));
+                    TriggerType.NEWLY, getReservationsForProcedure(finishedTriggeringProcedure));
         }
 
-        if (continuingTriggeringRunnable != null) {
-            triggerRunnables.put(TriggerType.CONTINUING, continuingTriggeringRunnable);
+        if (continuingTriggeringProcedure != null) {
+            triggerProcedures.put(TriggerType.CONTINUING, continuingTriggeringProcedure);
             triggerReservations.put(
                     TriggerType.CONTINUING,
-                    getReservationsForRunnable(continuingTriggeringRunnable));
+                    getReservationsForProcedure(continuingTriggeringProcedure));
         }
 
-        if (finishedTriggeringRunnable != null) {
-            triggerRunnables.put(TriggerType.FINISHED, finishedTriggeringRunnable);
+        if (finishedTriggeringProcedure != null) {
+            triggerProcedures.put(TriggerType.FINISHED, finishedTriggeringProcedure);
             triggerReservations.put(
-                    TriggerType.FINISHED, getReservationsForRunnable(finishedTriggeringRunnable));
+                    TriggerType.FINISHED, getReservationsForProcedure(finishedTriggeringProcedure));
         }
     }
 
-    private Set<Mechanism<?>> getReservationsForRunnable(RunnableCreator creator) {
+    private Set<Mechanism<?>> getReservationsForProcedure(ProcedureCreator creator) {
         if (creator != null) {
-            RunnableWithContext runnable = creator.create();
-            if (runnable != null) {
-                return runnable.reservations();
+            Procedure procedure = creator.create();
+            if (procedure != null) {
+                return procedure.reservations();
             }
         }
         return Collections.emptySet();
@@ -197,10 +218,10 @@ public class Rule {
         return Collections.emptySet();
     }
 
-    /* package */ RunnableWithContext getRunnableToRun() {
+    /* package */ Procedure getProcedureToRun() {
         if (currentTriggerType != TriggerType.NONE) {
-            if (triggerRunnables.containsKey(currentTriggerType)) {
-                RunnableCreator creator = triggerRunnables.get(currentTriggerType);
+            if (triggerProcedures.containsKey(currentTriggerType)) {
+                ProcedureCreator creator = triggerProcedures.get(currentTriggerType);
                 if (creator != null) {
                     return creator.create();
                 }

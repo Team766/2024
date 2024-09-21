@@ -1,17 +1,19 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Sets;
-import com.team766.framework.LoggingBase;
+import com.team766.logging.Category;
+import edu.wpi.first.wpilibj2.command.Command;
+import java.util.Collection;
 import java.util.Set;
 
-public abstract class Procedure extends LoggingBase implements RunnableWithContext {
+public abstract class Procedure implements LoggingBase {
     // A reusable Procedure that does nothing.
-    private static final class NoOpProcedure extends Procedure {
+    private static final class NoOpProcedure extends InstantProcedure {
         @Override
-        public void run(final Context context) {}
+        public void run() {}
     }
 
-    public static final Procedure NO_OP = new NoOpProcedure();
+    public static final InstantProcedure NO_OP = new NoOpProcedure();
 
     private static int c_idCounter = 0;
 
@@ -19,30 +21,56 @@ public abstract class Procedure extends LoggingBase implements RunnableWithConte
         return c_idCounter++;
     }
 
-    protected final int m_id;
-    private final Set<Mechanism<?>> reservations = Sets.newHashSet();
+    private final String name;
+    private final Set<Mechanism<?>> reservations;
 
-    Procedure() {
-        m_id = createNewId();
+    protected Procedure() {
+        this.name = this.getClass().getName() + "/" + createNewId();
+        this.reservations = Sets.newHashSet();
+    }
+
+    protected Procedure(String name, Set<Mechanism<?>> reservations) {
+        this.name = name;
+        this.reservations = reservations;
+    }
+
+    public abstract void run(Context context);
+
+    /* package */ Command createCommand() {
+        return new ContextImpl(this);
     }
 
     @Override
-    public String getName() {
-        return this.getClass().getName() + "/" + m_id;
+    public final String getName() {
+        return name;
     }
 
-    protected <M extends Mechanism<?>> M reserve(M m) {
+    @Override
+    public Category getLoggerCategory() {
+        return Category.PROCEDURES;
+    }
+
+    protected final <M extends Mechanism<?>> M reserve(M m) {
         reservations.add(m);
         return m;
     }
 
-    @Override
-    public Set<Mechanism<?>> reservations() {
+    protected final void reserve(Mechanism<?>... ms) {
+        for (var m : ms) {
+            reservations.add(m);
+        }
+    }
+
+    protected final void reserve(Collection<? extends Mechanism<?>> ms) {
+        reservations.addAll(ms);
+    }
+
+    public final Set<Mechanism<?>> reservations() {
         return reservations;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 }

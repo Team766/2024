@@ -1,142 +1,61 @@
 package com.team766.framework3;
 
-import com.team766.framework.LoggingBase;
-import com.team766.framework.StackTraceUtils;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // TODO: add javadoc
-public abstract class Mechanism<R extends Request<?>> extends LoggingBase {
-    private ContextImpl m_owningContext = null;
+public abstract class Mechanism<R extends Request<?>> extends SubsystemBase implements LoggingBase {
     private Thread m_runningPeriodic = null;
 
     private R request = null;
     private boolean isRequestNew = false;
 
-    public Mechanism() {
-        loggerCategory = Category.MECHANISMS;
-
-        Scheduler.getInstance()
-                .add(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Mechanism.this.m_runningPeriodic = Thread.currentThread();
-                                    Mechanism.this.run();
-                                } finally {
-                                    Mechanism.this.m_runningPeriodic = null;
-                                }
-                            }
-
-                            @Override
-                            public String toString() {
-                                String repr = Mechanism.this.getName();
-                                if (Mechanism.this.m_runningPeriodic != null) {
-                                    repr +=
-                                            " running\n"
-                                                    + StackTraceUtils.getStackTrace(
-                                                            m_runningPeriodic);
-                                }
-                                return repr;
-                            }
-                        });
-    }
-
-    public String getName() {
-        return this.getClass().getName();
+    @Override
+    public Category getLoggerCategory() {
+        return Category.MECHANISMS;
     }
 
     public final void setRequest(R request) {
-        checkContextOwnership();
+        checkContextReservation();
         this.request = request;
         isRequestNew = true;
         log(this.getClass().getName() + " processing request: " + request);
     }
 
-    protected void checkContextOwnership() {
-        if (ContextImpl.currentContext() != m_owningContext && m_runningPeriodic == null) {
-            String message =
-                    getName()
-                            + " tried to be used by "
-                            + ContextImpl.currentContext().getContextName();
-            if (m_owningContext != null) {
-                message += " while owned by " + m_owningContext.getContextName();
+    protected void checkContextReservation() {
+        var owningCommand = CommandScheduler.getInstance().requiring(this);
+        if ((owningCommand == null || SchedulerMonitor.currentCommand != owningCommand)
+                && m_runningPeriodic == null) {
+            final String commandName =
+                    SchedulerMonitor.currentCommand != null
+                            ? SchedulerMonitor.currentCommand.getName()
+                            : "non-Procedure code";
+            String message = getName() + " tried to be used by " + commandName;
+            if (owningCommand != null) {
+                message += " while reserved by " + owningCommand.getName();
             } else {
-                message += " without taking ownership of it";
+                message += " without reserving it";
             }
             Logger.get(Category.FRAMEWORK).logRaw(Severity.ERROR, message);
             throw new IllegalStateException(message);
         }
     }
 
-    void takeOwnership(final ContextImpl context, final ContextImpl parentContext) {
-        if (m_owningContext != null && m_owningContext == parentContext) {
-            Logger.get(Category.FRAMEWORK)
-                    .logRaw(
-                            Severity.DEBUG,
-                            context.getContextName()
-                                    + " is inheriting ownership of "
-                                    + getName()
-                                    + " from "
-                                    + parentContext.getContextName());
-        } else {
-            if (m_owningContext != context) {
-                Logger.get(Category.FRAMEWORK)
-                        .logRaw(
-                                Severity.DEBUG,
-                                context.getContextName() + " is taking ownership of " + getName());
-            }
-            while (m_owningContext != null && m_owningContext != context) {
-                Logger.get(Category.FRAMEWORK)
-                        .logRaw(
-                                Severity.WARNING,
-                                "Stopping previous owner of "
-                                        + getName()
-                                        + ": "
-                                        + m_owningContext.getContextName());
-                m_owningContext.stop();
-                var stoppedContext = m_owningContext;
-                context.yield();
-                if (m_owningContext == stoppedContext) {
-                    Logger.get(Category.FRAMEWORK)
-                            .logRaw(
-                                    Severity.ERROR,
-                                    "Previous owner of "
-                                            + getName()
-                                            + ", "
-                                            + m_owningContext.getContextName()
-                                            + " did not release ownership when requested. Release will be forced.");
-                    m_owningContext.releaseOwnership(this);
-                    break;
-                }
-            }
-        }
-        m_owningContext = context;
-    }
+    @Override
+    public final void periodic() {
+        super.periodic();
 
-    void releaseOwnership(final ContextImpl context) {
-        if (m_owningContext != context) {
-            LoggerExceptionUtils.logException(
-                    new Exception(
-                            context.getContextName()
-                                    + " tried to release ownership of "
-                                    + getName()
-                                    + " but it doesn't own it"));
-            return;
+        try {
+            m_runningPeriodic = Thread.currentThread();
+            boolean wasRequestNew = isRequestNew;
+            isRequestNew = false;
+            run(request, wasRequestNew);
+        } finally {
+            m_runningPeriodic = null;
         }
-        Logger.get(Category.FRAMEWORK)
-                .logRaw(
-                        Severity.DEBUG,
-                        context.getContextName() + " is releasing ownership of " + getName());
-        m_owningContext = null;
-    }
-
-    /* package */ void run() {
-        run(request, isRequestNew);
-        isRequestNew = false;
     }
 
     protected abstract void run(R request, boolean isRequestNew);
