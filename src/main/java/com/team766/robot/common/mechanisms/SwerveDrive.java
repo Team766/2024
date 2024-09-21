@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
-public class Drive extends Mechanism {
+public class SwerveDrive extends Mechanism {
 
     private final SwerveConfig config;
 
@@ -58,7 +58,7 @@ public class Drive extends Mechanism {
     private double x;
     private double y;
 
-    public Drive(SwerveConfig config) {
+    public SwerveDrive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
 
         this.config = config;

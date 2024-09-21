@@ -9,7 +9,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.RunnableWithContext;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.PathPlannerConstants;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.procedures.MoveClimbersToBottom;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class PathSequenceAuto extends Procedure {
 
     private final LinkedList<RunnableWithContext> pathItems;
-    private final Drive drive;
+    private final SwerveDrive drive;
     private final Pose2d initialPosition;
     private final PPHolonomicDriveController controller;
     private VisionSpeakerHelper visionSpeakerHelper;
@@ -32,7 +32,7 @@ public class PathSequenceAuto extends Procedure {
      * @param drive The instantiation of drive for the robot (pass in Robot.drive)
      * @param initialPosition Starting position on Blue Alliance in meters (gets flipped when on red)
      */
-    public PathSequenceAuto(Drive drive, Pose2d initialPosition) {
+    public PathSequenceAuto(SwerveDrive drive, Pose2d initialPosition) {
         pathItems = new LinkedList<RunnableWithContext>();
         this.drive = drive;
         this.controller = createDriveController(drive);
@@ -40,7 +40,7 @@ public class PathSequenceAuto extends Procedure {
         visionSpeakerHelper = new VisionSpeakerHelper(drive);
     }
 
-    private PPHolonomicDriveController createDriveController(Drive drive) {
+    private PPHolonomicDriveController createDriveController(SwerveDrive drive) {
         double maxSpeed =
                 ConfigFileReader.getInstance()
                         .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
