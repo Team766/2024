@@ -15,7 +15,7 @@ public class AutonomousMode implements AutonomousSelector.Selectable<AutonomousM
 
     public AutonomousMode(
             final String name, final com.google.common.base.Supplier<Procedure> constructor) {
-        this(name, () -> constructor.get().createCommand());
+        this(name, () -> constructor.get().createCommandToRunProcedure());
     }
 
     public Command instantiate() {

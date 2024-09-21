@@ -2,6 +2,7 @@ package com.team766.framework3;
 
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,6 +53,9 @@ public abstract class Mechanism<R extends Request<?>> extends SubsystemBase impl
             boolean wasRequestNew = isRequestNew;
             isRequestNew = false;
             run(request, wasRequestNew);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            LoggerExceptionUtils.logException(ex);
         } finally {
             m_runningPeriodic = null;
         }

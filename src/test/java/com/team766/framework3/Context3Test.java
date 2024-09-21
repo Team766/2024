@@ -94,6 +94,22 @@ public class Context3Test extends TestCase3 {
         assertTrue(context.isFinished());
     }
 
+    @Test
+    public void testCancelAfterEnd() {
+        var context = new ContextImpl(new FakeProcedure(0, Set.of()));
+
+        context.schedule();
+
+        step();
+
+        assertTrue(context.isFinished());
+
+        context.cancel();
+        step();
+
+        assertTrue(context.isFinished());
+    }
+
     /// Test Context.runSync
     @Test
     public void testRunSync() {

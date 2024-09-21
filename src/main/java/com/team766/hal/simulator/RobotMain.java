@@ -1,7 +1,6 @@
 package com.team766.hal.simulator;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Scheduler;
 import com.team766.hal.GenericRobotMainBase;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.RobotSelector;
@@ -25,8 +24,6 @@ public class RobotMain {
             // TODO: update this to come from deploy directory?
             ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
             RobotProvider.instance = new SimulationRobotProvider();
-
-            Scheduler.getInstance().reset();
 
             robot = RobotSelector.createConfigurator().createRobotMain();
 

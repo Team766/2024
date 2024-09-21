@@ -25,7 +25,7 @@ import java.util.function.BooleanSupplier;
  */
 /* package */ class ContextImpl extends Command implements Context, LaunchedContext {
     // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
-    // TODO: Re-evaluate whether this should use the default Command behavior (return false).
+    // TODO(MF3): Re-evaluate whether this should use the default Command behavior (return false).
     private static final boolean RUNS_WHEN_DISABLED = true;
 
     /**
@@ -344,10 +344,10 @@ import java.util.function.BooleanSupplier;
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
             checkProcedureReservationsSubset(procedure);
-            contexts[i] = procedure.createCommand();
+            contexts[i] = procedure.createCommandToRunProcedure();
         }
         // NOTE: Commands.parallel will ensure procedures' reservations are disjoint.
-        runSync(new WPILibCommandProcedure(Commands.parallel(contexts)));
+        new WPILibCommandProcedure(Commands.parallel(contexts)).run(this);
     }
 
     @Override
@@ -356,10 +356,10 @@ import java.util.function.BooleanSupplier;
         for (int i = 0; i < contexts.length; ++i) {
             var procedure = procedures[i];
             checkProcedureReservationsSubset(procedure);
-            contexts[i] = procedure.createCommand();
+            contexts[i] = procedure.createCommandToRunProcedure();
         }
         // NOTE: Commands.race will ensure procedures' reservations are disjoint.
-        runSync(new WPILibCommandProcedure(Commands.race(contexts)));
+        new WPILibCommandProcedure(Commands.race(contexts)).run(this);
     }
 
     private void checkProcedureReservationsSubset(Procedure procedure) {
@@ -371,20 +371,6 @@ import java.util.function.BooleanSupplier;
                                 + " tried to run "
                                 + procedure.getName()
                                 + " but is missing the reservation on "
-                                + req.getName());
-            }
-        }
-    }
-
-    /* package */ void checkProcedureReservationsDisjoint(Procedure procedure) {
-        final var thisReservations = getRequirements();
-        for (var req : procedure.reservations()) {
-            if (thisReservations.contains(req)) {
-                throw new IllegalArgumentException(
-                        getName()
-                                + " tried to launch "
-                                + procedure.getName()
-                                + " asynchronously, but both have a reservation on "
                                 + req.getName());
             }
         }
@@ -405,11 +391,12 @@ import java.util.function.BooleanSupplier;
     @Override
     public void end(boolean interrupted) {
         synchronized (m_threadSync) {
-            if (m_state != State.DONE) {
-                Logger.get(Category.FRAMEWORK)
-                        .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
-                m_state = State.CANCELED;
+            if (m_state == State.DONE) {
+                return;
             }
+            Logger.get(Category.FRAMEWORK)
+                    .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
+            m_state = State.CANCELED;
             if (m_controlOwner == ControlOwner.SUBROUTINE) {
                 throw new IllegalStateException("A Procedure should not cancel() its own Context");
             }

@@ -77,7 +77,7 @@ public interface Context {
      * has finished).
      * The given procedure must only reserve Mechanisms that were reserved by the calling Procedure.
      */
-    void runSync(final Procedure func);
+    void runSync(final Procedure procedure);
 
     /**
      * Run the given Procedures at the same time. The calling Procedure will resume after all

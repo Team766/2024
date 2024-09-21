@@ -9,11 +9,25 @@ public class AdvancedUtils {
      */
     public static LaunchedContext startAsync(
             final Context callingContext, final Procedure procedure) {
-        final ContextImpl callingContextImpl = (ContextImpl) callingContext;
-        callingContextImpl.checkProcedureReservationsDisjoint(procedure);
+        checkProcedureReservationsDisjoint((ContextImpl) callingContext, procedure);
         var context = new ContextImpl(procedure);
         context.schedule();
         return context;
+    }
+
+    private static void checkProcedureReservationsDisjoint(
+            ContextImpl callingContext, Procedure procedure) {
+        final var thisReservations = callingContext.getRequirements();
+        for (var req : procedure.reservations()) {
+            if (thisReservations.contains(req)) {
+                throw new IllegalArgumentException(
+                        callingContext.getName()
+                                + " tried to launch "
+                                + procedure.getName()
+                                + " asynchronously, but both have a reservation on "
+                                + req.getName());
+            }
+        }
     }
 
     private AdvancedUtils() {}

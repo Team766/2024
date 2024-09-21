@@ -37,11 +37,11 @@ public final class WPILibCommandProcedure extends Procedure {
         try {
             command.initialize();
             if (!command.isFinished()) {
-                command.execute();
-                while (!command.isFinished()) {
-                    context.yield();
-                    command.execute();
-                }
+                context.waitFor(
+                        () -> {
+                            command.execute();
+                            return command.isFinished();
+                        });
             }
         } catch (Throwable ex) {
             interrupted = true;
@@ -52,7 +52,7 @@ public final class WPILibCommandProcedure extends Procedure {
     }
 
     @Override
-    Command createCommand() {
+    public Command createCommandToRunProcedure() {
         return command;
     }
 }

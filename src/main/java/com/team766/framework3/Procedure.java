@@ -41,7 +41,7 @@ public abstract class Procedure implements LoggingBase {
 
     public abstract void run(Context context);
 
-    /* package */ Command createCommand() {
+    public Command createCommandToRunProcedure() {
         return new ContextImpl(this);
     }
 

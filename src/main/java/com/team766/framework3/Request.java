@@ -17,5 +17,5 @@ public interface Request<S extends Status> {
      */
     boolean isDone(S status);
 
-    // TODO: do we need any way of checking if the request has been bumped/canceled?
+    // TODO(MF3): do we need any way of checking if the request has been bumped/canceled?
 }

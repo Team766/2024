@@ -34,7 +34,7 @@ public class LocalMotorController implements MotorController {
         }
         this.pidController = PIDController.loadFromConfig(configPrefix + "pid.");
 
-        // TODO: Convert to CommandScheduler.getInstance().registerSubsystem() when converted to MF3
+        // TODO(MF3): Use CommandScheduler.getInstance().registerSubsystem() when converted to MF3
         Scheduler.getInstance()
                 .add(
                         new Runnable() {

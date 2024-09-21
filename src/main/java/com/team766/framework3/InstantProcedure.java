@@ -21,7 +21,7 @@ public abstract class InstantProcedure extends Procedure implements Runnable {
     }
 
     @Override
-    Command createCommand() {
+    public Command createCommandToRunProcedure() {
         return new InstantCommand(this);
     }
 }

@@ -76,7 +76,7 @@ public class RuleEngine implements LoggingBase {
     public final void run() {
         Set<Mechanism<?>> mechanismsToUse = new HashSet<>();
 
-        // TODO: when creating a Procedure, check that the reservations are the same as
+        // TODO(MF3): when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
 
         // evaluate each rule
@@ -145,8 +145,8 @@ public class RuleEngine implements LoggingBase {
                                     + " with reservations "
                                     + reservations);
 
-                    // TODO: check that the reservations have not changed
-                    Command command = procedure.createCommand();
+                    // TODO(MF3): check that the reservations have not changed
+                    Command command = procedure.createCommandToRunProcedure();
                     mechanismsToUse.addAll(reservations);
                     ruleMap.forcePut(command, new RuleAction(rule, triggerType));
                     command.schedule();
