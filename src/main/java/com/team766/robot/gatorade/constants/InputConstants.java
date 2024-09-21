@@ -16,11 +16,12 @@ public final class InputConstants {
     public static final int AXIS_TWIST = 3;
 
     // Joystick buttons
-    public static final int INTAKE_OUT = 1;
-    public static final int FINE_DRIVING = 1;
-    public static final int CROSS_WHEELS = 3;
-    public static final int RESET_GYRO = 9;
-    public static final int RESET_POS = 15;
+    public static final int BUTTON_INTAKE_OUT = 1;
+    public static final int BUTTON_TARGET_SHOOTER = 1;
+    public static final int BUTTON_FINE_DRIVING = 1;
+    public static final int BUTTON_CROSS_WHEELS = 3;
+    public static final int BUTTON_RESET_GYRO = 9;
+    public static final int BUTTON_RESET_POS = 15;
 
     // Boxop Gamepad Buttons
 

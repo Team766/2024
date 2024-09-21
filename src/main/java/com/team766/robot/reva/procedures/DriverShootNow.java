@@ -1,51 +1,45 @@
 package com.team766.robot.reva.procedures;
 
+import static com.team766.framework3.Conditions.waitForRequestOrTimeout;
+import static com.team766.framework3.StatusBus.getStatus;
+import static com.team766.framework3.StatusBus.publishStatus;
+
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.framework.Context;
+import com.team766.framework3.Context;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
+import com.team766.logging.Severity;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
-import com.team766.robot.reva.constants.VisionConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shoulder;
+import com.team766.robot.reva.mechanisms.Superstructure;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 
 public class DriverShootNow extends VisionPIDProcedure {
 
-    private int tagId;
-    private double angle;
+    private final SwerveDrive drive;
+    private final Superstructure superstructure;
+    private final Intake intake;
+
+    public DriverShootNow(SwerveDrive drive, Superstructure superstructure, Intake intake) {
+        this.drive = reserve(drive);
+        this.superstructure = reserve(superstructure);
+        this.intake = reserve(intake);
+    }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
+        publishStatus(new ShootingProcedureStatus(ShootingProcedureStatus.Status.RUNNING));
+        drive.setRequest(new SwerveDrive.Stop());
 
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-
-        if (alliance.isPresent()) {
-            if (alliance.get().equals(Alliance.Blue)) {
-                tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
-            } else if (alliance.get().equals(Alliance.Red)) {
-                tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
-            }
-        } else {
-            tagId = -1;
-        }
-
-        context.takeOwnership(Robot.drive);
-        context.takeOwnership(Robot.shoulder);
-
-        Robot.lights.signalStartingShootingProcedure();
-        Robot.drive.stopDrive();
-
-        Transform3d toUse;
-        try {
-            toUse = getTransform3dOfRobotToTag();
-
-        } catch (AprilTagGeneralCheckedException e) {
-            LoggerExceptionUtils.logException(e);
+        Optional<Transform3d> maybeToUse = getTransform3dOfRobotToTag();
+        if (!maybeToUse.isPresent()) {
+            log(Severity.ERROR, "No tag info available");
             return;
         }
+        Transform3d toUse = maybeToUse.orElseThrow();
 
         double x = toUse.getX();
         double y = toUse.getY();
@@ -59,23 +53,28 @@ public class DriverShootNow extends VisionPIDProcedure {
                 > VisionPIDProcedure.scoringPositions
                         .get(VisionPIDProcedure.scoringPositions.size() - 1)
                         .distanceFromCenterApriltag()) {
-            Robot.lights.signalShooterOutOfRange();
+            publishStatus(new ShootingProcedureStatus(ShootingProcedureStatus.Status.OUT_OF_RANGE));
+            return;
         }
-        // double power;
-        double armAngle;
+        // Shooter.ShootAtSpeed speedRequest;
+        Shoulder.RotateToPosition armRequest;
         try {
-            // power = VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag);
-            armAngle = VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag);
+            // speedRequest =
+            //         new Shooter.ShootAtSpeed(
+            //                 VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag));
+            armRequest =
+                    new Shoulder.RotateToPosition(
+                            VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag));
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;
         }
 
-        // Robot.shooter.shoot(power);
+        // shooter.setRequest(speedRequest);
 
-        Robot.shoulder.rotate(armAngle);
+        superstructure.setRequest(armRequest);
 
-        angle = Math.atan2(y, x);
+        double angle = Math.atan2(y, x);
 
         anglePID.calculate(angle);
 
@@ -84,37 +83,36 @@ public class DriverShootNow extends VisionPIDProcedure {
 
             // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
             // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
-            try {
-                toUse = getTransform3dOfRobotToTag();
 
-                y = toUse.getY();
-                x = toUse.getX();
-
-                angle = Math.atan2(y, x);
-
-                anglePID.calculate(angle);
-            } catch (AprilTagGeneralCheckedException e) {
+            maybeToUse = getTransform3dOfRobotToTag();
+            if (!maybeToUse.isPresent()) {
                 continue;
             }
+            toUse = maybeToUse.orElseThrow();
 
-            Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
+            y = toUse.getY();
+            x = toUse.getX();
+
+            angle = Math.atan2(y, x);
+
+            anglePID.calculate(angle);
+
+            drive.setRequest(new SwerveDrive.RobotOrientedVelocity(0, 0, -anglePID.getOutput()));
         }
 
-        Robot.drive.stopDrive();
-        context.releaseOwnership(Robot.drive);
+        drive.setRequest(new SwerveDrive.Stop());
 
         // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
         // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
 
-        context.waitForConditionOrTimeout(() -> Robot.shoulder.isFinished(), 1);
+        waitForRequestOrTimeout(context, armRequest, 1);
 
-        Robot.lights.signalFinishingShootingProcedure();
-        context.runSync(new DriverShootVelocityAndIntake());
+        publishStatus(new ShootingProcedureStatus(ShootingProcedureStatus.Status.FINISHED));
+        context.runSync(new DriverShootVelocityAndIntake(intake));
     }
 
-    private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        GrayScaleCamera toUse = Robot.forwardApriltagCamera.getCamera();
-
-        return GrayScaleCamera.getBestTargetTransform3d(toUse.getTrackedTargetWithID(tagId));
+    private Optional<Transform3d> getTransform3dOfRobotToTag() {
+        return getStatus(ForwardApriltagCamera.ApriltagCameraStatus.class)
+                .flatMap(s -> s.speakerTagTransform());
     }
 }

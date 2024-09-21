@@ -1,23 +1,72 @@
 package com.team766.robot.reva.mechanisms;
 
+import static com.team766.framework3.StatusBus.getStatusOrThrow;
 import static com.team766.robot.reva.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.Mechanism;
+import com.team766.framework3.Request;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.library.ValueProvider;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Intake extends Mechanism {
+public class Intake extends Mechanism<Intake.IntakeRequest, Intake.IntakeStatus> {
+    public record IntakeStatus(double motorPower, boolean hasNoteInIntake, boolean isNoteClose)
+            implements Status {}
 
-    public enum State {
-        IN,
-        OUT,
-        STOPPED
+    public sealed interface IntakeRequest extends Request {}
+
+    public record In() implements IntakeRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+    }
+
+    public record Out() implements IntakeRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+    }
+
+    public record Stop() implements IntakeRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+    }
+
+    public static IntakeRequest makeNudgeUp() {
+        return new SetMotorPower(
+                Math.min(
+                        getStatusOrThrow(IntakeStatus.class).motorPower() + NUDGE_INCREMENT,
+                        MAX_POWER));
+    }
+
+    public static IntakeRequest makeNudgeDown() {
+        return new SetMotorPower(
+                Math.max(
+                        getStatusOrThrow(IntakeStatus.class).motorPower() - NUDGE_INCREMENT,
+                        MIN_POWER));
+    }
+
+    public record SetMotorPower(double power) implements IntakeRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+    }
+
+    public record SetPowerForSensorDistance() implements IntakeRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
     }
 
     private record IntakePosition(double intakePower, double proximityValue) {}
@@ -44,8 +93,6 @@ public class Intake extends Mechanism {
                     .getDouble("RightProximitySensor.threshold"); // needs calibration
 
     private MotorController intakeMotor;
-    private double intakePower = DEFAULT_POWER;
-    private State state = State.STOPPED;
     private TimeOfFlight sensor;
 
     public Intake() {
@@ -57,78 +104,52 @@ public class Intake extends Mechanism {
         sensor.setRangingMode(RangingMode.Short, 24);
     }
 
-    public State getState() {
-        return state;
+    @Override
+    protected IntakeRequest getInitialRequest() {
+        return new Stop();
     }
 
-    public void runIntake() {
-        checkContextOwnership();
-        intakeMotor.set(intakePower);
-        if (intakePower == 0) {
-            state = State.STOPPED;
-        } else {
-            state = intakePower > 0 ? State.IN : State.OUT;
-        }
+    @Override
+    protected IntakeRequest getIdleRequest() {
+        return new Stop();
     }
 
-    public void in() {
-        intakePower = DEFAULT_POWER;
-        runIntake();
-    }
-
-    public void out() {
-        intakePower = -1 * DEFAULT_POWER;
-        runIntake();
-    }
-
-    public void stop() {
-        intakePower = 0.0;
-        runIntake();
-    }
-
-    public void nudgeUp() {
-        checkContextOwnership();
-        intakePower = Math.min(intakePower + NUDGE_INCREMENT, MAX_POWER);
-        intakeMotor.set(intakePower);
-    }
-
-    public void nudgeDown() {
-        checkContextOwnership();
-        intakePower = Math.max(intakePower - NUDGE_INCREMENT, MIN_POWER);
-        intakeMotor.set(intakePower);
-    }
-
-    public void run() {
-        // SmartDashboard.putString("[INTAKE]", state.toString());
+    @Override
+    protected IntakeStatus run(IntakeRequest request, boolean isRequestNew) {
         // SmartDashboard.putNumber("[INTAKE POWER]", intakePower);
         // SmartDashboard.putNumber("[INTAKE] Current", MotorUtil.getCurrentUsage(intakeMotor));
-        SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
-    }
+        // SmartDashboard.putNumber("Prox Sensor", sensor.getRange());
 
-    // feel free to refactor these two functions later - I didn't want to mess up existing code
+        switch (request) {
+            case In g -> {
+                if (!isRequestNew) break;
+                intakeMotor.set(DEFAULT_POWER);
+            }
+            case Out g -> {
+                if (!isRequestNew) break;
+                intakeMotor.set(-1 * DEFAULT_POWER);
+            }
+            case Stop g -> {
+                if (!isRequestNew) break;
+                intakeMotor.set(0.0);
+            }
+            case SetMotorPower g -> {
+                if (!isRequestNew) break;
+                intakeMotor.set(g.power());
+            }
+            case SetPowerForSensorDistance g -> {
+                intakeMotor.set(
+                        com.team766.math.Math.interpolate(
+                                positions,
+                                sensor.getRange(),
+                                IntakePosition::proximityValue,
+                                IntakePosition::intakePower));
+            }
+        }
 
-    private boolean isNoteReady() {
-        return (threshold.get()) > sensor.getRange() && sensor.isRangeValid();
-    }
-
-    public boolean isNoteClose() {
-        return (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid();
-    }
-
-    public boolean hasNoteInIntake() {
-        // debug
-        // log("Sensor thingy: " + sensor.getRange());
-        return isNoteReady();
-    }
-
-    public void setIntakePowerForSensorDistance() {
-        checkContextOwnership();
-        intakePower =
-                com.team766.math.Math.interpolate(
-                        positions,
-                        sensor.getRange(),
-                        IntakePosition::proximityValue,
-                        IntakePosition::intakePower);
-        runIntake();
+        return new IntakeStatus(
+                intakeMotor.get(),
+                (threshold.get()) > sensor.getRange() && sensor.isRangeValid(),
+                (IS_CLOSE_THRESHOLD) > sensor.getRange() && sensor.isRangeValid());
     }
 }

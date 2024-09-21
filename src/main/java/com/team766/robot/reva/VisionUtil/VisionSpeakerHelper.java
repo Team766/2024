@@ -1,10 +1,11 @@
 package com.team766.robot.reva.VisionUtil;
 
+import static com.team766.framework3.StatusBus.getStatusOrThrow;
+
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.ViSIONbase.GrayScaleCamera;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
+import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -14,32 +15,21 @@ import java.util.Optional;
 
 public class VisionSpeakerHelper {
 
-    int tagId;
     double angle;
-    GrayScaleCamera camera;
-    SwerveDrive drive;
+    private ForwardApriltagCamera.ApriltagCameraStatus cameraStatus;
+    private SwerveDrive.DriveStatus driveStatus;
     Translation2d absTargetPos;
     Translation2d relativeTranslation2d;
-
-    // TODO: make this static
-    public VisionSpeakerHelper(SwerveDrive drive) {
-        camera = Robot.forwardApriltagCamera.getCamera();
-        this.drive = drive;
-    }
 
     private void updateAlliance() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (alliance.isPresent()) {
             if (alliance.get().equals(Alliance.Blue)) {
-                tagId = VisionConstants.MAIN_BLUE_SPEAKER_TAG;
                 absTargetPos = VisionConstants.MAIN_BLUE_SPEAKER_TAG_POS;
             } else if (alliance.get().equals(Alliance.Red)) {
-                tagId = VisionConstants.MAIN_RED_SPEAKER_TAG;
                 absTargetPos = VisionConstants.MAIN_RED_SPEAKER_TAG_POS;
             }
-        } else {
-            tagId = -1;
         }
     }
 
@@ -56,21 +46,19 @@ public class VisionSpeakerHelper {
             // Shooter camera is on back of the robot
             // Sticks around even when there is no new valid relativeTarget
 
-            Transform3d transform3d =
-                    GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
+            Transform3d transform3d = cameraStatus.speakerTagTransform().orElseThrow();
             Translation2d relativeTarget =
                     new Translation2d(transform3d.getX(), transform3d.getY());
 
             absTargetPos =
-                    drive.getCurrentPosition()
+                    driveStatus
+                            .currentPosition()
                             .getTranslation()
                             .plus(
                                     relativeTarget.rotateBy(
-                                            Rotation2d.fromDegrees((drive.getHeading() + 180))));
+                                            Rotation2d.fromDegrees((driveStatus.heading() + 180))));
 
             // SmartDashboard.putString("target pos", absTargetPos.toString());
-
-            // context.takeOwnership(drive);
 
             // drive.setCurrentPosition(
             //         new Pose2d(
@@ -78,8 +66,6 @@ public class VisionSpeakerHelper {
             //                         relativeTarget.rotateBy(
             //                                 Rotation2d.fromDegrees(drive.getHeading() + 180))),
             //                 Rotation2d.fromDegrees(drive.getHeading())));
-
-            // context.releaseOwnership(drive);
 
             return true;
 
@@ -94,8 +80,7 @@ public class VisionSpeakerHelper {
 
     private void updateRelativeTranslation2d() {
         try {
-            Transform3d transform3d =
-                    GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId));
+            Transform3d transform3d = cameraStatus.speakerTagTransform().orElseThrow();
             relativeTranslation2d = new Translation2d(transform3d.getX(), transform3d.getY());
         } catch (Exception e) {
             if (!(e instanceof AprilTagGeneralCheckedException)) {
@@ -104,12 +89,15 @@ public class VisionSpeakerHelper {
             }
             relativeTranslation2d =
                     absTargetPos
-                            .minus(drive.getCurrentPosition().getTranslation())
-                            .rotateBy(Rotation2d.fromDegrees(-drive.getHeading() - 180));
+                            .minus(driveStatus.currentPosition().getTranslation())
+                            .rotateBy(Rotation2d.fromDegrees(-driveStatus.heading() - 180));
         }
     }
 
     public void update() {
+        cameraStatus = getStatusOrThrow(ForwardApriltagCamera.ApriltagCameraStatus.class);
+        driveStatus = getStatusOrThrow(SwerveDrive.DriveStatus.class);
+
         updateAlliance();
         updateTarget();
         updateRelativeTranslation2d();
@@ -124,7 +112,7 @@ public class VisionSpeakerHelper {
         // if the target is not currently seen
         // Calculated the heading the robot needs to face from this translation
 
-        double val = relativeTranslation2d.getAngle().getDegrees() + drive.getHeading();
+        double val = relativeTranslation2d.getAngle().getDegrees() + driveStatus.heading();
         // SmartDashboard.putNumber(
         //         "relativeTranslation2d angle", relativeTranslation2d.getAngle().getDegrees());
         // SmartDashboard.putNumber(
