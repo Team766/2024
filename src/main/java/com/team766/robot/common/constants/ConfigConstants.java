@@ -5,9 +5,6 @@ public final class ConfigConstants {
     // utility class
     private ConfigConstants() {}
 
-    public static final String DRIVE_RIGHT = "drive.Right";
-    public static final String DRIVE_LEFT = "drive.Left";
-
     // drive config values
     public static final String DRIVE_GYRO = "drive.Gyro";
     public static final String DRIVE_DRIVE_FRONT_RIGHT = "drive.DriveFrontRight";
