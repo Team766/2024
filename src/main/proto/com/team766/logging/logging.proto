@@ -39,6 +39,7 @@ enum Category {
 	DRIVE = 11;
 	GYRO = 12;
 	ODOMETRY = 13;
+	RULES = 14;
 }
 
 // `Value` represents a dynamically typed value which can be either a number,

@@ -1,6 +1,5 @@
 package com.team766.framework3;
 
-import com.team766.framework.LaunchedContext;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -12,8 +11,8 @@ import java.util.function.BooleanSupplier;
  * procedures may call other procedures directly; those procedures would share
  * the same Context. Each Context can only be running a single procedure at a
  * time. If a procedure wants to call multiple other procedures at the same
- * time, it has to create new Contexts for them (using the {@link #startAsync}
- * method).
+ * time, it has to create new Contexts for them (using {@link #runParallel} or
+ * similar methods).
  *
  * Use the Context instance passed to your procedure whenever you want your
  * procedure to wait for something. For example, to have your procedure pause
@@ -59,17 +58,6 @@ public interface Context {
     void waitFor(final BooleanSupplier predicate);
 
     /**
-     * Pauses the execution of this Context until the given LaunchedContext has finished running.
-     */
-    void waitFor(final LaunchedContext otherContext);
-
-    /**
-     * Pauses the execution of this Context until all of the given LaunchedContexts have finished
-     * running.
-     */
-    void waitFor(final LaunchedContext... otherContexts);
-
-    /**
      * Momentarily pause execution of this Context to allow other Contexts to execute. Execution of
      * this Context will resume as soon as possible after the other Contexts have been given a
      * chance to run.
@@ -85,13 +73,25 @@ public interface Context {
     void waitForSeconds(final double seconds);
 
     /**
-     * Start running a new Context so the given procedure can run in parallel.
-     */
-    LaunchedContext startAsync(final RunnableWithContext func);
-
-    /**
      * Run the given Procedure synchronously (the calling Procedure will not resume until this one
      * has finished).
+     * The given procedure must only reserve Mechanisms that were reserved by the calling Procedure.
      */
-    void runSync(final RunnableWithContext func);
+    void runSync(final Procedure func);
+
+    /**
+     * Run the given Procedures at the same time. The calling Procedure will resume after all
+     * Procedures in the group finish.
+     * The given procedures must only reserve Mechanisms that were reserved by the calling Procedure,
+     * and their reservations must not overlap with each other.
+     */
+    void runParallel(Procedure... procedures);
+
+    /**
+     * Run the given Procedures at the same time. The calling Procedure will resume once any
+     * Procedure in the group finishes, and the others will be cancelled.
+     * The given procedures must only reserve Mechanisms that were reserved by the calling Procedure,
+     * and their reservations must not overlap with each other.
+     */
+    void runParallelRace(Procedure... procedures);
 }

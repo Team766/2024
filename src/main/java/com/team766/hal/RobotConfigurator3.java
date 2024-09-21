@@ -1,7 +1,7 @@
 package com.team766.hal;
 
-import com.team766.framework.AutonomousMode;
-import com.team766.framework.Procedure;
+import com.team766.framework3.AutonomousMode;
+import com.team766.framework3.RuleEngine;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -12,7 +12,7 @@ import com.team766.logging.Severity;
  *
  * @see RobotSelector
  */
-public interface RobotConfigurator extends RobotConfiguratorBase {
+public interface RobotConfigurator3 extends RobotConfiguratorBase {
 
     /**
      * Initializes the {@link Mechanism}s for this robot.
@@ -22,9 +22,14 @@ public interface RobotConfigurator extends RobotConfiguratorBase {
     void initializeMechanisms();
 
     /**
-     * Creates the Operator Interface (OI) for this robot.
+     * Creates the Operator Interface (OI) RuleEngine for this robot.
      */
-    Procedure createOI();
+    RuleEngine createOI();
+
+    /**
+     * Creates the Lights RuleEngine for this robot.
+     */
+    RuleEngine createLights();
 
     /**
      * Returns an array of {@link AutonomousMode}s available for this robot.
@@ -33,7 +38,7 @@ public interface RobotConfigurator extends RobotConfiguratorBase {
 
     @Override
     default GenericRobotMainBase createRobotMain() {
-        Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Instantiating GenericRobotMain");
-        return new GenericRobotMain(this);
+        Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Instantiating GenericRobotMain3");
+        return new GenericRobotMain3(this);
     }
 }

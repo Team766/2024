@@ -1,6 +1,6 @@
 package com.team766.framework3;
 
-import com.team766.framework.LoggingBase;
+import com.team766.logging.Category;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  * (eg, {@code MyStatus.class}) for the {@link Status} they are interested in querying, to get the latest
  * published {@link Status}.
  */
-public class StatusBus extends LoggingBase {
+public class StatusBus implements LoggingBase {
 
     private static StatusBus s_instance = new StatusBus();
     private final Map<Class<? extends Status>, Status> statuses = new LinkedHashMap<>();
@@ -47,7 +47,7 @@ public class StatusBus extends LoggingBase {
      *
      * @param <S> The specific {@link Status} class of interest.
      * @param statusClass The Class object for the Status, eg {@code MyStatus.class}.
-     * @return The latest published {@link Status}.
+     * @return The latest published {@link Status} or null if the {@link Status} hasn't been published.
      */
     @SuppressWarnings("unchecked")
     public <S extends Status> S getStatus(Class<S> statusClass) {
@@ -55,7 +55,7 @@ public class StatusBus extends LoggingBase {
     }
 
     @Override
-    public String getName() {
-        return "StatusBus";
+    public Category getLoggerCategory() {
+        return Category.FRAMEWORK;
     }
 }

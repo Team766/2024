@@ -2,8 +2,9 @@ package com.team766.hal.simulator;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
-import com.team766.hal.GenericRobotMain;
+import com.team766.hal.GenericRobotMainBase;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.RobotSelector;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.Program;
 import com.team766.simulator.ProgramInterface;
@@ -16,7 +17,7 @@ public class RobotMain {
         VrConnector,
     }
 
-    private GenericRobotMain robot;
+    private GenericRobotMainBase robot;
     private Runnable simulator;
 
     public RobotMain(final Mode mode) {
@@ -27,7 +28,7 @@ public class RobotMain {
 
             Scheduler.getInstance().reset();
 
-            robot = new GenericRobotMain();
+            robot = RobotSelector.createConfigurator().createRobotMain();
 
             robot.robotInit();
 

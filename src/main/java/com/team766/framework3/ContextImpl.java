@@ -1,7 +1,6 @@
 package com.team766.framework3;
 
 import com.team766.framework.ContextStoppedException;
-import com.team766.framework.LaunchedContext;
 import com.team766.framework.StackTraceUtils;
 import com.team766.hal.Clock;
 import com.team766.hal.RobotProvider;
@@ -9,11 +8,9 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import java.lang.StackWalker.StackFrame;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -26,7 +23,10 @@ import java.util.function.BooleanSupplier;
  * one of threads is actually running at once (the others will be sleeping,
  * waiting for the baton to be passed to them).
  */
-class ContextImpl implements Context, LaunchedContext, Runnable {
+/* package */ class ContextImpl extends Command implements Context, LaunchedContext {
+    // Maintains backward compatibility with the behavior of the old Maroon Framework scheduler.
+    // TODO: Re-evaluate whether this should use the default Command behavior (return false).
+    private static final boolean RUNS_WHEN_DISABLED = true;
 
     /**
      * Represents the baton-passing state (see class comments). Instead of
@@ -46,12 +46,15 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      */
     private enum State {
         /**
-         * The Context has been started (a Context is started immediately upon
-         * construction).
+         * The Context has not yet been started.
+         */
+        NEW,
+        /**
+         * The Context has been started.
          */
         RUNNING,
         /**
-         * stop() has been called on this Context (but it has not been allowed
+         * cancel() has been called on this Context (but it has not been allowed
          * to respond to the stop request yet).
          */
         CANCELED,
@@ -98,36 +101,15 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
         }
     }
 
-    private static ContextImpl c_currentContext = null;
-
-    /**
-     * Returns the currently-executing Context.
-     *
-     * This is maintained for things like checking Mechanism ownership, but
-     * intentionally only has package-private visibility - code outside of the
-     * framework should ideally pass around references to the current context
-     * object rather than cheating with this static accessor.
-     */
-    static ContextImpl currentContext() {
-        return c_currentContext;
-    }
-
     /**
      * The top-level procedure being run by this Context.
      */
-    private final RunnableWithContext m_func;
-
-    /**
-     * If this Context was created by another context using
-     * {@link #startAsync}, this will contain a reference to that originating
-     * Context.
-     */
-    private final ContextImpl m_parentContext;
+    private final Procedure m_procedure;
 
     /**
      * The OS thread that this Context is executing on.
      */
-    private final Thread m_thread;
+    private Thread m_thread;
 
     /**
      * Used to synchronize access to this Context's state variable.
@@ -160,59 +142,47 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      */
     private String m_previousWaitPoint;
 
-    /**
-     * The mechanisms that have been claimed by this Context using
-     * takeOwnership. These will be automatically released when the Context
-     * finishes executing.
-     */
-    private Set<Mechanism<?>> m_ownedMechanisms = new HashSet<Mechanism<?>>();
-
     /*
      * Constructors are intentionally private or package-private. New contexts
-     * should be created with {@link Context#startAsync} or
-     * {@link Scheduler#startAsync}.
+     * should be created by the framwork.
      */
 
-    ContextImpl(final RunnableWithContext func, final ContextImpl parentContext) {
-        m_func = func;
-        m_parentContext = parentContext;
+    /* package */ ContextImpl(final Procedure procedure) {
+        m_procedure = procedure;
         Logger.get(Category.FRAMEWORK)
                 .logRaw(
                         Severity.DEBUG,
-                        "Starting context " + getContextName() + " for " + func.toString());
+                        "Starting context " + getContextName() + " for " + procedure.getName());
         m_threadSync = new Object();
         m_previousWaitPoint = null;
         m_controlOwner = ControlOwner.MAIN_THREAD;
-        m_state = State.RUNNING;
-        m_thread = new Thread(this::threadFunction, getContextName());
-        m_thread.start();
-        Scheduler.getInstance().add(this);
-    }
-
-    ContextImpl(final RunnableWithContext func) {
-        this(func, null);
+        m_state = State.NEW;
+        setName(getContextName());
+        m_requirements.addAll(procedure.reservations());
     }
 
     /**
      * Returns a string meant to uniquely identify this Context (e.g. for use in logging).
      */
     public String getContextName() {
-        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
-    }
-
-    /* package */ RunnableWithContext getRunnable() {
-        return m_func;
+        return "Context/" + Integer.toHexString(hashCode()) + "/" + m_procedure.getName();
     }
 
     @Override
     public String toString() {
         String repr = getContextName();
-        if (currentContext() == this) {
+        if (m_controlOwner == ControlOwner.SUBROUTINE) {
             repr += " running";
         }
-        repr += "\n";
-        repr += StackTraceUtils.getStackTrace(m_thread);
         return repr;
+    }
+
+    public String getStackTrace() {
+        if (m_thread != null) {
+            return StackTraceUtils.getStackTrace(m_thread);
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -239,7 +209,7 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      *
      * @param thisOwner the thread from which this function is being called (and thus the
      *        baton-passing state that should be waited for)
-     * @throws ContextStoppedException if stop() is called on this Context while waiting.
+     * @throws ContextStoppedException if cancel() is called on this Context while waiting.
      */
     private void waitForControl(final ControlOwner thisOwner) {
         // If this is being called from the worker thread, log from where in the
@@ -278,7 +248,7 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      * @param thisOwner the thread from which this function is being called (and thus the
      *        baton-passing state that should be waited for)
      * @param desiredOwner the thread to which the baton should be passed
-     * @throws ContextStoppedException if stop() is called on this Context while waiting.
+     * @throws ContextStoppedException if cancel() is called on this Context while waiting.
      */
     private void transferControl(final ControlOwner thisOwner, final ControlOwner desiredOwner) {
         synchronized (m_threadSync) {
@@ -294,9 +264,9 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
             // Pass the baton.
             m_controlOwner = desiredOwner;
             if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                c_currentContext = this;
+                SchedulerMonitor.currentCommand = this;
             } else {
-                c_currentContext = null;
+                SchedulerMonitor.currentCommand = null;
             }
             m_threadSync.notifyAll();
             // Wait for the baton to be passed back.
@@ -308,27 +278,13 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
      * This is the entry point for this Context's worker thread.
      */
     private void threadFunction() {
-        var inheritedReservations = new TreeSet<Mechanism<?>>();
-
         try {
             // OS threads run independently of one another, so we need to wait until
             // the baton is passed to us before we can start running the user's code
             waitForControl(ControlOwner.SUBROUTINE);
 
-            // automatically take ownership of mechanisms reserved by the RunnableWithContext we
-            // will be running.
-            for (Mechanism<?> m : m_func.reservations()) {
-                // keep track of mechanisms we move from parent to child, so we can subsequently
-                // restore
-                if (m_parentContext.ownedMechanisms().contains(m)) {
-                    inheritedReservations.add(m);
-                }
-                m.takeOwnership(this, m_parentContext);
-                m_ownedMechanisms.add(m);
-            }
-
             // Call into the user's code.
-            m_func.run(this);
+            m_procedure.run(this);
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.DEBUG, "Context " + getContextName() + " finished");
         } catch (ContextStoppedException ex) {
@@ -340,29 +296,11 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
             Logger.get(Category.FRAMEWORK)
                     .logRaw(Severity.WARNING, "Context " + getContextName() + " died");
         } finally {
-            for (Mechanism<?> m : m_ownedMechanisms) {
-                // Don't use this.releaseOwnership here, because that would cause a
-                // ConcurrentModificationException since we're iterating over m_ownedMechanisms
-                try {
-                    m.releaseOwnership(this);
-                } catch (Exception ex) {
-                    LoggerExceptionUtils.logException(ex);
-                }
-            }
-
-            // restore ownership of mechanisms inherited from the parent context
-            if (m_parentContext != null) {
-                for (Mechanism<?> inherited : inheritedReservations) {
-                    inherited.takeOwnership(m_parentContext, null);
-                }
-            }
-
             synchronized (m_threadSync) {
                 m_state = State.DONE;
-                c_currentContext = null;
+                SchedulerMonitor.currentCommand = null;
                 m_threadSync.notifyAll();
             }
-            m_ownedMechanisms.clear();
         }
     }
 
@@ -383,16 +321,6 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
     }
 
     @Override
-    public void waitFor(final LaunchedContext otherContext) {
-        waitFor(otherContext::isDone);
-    }
-
-    @Override
-    public void waitFor(final LaunchedContext... otherContexts) {
-        waitFor(() -> Arrays.stream(otherContexts).allMatch(LaunchedContext::isDone));
-    }
-
-    @Override
     public void waitForSeconds(final double seconds) {
         double startTime = RobotProvider.instance.getClock().getTime();
         waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
@@ -405,96 +333,106 @@ class ContextImpl implements Context, LaunchedContext, Runnable {
     }
 
     @Override
-    public LaunchedContext startAsync(final RunnableWithContext func) {
-        return new ContextImpl(func, this);
+    public void runSync(final Procedure procedure) {
+        checkProcedureReservationsSubset(procedure);
+        procedure.run(this);
     }
 
     @Override
-    public void runSync(final RunnableWithContext func) {
-        // TODO: think through this auto-take/release logic!
-        // this requires careful thought and testing.
-        var inheritedReservations = new TreeSet<Mechanism<?>>();
-
-        // automatically take ownership of mechanisms reserved by the RunnableWithContext we
-        // will be running.
-        // TODO: pay attention to what *this* Context already owned - we need to restore those.
-        for (Mechanism<?> m : func.reservations()) {
-            // keep track of mechanisms we move from parent to child, so we can subsequently
-            // restore
-            if (m_parentContext.ownedMechanisms().contains(m)) {
-                inheritedReservations.add(m);
-            }
-            m.takeOwnership(this, m_parentContext);
-            m_ownedMechanisms.add(m);
+    public void runParallel(Procedure... procedures) {
+        var contexts = new Command[procedures.length];
+        for (int i = 0; i < contexts.length; ++i) {
+            var procedure = procedures[i];
+            checkProcedureReservationsSubset(procedure);
+            contexts[i] = procedure.createCommand();
         }
+        // NOTE: Commands.parallel will ensure procedures' reservations are disjoint.
+        runSync(new WPILibCommandProcedure(Commands.parallel(contexts)));
+    }
 
-        try {
-            func.run(this);
-        } finally {
-            for (Mechanism<?> m : func.reservations()) {
-                if (inheritedReservations.contains(m)) {
-                    m.takeOwnership(m_parentContext, null);
-                }
+    @Override
+    public void runParallelRace(Procedure... procedures) {
+        var contexts = new Command[procedures.length];
+        for (int i = 0; i < contexts.length; ++i) {
+            var procedure = procedures[i];
+            checkProcedureReservationsSubset(procedure);
+            contexts[i] = procedure.createCommand();
+        }
+        // NOTE: Commands.race will ensure procedures' reservations are disjoint.
+        runSync(new WPILibCommandProcedure(Commands.race(contexts)));
+    }
+
+    private void checkProcedureReservationsSubset(Procedure procedure) {
+        final var thisReservations = getRequirements();
+        for (var req : procedure.reservations()) {
+            if (!thisReservations.contains(req)) {
+                throw new IllegalArgumentException(
+                        getName()
+                                + " tried to run "
+                                + procedure.getName()
+                                + " but is missing the reservation on "
+                                + req.getName());
             }
         }
     }
 
-    /**
-     * Interrupt the running of this Context and force it to terminate.
-     *
-     * A ContextStoppedException will be raised on this Context at the point where the Context most
-     * recently waited or yielded -- if this Context is currently executing, a
-     * ContextStoppedException will be raised immediately.
-     */
+    /* package */ void checkProcedureReservationsDisjoint(Procedure procedure) {
+        final var thisReservations = getRequirements();
+        for (var req : procedure.reservations()) {
+            if (thisReservations.contains(req)) {
+                throw new IllegalArgumentException(
+                        getName()
+                                + " tried to launch "
+                                + procedure.getName()
+                                + " asynchronously, but both have a reservation on "
+                                + req.getName());
+            }
+        }
+    }
+
     @Override
-    public void stop() {
-        Logger.get(Category.FRAMEWORK)
-                .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
+    public void initialize() {
+        m_state = State.RUNNING;
+        m_thread = new Thread(this::threadFunction, getContextName());
+        m_thread.start();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return m_state == State.DONE;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
         synchronized (m_threadSync) {
             if (m_state != State.DONE) {
+                Logger.get(Category.FRAMEWORK)
+                        .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
                 m_state = State.CANCELED;
             }
             if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                throw new ContextStoppedException();
+                throw new IllegalStateException("A Procedure should not cancel() its own Context");
+            }
+            transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+            if (m_state != State.DONE) {
+                Logger.get(Category.FRAMEWORK)
+                        .logRaw(Severity.ERROR, getContextName() + " did not end when requested");
             }
         }
     }
 
-    /**
-     * Entry point for the Scheduler to execute this Context.
-     *
-     * This should only be called from framework code; it is public only as an implementation
-     * detail.
-     */
     @Override
-    public void run() {
+    public void execute() {
         if (m_state == State.DONE) {
-            Scheduler.getInstance().cancel(this);
             return;
         }
-        if (m_state == State.CANCELED
-                || m_blockingPredicate == null
-                || m_blockingPredicate.getAsBoolean()) {
+        if (m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
             transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
         }
     }
 
     @Override
-    public boolean isDone() {
-        return m_state == State.DONE;
-    }
-
-    /* package */ void takeOwnership(final Mechanism<?> mechanism) {
-        mechanism.takeOwnership(this, m_parentContext);
-        m_ownedMechanisms.add(mechanism);
-    }
-
-    /* package */ void releaseOwnership(final Mechanism<?> mechanism) {
-        mechanism.releaseOwnership(this);
-        m_ownedMechanisms.remove(mechanism);
-    }
-
-    /* package */ Set<Mechanism<?>> ownedMechanisms() {
-        return m_ownedMechanisms;
+    public boolean runsWhenDisabled() {
+        return RUNS_WHEN_DISABLED;
     }
 }
