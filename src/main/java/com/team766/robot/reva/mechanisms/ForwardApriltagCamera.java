@@ -27,7 +27,7 @@ public class ForwardApriltagCamera extends Mechanism {
                 Robot.lights.signalCameraNotConnected();
             }
         } catch (Exception e) {
-            log("Unable to create GrayScaleCamera");
+            log("Unable to create GrayScaleCamera for Apriltag Camera");
             LoggerExceptionUtils.logException(e);
             Robot.lights.signalCameraNotConnected();
         }

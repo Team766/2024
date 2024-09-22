@@ -85,6 +85,21 @@ public class Lights extends Mechanism {
         ErrorCode e = m_candle.setLEDs(50, 50, 2);
         return handleErrorCode(e);
     }
+    
+    public boolean signalTrapNotWorking(){
+        ErrorCode e = m_candle.setLEDs(255, 0, 0);
+        return handleErrorCode(e);
+    }
+
+    public boolean signalTrapRunning(){
+        ErrorCode e = m_candle.setLEDs(17, 0, 255);
+        return handleErrorCode(e);
+    }
+
+    public boolean signalTrapFinished(){
+        ErrorCode e = m_candle.setLEDs(0, 255, 0);
+        return handleErrorCode(e);
+    }
 
     private boolean handleErrorCode(ErrorCode e) {
         if (e.equals(ErrorCode.OK)) {
