@@ -32,6 +32,7 @@ public class ArmCamera extends Mechanism {
         }
 
         public void shootTrap(){
+            checkContextOwnership();
             PhotonTrackedTarget target = null;
             int tagIdUsing = 0;
             for (int tagId: tagIds){
