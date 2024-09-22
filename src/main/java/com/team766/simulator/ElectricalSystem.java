@@ -36,9 +36,8 @@ public class ElectricalSystem {
             branch.flow = branch.device.step(systemState, dt);
             current += branch.flow.current;
         }
-        systemState =
-                new ElectricalDevice.Input(
-                        Math.max(0, nominalVoltage - primaryResistance * current));
+        systemState = new ElectricalDevice.Input(
+                Math.max(0, nominalVoltage - primaryResistance * current));
     }
 
     public double getSystemVoltage() {

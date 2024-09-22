@@ -50,10 +50,8 @@ public class ForwardApriltagCamera
 
         Optional<Transform3d> speakerTagTransform;
         try {
-            speakerTagTransform =
-                    Optional.of(
-                            GrayScaleCamera.getBestTargetTransform3d(
-                                    camera.getTrackedTargetWithID(tagId)));
+            speakerTagTransform = Optional.of(
+                    GrayScaleCamera.getBestTargetTransform3d(camera.getTrackedTargetWithID(tagId)));
         } catch (AprilTagGeneralCheckedException ex) {
             speakerTagTransform = Optional.empty();
         }

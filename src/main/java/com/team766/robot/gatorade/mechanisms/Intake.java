@@ -83,27 +83,24 @@ public class Intake extends Mechanism<Intake.IntakeState, Intake.IntakeState> {
         if (isRequestNew) {
             switch (request.state) {
                 case IN -> {
-                    double power =
-                            (request.gamePieceType == GamePieceType.CONE)
-                                    ? POWER_IN
-                                    : (-1 * POWER_IN);
+                    double power = (request.gamePieceType == GamePieceType.CONE)
+                            ? POWER_IN
+                            : (-1 * POWER_IN);
                     motor.set(power);
                 }
                 case OUT -> {
-                    double power =
-                            (request.gamePieceType == GamePieceType.CONE)
-                                    ? (-1 * POWER_OUT)
-                                    : POWER_OUT;
+                    double power = (request.gamePieceType == GamePieceType.CONE)
+                            ? (-1 * POWER_OUT)
+                            : POWER_OUT;
                     motor.set(power);
                 }
                 case STOP -> {
                     motor.set(0.0);
                 }
                 case IDLE -> {
-                    double power =
-                            (request.gamePieceType == GamePieceType.CONE)
-                                    ? POWER_IDLE
-                                    : (-1 * POWER_IDLE);
+                    double power = (request.gamePieceType == GamePieceType.CONE)
+                            ? POWER_IDLE
+                            : (-1 * POWER_IDLE);
                     motor.set(power);
                 }
             }

@@ -12,11 +12,9 @@ public class SchedulerMonitor {
 
     public static void start() {
         if (c_thread != null) {
-            CommandScheduler.getInstance()
-                    .onCommandExecute(
-                            __ -> {
-                                ++c_iterationCount;
-                            });
+            CommandScheduler.getInstance().onCommandExecute(__ -> {
+                ++c_iterationCount;
+            });
             c_thread = new Thread(SchedulerMonitor::monitor);
             c_thread.setDaemon(true);
             c_thread.start();
@@ -38,14 +36,10 @@ public class SchedulerMonitor {
                                 "The code has gotten stuck. You probably have an unintended infinite "
                                         + "loop or need to add a call to context.yield() in a Procedure.\n"
                                         + Thread.getAllStackTraces().entrySet().stream()
-                                                .map(
-                                                        e ->
-                                                                e.getKey().getName()
-                                                                        + ":\n"
-                                                                        + StackTraceUtils
-                                                                                .getStackTrace(
-                                                                                        e
-                                                                                                .getValue()))
+                                                .map(e -> e.getKey().getName()
+                                                        + ":\n"
+                                                        + StackTraceUtils.getStackTrace(
+                                                                e.getValue()))
                                                 .collect(Collectors.joining("\n")));
             }
 

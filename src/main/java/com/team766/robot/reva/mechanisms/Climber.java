@@ -134,10 +134,9 @@ public class Climber extends Mechanism<Climber.ClimberRequest, Climber.ClimberSt
         // SmartDashboard.putNumber(
         //         "[CLIMBER] Right Motor Stator Current",
         //         MotorUtil.getStatorCurrentUsage(rightMotor));
-        final var status =
-                new ClimberStatus(
-                        rotationsToHeight(leftMotor.getSensorPosition()),
-                        rotationsToHeight(rightMotor.getSensorPosition()));
+        final var status = new ClimberStatus(
+                rotationsToHeight(leftMotor.getSensorPosition()),
+                rotationsToHeight(rightMotor.getSensorPosition()));
 
         switch (request) {
             case Stop g -> {

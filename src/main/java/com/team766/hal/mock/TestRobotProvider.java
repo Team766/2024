@@ -35,11 +35,10 @@ public class TestRobotProvider extends RobotProvider {
             final MotorController.Type type,
             final ControlInputReader localSensor) {
         if (motors[index] == null) {
-            motors[index] =
-                    new LocalMotorController(
-                            configPrefix,
-                            new MockMotorController(index),
-                            localSensor != null ? localSensor : new MockEncoder());
+            motors[index] = new LocalMotorController(
+                    configPrefix,
+                    new MockMotorController(index),
+                    localSensor != null ? localSensor : new MockEncoder());
         }
         return motors[index];
     }

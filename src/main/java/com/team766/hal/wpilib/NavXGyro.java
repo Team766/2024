@@ -2,9 +2,6 @@ package com.team766.hal.wpilib;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.team766.hal.GyroReader;
-// import com.team766.logging.Category;
-// import com.team766.logging.Logger;
-// import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj.I2C;
 
 public class NavXGyro implements GyroReader {

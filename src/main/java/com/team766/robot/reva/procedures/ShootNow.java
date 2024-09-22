@@ -65,12 +65,10 @@ public class ShootNow extends VisionPIDProcedure {
         Shooter.ShootAtSpeed speedRequest;
         Shoulder.RotateToPosition armRequest;
         try {
-            speedRequest =
-                    new Shooter.ShootAtSpeed(
-                            VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag));
-            armRequest =
-                    new Shoulder.RotateToPosition(
-                            VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag));
+            speedRequest = new Shooter.ShootAtSpeed(
+                    VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag));
+            armRequest = new Shoulder.RotateToPosition(
+                    VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag));
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;

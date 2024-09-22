@@ -67,10 +67,9 @@ public final class EncoderUtils {
      * @return
      */
     public static double lawOfCosines(double side1, double side2, double angle) {
-        double side3Squared =
-                (Math.pow(side1, 2.0)
-                        + Math.pow(side2, 2.0)
-                        - (2 * side1 * side2 * Math.cos(Math.toRadians(angle))));
+        double side3Squared = (Math.pow(side1, 2.0)
+                + Math.pow(side2, 2.0)
+                - (2 * side1 * side2 * Math.cos(Math.toRadians(angle))));
         return Math.sqrt(side3Squared);
     }
 

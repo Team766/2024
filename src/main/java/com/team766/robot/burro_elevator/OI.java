@@ -32,43 +32,32 @@ public class OI extends RuleEngine {
 
         // Add driver controls here.
 
-        addRule(
-                Rule.create("Drive Robot", () -> true)
-                        .withOnTriggeringProcedure(
-                                REPEATEDLY,
-                                Set.of(drive),
-                                () -> {
-                                    drive.setRequest(
-                                            new BurroDrive.ArcadeDrive(
-                                                    -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
-                                                    -joystick0.getAxis(AXIS_TURN) * 0.5));
-                                }));
+        addRule(Rule.create("Drive Robot", () -> true)
+                .withOnTriggeringProcedure(REPEATEDLY, Set.of(drive), () -> {
+                    drive.setRequest(new BurroDrive.ArcadeDrive(
+                            -joystick0.getAxis(AXIS_FORWARD_BACKWARD) * 0.5,
+                            -joystick0.getAxis(AXIS_TURN) * 0.5));
+                }));
 
-        addRule(
-                Rule.create("Elevator Up", () -> joystick0.getButton(BUTTON_ELEVATOR_UP))
-                        .withOnTriggeringProcedure(
-                                ONCE,
-                                Set.of(elevator),
-                                () -> elevator.setRequest(Elevator.makeNudgeUp())));
-        addRule(
-                Rule.create("Elevator Down", () -> joystick0.getButton(BUTTON_ELEVATOR_DOWN))
-                        .withOnTriggeringProcedure(
-                                ONCE,
-                                Set.of(elevator),
-                                () -> elevator.setRequest(Elevator.makeNudgeDown())));
+        addRule(Rule.create("Elevator Up", () -> joystick0.getButton(BUTTON_ELEVATOR_UP))
+                .withOnTriggeringProcedure(
+                        ONCE, Set.of(elevator), () -> elevator.setRequest(Elevator.makeNudgeUp())));
+        addRule(Rule.create("Elevator Down", () -> joystick0.getButton(BUTTON_ELEVATOR_DOWN))
+                .withOnTriggeringProcedure(
+                        ONCE,
+                        Set.of(elevator),
+                        () -> elevator.setRequest(Elevator.makeNudgeDown())));
 
-        addRule(
-                Rule.create("Intake", () -> joystick0.getButton(BUTTON_INTAKE))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(gripper),
-                                () -> gripper.setRequest(new Gripper.Intake())));
-        addRule(
-                Rule.create("Outtake", () -> joystick0.getButton(BUTTON_OUTTAKE))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(gripper),
-                                () -> gripper.setRequest(new Gripper.Outtake())));
+        addRule(Rule.create("Intake", () -> joystick0.getButton(BUTTON_INTAKE))
+                .withOnTriggeringProcedure(
+                        ONCE_AND_HOLD,
+                        Set.of(gripper),
+                        () -> gripper.setRequest(new Gripper.Intake())));
+        addRule(Rule.create("Outtake", () -> joystick0.getButton(BUTTON_OUTTAKE))
+                .withOnTriggeringProcedure(
+                        ONCE_AND_HOLD,
+                        Set.of(gripper),
+                        () -> gripper.setRequest(new Gripper.Outtake())));
     }
 
     @Override

@@ -50,7 +50,8 @@ public class CanivPoller implements Runnable {
                     keyValue[1] = keyValue[1].trim();
 
                     if (!publishers.containsKey(keyValue[0])) {
-                        publishers.put(keyValue[0], table.getStringTopic(keyValue[0]).publish());
+                        publishers.put(
+                                keyValue[0], table.getStringTopic(keyValue[0]).publish());
                     }
                     publishers.get(keyValue[0]).set(keyValue[1]);
                 }

@@ -243,8 +243,9 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         toggleOffOn()
-        googleJavaFormat().formatJavadoc(false).aosp()
+        palantirJavaFormat('2.39.0').style('AOSP')
         removeUnusedImports()
+        importOrder()
         trimTrailingWhitespace()
         endWithNewline()
     }

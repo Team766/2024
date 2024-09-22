@@ -17,25 +17,21 @@ public class MechanismTest extends TestCase {
     public void testRequests() {
         var mech = new FakeMechanism();
 
-        var cmd =
-                new ContextImpl(
-                        new FunctionalProcedure(
-                                Set.of(mech),
-                                context -> {
-                                    // Step 1
-                                    context.yield();
+        var cmd = new ContextImpl(new FunctionalProcedure(Set.of(mech), context -> {
+            // Step 1
+            context.yield();
 
-                                    // Step 2
-                                    mech.setRequest(new FakeRequest(0));
-                                    context.yield();
+            // Step 2
+            mech.setRequest(new FakeRequest(0));
+            context.yield();
 
-                                    // Step 3
-                                    context.yield();
+            // Step 3
+            context.yield();
 
-                                    // Step 4
-                                    mech.setRequest(new FakeRequest(1));
-                                    context.yield();
-                                }));
+            // Step 4
+            mech.setRequest(new FakeRequest(1));
+            context.yield();
+        }));
         cmd.schedule();
 
         // Step 0. The CommandScheduler runs Subsystems (Mechanisms) before Commands (Procedures),
@@ -73,13 +69,12 @@ public class MechanismTest extends TestCase {
     public void testStatuses() {
         // FakeMechanism publishes a FakeStatus with the state value which was most recently set in
         // its Request.
-        var mech =
-                new FakeMechanism() {
-                    @Override
-                    protected FakeRequest getIdleRequest() {
-                        return new FakeRequest(10);
-                    }
-                };
+        var mech = new FakeMechanism() {
+            @Override
+            protected FakeRequest getIdleRequest() {
+                return new FakeRequest(10);
+            }
+        };
         step();
         // Status set from Initial request
         assertEquals(new FakeStatus(-1), StatusBus.getStatusOrThrow(FakeStatus.class));
@@ -108,17 +103,13 @@ public class MechanismTest extends TestCase {
         var mech = new DummyMechanism();
 
         var thrownException = new AtomicReference<String>(null);
-        var cmd =
-                new ContextImpl(
-                        new FunctionalProcedure(
-                                Set.of(),
-                                context -> {
-                                    try {
-                                        mech.setRequest(new FakeRequest(0));
-                                    } catch (Throwable ex) {
-                                        thrownException.set(ex.getMessage());
-                                    }
-                                }));
+        var cmd = new ContextImpl(new FunctionalProcedure(Set.of(), context -> {
+            try {
+                mech.setRequest(new FakeRequest(0));
+            } catch (Throwable ex) {
+                thrownException.set(ex.getMessage());
+            }
+        }));
         cmd.schedule();
         step();
         assertThat(thrownException.get())
@@ -138,18 +129,17 @@ public class MechanismTest extends TestCase {
     public void testCheckContextReservationInRun() {
         var thrownException = new AtomicReference<Throwable>();
         @SuppressWarnings("unused")
-        var mech =
-                new FakeMechanism() {
-                    @Override
-                    protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
-                        try {
-                            checkContextReservation();
-                        } catch (Throwable ex) {
-                            thrownException.set(ex);
-                        }
-                        return new FakeStatus(request.targetState());
-                    }
-                };
+        var mech = new FakeMechanism() {
+            @Override
+            protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
+                try {
+                    checkContextReservation();
+                } catch (Throwable ex) {
+                    thrownException.set(ex);
+                }
+                return new FakeStatus(request.targetState());
+            }
+        };
         step();
         assertNull(thrownException.get());
     }
@@ -172,13 +162,12 @@ public class MechanismTest extends TestCase {
     /// Test that the Idle request runs if no other Command reserves this Mechanism.
     @Test
     public void testIdleRequest() {
-        var mech =
-                new FakeMechanism() {
-                    @Override
-                    protected FakeRequest getIdleRequest() {
-                        return new FakeRequest(0);
-                    }
-                };
+        var mech = new FakeMechanism() {
+            @Override
+            protected FakeRequest getIdleRequest() {
+                return new FakeRequest(0);
+            }
+        };
 
         // The first step should run the Initial request.
         step();
@@ -198,12 +187,10 @@ public class MechanismTest extends TestCase {
 
         // When a Command is scheduled which reserves this Procedure, it should preempt
         // the Idle request.
-        new FunctionalProcedure(
-                        Set.of(mech),
-                        context -> {
-                            mech.setRequest(new FakeRequest(1));
-                            context.waitFor(() -> false);
-                        })
+        new FunctionalProcedure(Set.of(mech), context -> {
+                    mech.setRequest(new FakeRequest(1));
+                    context.waitFor(() -> false);
+                })
                 .createCommandToRunProcedure()
                 .schedule();
         step();
@@ -277,13 +264,11 @@ public class MechanismTest extends TestCase {
 
         assertThrows(
                 UnsupportedOperationException.class,
-                () ->
-                        superstructure.addMechanism(
-                                new FakeMechanism() {
-                                    protected FakeRequest getIdleRequest() {
-                                        return new FakeRequest(0);
-                                    }
-                                }),
+                () -> superstructure.addMechanism(new FakeMechanism() {
+                    protected FakeRequest getIdleRequest() {
+                        return new FakeRequest(0);
+                    }
+                }),
                 "A Mechanism contained in a superstructure cannot define an idle request");
     }
 }

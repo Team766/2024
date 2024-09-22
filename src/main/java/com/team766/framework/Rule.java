@@ -89,35 +89,29 @@ public class Rule {
                     this.cancellationOnFinish = Cancellation.DO_NOT_CANCEL;
                 }
                 case ONCE_AND_HOLD -> {
-                    this.onTriggeringProcedure =
-                            () -> {
-                                final Procedure procedure = action.get();
-                                return new FunctionalProcedure(
-                                        procedure.getName(),
-                                        procedure.reservations(),
-                                        context -> {
-                                            procedure.run(context);
-                                            context.waitFor(() -> false);
-                                        });
-                            };
+                    this.onTriggeringProcedure = () -> {
+                        final Procedure procedure = action.get();
+                        return new FunctionalProcedure(
+                                procedure.getName(), procedure.reservations(), context -> {
+                                    procedure.run(context);
+                                    context.waitFor(() -> false);
+                                });
+                    };
                     this.cancellationOnFinish = Cancellation.CANCEL_NEWLY_ACTION;
                 }
                 case REPEATEDLY -> {
-                    this.onTriggeringProcedure =
-                            () -> {
-                                final Procedure procedure = action.get();
-                                return new FunctionalProcedure(
-                                        procedure.getName(),
-                                        procedure.reservations(),
-                                        context -> {
-                                            Procedure currentProcedure = procedure;
-                                            while (true) {
-                                                context.runSync(currentProcedure);
-                                                context.yield();
-                                                currentProcedure = action.get();
-                                            }
-                                        });
-                            };
+                    this.onTriggeringProcedure = () -> {
+                        final Procedure procedure = action.get();
+                        return new FunctionalProcedure(
+                                procedure.getName(), procedure.reservations(), context -> {
+                                    Procedure currentProcedure = procedure;
+                                    while (true) {
+                                        context.runSync(currentProcedure);
+                                        context.yield();
+                                        currentProcedure = action.get();
+                                    }
+                                });
+                    };
                     this.cancellationOnFinish = Cancellation.CANCEL_NEWLY_ACTION;
                 }
             }
@@ -184,31 +178,27 @@ public class Rule {
         private List<Rule> build(BooleanSupplier parentPredicate) {
             final var rules = new ArrayList<Rule>();
 
-            final BooleanSupplier fullPredicate =
-                    parentPredicate == null
-                            ? predicate
-                            : () -> parentPredicate.getAsBoolean() && predicate.getAsBoolean();
-            final var thisRule =
-                    new Rule(
-                            name,
-                            fullPredicate,
-                            onTriggeringProcedure,
-                            cancellationOnFinish,
-                            finishedTriggeringProcedure);
+            final BooleanSupplier fullPredicate = parentPredicate == null
+                    ? predicate
+                    : () -> parentPredicate.getAsBoolean() && predicate.getAsBoolean();
+            final var thisRule = new Rule(
+                    name,
+                    fullPredicate,
+                    onTriggeringProcedure,
+                    cancellationOnFinish,
+                    finishedTriggeringProcedure);
             rules.add(thisRule);
 
             // Important! These composed predicates shouldn't invoke `predicate`. `predicate` should
             // only be invoked once per call to RuleEngine.run(), so having all rules in the
             // hierarchy call it would not work as expected. Instead, we have the child rules query
             // the triggering state of the parent rule.
-            final BooleanSupplier composedPredicate =
-                    parentPredicate == null
-                            ? () -> thisRule.isTriggering()
-                            : () -> parentPredicate.getAsBoolean() && thisRule.isTriggering();
-            final BooleanSupplier negativeComposedPredicate =
-                    parentPredicate == null
-                            ? () -> !thisRule.isTriggering()
-                            : () -> parentPredicate.getAsBoolean() && !thisRule.isTriggering();
+            final BooleanSupplier composedPredicate = parentPredicate == null
+                    ? () -> thisRule.isTriggering()
+                    : () -> parentPredicate.getAsBoolean() && thisRule.isTriggering();
+            final BooleanSupplier negativeComposedPredicate = parentPredicate == null
+                    ? () -> !thisRule.isTriggering()
+                    : () -> parentPredicate.getAsBoolean() && !thisRule.isTriggering();
             for (var r : composedRules) {
                 rules.addAll(r.build(composedPredicate));
             }
@@ -297,21 +287,17 @@ public class Rule {
 
     /* package */ void evaluate() {
         if (predicate.getAsBoolean()) {
-            currentTriggerType =
-                    switch (currentTriggerType) {
-                        case NONE -> TriggerType.NEWLY;
-                        case NEWLY -> TriggerType.CONTINUING;
-                        case CONTINUING -> TriggerType.CONTINUING;
-                        case FINISHED -> TriggerType.NEWLY;
-                    };
+            currentTriggerType = switch (currentTriggerType) {
+                case NONE -> TriggerType.NEWLY;
+                case NEWLY -> TriggerType.CONTINUING;
+                case CONTINUING -> TriggerType.CONTINUING;
+                case FINISHED -> TriggerType.NEWLY;};
         } else {
-            currentTriggerType =
-                    switch (currentTriggerType) {
-                        case NONE -> TriggerType.NONE;
-                        case NEWLY -> TriggerType.FINISHED;
-                        case CONTINUING -> TriggerType.FINISHED;
-                        case FINISHED -> TriggerType.NONE;
-                    };
+            currentTriggerType = switch (currentTriggerType) {
+                case NONE -> TriggerType.NONE;
+                case NEWLY -> TriggerType.FINISHED;
+                case CONTINUING -> TriggerType.FINISHED;
+                case FINISHED -> TriggerType.NONE;};
         }
     }
 

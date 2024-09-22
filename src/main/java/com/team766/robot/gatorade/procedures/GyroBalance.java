@@ -64,8 +64,9 @@ public class GyroBalance extends Procedure {
         context.waitFor(() -> Arm.MoveToPosition.EXTENDED_TO_MID.isDone());
 
         // initialY is robot y position when balancing starts
-        final double initialY =
-                getStatusOrThrow(SwerveDrive.DriveStatus.class).currentPosition().getY();
+        final double initialY = getStatusOrThrow(SwerveDrive.DriveStatus.class)
+                .currentPosition()
+                .getY();
         // Sets movement direction towards desired charge station.
         switch (alliance) {
             case Red:
@@ -98,11 +99,10 @@ public class GyroBalance extends Procedure {
         // State: RAMP_TRANSITION
         setDriveSpeed(SPEED_TRANSITION);
         log("Transition, curState: RAMP_TRANSITION");
-        context.waitFor(
-                () -> {
-                    final double tilt = getAbsoluteTilt();
-                    return tilt < TOP_TILT && tilt > FLAP_TILT;
-                });
+        context.waitFor(() -> {
+            final double tilt = getAbsoluteTilt();
+            return tilt < TOP_TILT && tilt > FLAP_TILT;
+        });
 
         // State: RAMP_TILT
         setDriveSpeed(SPEED_TILT);

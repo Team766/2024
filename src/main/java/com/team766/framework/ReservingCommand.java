@@ -30,9 +30,8 @@ public final class ReservingCommand extends WrapperCommand {
      */
     public static void checkCurrentCommandHasReservation(Subsystem subsystem) {
         if (!currentCommandHasReservation(subsystem)) {
-            var exception =
-                    new IllegalStateException(
-                            subsystem.getName() + " tried to be used without reserving it");
+            var exception = new IllegalStateException(
+                    subsystem.getName() + " tried to be used without reserving it");
             Logger.get(Category.FRAMEWORK)
                     .logRaw(
                             Severity.ERROR,
@@ -86,12 +85,11 @@ public final class ReservingCommand extends WrapperCommand {
         final var thisReservations = parent.getRequirements();
         for (var req : child.getRequirements()) {
             if (!thisReservations.contains(req)) {
-                throw new IllegalArgumentException(
-                        parent.getName()
-                                + " tried to run "
-                                + child.getName()
-                                + " but is missing the reservation on "
-                                + req.getName());
+                throw new IllegalArgumentException(parent.getName()
+                        + " tried to run "
+                        + child.getName()
+                        + " but is missing the reservation on "
+                        + req.getName());
             }
         }
     }

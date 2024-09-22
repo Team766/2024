@@ -148,10 +148,9 @@ public class Wrist extends Mechanism<Wrist.WristRequest, Wrist.WristStatus> {
 
     @Override
     protected WristStatus run(WristRequest request, boolean isRequestNew) {
-        final var status =
-                new WristStatus(
-                        motor.getEncoder().getPosition(),
-                        EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition()));
+        final var status = new WristStatus(
+                motor.getEncoder().getPosition(),
+                EncoderUtils.wristRotationsToDegrees(motor.getEncoder().getPosition()));
 
         switch (request) {
             case NudgeNoPID nudge -> {

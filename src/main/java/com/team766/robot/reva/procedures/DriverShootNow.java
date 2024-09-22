@@ -62,9 +62,8 @@ public class DriverShootNow extends VisionPIDProcedure {
             // speedRequest =
             //         new Shooter.ShootAtSpeed(
             //                 VisionPIDProcedure.getBestPowerToUse(distanceOfRobotToTag));
-            armRequest =
-                    new Shoulder.RotateToPosition(
-                            VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag));
+            armRequest = new Shoulder.RotateToPosition(
+                    VisionPIDProcedure.getBestArmAngleToUse(distanceOfRobotToTag));
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;

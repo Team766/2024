@@ -8,12 +8,12 @@ class LogEntryComparator implements Comparator<LogEntry> {
     // It is used to signal to the log writing thread that it should exit.
     // We want it to come last in the priority queue so that any pending log
     // entries get written before the thread terminates.
-    public static final LogEntry TERMINATION_SENTINAL =
-            LogEntry.newBuilder()
-                    .setSeverity(
-                            Arrays.stream(Severity.values()).min(Comparator.naturalOrder()).get())
-                    .setTime(Long.MAX_VALUE)
-                    .build();
+    public static final LogEntry TERMINATION_SENTINAL = LogEntry.newBuilder()
+            .setSeverity(Arrays.stream(Severity.values())
+                    .min(Comparator.naturalOrder())
+                    .get())
+            .setTime(Long.MAX_VALUE)
+            .build();
 
     @Override
     public int compare(final LogEntry o1, final LogEntry o2) {

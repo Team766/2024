@@ -65,9 +65,8 @@ public class Robot implements RobotConfigurator {
                     () -> new ThreePieceMidfieldAmpSide(drive, superstructure, shooter, intake)),
             new AutonomousMode(
                     "3p Start Center, Amp and Center Pieces",
-                    () ->
-                            new ThreePieceStartCenterTopAndAmp(
-                                    drive, superstructure, shooter, intake)),
+                    () -> new ThreePieceStartCenterTopAndAmp(
+                            drive, superstructure, shooter, intake)),
             new AutonomousMode(
                     "Just Shoot Amp",
                     () -> new JustShootAmp(drive, superstructure, shooter, intake)),

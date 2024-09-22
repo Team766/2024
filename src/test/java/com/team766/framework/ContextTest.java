@@ -118,13 +118,10 @@ public class ContextTest extends TestCase {
         var proc1 = new FakeProcedure(1, Set.of(mech1));
         var proc2 = new FakeProcedure(1, Set.of(mech1, mech2));
 
-        var proc =
-                new FunctionalProcedure(
-                        Set.of(mech1, mech2),
-                        context -> {
-                            context.runSync(proc1);
-                            context.runSync(proc2);
-                        });
+        var proc = new FunctionalProcedure(Set.of(mech1, mech2), context -> {
+            context.runSync(proc1);
+            context.runSync(proc2);
+        });
         var context = new ContextImpl(proc);
 
         // Schedule the Context for execution by the scheduler.
@@ -168,12 +165,9 @@ public class ContextTest extends TestCase {
         var proc1 = new FakeProcedure(1, Set.of(mech1));
         var proc2 = new FakeProcedure(2, Set.of(mech2));
 
-        var proc =
-                new FunctionalProcedure(
-                        Set.of(mech1, mech2),
-                        context -> {
-                            context.runParallel(proc1, proc2);
-                        });
+        var proc = new FunctionalProcedure(Set.of(mech1, mech2), context -> {
+            context.runParallel(proc1, proc2);
+        });
         var context = new ContextImpl(proc);
 
         // Schedule the Context for execution by the scheduler.
@@ -217,12 +211,9 @@ public class ContextTest extends TestCase {
         var proc1 = new FakeProcedure(1, Set.of(mech1));
         var proc2 = new FakeProcedure(3, Set.of(mech2));
 
-        var proc =
-                new FunctionalProcedure(
-                        Set.of(mech1, mech2),
-                        context -> {
-                            context.runParallelRace(proc1, proc2);
-                        });
+        var proc = new FunctionalProcedure(Set.of(mech1, mech2), context -> {
+            context.runParallelRace(proc1, proc2);
+        });
         var context = new ContextImpl(proc);
 
         // Schedule the Context for execution by the scheduler.
@@ -259,16 +250,13 @@ public class ContextTest extends TestCase {
         var proc1 = new FakeProcedure(1, Set.of(mech));
 
         AtomicReference<String> thrownException = new AtomicReference<>(null);
-        var proc =
-                new FunctionalProcedure(
-                        Set.of(),
-                        context -> {
-                            try {
-                                runMethod.accept(context, proc1);
-                            } catch (IllegalArgumentException ex) {
-                                thrownException.set(ex.getMessage());
-                            }
-                        });
+        var proc = new FunctionalProcedure(Set.of(), context -> {
+            try {
+                runMethod.accept(context, proc1);
+            } catch (IllegalArgumentException ex) {
+                thrownException.set(ex.getMessage());
+            }
+        });
         var context = new ContextImpl(proc);
 
         context.schedule();
@@ -293,16 +281,13 @@ public class ContextTest extends TestCase {
         var proc2 = new FakeProcedure(1, Set.of(mech));
 
         AtomicReference<String> thrownException = new AtomicReference<>(null);
-        var proc =
-                new FunctionalProcedure(
-                        Set.of(mech),
-                        context -> {
-                            try {
-                                runMethod.accept(context, new Procedure[] {proc1, proc2});
-                            } catch (IllegalArgumentException ex) {
-                                thrownException.set(ex.getMessage());
-                            }
-                        });
+        var proc = new FunctionalProcedure(Set.of(mech), context -> {
+            try {
+                runMethod.accept(context, new Procedure[] {proc1, proc2});
+            } catch (IllegalArgumentException ex) {
+                thrownException.set(ex.getMessage());
+            }
+        });
         var context = new ContextImpl(proc);
 
         context.schedule();

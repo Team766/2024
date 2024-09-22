@@ -23,41 +23,26 @@ public class Lights extends RuleEngine {
     private final CANdle candle = new CANdle(CANID, SwerveDriveConstants.SWERVE_CANBUS);
 
     public Lights() {
-        addRule(
-                Rule.create(
-                                "OI State Updated",
-                                () ->
-                                        checkForStatusEntryWith(
-                                                OI.OIStatus.class, s -> s.age() < 1.3))
-                        .withOnTriggeringProcedure(
-                                REPEATEDLY,
-                                Set.of(),
-                                () -> {
-                                    final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
-                                    setLightsForGamePiece(status.gamePieceType());
-                                    setLightsForPlacement(
-                                            status.placementPosition(), status.gamePieceType());
-                                }));
+        addRule(Rule.create(
+                        "OI State Updated",
+                        () -> checkForStatusEntryWith(OI.OIStatus.class, s -> s.age() < 1.3))
+                .withOnTriggeringProcedure(REPEATEDLY, Set.of(), () -> {
+                    final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
+                    setLightsForGamePiece(status.gamePieceType());
+                    setLightsForPlacement(status.placementPosition(), status.gamePieceType());
+                }));
 
-        addRule(
-                Rule.create(
-                                "Endgame",
-                                () ->
-                                        DriverStation.getMatchTime() > 0
-                                                && DriverStation.getMatchTime() < 17)
-                        .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
+        addRule(Rule.create(
+                        "Endgame",
+                        () -> DriverStation.getMatchTime() > 0 && DriverStation.getMatchTime() < 17)
+                .withOnTriggeringProcedure(ONCE_AND_HOLD, Set.of(), () -> rainbow()));
 
-        addRule(
-                Rule.create("Default display", () -> checkForStatus(OI.OIStatus.class))
-                        .withOnTriggeringProcedure(
-                                REPEATEDLY,
-                                Set.of(),
-                                () -> {
-                                    final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
-                                    setLightsForGamePiece(status.gamePieceType());
-                                    setLightsForPlacement(
-                                            status.placementPosition(), status.gamePieceType());
-                                }));
+        addRule(Rule.create("Default display", () -> checkForStatus(OI.OIStatus.class))
+                .withOnTriggeringProcedure(REPEATEDLY, Set.of(), () -> {
+                    final OI.OIStatus status = getStatusOrThrow(OI.OIStatus.class);
+                    setLightsForGamePiece(status.gamePieceType());
+                    setLightsForPlacement(status.placementPosition(), status.gamePieceType());
+                }));
     }
 
     private void setLightsForPlacement(

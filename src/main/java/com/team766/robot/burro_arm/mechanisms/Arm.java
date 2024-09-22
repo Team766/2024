@@ -89,15 +89,13 @@ public class Arm extends Mechanism<Arm.ArmRequest, Arm.ArmStatus> {
     @Override
     public ArmStatus run(ArmRequest request, boolean isRequestNew) {
         if (!initialized && absoluteEncoder.isConnected()) {
-            final double absoluteEncoderPosition =
-                    Math.IEEEremainder(
-                            absoluteEncoder.getPosition() + absoluteEncoderOffset.get(), 1.0);
+            final double absoluteEncoderPosition = Math.IEEEremainder(
+                    absoluteEncoder.getPosition() + absoluteEncoderOffset.get(), 1.0);
             SmartDashboard.putNumber(
                     "[ARM] AbsoluteEncoder Init Position", absoluteEncoderPosition);
-            motor.setSensorPosition(
-                    absoluteEncoderPosition
-                            * ABSOLUTE_ENCODER_TO_ARM_ANGLE
-                            / MOTOR_ROTATIONS_TO_ARM_ANGLE);
+            motor.setSensorPosition(absoluteEncoderPosition
+                    * ABSOLUTE_ENCODER_TO_ARM_ANGLE
+                    / MOTOR_ROTATIONS_TO_ARM_ANGLE);
             initialized = true;
         }
 

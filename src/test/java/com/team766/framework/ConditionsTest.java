@@ -54,12 +54,9 @@ public class ConditionsTest extends TestCase {
     @Test
     public void testWaitForValue() {
         AtomicReference<Optional<String>> container = new AtomicReference<>(Optional.empty());
-        var c =
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    "the value", Conditions.waitForValue(context, container::get));
-                        });
+        var c = startContext(context -> {
+            assertEquals("the value", Conditions.waitForValue(context, container::get));
+        });
         assertFalse(step(5, c));
         container.set(Optional.of("the value"));
         assertTrue(step(1, c));
@@ -68,21 +65,16 @@ public class ConditionsTest extends TestCase {
     @Test
     public void testWaitForValueOrTimeout() {
         AtomicReference<Optional<String>> container = new AtomicReference<>(Optional.empty());
-        finish(
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    Optional.empty(),
-                                    Conditions.waitForValueOrTimeout(context, container::get, 0.1));
-                        }));
-        var c =
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    Optional.of("the value"),
-                                    Conditions.waitForValueOrTimeout(
-                                            context, container::get, 1000.0));
-                        });
+        finish(startContext(context -> {
+            assertEquals(
+                    Optional.empty(),
+                    Conditions.waitForValueOrTimeout(context, container::get, 0.1));
+        }));
+        var c = startContext(context -> {
+            assertEquals(
+                    Optional.of("the value"),
+                    Conditions.waitForValueOrTimeout(context, container::get, 1000.0));
+        });
         assertFalse(step(5, c));
         container.set(Optional.of("the value"));
         assertTrue(step(1, c));
@@ -109,32 +101,24 @@ public class ConditionsTest extends TestCase {
 
     @Test
     public void testCheckForStatusEntryWith() {
-        assertFalse(
-                Conditions.checkForStatusEntryWith(
-                        FakeStatus.class, s -> s.status().currentState() == 1));
+        assertFalse(Conditions.checkForStatusEntryWith(
+                FakeStatus.class, s -> s.status().currentState() == 1));
         StatusBus.publishStatus(new OtherStatus(1));
-        assertFalse(
-                Conditions.checkForStatusEntryWith(
-                        FakeStatus.class, s -> s.status().currentState() == 1));
+        assertFalse(Conditions.checkForStatusEntryWith(
+                FakeStatus.class, s -> s.status().currentState() == 1));
         StatusBus.publishStatus(new FakeStatus(0));
-        assertFalse(
-                Conditions.checkForStatusEntryWith(
-                        FakeStatus.class, s -> s.status().currentState() == 1));
+        assertFalse(Conditions.checkForStatusEntryWith(
+                FakeStatus.class, s -> s.status().currentState() == 1));
         StatusBus.publishStatus(new FakeStatus(1));
-        assertTrue(
-                Conditions.checkForStatusEntryWith(
-                        FakeStatus.class, s -> s.status().currentState() == 1));
+        assertTrue(Conditions.checkForStatusEntryWith(
+                FakeStatus.class, s -> s.status().currentState() == 1));
     }
 
     @Test
     public void testWaitForStatus() {
-        var c =
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    new FakeStatus(42),
-                                    Conditions.waitForStatus(context, FakeStatus.class));
-                        });
+        var c = startContext(context -> {
+            assertEquals(new FakeStatus(42), Conditions.waitForStatus(context, FakeStatus.class));
+        });
         assertFalse(step(5, c));
         StatusBus.publishStatus(new OtherStatus(42));
         assertFalse(step(5, c));
@@ -144,22 +128,16 @@ public class ConditionsTest extends TestCase {
 
     @Test
     public void testWaitForStatusOrTimeout() {
-        finish(
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    Optional.empty(),
-                                    Conditions.waitForStatusOrTimeout(
-                                            context, FakeStatus.class, 0.1));
-                        }));
-        var c =
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    Optional.of(new FakeStatus(42)),
-                                    Conditions.waitForStatusOrTimeout(
-                                            context, FakeStatus.class, 1000.0));
-                        });
+        finish(startContext(context -> {
+            assertEquals(
+                    Optional.empty(),
+                    Conditions.waitForStatusOrTimeout(context, FakeStatus.class, 0.1));
+        }));
+        var c = startContext(context -> {
+            assertEquals(
+                    Optional.of(new FakeStatus(42)),
+                    Conditions.waitForStatusOrTimeout(context, FakeStatus.class, 1000.0));
+        });
         assertFalse(step(5, c));
         StatusBus.publishStatus(new OtherStatus(42));
         assertFalse(step(5, c));
@@ -169,16 +147,12 @@ public class ConditionsTest extends TestCase {
 
     @Test
     public void testWaitForStatusWith() {
-        var c =
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    new FakeStatus(42),
-                                    Conditions.waitForStatusWith(
-                                            context,
-                                            FakeStatus.class,
-                                            s -> s.currentState() == 42));
-                        });
+        var c = startContext(context -> {
+            assertEquals(
+                    new FakeStatus(42),
+                    Conditions.waitForStatusWith(
+                            context, FakeStatus.class, s -> s.currentState() == 42));
+        });
         assertFalse(step(5, c));
         StatusBus.publishStatus(new OtherStatus(42));
         assertFalse(step(5, c));
@@ -190,28 +164,18 @@ public class ConditionsTest extends TestCase {
 
     @Test
     public void testWaitForStatusWithOrTimeout() {
-        finish(
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    Optional.empty(),
-                                    Conditions.waitForStatusWithOrTimeout(
-                                            context,
-                                            FakeStatus.class,
-                                            s -> s.currentState() == 42,
-                                            0.1));
-                        }));
-        var c =
-                startContext(
-                        context -> {
-                            assertEquals(
-                                    Optional.of(new FakeStatus(42)),
-                                    Conditions.waitForStatusWithOrTimeout(
-                                            context,
-                                            FakeStatus.class,
-                                            s -> s.currentState() == 42,
-                                            1000.0));
-                        });
+        finish(startContext(context -> {
+            assertEquals(
+                    Optional.empty(),
+                    Conditions.waitForStatusWithOrTimeout(
+                            context, FakeStatus.class, s -> s.currentState() == 42, 0.1));
+        }));
+        var c = startContext(context -> {
+            assertEquals(
+                    Optional.of(new FakeStatus(42)),
+                    Conditions.waitForStatusWithOrTimeout(
+                            context, FakeStatus.class, s -> s.currentState() == 42, 1000.0));
+        });
         assertFalse(step(5, c));
         StatusBus.publishStatus(new OtherStatus(42));
         assertFalse(step(5, c));
@@ -224,11 +188,9 @@ public class ConditionsTest extends TestCase {
     @Test
     public void testWaitForRequest() {
         var request = new ProxyRequest();
-        var c =
-                startContext(
-                        context -> {
-                            Conditions.waitForRequest(context, request);
-                        });
+        var c = startContext(context -> {
+            Conditions.waitForRequest(context, request);
+        });
         assertFalse(step(5, c));
         request.isDone = true;
         assertTrue(step(1, c));
@@ -237,17 +199,12 @@ public class ConditionsTest extends TestCase {
     @Test
     public void testWaitForRequestOrTimeout() {
         var request = new ProxyRequest();
-        finish(
-                startContext(
-                        context -> {
-                            assertFalse(Conditions.waitForRequestOrTimeout(context, request, 0.1));
-                        }));
-        var c =
-                startContext(
-                        context -> {
-                            assertTrue(
-                                    Conditions.waitForRequestOrTimeout(context, request, 1000.0));
-                        });
+        finish(startContext(context -> {
+            assertFalse(Conditions.waitForRequestOrTimeout(context, request, 0.1));
+        }));
+        var c = startContext(context -> {
+            assertTrue(Conditions.waitForRequestOrTimeout(context, request, 1000.0));
+        });
         assertFalse(step(5, c));
         request.isDone = true;
         assertTrue(step(1, c));

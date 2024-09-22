@@ -42,9 +42,8 @@ public class RotateAndShootNow extends Procedure {
         try {
             // power = visionSpeakerHelper.getShooterPower();
             armRequest = new Shoulder.RotateToPosition(visionSpeakerHelper.getArmAngle());
-            headingRequest =
-                    new SwerveDrive.FieldOrientedVelocityWithRotationTarget(
-                            0, 0, visionSpeakerHelper.getHeadingToTarget());
+            headingRequest = new SwerveDrive.FieldOrientedVelocityWithRotationTarget(
+                    0, 0, visionSpeakerHelper.getHeadingToTarget());
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;

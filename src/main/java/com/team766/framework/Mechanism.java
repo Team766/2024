@@ -128,10 +128,9 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
         }
         if (superstructure != null) {
             if (!superstructure.isRunningPeriodic()) {
-                var exception =
-                        new IllegalStateException(
-                                this.getName()
-                                        + " is part of a superstructure but was used by something outside the superstructure");
+                var exception = new IllegalStateException(
+                        this.getName()
+                                + " is part of a superstructure but was used by something outside the superstructure");
                 Logger.get(Category.FRAMEWORK)
                         .logRaw(
                                 Severity.ERROR,

@@ -167,11 +167,9 @@ public class Elevator extends Mechanism<Elevator.ElevatorRequest, Elevator.Eleva
 
     @Override
     protected ElevatorStatus run(ElevatorRequest request, boolean isRequestNew) {
-        final var status =
-                new ElevatorStatus(
-                        leftMotor.getEncoder().getPosition(),
-                        EncoderUtils.elevatorRotationsToHeight(
-                                leftMotor.getEncoder().getPosition()));
+        final var status = new ElevatorStatus(
+                leftMotor.getEncoder().getPosition(),
+                EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition()));
 
         switch (request) {
             case NudgeNoPID nudge -> {

@@ -16,12 +16,11 @@ public class Conditions {
      */
     public static <T> T waitForValue(Context context, Supplier<Optional<T>> supplier) {
         final AtomicReference<T> result = new AtomicReference<>();
-        context.waitFor(
-                () -> {
-                    final var t = supplier.get();
-                    t.ifPresent(result::set);
-                    return t.isPresent();
-                });
+        context.waitFor(() -> {
+            final var t = supplier.get();
+            t.ifPresent(result::set);
+            return t.isPresent();
+        });
         return result.get();
     }
 

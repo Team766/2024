@@ -73,41 +73,35 @@ public class Arm extends Superstructure<Arm.ArmRequest, Arm.ArmStatus> {
             Elevator.MoveToPosition elevatorSetpoint,
             Wrist.RotateToPosition wristSetpoint)
             implements ArmRequest {
-        public static final MoveToPosition RETRACTED =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.BOTTOM,
-                        Elevator.MoveToPosition.RETRACTED,
-                        Wrist.RotateToPosition.RETRACTED);
+        public static final MoveToPosition RETRACTED = new MoveToPosition(
+                Shoulder.RotateToPosition.BOTTOM,
+                Elevator.MoveToPosition.RETRACTED,
+                Wrist.RotateToPosition.RETRACTED);
 
-        public static final MoveToPosition EXTENDED_TO_LOW =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.FLOOR,
-                        Elevator.MoveToPosition.LOW,
-                        Wrist.RotateToPosition.LEVEL);
+        public static final MoveToPosition EXTENDED_TO_LOW = new MoveToPosition(
+                Shoulder.RotateToPosition.FLOOR,
+                Elevator.MoveToPosition.LOW,
+                Wrist.RotateToPosition.LEVEL);
 
-        public static final MoveToPosition EXTENDED_TO_MID =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.MID,
-                        Wrist.RotateToPosition.MID_NODE);
+        public static final MoveToPosition EXTENDED_TO_MID = new MoveToPosition(
+                Shoulder.RotateToPosition.RAISED,
+                Elevator.MoveToPosition.MID,
+                Wrist.RotateToPosition.MID_NODE);
 
-        public static final MoveToPosition EXTENDED_TO_HIGH =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.HIGH,
-                        Wrist.RotateToPosition.HIGH_NODE);
+        public static final MoveToPosition EXTENDED_TO_HIGH = new MoveToPosition(
+                Shoulder.RotateToPosition.RAISED,
+                Elevator.MoveToPosition.HIGH,
+                Wrist.RotateToPosition.HIGH_NODE);
 
-        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CONE =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.HUMAN_CONES,
-                        Wrist.RotateToPosition.HUMAN_CONES);
+        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CONE = new MoveToPosition(
+                Shoulder.RotateToPosition.RAISED,
+                Elevator.MoveToPosition.HUMAN_CONES,
+                Wrist.RotateToPosition.HUMAN_CONES);
 
-        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CUBE =
-                new MoveToPosition(
-                        Shoulder.RotateToPosition.RAISED,
-                        Elevator.MoveToPosition.HUMAN_CUBES,
-                        Wrist.RotateToPosition.HUMAN_CUBES);
+        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CUBE = new MoveToPosition(
+                Shoulder.RotateToPosition.RAISED,
+                Elevator.MoveToPosition.HUMAN_CUBES,
+                Wrist.RotateToPosition.HUMAN_CUBES);
 
         @Override
         public boolean isDone() {
@@ -168,9 +162,8 @@ public class Arm extends Superstructure<Arm.ArmRequest, Arm.ArmStatus> {
                     ELEVATOR_IN_POSITION
                 }
 
-                final boolean raisingShoulder =
-                        g.shoulderSetpoint.angle()
-                                > getStatusOrThrow(Shoulder.ShoulderStatus.class).angle();
+                final boolean raisingShoulder = g.shoulderSetpoint.angle()
+                        > getStatusOrThrow(Shoulder.ShoulderStatus.class).angle();
 
                 MovePhase phase;
                 if (getStatusOrThrow(Elevator.ElevatorStatus.class).isNearTo(g.elevatorSetpoint)) {

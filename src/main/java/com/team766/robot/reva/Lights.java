@@ -19,63 +19,57 @@ public class Lights extends RuleEngine {
     CANdle m_candle = new CANdle(58);
 
     public Lights() {
-        final BooleanSupplier isCameraMissing =
-                () ->
-                        !checkForStatusWith(
-                                ForwardApriltagCamera.ApriltagCameraStatus.class,
-                                s -> s.isCameraConnected());
+        final BooleanSupplier isCameraMissing = () -> !checkForStatusWith(
+                ForwardApriltagCamera.ApriltagCameraStatus.class, s -> s.isCameraConnected());
 
-        addRule(
-                Rule.create("Robot Disabled", () -> DriverStation.isDisabled())
-                        .whenTriggering(
-                                Rule.create("Camera Missing", isCameraMissing)
-                                        .withOnTriggeringProcedure(
-                                                ONCE_AND_HOLD,
-                                                Set.of(),
-                                                () -> signalCameraNotConnected())
+        addRule(Rule.create("Robot Disabled", () -> DriverStation.isDisabled())
+                .whenTriggering(
+                        Rule.create("Camera Missing", isCameraMissing)
+                                .withOnTriggeringProcedure(
+                                        ONCE_AND_HOLD, Set.of(), () -> signalCameraNotConnected())
 
-                                // Rule.createDefaultProcedure("Alliance Color", Set.of(), () -> {
-                                //     switch (DriverStation.getAlliance().orElse(null)) {
-                                //         case Blue -> blue();
-                                //         case Red -> red();
-                                //         case null -> purple();
-                                //     }
-                                // })
-                                )
-                        .whenNotTriggering(
-                                // for (var s : statuses) {
-                                //     if (!s.isFreshOrAgeLessThan(2.0)) {
-                                //         continue;
-                                //     }
-                                //     switch (s.status) {
-                                //         case IntakeUntilIn.IntakeUntilInStatus intakeStatus -> {
-                                //             if (intakeStatus.noteInIntake()) {
-                                //                 signalNoteInIntake();
-                                //             } else {
-                                //                 signalNoNoteInIntakeYet();
-                                //             }
-                                //             return;
-                                //         }
-                                //         case ShootingProcedureStatus shootStatus -> {
-                                //             if (isCameraMissing) {
-                                //                 signalCameraNotConnected();
-                                //             } else {
-                                //                 switch (shootStatus.status()) {
-                                //                     case RUNNING ->
-                                // signalStartingShootingProcedure();
-                                //                     case OUT_OF_RANGE ->
-                                // signalShooterOutOfRange();
-                                //                     case FINISHED ->
-                                // signalFinishingShootingProcedure();
-                                //                 }
-                                //             }
-                                //             return;
-                                //         }
-                                //         default -> {}
-                                //     }
-                                // }
-                                // turnLightsOff();
-                                ));
+                        // Rule.createDefaultProcedure("Alliance Color", Set.of(), () -> {
+                        //     switch (DriverStation.getAlliance().orElse(null)) {
+                        //         case Blue -> blue();
+                        //         case Red -> red();
+                        //         case null -> purple();
+                        //     }
+                        // })
+                        )
+                .whenNotTriggering(
+                        // for (var s : statuses) {
+                        //     if (!s.isFreshOrAgeLessThan(2.0)) {
+                        //         continue;
+                        //     }
+                        //     switch (s.status) {
+                        //         case IntakeUntilIn.IntakeUntilInStatus intakeStatus -> {
+                        //             if (intakeStatus.noteInIntake()) {
+                        //                 signalNoteInIntake();
+                        //             } else {
+                        //                 signalNoNoteInIntakeYet();
+                        //             }
+                        //             return;
+                        //         }
+                        //         case ShootingProcedureStatus shootStatus -> {
+                        //             if (isCameraMissing) {
+                        //                 signalCameraNotConnected();
+                        //             } else {
+                        //                 switch (shootStatus.status()) {
+                        //                     case RUNNING ->
+                        // signalStartingShootingProcedure();
+                        //                     case OUT_OF_RANGE ->
+                        // signalShooterOutOfRange();
+                        //                     case FINISHED ->
+                        // signalFinishingShootingProcedure();
+                        //                 }
+                        //             }
+                        //             return;
+                        //         }
+                        //         default -> {}
+                        //     }
+                        // }
+                        // turnLightsOff();
+                        ));
     }
 
     // Lime green

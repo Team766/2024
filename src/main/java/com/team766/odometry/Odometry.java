@@ -168,19 +168,17 @@ public class Odometry {
             // motorCount)), currPositions[i].getHeading());
             // This following line only works if the average of wheel positions is (0,0)
 
-            prevPositions[i] =
-                    new Pose2d(
-                            currentPosition
-                                    .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
-                                    .getTranslation(),
-                            currPositions[i].getRotation());
+            prevPositions[i] = new Pose2d(
+                    currentPosition
+                            .plus(new Transform2d(wheelPositions[i], new Rotation2d()))
+                            .getTranslation(),
+                    currPositions[i].getRotation());
             // SmartDashboard.putNumber(
             //         "early curr rotation", currPositions[i].getRotation().getDegrees());
             // SmartDashboard.putString("prev rotation direct", prevPositions[i].toString());
-            currPositions[i] =
-                    new Pose2d(
-                            currPositions[i].getTranslation(),
-                            gyroPosition.plus(Rotation2d.fromDegrees(absolutePosition)));
+            currPositions[i] = new Pose2d(
+                    currPositions[i].getTranslation(),
+                    gyroPosition.plus(Rotation2d.fromDegrees(absolutePosition)));
 
             rotationChange = currPositions[i].getRotation().minus(prevPositions[i].getRotation());
             // SmartDashboard.putNumber("curr rotation",
@@ -197,12 +195,11 @@ public class Odometry {
             double w = Math.toRadians(absolutePosition);
             Vector2D u =
                     new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
-            Vector2D v =
-                    new Vector2D(
-                            Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)
-                                    - Math.sin(yaw) * Math.cos(roll),
-                            Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll)
-                                    + Math.cos(yaw) * Math.cos(roll));
+            Vector2D v = new Vector2D(
+                    Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)
+                            - Math.sin(yaw) * Math.cos(roll),
+                    Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll)
+                            + Math.cos(yaw) * Math.cos(roll));
             Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
             Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
             Vector2D wheelMotion;
@@ -213,10 +210,9 @@ public class Odometry {
 
             // estimates the bot moved in a circle to calculate new position
             if (Math.abs(rotationChange.getDegrees()) != 0) {
-                radius =
-                        180
-                                * (currEncoderValues[i] - prevEncoderValues[i])
-                                / (Math.PI * rotationChange.getDegrees());
+                radius = 180
+                        * (currEncoderValues[i] - prevEncoderValues[i])
+                        / (Math.PI * rotationChange.getDegrees());
                 // could def make this math cleaner w/rotation functions
                 deltaX = radius * Math.sin(Math.toRadians(rotationChange.getDegrees()));
                 deltaY = radius * (1 - Math.cos(Math.toRadians(rotationChange.getDegrees())));
@@ -242,9 +238,8 @@ public class Odometry {
                 // Math.sin(Math.toRadians(prevPositions[i].getHeading())) * slopeFactor.getY() *
                 // WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
             }
-            wheelMotion =
-                    wheelMotion.scalarMultiply(
-                            wheelCircumference / (gearRatio * encoderToRevolutionConstant));
+            wheelMotion = wheelMotion.scalarMultiply(
+                    wheelCircumference / (gearRatio * encoderToRevolutionConstant));
             // wheelMotion = rotate(wheelMotion, Math.toRadians(gyroPosition));
             // log("Difference: " + (oldWheelX - wheelMotion.getX()) + ", " + (oldWheelY -
             // wheelMotion.getY()) + "Old Method: " + oldWheelX + ", " + oldWheelY + "Current
@@ -252,11 +247,10 @@ public class Odometry {
             // log("Current: " + currPositions[i] + " Motion: " + wheelMotion + " New: " +
             // currPositions[i].add(wheelMotion));
 
-            currPositions[i] =
-                    new Pose2d(
-                            currPositions[i].getX() + wheelMotion.getX(),
-                            currPositions[i].getY() + wheelMotion.getY(),
-                            currPositions[i].getRotation());
+            currPositions[i] = new Pose2d(
+                    currPositions[i].getX() + wheelMotion.getX(),
+                    currPositions[i].getY() + wheelMotion.getY(),
+                    currPositions[i].getRotation());
         }
     }
 

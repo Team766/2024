@@ -16,16 +16,13 @@ public class AdvancedUtilsTest extends TestCase {
         var proc2 = new FakeProcedure(1, Set.of(mech));
 
         var proc1age = new AtomicInteger(0);
-        var proc1 =
-                new FunctionalProcedure(
-                        Set.of(),
-                        context -> {
-                            var lc = AdvancedUtils.startAsync(context, proc2);
-                            while (!lc.isFinished()) {
-                                proc1age.incrementAndGet();
-                                context.yield();
-                            }
-                        });
+        var proc1 = new FunctionalProcedure(Set.of(), context -> {
+            var lc = AdvancedUtils.startAsync(context, proc2);
+            while (!lc.isFinished()) {
+                proc1age.incrementAndGet();
+                context.yield();
+            }
+        });
         var context = new ContextImpl(proc1);
 
         // Schedule the Context for execution by the scheduler.
@@ -72,16 +69,13 @@ public class AdvancedUtilsTest extends TestCase {
         var proc2 = new FakeProcedure(1, Set.of(mech));
 
         AtomicReference<String> thrownException = new AtomicReference<>(null);
-        var proc1 =
-                new FunctionalProcedure(
-                        Set.of(mech),
-                        context -> {
-                            try {
-                                AdvancedUtils.startAsync(context, proc2);
-                            } catch (IllegalArgumentException ex) {
-                                thrownException.set(ex.getMessage());
-                            }
-                        });
+        var proc1 = new FunctionalProcedure(Set.of(mech), context -> {
+            try {
+                AdvancedUtils.startAsync(context, proc2);
+            } catch (IllegalArgumentException ex) {
+                thrownException.set(ex.getMessage());
+            }
+        });
         var context = new ContextImpl(proc1);
 
         context.schedule();

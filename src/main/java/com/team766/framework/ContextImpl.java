@@ -190,16 +190,12 @@ import java.util.function.BooleanSupplier;
      */
     private String getExecutionPoint() {
         StackWalker walker = StackWalker.getInstance();
-        return walker.walk(
-                s ->
-                        s.dropWhile(f -> f.getClassName() != ContextImpl.this.getClass().getName())
-                                .filter(
-                                        f ->
-                                                f.getClassName()
-                                                        != ContextImpl.this.getClass().getName())
-                                .findFirst()
-                                .map(StackFrame::toString)
-                                .orElse(null));
+        return walker.walk(s -> s.dropWhile(
+                        f -> f.getClassName() != ContextImpl.this.getClass().getName())
+                .filter(f -> f.getClassName() != ContextImpl.this.getClass().getName())
+                .findFirst()
+                .map(StackFrame::toString)
+                .orElse(null));
     }
 
     /**
@@ -253,11 +249,10 @@ import java.util.function.BooleanSupplier;
             // Make sure we currently have the baton before trying to give it to
             // someone else.
             if (m_controlOwner != thisOwner) {
-                throw new IllegalStateException(
-                        "Subroutine had control owner "
-                                + m_controlOwner
-                                + " but assumed control owner "
-                                + thisOwner);
+                throw new IllegalStateException("Subroutine had control owner "
+                        + m_controlOwner
+                        + " but assumed control owner "
+                        + thisOwner);
             }
             // Pass the baton.
             m_controlOwner = desiredOwner;
@@ -358,12 +353,11 @@ import java.util.function.BooleanSupplier;
         final var thisReservations = getRequirements();
         for (var req : procedure.reservations()) {
             if (!thisReservations.contains(req)) {
-                throw new IllegalArgumentException(
-                        getName()
-                                + " tried to run "
-                                + procedure.getName()
-                                + " but is missing the reservation on "
-                                + req.getName());
+                throw new IllegalArgumentException(getName()
+                        + " tried to run "
+                        + procedure.getName()
+                        + " but is missing the reservation on "
+                        + req.getName());
             }
         }
     }

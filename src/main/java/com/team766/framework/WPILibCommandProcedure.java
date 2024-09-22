@@ -37,11 +37,10 @@ public final class WPILibCommandProcedure extends Procedure {
         try {
             command.initialize();
             if (!command.isFinished()) {
-                context.waitFor(
-                        () -> {
-                            command.execute();
-                            return command.isFinished();
-                        });
+                context.waitFor(() -> {
+                    command.execute();
+                    return command.isFinished();
+                });
             }
         } catch (Throwable ex) {
             interrupted = true;

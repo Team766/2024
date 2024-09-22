@@ -51,11 +51,9 @@ public class RuleTest {
 
     @Test
     public void testCreate() {
-        Rule alwaysTrue =
-                getSingleElement(
-                        Rule.create("always true", () -> true)
-                                .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
-                                .build());
+        Rule alwaysTrue = getSingleElement(Rule.create("always true", () -> true)
+                .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
+                .build());
         assertNotNull(alwaysTrue);
         assertEquals("always true", alwaysTrue.getName());
     }
@@ -63,11 +61,9 @@ public class RuleTest {
     @Test
     public void testEvaluate() {
         // start with simple test of a NONE->NEWLY->CONTINUING->CONTINUING sequence
-        Rule alwaysTrue =
-                getSingleElement(
-                        Rule.create("always true", () -> true)
-                                .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
-                                .build());
+        Rule alwaysTrue = getSingleElement(Rule.create("always true", () -> true)
+                .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
+                .build());
         assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
         alwaysTrue.evaluate();
         assertEquals(TriggerType.NEWLY, alwaysTrue.getCurrentTriggerType());
@@ -77,11 +73,10 @@ public class RuleTest {
         assertEquals(TriggerType.CONTINUING, alwaysTrue.getCurrentTriggerType());
 
         // test a full cycle: NONE->NEWLY->CONTINUING->FINISHED->NONE->NEWLY->...
-        Rule duckDuckGooseGoose =
-                getSingleElement(
-                        Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                                .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
-                                .build());
+        Rule duckDuckGooseGoose = getSingleElement(
+                Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
+                        .build());
         assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
         duckDuckGooseGoose.evaluate();
         assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
@@ -98,25 +93,22 @@ public class RuleTest {
     @Test
     public void testGetCancellation() {
         Rule ruleWithOnce =
-                getSingleElement(
-                        Rule.create("always true", new DuckDuckGooseGoosePredicate())
-                                .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
-                                .build());
+                getSingleElement(Rule.create("always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
+                        .build());
         assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellationOnFinish());
 
         Rule ruleWithOnceAndHold =
-                getSingleElement(
-                        Rule.create("always true", new DuckDuckGooseGoosePredicate())
-                                .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> Procedure.NO_OP)
-                                .build());
+                getSingleElement(Rule.create("always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> Procedure.NO_OP)
+                        .build());
         assertEquals(
                 Cancellation.CANCEL_NEWLY_ACTION, ruleWithOnceAndHold.getCancellationOnFinish());
 
         Rule ruleWithRepeatedly =
-                getSingleElement(
-                        Rule.create("always true", new DuckDuckGooseGoosePredicate())
-                                .withOnTriggeringProcedure(REPEATEDLY, () -> Procedure.NO_OP)
-                                .build());
+                getSingleElement(Rule.create("always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(REPEATEDLY, () -> Procedure.NO_OP)
+                        .build());
         assertEquals(
                 Cancellation.CANCEL_NEWLY_ACTION, ruleWithRepeatedly.getCancellationOnFinish());
     }
@@ -127,12 +119,11 @@ public class RuleTest {
                 Set.of(new FakeMechanism1(), new FakeMechanism2());
         final Set<Mechanism<?, ?>> finishedMechanisms = Set.of(new FakeMechanism());
 
-        Rule duckDuckGooseGoose =
-                getSingleElement(
-                        Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                                .withOnTriggeringProcedure(ONCE, newlyMechanisms, () -> {})
-                                .withFinishedTriggeringProcedure(finishedMechanisms, () -> {})
-                                .build());
+        Rule duckDuckGooseGoose = getSingleElement(
+                Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, newlyMechanisms, () -> {})
+                        .withFinishedTriggeringProcedure(finishedMechanisms, () -> {})
+                        .build());
 
         // NONE
         assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
@@ -160,14 +151,11 @@ public class RuleTest {
 
     @Test
     public void testGetProcedureToRun() {
-        Rule duckDuckGooseGoose =
-                getSingleElement(
-                        Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                                .withOnTriggeringProcedure(
-                                        ONCE, () -> new TrivialProcedure("newly"))
-                                .withFinishedTriggeringProcedure(
-                                        () -> new TrivialProcedure("finished"))
-                                .build());
+        Rule duckDuckGooseGoose = getSingleElement(
+                Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> new TrivialProcedure("newly"))
+                        .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"))
+                        .build());
 
         // NONE
         assertNull(duckDuckGooseGoose.getProcedureToRun());

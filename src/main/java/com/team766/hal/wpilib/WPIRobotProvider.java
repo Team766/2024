@@ -131,9 +131,8 @@ public class WPIRobotProvider extends RobotProvider {
                     motor = new CANSparkMaxMotorController(index);
                 } catch (Exception ex) {
                     LoggerExceptionUtils.logException(ex);
-                    motor =
-                            new LocalMotorController(
-                                    configPrefix, new MockMotorController(index), localSensor);
+                    motor = new LocalMotorController(
+                            configPrefix, new MockMotorController(index), localSensor);
                     localSensor = null;
                 }
                 break;
@@ -158,9 +157,8 @@ public class WPIRobotProvider extends RobotProvider {
         if (motor == null) {
             LoggerExceptionUtils.logException(
                     new IllegalArgumentException("Unsupported motor type " + type));
-            motor =
-                    new LocalMotorController(
-                            configPrefix, new MockMotorController(index), localSensor);
+            motor = new LocalMotorController(
+                    configPrefix, new MockMotorController(index), localSensor);
             localSensor = null;
         }
         if (localSensor != null) {
@@ -180,9 +178,8 @@ public class WPIRobotProvider extends RobotProvider {
 
     @Override
     public EncoderReader getEncoder(int index1, String configPrefix) {
-        final ValueProvider<EncoderReader.Type> type =
-                ConfigFileReader.getInstance()
-                        .getEnum(EncoderReader.Type.class, configPrefix + ".type");
+        final ValueProvider<EncoderReader.Type> type = ConfigFileReader.getInstance()
+                .getEnum(EncoderReader.Type.class, configPrefix + ".type");
 
         if (type.hasValue()) {
             if (type.get() == EncoderReader.Type.CANcoder) {
@@ -222,9 +219,8 @@ public class WPIRobotProvider extends RobotProvider {
     // 0+ = Analog Gyro on port index
     public GyroReader getGyro(final int index, String configPrefix) {
 
-        final ValueProvider<GyroReader.Type> type =
-                ConfigFileReader.getInstance()
-                        .getEnum(GyroReader.Type.class, configPrefix + ".type");
+        final ValueProvider<GyroReader.Type> type = ConfigFileReader.getInstance()
+                .getEnum(GyroReader.Type.class, configPrefix + ".type");
 
         if (type.hasValue()) {
             if (type.get() == GyroReader.Type.Pigeon2) {

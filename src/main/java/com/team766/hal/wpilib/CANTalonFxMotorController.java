@@ -128,9 +128,8 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
             StrictFollower follower = new StrictFollower(talonFxLeader.getDeviceID());
             statusCodeToException(ExceptionTarget.LOG, super.setControl(follower));
         } else {
-            LoggerExceptionUtils.logException(
-                    new IllegalArgumentException(
-                            "TalonFX can only follow another TalonFX motor controller."));
+            LoggerExceptionUtils.logException(new IllegalArgumentException(
+                    "TalonFX can only follow another TalonFX motor controller."));
         }
     }
 
@@ -196,9 +195,8 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         // alternatively, we may only allow specifying the CANcoder in the constructor,
         // eg if configured as a "child" node of this motor in the MaroonFramework config.
         // NOTE: the only remote sensor that's supported is a CANcoder.
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setSelectedFeedbackSensor() is not currently supported."));
+        LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                "setSelectedFeedbackSensor() is not currently supported."));
     }
 
     @Override
@@ -209,9 +207,8 @@ public class CANTalonFxMotorController extends TalonFX implements MotorControlle
         // supported
         // on FusedCANcoder.
         // TODO: This will require further investiation.
-        LoggerExceptionUtils.logException(
-                new UnsupportedOperationException(
-                        "setSelectedFeedbackSensor() is not currently supported."));
+        LoggerExceptionUtils.logException(new UnsupportedOperationException(
+                "setSelectedFeedbackSensor() is not currently supported."));
     }
 
     @Override

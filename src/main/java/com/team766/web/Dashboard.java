@@ -14,30 +14,27 @@ public class Dashboard implements WebServer.Handler {
             page += '\n';
         }
         page += "</div>\n";
-        page +=
-                String.join(
-                        "\n",
-                        new String[] {
-                            "<script>",
-                            "  function refreshDashboard() {",
-                            "    var xhttp = new XMLHttpRequest();",
-                            "    xhttp.onreadystatechange = function() {",
-                            "      if (this.readyState == 4 && this.status == 200) {",
-                            "        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
-                            "        var oldTable = document.getElementById('dashboard');",
-                            "        oldTable.parentNode.replaceChild(",
-                            "            document.importNode(newDoc.querySelector('#dashboard'), true),",
-                            "            oldTable);",
-                            "        setTimeout(refreshDashboard, 300);",
-                            "     }",
-                            "    };",
-                            "    xhttp.open('GET', \"" + ENDPOINT + "\", true);",
-                            "    xhttp.send();",
-                            "  }",
-                            "  refreshDashboard();",
-                            "  setInterval(refreshDashboard, 5000);",
-                            "</script>",
-                        });
+        page += String.join("\n", new String[] {
+            "<script>",
+            "  function refreshDashboard() {",
+            "    var xhttp = new XMLHttpRequest();",
+            "    xhttp.onreadystatechange = function() {",
+            "      if (this.readyState == 4 && this.status == 200) {",
+            "        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
+            "        var oldTable = document.getElementById('dashboard');",
+            "        oldTable.parentNode.replaceChild(",
+            "            document.importNode(newDoc.querySelector('#dashboard'), true),",
+            "            oldTable);",
+            "        setTimeout(refreshDashboard, 300);",
+            "     }",
+            "    };",
+            "    xhttp.open('GET', \"" + ENDPOINT + "\", true);",
+            "    xhttp.send();",
+            "  }",
+            "  refreshDashboard();",
+            "  setInterval(refreshDashboard, 5000);",
+            "</script>",
+        });
         return page;
     }
 

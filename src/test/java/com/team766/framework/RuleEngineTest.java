@@ -68,19 +68,14 @@ public class RuleEngineTest extends TestCase {
         // simply test that rules we add are added - and at the expected priority
 
         // create simple RuleEngine with two rules
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
+            }
+        };
 
         Map<String, Rule> namedRules = myRules.getRuleNameMap();
         // make sure we have 2 rules
@@ -97,19 +92,14 @@ public class RuleEngineTest extends TestCase {
         // lifetime.
 
         // create a simple RuleEngine with two non-conflicting rules
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm2", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE, () -> new FakeProcedure(2, Set.of(fm2))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
+                addRule(Rule.create("fm2", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(ONCE, () -> new FakeProcedure(2, Set.of(fm2))));
+            }
+        };
 
         // run the RuleEngine once to trigger these rules.
         myRules.run();
@@ -147,24 +137,15 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testFinishedProcedureBumpsNewlyProcedureForSameRule() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0",
-                                                                1,
-                                                                Set.of(fm1, fm2))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 1, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p0", 1, Set.of(fm1, fm2))));
+            }
+        };
 
         myRules.run();
 
@@ -190,37 +171,20 @@ public class RuleEngineTest extends TestCase {
     public void testRunRulePriorities() {
         // create simple RuleEngine with two rules with conflicting actions
         // we'll check that only the higher priority rule triggers
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p0",
-                                                                0,
-                                                                Set.of(fm1, fm2))));
-                        addRule(
-                                Rule.create("fm1_p1", new PeriodicPredicate(2))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p1",
-                                                                0,
-                                                                Set.of(fm1, fm3))));
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p0", 0, Set.of(fm1, fm2))));
+                addRule(Rule.create("fm1_p1", new PeriodicPredicate(2))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p1", 0, Set.of(fm1, fm3))));
 
-                        addRule(
-                                Rule.create("fm3_p2", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm3proc_p2", 0, Set.of(fm3))));
-                    }
-                };
+                addRule(Rule.create("fm3_p2", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm3proc_p2", 0, Set.of(fm3))));
+            }
+        };
 
         // run the RuleEngine once to trigger these rules
         myRules.run();
@@ -255,39 +219,20 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRunHigherPriorityRuleStillBeingRun() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p0",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p1",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p0", 2, Set.of(fm1, fm2))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p1", 2, Set.of(fm1, fm2))));
 
-                        addRule(
-                                Rule.create("fm1_p2", new ScheduledPredicate(3))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p2",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
-                    }
-                };
+                addRule(Rule.create("fm1_p2", new ScheduledPredicate(3))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p2", 2, Set.of(fm1, fm2))));
+            }
+        };
 
         myRules.run();
 
@@ -329,29 +274,16 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRunLowerPriorityRuleBumped() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p0",
-                                                                2,
-                                                                Set.of(fm1, fm2))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1proc_p1",
-                                                                4,
-                                                                Set.of(fm1, fm2))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p0", 2, Set.of(fm1, fm2))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1proc_p1", 4, Set.of(fm1, fm2))));
+            }
+        };
 
         myRules.run();
 
@@ -373,29 +305,18 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRuleResetIgnoredLowerPriorityRule() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 2, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm2))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 2, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm2))));
+            }
+        };
 
         myRules.run();
 
@@ -416,29 +337,18 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRuleResetIgnoredLowerPriorityRuleHigherPriorityRulePreviouslyScheduled() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 2, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm2))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 2, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm2))));
+            }
+        };
 
         myRules.run();
 
@@ -467,29 +377,18 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRuleResetBumpedLowerPriorityRule() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 2, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 2, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 2, Set.of(fm2))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 2, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(0))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p1", 2, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p1", 2, Set.of(fm2))));
+            }
+        };
 
         myRules.run();
 
@@ -510,33 +409,20 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testLowerPriorityRuleRunsWhenProcedureFromHigherPriorityRuleFinishes() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(0, 4))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0", 0, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 0, Set.of(fm1))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(0, 4))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 0, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p0", 0, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p1", 0, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p1", 0, Set.of(fm1))));
+            }
+        };
 
         myRules.run();
 
@@ -581,33 +467,20 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRuleCalledAgainAfterBeingReset() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0", 0, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0, 4))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm1))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 0, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p0", 0, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(0, 4))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm1))));
+            }
+        };
 
         myRules.run();
 
@@ -653,33 +526,20 @@ public class RuleEngineTest extends TestCase {
 
     @Test
     public void testRuleResetPreventsFinishedForLongTrigger() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p0", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p0", 0, Set.of(fm1))));
-                        addRule(
-                                Rule.create("fm1_p1", new ScheduledPredicate(0, 3))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procnew_p1", 1, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "fm1procfin_p1", 1, Set.of(fm1))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("fm1_p0", new ScheduledPredicate(1))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p0", 0, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p0", 0, Set.of(fm1))));
+                addRule(Rule.create("fm1_p1", new ScheduledPredicate(0, 3))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("fm1procnew_p1", 1, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("fm1procfin_p1", 1, Set.of(fm1))));
+            }
+        };
 
         myRules.run();
 
@@ -719,37 +579,23 @@ public class RuleEngineTest extends TestCase {
     public void testOncePersistence() {
         AtomicReference<FakeProcedure> predicateEndsFirstProc = new AtomicReference<>();
         AtomicReference<FakeProcedure> actionEndsFirstProc = new AtomicReference<>();
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () -> {
-                                                    var proc =
-                                                            new FakeProcedure(
-                                                                    "predicate_ends_first_proc",
-                                                                    10,
-                                                                    Set.of(fm1));
-                                                    predicateEndsFirstProc.set(proc);
-                                                    return proc;
-                                                }));
-                        addRule(
-                                Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () -> {
-                                                    var proc =
-                                                            new FakeProcedure(
-                                                                    "action_ends_first_proc",
-                                                                    1,
-                                                                    Set.of(fm2));
-                                                    actionEndsFirstProc.set(proc);
-                                                    return proc;
-                                                }));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
+                        .withOnTriggeringProcedure(ONCE, () -> {
+                            var proc =
+                                    new FakeProcedure("predicate_ends_first_proc", 10, Set.of(fm1));
+                            predicateEndsFirstProc.set(proc);
+                            return proc;
+                        }));
+                addRule(Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
+                        .withOnTriggeringProcedure(ONCE, () -> {
+                            var proc = new FakeProcedure("action_ends_first_proc", 1, Set.of(fm2));
+                            actionEndsFirstProc.set(proc);
+                            return proc;
+                        }));
+            }
+        };
 
         myRules.run();
 
@@ -784,37 +630,23 @@ public class RuleEngineTest extends TestCase {
     public void testOnceAndHoldPersistence() {
         AtomicReference<FakeProcedure> predicateEndsFirstProc = new AtomicReference<>();
         AtomicReference<FakeProcedure> actionEndsFirstProc = new AtomicReference<>();
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
-                                        .withOnTriggeringProcedure(
-                                                ONCE_AND_HOLD,
-                                                () -> {
-                                                    var proc =
-                                                            new FakeProcedure(
-                                                                    "predicate_ends_first_proc",
-                                                                    10,
-                                                                    Set.of(fm1));
-                                                    predicateEndsFirstProc.set(proc);
-                                                    return proc;
-                                                }));
-                        addRule(
-                                Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
-                                        .withOnTriggeringProcedure(
-                                                ONCE_AND_HOLD,
-                                                () -> {
-                                                    var proc =
-                                                            new FakeProcedure(
-                                                                    "action_ends_first_proc",
-                                                                    1,
-                                                                    Set.of(fm2));
-                                                    actionEndsFirstProc.set(proc);
-                                                    return proc;
-                                                }));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
+                        .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> {
+                            var proc =
+                                    new FakeProcedure("predicate_ends_first_proc", 10, Set.of(fm1));
+                            predicateEndsFirstProc.set(proc);
+                            return proc;
+                        }));
+                addRule(Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
+                        .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> {
+                            var proc = new FakeProcedure("action_ends_first_proc", 1, Set.of(fm2));
+                            actionEndsFirstProc.set(proc);
+                            return proc;
+                        }));
+            }
+        };
 
         myRules.run();
 
@@ -849,37 +681,23 @@ public class RuleEngineTest extends TestCase {
     public void testRepeatedlyPersistence() {
         AtomicReference<FakeProcedure> predicateEndsFirstProc = new AtomicReference<>();
         AtomicReference<FakeProcedure> actionEndsFirstProc = new AtomicReference<>();
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
-                                        .withOnTriggeringProcedure(
-                                                REPEATEDLY,
-                                                () -> {
-                                                    var proc =
-                                                            new FakeProcedure(
-                                                                    "predicate_ends_first_proc",
-                                                                    10,
-                                                                    Set.of(fm1));
-                                                    predicateEndsFirstProc.set(proc);
-                                                    return proc;
-                                                }));
-                        addRule(
-                                Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
-                                        .withOnTriggeringProcedure(
-                                                REPEATEDLY,
-                                                () -> {
-                                                    var proc =
-                                                            new FakeProcedure(
-                                                                    "action_ends_first_proc",
-                                                                    1,
-                                                                    Set.of(fm2));
-                                                    actionEndsFirstProc.set(proc);
-                                                    return proc;
-                                                }));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
+                        .withOnTriggeringProcedure(REPEATEDLY, () -> {
+                            var proc =
+                                    new FakeProcedure("predicate_ends_first_proc", 10, Set.of(fm1));
+                            predicateEndsFirstProc.set(proc);
+                            return proc;
+                        }));
+                addRule(Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
+                        .withOnTriggeringProcedure(REPEATEDLY, () -> {
+                            var proc = new FakeProcedure("action_ends_first_proc", 1, Set.of(fm2));
+                            actionEndsFirstProc.set(proc);
+                            return proc;
+                        }));
+            }
+        };
 
         myRules.run();
 
@@ -925,46 +743,33 @@ public class RuleEngineTest extends TestCase {
     /** Test hierarchical Rules triggering */
     @Test
     public void testRuleHierarchy() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("root", new ScheduledPredicate(0, 2))
-                                        .withOnTriggeringProcedure(
-                                                ONCE_AND_HOLD,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "root_proc", 10, Set.of(fm1)))
-                                        .whenTriggering(
-                                                Rule.create(
-                                                                "positive_combinator",
-                                                                new ScheduledPredicate(1, 3))
-                                                        .withOnTriggeringProcedure(
-                                                                ONCE_AND_HOLD,
-                                                                () ->
-                                                                        new FakeProcedure(
-                                                                                "positive_combinator_proc",
-                                                                                10,
-                                                                                Set.of(fm2))))
-                                        .whenNotTriggering(
-                                                Rule.create(
-                                                                "negative_combinator",
-                                                                // Note: This predicate is only
-                                                                // evaluated when the `root` rule is
-                                                                // not triggering, so this triggers
-                                                                // on frame 2, even though its
-                                                                // start/end arguments say it
-                                                                // triggers on frame 0.
-                                                                new ScheduledPredicate(0, 1))
-                                                        .withOnTriggeringProcedure(
-                                                                ONCE_AND_HOLD,
-                                                                () ->
-                                                                        new FakeProcedure(
-                                                                                "negative_combinator_proc",
-                                                                                10,
-                                                                                Set.of(fm3)))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("root", new ScheduledPredicate(0, 2))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                () -> new FakeProcedure("root_proc", 10, Set.of(fm1)))
+                        .whenTriggering(Rule.create(
+                                        "positive_combinator", new ScheduledPredicate(1, 3))
+                                .withOnTriggeringProcedure(
+                                        ONCE_AND_HOLD,
+                                        () -> new FakeProcedure(
+                                                "positive_combinator_proc", 10, Set.of(fm2))))
+                        .whenNotTriggering(Rule.create(
+                                        "negative_combinator",
+                                        // Note: This predicate is only
+                                        // evaluated when the `root` rule is
+                                        // not triggering, so this triggers
+                                        // on frame 2, even though its
+                                        // start/end arguments say it
+                                        // triggers on frame 0.
+                                        new ScheduledPredicate(0, 1))
+                                .withOnTriggeringProcedure(
+                                        ONCE_AND_HOLD,
+                                        () -> new FakeProcedure(
+                                                "negative_combinator_proc", 10, Set.of(fm3)))));
+            }
+        };
 
         myRules.run();
 
@@ -1013,52 +818,34 @@ public class RuleEngineTest extends TestCase {
     /** Test that the root Rule takes precedence over child rules triggering */
     @Test
     public void testRuleHierarchyPriorities() {
-        RuleEngine myRules =
-                new RuleEngine() {
-                    {
-                        addRule(
-                                Rule.create("root", new ScheduledPredicate(0, 2))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "root_newly_proc", 0, Set.of(fm1)))
-                                        .withFinishedTriggeringProcedure(
-                                                () ->
-                                                        new FakeProcedure(
-                                                                "root_finished_proc",
-                                                                0,
-                                                                Set.of(fm1)))
-                                        .whenTriggering(
-                                                Rule.create(
-                                                                "positive_combinator",
-                                                                new ScheduledPredicate(0, 2))
-                                                        .withOnTriggeringProcedure(
-                                                                ONCE_AND_HOLD,
-                                                                () ->
-                                                                        new FakeProcedure(
-                                                                                "positive_combinator_proc",
-                                                                                10,
-                                                                                Set.of(fm1))))
-                                        .whenNotTriggering(
-                                                Rule.create(
-                                                                "negative_combinator",
-                                                                // Note: This predicate is only
-                                                                // evaluated when the `root` rule is
-                                                                // not triggering, so this triggers
-                                                                // on frames 2-3, even though its
-                                                                // start/end arguments say it
-                                                                // triggers on frame 0-1.
-                                                                new ScheduledPredicate(0, 2))
-                                                        .withOnTriggeringProcedure(
-                                                                ONCE_AND_HOLD,
-                                                                () ->
-                                                                        new FakeProcedure(
-                                                                                "negative_combinator_proc",
-                                                                                10,
-                                                                                Set.of(fm1)))));
-                    }
-                };
+        RuleEngine myRules = new RuleEngine() {
+            {
+                addRule(Rule.create("root", new ScheduledPredicate(0, 2))
+                        .withOnTriggeringProcedure(
+                                ONCE, () -> new FakeProcedure("root_newly_proc", 0, Set.of(fm1)))
+                        .withFinishedTriggeringProcedure(
+                                () -> new FakeProcedure("root_finished_proc", 0, Set.of(fm1)))
+                        .whenTriggering(Rule.create(
+                                        "positive_combinator", new ScheduledPredicate(0, 2))
+                                .withOnTriggeringProcedure(
+                                        ONCE_AND_HOLD,
+                                        () -> new FakeProcedure(
+                                                "positive_combinator_proc", 10, Set.of(fm1))))
+                        .whenNotTriggering(Rule.create(
+                                        "negative_combinator",
+                                        // Note: This predicate is only
+                                        // evaluated when the `root` rule is
+                                        // not triggering, so this triggers
+                                        // on frames 2-3, even though its
+                                        // start/end arguments say it
+                                        // triggers on frame 0-1.
+                                        new ScheduledPredicate(0, 2))
+                                .withOnTriggeringProcedure(
+                                        ONCE_AND_HOLD,
+                                        () -> new FakeProcedure(
+                                                "negative_combinator_proc", 10, Set.of(fm1)))));
+            }
+        };
 
         myRules.run();
 

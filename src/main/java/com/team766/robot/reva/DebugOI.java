@@ -41,113 +41,98 @@ public class DebugOI {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down
-        oi.addRule(
-                Rule.create(
-                                "Debug Control Shoulder",
-                                () -> macropad.getButton(InputConstants.CONTROL_SHOULDER))
-                        .whenTriggering(
-                                Rule.create(
-                                                "Debug Shoulder Nudge Up",
-                                                () -> macropad.getButton(InputConstants.NUDGE_UP))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.makeNudgeUp())),
-                                Rule.create(
-                                                "Debug Shoulder Nudge Down",
-                                                () -> macropad.getButton(InputConstants.NUDGE_DOWN))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                Set.of(ss),
-                                                () -> ss.setRequest(Shoulder.makeNudgeDown())),
-                                Rule.create(
-                                                "Debug Shoulder Reset",
-                                                () ->
-                                                        macropad.getButton(
-                                                                InputConstants
-                                                                        .MACROPAD_RESET_SHOULDER))
-                                        .withOnTriggeringProcedure(
-                                                ONCE, Set.of(ss), () -> ss.resetShoulder())));
+        oi.addRule(Rule.create(
+                        "Debug Control Shoulder",
+                        () -> macropad.getButton(InputConstants.CONTROL_SHOULDER))
+                .whenTriggering(
+                        Rule.create(
+                                        "Debug Shoulder Nudge Up",
+                                        () -> macropad.getButton(InputConstants.NUDGE_UP))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        Set.of(ss),
+                                        () -> ss.setRequest(Shoulder.makeNudgeUp())),
+                        Rule.create(
+                                        "Debug Shoulder Nudge Down",
+                                        () -> macropad.getButton(InputConstants.NUDGE_DOWN))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        Set.of(ss),
+                                        () -> ss.setRequest(Shoulder.makeNudgeDown())),
+                        Rule.create(
+                                        "Debug Shoulder Reset",
+                                        () -> macropad.getButton(
+                                                InputConstants.MACROPAD_RESET_SHOULDER))
+                                .withOnTriggeringProcedure(
+                                        ONCE, Set.of(ss), () -> ss.resetShoulder())));
 
-        oi.addRule(
-                Rule.create("Debug Climber Reset", () -> macropad.getButton(16))
-                        .withOnTriggeringProcedure(
-                                ONCE, Set.of(ss), () -> ss.resetClimberPositions()));
+        oi.addRule(Rule.create("Debug Climber Reset", () -> macropad.getButton(16))
+                .withOnTriggeringProcedure(ONCE, Set.of(ss), () -> ss.resetClimberPositions()));
 
         // fine-grained control of the climber
         // used for testing and tuning
         // press down the climber control button and nudge the climber up and down
-        oi.addRule(
-                Rule.create(
-                                "Debug Control Climber",
-                                () -> macropad.getButton(InputConstants.CONTROL_CLIMBER))
-                        .whenTriggering(
-                                Rule.create(
-                                                "Debug Climber Nudge Up",
-                                                () -> macropad.getButton(InputConstants.NUDGE_UP))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                Set.of(ss),
-                                                () ->
-                                                        ss.setRequest(
-                                                                new Climber.MotorPowers(
-                                                                        -0.25, -0.25, true))),
-                                Rule.create(
-                                                "Debug Climber Nudge Down",
-                                                () -> macropad.getButton(InputConstants.NUDGE_DOWN))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                Set.of(ss),
-                                                () ->
-                                                        ss.setRequest(
-                                                                new Climber.MotorPowers(
-                                                                        0.25, 0.25, true))))
-                        .withFinishedTriggeringProcedure(
-                                Set.of(ss), () -> ss.setRequest(new Climber.Stop())));
+        oi.addRule(Rule.create(
+                        "Debug Control Climber",
+                        () -> macropad.getButton(InputConstants.CONTROL_CLIMBER))
+                .whenTriggering(
+                        Rule.create(
+                                        "Debug Climber Nudge Up",
+                                        () -> macropad.getButton(InputConstants.NUDGE_UP))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        Set.of(ss),
+                                        () -> ss.setRequest(
+                                                new Climber.MotorPowers(-0.25, -0.25, true))),
+                        Rule.create(
+                                        "Debug Climber Nudge Down",
+                                        () -> macropad.getButton(InputConstants.NUDGE_DOWN))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        Set.of(ss),
+                                        () -> ss.setRequest(
+                                                new Climber.MotorPowers(0.25, 0.25, true))))
+                .withFinishedTriggeringProcedure(
+                        Set.of(ss), () -> ss.setRequest(new Climber.Stop())));
 
         // simple one-button controls for intake
         // used for testing and tuning
         // allows for running intake at default intake/outtake speeds.
-        oi.addRule(
-                Rule.create("Debug Intake In", () -> macropad.getButton(InputConstants.INTAKE_IN))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(intake),
-                                () -> intake.setRequest(new Intake.In())));
-        oi.addRule(
-                Rule.create("Debug Intake Out", () -> macropad.getButton(InputConstants.INTAKE_OUT))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(intake),
-                                () -> intake.setRequest(new Intake.Out())));
+        oi.addRule(Rule.create(
+                        "Debug Intake In", () -> macropad.getButton(InputConstants.INTAKE_IN))
+                .withOnTriggeringProcedure(
+                        ONCE_AND_HOLD, Set.of(intake), () -> intake.setRequest(new Intake.In())));
+        oi.addRule(Rule.create(
+                        "Debug Intake Out", () -> macropad.getButton(InputConstants.INTAKE_OUT))
+                .withOnTriggeringProcedure(
+                        ONCE_AND_HOLD, Set.of(intake), () -> intake.setRequest(new Intake.Out())));
 
         // fine-grained controls for shooter
         // used for testing and tuning
         // press down the intake control button and nudge ths shooter speed up and down
-        oi.addRule(
-                Rule.create(
-                                "Debug Control Shooter",
-                                () -> macropad.getButton(InputConstants.CONTROL_SHOOTER))
-                        .withOnTriggeringProcedure(
-                                ONCE_AND_HOLD,
-                                Set.of(shooter),
-                                () -> shooter.setRequest(Shooter.makeShoot()))
-                        .whenTriggering(
-                                Rule.create(
-                                                "Debug Shooter Nudge Up",
-                                                () -> macropad.getButton(InputConstants.NUDGE_UP))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                Set.of(shooter),
-                                                () -> shooter.setRequest(Shooter.makeNudgeUp())),
-                                Rule.create(
-                                                "Debug Shooter Nudge Down",
-                                                () -> macropad.getButton(InputConstants.NUDGE_DOWN))
-                                        .withOnTriggeringProcedure(
-                                                ONCE,
-                                                Set.of(shooter),
-                                                () -> shooter.setRequest(Shooter.makeNudgeDown())))
-                        .withFinishedTriggeringProcedure(
-                                Set.of(shooter), () -> shooter.setRequest(new Shooter.Stop())));
+        oi.addRule(Rule.create(
+                        "Debug Control Shooter",
+                        () -> macropad.getButton(InputConstants.CONTROL_SHOOTER))
+                .withOnTriggeringProcedure(
+                        ONCE_AND_HOLD,
+                        Set.of(shooter),
+                        () -> shooter.setRequest(Shooter.makeShoot()))
+                .whenTriggering(
+                        Rule.create(
+                                        "Debug Shooter Nudge Up",
+                                        () -> macropad.getButton(InputConstants.NUDGE_UP))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        Set.of(shooter),
+                                        () -> shooter.setRequest(Shooter.makeNudgeUp())),
+                        Rule.create(
+                                        "Debug Shooter Nudge Down",
+                                        () -> macropad.getButton(InputConstants.NUDGE_DOWN))
+                                .withOnTriggeringProcedure(
+                                        ONCE,
+                                        Set.of(shooter),
+                                        () -> shooter.setRequest(Shooter.makeNudgeDown())))
+                .withFinishedTriggeringProcedure(
+                        Set.of(shooter), () -> shooter.setRequest(new Shooter.Stop())));
     }
 }

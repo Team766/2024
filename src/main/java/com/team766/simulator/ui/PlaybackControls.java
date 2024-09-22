@@ -36,39 +36,35 @@ public class PlaybackControls extends JPanel {
         // different time.
         var slider = new JSlider(0, (int) Math.ceil(playbackTimer.endTime() / SLIDER_RESOLUTION));
         slider.setValue(0);
-        slider.addChangeListener(
-                new ChangeListener() {
-                    public void stateChanged(ChangeEvent e) {
-                        if (inTimerTick) {
-                            return;
-                        }
-                        playbackTimer.setTime(slider.getValue() * SLIDER_RESOLUTION);
-                    }
-                });
+        slider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                if (inTimerTick) {
+                    return;
+                }
+                playbackTimer.setTime(slider.getValue() * SLIDER_RESOLUTION);
+            }
+        });
         add(slider);
 
         // Add a button that can start and stop playback.
         JButton playButton = new JButton(">");
-        playButton.addActionListener(
-                new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (playbackTimer.isRunning()) {
-                            playbackTimer.stop();
-                        } else {
-                            playbackTimer.start();
-                        }
-                    }
-                });
+        playButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (playbackTimer.isRunning()) {
+                    playbackTimer.stop();
+                } else {
+                    playbackTimer.start();
+                }
+            }
+        });
         add(playButton);
 
         // Add the callback that will update this panel when playback time progresses.
-        playbackTimer.addListener(
-                (PropertyChangeEvent event) -> {
-                    inTimerTick = true;
-                    slider.setValue(
-                            (int) Math.ceil((Double) event.getNewValue() / SLIDER_RESOLUTION));
-                    inTimerTick = false;
-                });
+        playbackTimer.addListener((PropertyChangeEvent event) -> {
+            inTimerTick = true;
+            slider.setValue((int) Math.ceil((Double) event.getNewValue() / SLIDER_RESOLUTION));
+            inTimerTick = false;
+        });
     }
 }

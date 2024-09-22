@@ -272,11 +272,10 @@ public class PIDController {
             total_error = -1 / ki;
         }
 
-        double out =
-                Kp.valueOr(0.0) * cur_error
-                        + Ki.valueOr(0.0) * total_error
-                        + Kd.valueOr(0.0) * error_rate
-                        + Kff.valueOr(0.0) * setpoint;
+        double out = Kp.valueOr(0.0) * cur_error
+                + Ki.valueOr(0.0) * total_error
+                + Kd.valueOr(0.0) * error_rate
+                + Kff.valueOr(0.0) * setpoint;
         prev_error = cur_error;
 
         pr("Pre-clip output: " + out);
@@ -287,15 +286,14 @@ public class PIDController {
 
         lastTime = timeProvider.get();
 
-        pr(
-                "	Total Error: "
-                        + total_error
-                        + "		Current Error: "
-                        + cur_error
-                        + "	Output: "
-                        + output_value
-                        + " 	Setpoint: "
-                        + setpoint);
+        pr("	Total Error: "
+                + total_error
+                + "		Current Error: "
+                + cur_error
+                + "	Output: "
+                + output_value
+                + " 	Setpoint: "
+                + setpoint);
     }
 
     public double getOutput() {
