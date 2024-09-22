@@ -144,34 +144,38 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
         CANcoder encoderBL = new CANcoder(1, config.canBus());
 
         // initialize the swerve modules
-        swerveFR = new SwerveModule(
-                "FR",
-                driveFR,
-                steerFR,
-                encoderFR,
-                config.driveMotorCurrentLimit(),
-                config.steerMotorCurrentLimit());
-        swerveFL = new SwerveModule(
-                "FL",
-                driveFL,
-                steerFL,
-                encoderFL,
-                config.driveMotorCurrentLimit(),
-                config.steerMotorCurrentLimit());
-        swerveBR = new SwerveModule(
-                "BR",
-                driveBR,
-                steerBR,
-                encoderBR,
-                config.driveMotorCurrentLimit(),
-                config.steerMotorCurrentLimit());
-        swerveBL = new SwerveModule(
-                "BL",
-                driveBL,
-                steerBL,
-                encoderBL,
-                config.driveMotorCurrentLimit(),
-                config.steerMotorCurrentLimit());
+        swerveFR =
+                new SwerveModule(
+                        "FR",
+                        driveFR,
+                        steerFR,
+                        encoderFR,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveFL =
+                new SwerveModule(
+                        "FL",
+                        driveFL,
+                        steerFL,
+                        encoderFL,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveBR =
+                new SwerveModule(
+                        "BR",
+                        driveBR,
+                        steerBR,
+                        encoderBR,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
+        swerveBL =
+                new SwerveModule(
+                        "BL",
+                        driveBL,
+                        steerBL,
+                        encoderBL,
+                        config.driveMotorCurrentLimit(),
+                        config.steerMotorCurrentLimit());
 
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
@@ -181,59 +185,70 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
         MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBR, driveBL};
         CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBR, encoderBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
-        this.wheelPositions = new Translation2d[] {
-            getPositionForWheel(config.frontRightLocation(), halfDistanceBetweenWheels),
-            getPositionForWheel(config.frontLeftLocation(), halfDistanceBetweenWheels),
-            getPositionForWheel(config.backRightLocation(), halfDistanceBetweenWheels),
-            getPositionForWheel(config.backLeftLocation(), halfDistanceBetweenWheels)
-        };
+        this.wheelPositions =
+                new Translation2d[] {
+                    getPositionForWheel(config.frontRightLocation(), halfDistanceBetweenWheels),
+                    getPositionForWheel(config.frontLeftLocation(), halfDistanceBetweenWheels),
+                    getPositionForWheel(config.backRightLocation(), halfDistanceBetweenWheels),
+                    getPositionForWheel(config.backLeftLocation(), halfDistanceBetweenWheels)
+                };
 
         swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
 
         log("MotorList Length: " + motorList.length);
         log("CANCoderList Length: " + encoderList.length);
-        swerveOdometry = new Odometry(
-                gyro,
-                motorList,
-                encoderList,
-                wheelPositions,
-                config.wheelCircumference(),
-                config.driveGearRatio(),
-                config.encoderToRevolutionConstant());
+        swerveOdometry =
+                new Odometry(
+                        gyro,
+                        motorList,
+                        encoderList,
+                        wheelPositions,
+                        config.wheelCircumference(),
+                        config.driveGearRatio(),
+                        config.encoderToRevolutionConstant());
 
-        double maxSpeed = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
-                .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
+        double maxSpeed =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_MAX_MODULE_SPEED_MPS)
+                        .valueOr(PathPlannerConstants.MAX_SPEED_MPS);
 
-        double translationP = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
-                .valueOr(PathPlannerConstants.TRANSLATION_P);
-        double translationI = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
-                .valueOr(PathPlannerConstants.TRANSLATION_I);
-        double translationD = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
-                .valueOr(PathPlannerConstants.TRANSLATION_D);
-        double rotationP = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
-                .valueOr(PathPlannerConstants.ROTATION_P);
-        double rotationI = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
-                .valueOr(PathPlannerConstants.ROTATION_I);
-        double rotationD = ConfigFileReader.getInstance()
-                .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
-                .valueOr(PathPlannerConstants.ROTATION_D);
+        double translationP =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_P)
+                        .valueOr(PathPlannerConstants.TRANSLATION_P);
+        double translationI =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_I)
+                        .valueOr(PathPlannerConstants.TRANSLATION_I);
+        double translationD =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_TRANSLATION_D)
+                        .valueOr(PathPlannerConstants.TRANSLATION_D);
+        double rotationP =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_P)
+                        .valueOr(PathPlannerConstants.ROTATION_P);
+        double rotationI =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_I)
+                        .valueOr(PathPlannerConstants.ROTATION_I);
+        double rotationD =
+                ConfigFileReader.getInstance()
+                        .getDouble(ConfigConstants.PATH_FOLLOWING_ROTATION_D)
+                        .valueOr(PathPlannerConstants.ROTATION_D);
 
-        double maxWheelDistToCenter = Arrays.stream(wheelPositions)
-                .mapToDouble(Translation2d::getNorm)
-                .max()
-                .getAsDouble();
+        double maxWheelDistToCenter =
+                Arrays.stream(wheelPositions)
+                        .mapToDouble(Translation2d::getNorm)
+                        .max()
+                        .getAsDouble();
 
-        controller = new PPHolonomicDriveController(
-                new PIDConstants(translationP, translationI, translationD),
-                new PIDConstants(rotationP, rotationI, rotationD),
-                maxSpeed,
-                maxWheelDistToCenter);
+        controller =
+                new PPHolonomicDriveController(
+                        new PIDConstants(translationP, translationI, translationD),
+                        new PIDConstants(rotationP, rotationI, rotationD),
+                        maxSpeed,
+                        maxWheelDistToCenter);
     }
 
     /**
@@ -257,22 +272,26 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
 
         // Finds the vectors for turning and for translation of each module, and adds them
         // Applies this for each module
-        swerveFR.driveAndSteer(new Vector2D(x, y)
-                .add(
-                        turnVelocity,
-                        createOrthogonalVector(config.frontRightLocation()).normalize()));
-        swerveFL.driveAndSteer(new Vector2D(x, y)
-                .add(
-                        turnVelocity,
-                        createOrthogonalVector(config.frontLeftLocation()).normalize()));
-        swerveBR.driveAndSteer(new Vector2D(x, y)
-                .add(
-                        turnVelocity,
-                        createOrthogonalVector(config.backRightLocation()).normalize()));
-        swerveBL.driveAndSteer(new Vector2D(x, y)
-                .add(
-                        turnVelocity,
-                        createOrthogonalVector(config.backLeftLocation()).normalize()));
+        swerveFR.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.frontRightLocation()).normalize()));
+        swerveFL.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.frontLeftLocation()).normalize()));
+        swerveBR.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.backRightLocation()).normalize()));
+        swerveBL.driveAndSteer(
+                new Vector2D(x, y)
+                        .add(
+                                turnVelocity,
+                                createOrthogonalVector(config.backLeftLocation()).normalize()));
     }
 
     /**
@@ -283,8 +302,12 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
      */
     private void controlFieldOriented(Status status, double x, double y, double turn) {
         final Optional<Alliance> alliance = DriverStation.getAlliance();
-        double yawRad = Math.toRadians(status.heading()
-                + (alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180));
+        double yawRad =
+                Math.toRadians(
+                        status.heading()
+                                + (alliance.isPresent() && alliance.get() == Alliance.Blue
+                                        ? 0
+                                        : 180));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -378,23 +401,25 @@ public class Drive extends RobotSystem<Drive.Status, Drive.Goal> {
         final double roll = gyro.getRoll();
         final Pose2d currentPosition = swerveOdometry.getCurrPosition();
 
-        final ChassisSpeeds chassisSpeeds = swerveDriveKinematics.toChassisSpeeds(
-                swerveFR.getModuleState(),
-                swerveFL.getModuleState(),
-                swerveBR.getModuleState(),
-                swerveBL.getModuleState());
+        final ChassisSpeeds chassisSpeeds =
+                swerveDriveKinematics.toChassisSpeeds(
+                        swerveFR.getModuleState(),
+                        swerveFL.getModuleState(),
+                        swerveBR.getModuleState(),
+                        swerveBL.getModuleState());
 
         swerveFR.dashboardCurrentUsage();
         swerveFL.dashboardCurrentUsage();
         swerveBR.dashboardCurrentUsage();
         swerveBL.dashboardCurrentUsage();
 
-        SwerveModuleState[] swerveStates = new SwerveModuleState[] {
-            swerveFR.getModuleState(),
-            swerveFL.getModuleState(),
-            swerveBR.getModuleState(),
-            swerveBL.getModuleState(),
-        };
+        SwerveModuleState[] swerveStates =
+                new SwerveModuleState[] {
+                    swerveFR.getModuleState(),
+                    swerveFL.getModuleState(),
+                    swerveBR.getModuleState(),
+                    swerveBL.getModuleState(),
+                };
 
         return new Status(heading, pitch, roll, currentPosition, chassisSpeeds, swerveStates);
     }

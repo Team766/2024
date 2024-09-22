@@ -16,9 +16,10 @@ public class Lights extends LightsBase {
     CANdle m_candle = new CANdle(58);
 
     protected void dispatch(Statuses statuses) {
-        final boolean isCameraPresent = statuses.has(
-                ForwardApriltagCamera.Status.class,
-                s -> s.status.isCameraConnected() && s.status.tagId().isPresent());
+        final boolean isCameraPresent =
+                statuses.has(
+                        ForwardApriltagCamera.Status.class,
+                        s -> s.status.isCameraConnected() && s.status.tagId().isPresent());
         if (DriverStation.isDisabled()) {
             if (!isCameraPresent) {
                 signalCameraNotConnected();
@@ -87,14 +88,15 @@ public class Lights extends LightsBase {
     }
 
     public void signalShooterOutOfRange() {
-        runAnimation((Context context) -> {
-            while (true) {
-                handleErrorCode(m_candle.setLEDs(150, 0, 0));
-                context.waitForSeconds(0.5);
-                turnLightsOff();
-                context.waitForSeconds(0.5);
-            }
-        });
+        runAnimation(
+                (Context context) -> {
+                    while (true) {
+                        handleErrorCode(m_candle.setLEDs(150, 0, 0));
+                        context.waitForSeconds(0.5);
+                        turnLightsOff();
+                        context.waitForSeconds(0.5);
+                    }
+                });
     }
 
     // Coral orange

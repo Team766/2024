@@ -15,8 +15,7 @@ public class DriverOI extends OIFragment {
     protected final JoystickReader leftJoystick;
     protected final JoystickReader rightJoystick;
 
-    @AutoLogOutput
-    protected boolean isCross = false;
+    @AutoLogOutput protected boolean isCross = false;
 
     public DriverOI(OI oi, JoystickReader leftJoystick, JoystickReader rightJoystick) {
         super(oi);
@@ -43,8 +42,9 @@ public class DriverOI extends OIFragment {
         }
 
         if (leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            whileAvailable((Drive drive, Superstructure ss, Intake intake) ->
-                    new DriverShootNow(drive, ss, intake));
+            whileAvailable(
+                    (Drive drive, Superstructure ss, Intake intake) ->
+                            new DriverShootNow(drive, ss, intake));
         }
 
         if (rightJoystick.getButton(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
@@ -72,16 +72,25 @@ public class DriverOI extends OIFragment {
                             ? ControlConstants.FINE_DRIVING_COEFFICIENT
                             : 1;
 
-            whileAvailable((Drive drive) -> drive.setGoal(new Drive.FieldOrientedVelocity(
-                    (drivingCoefficient
-                            * curvedJoystickPower(
-                                    leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
-                    (drivingCoefficient
-                            * curvedJoystickPower(
-                                    leftJoystickY, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
-                    (drivingCoefficient
-                            * curvedJoystickPower(
-                                    rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)))));
+            whileAvailable(
+                    (Drive drive) ->
+                            drive.setGoal(
+                                    new Drive.FieldOrientedVelocity(
+                                            (drivingCoefficient
+                                                    * curvedJoystickPower(
+                                                            leftJoystickX,
+                                                            ControlConstants
+                                                                    .TRANSLATIONAL_CURVE_POWER)),
+                                            (drivingCoefficient
+                                                    * curvedJoystickPower(
+                                                            leftJoystickY,
+                                                            ControlConstants
+                                                                    .TRANSLATIONAL_CURVE_POWER)),
+                                            (drivingCoefficient
+                                                    * curvedJoystickPower(
+                                                            rightJoystickY,
+                                                            ControlConstants
+                                                                    .ROTATIONAL_CURVE_POWER)))));
         }
 
         byDefault((Drive drive) -> drive.setGoal(new Drive.SetCross()));

@@ -38,9 +38,8 @@ public class RobotSystemsProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         final Set<? extends Element> preventReservableFieldsElements =
                 roundEnv.getElementsAnnotatedWith(PreventReservableFields.class);
-        final var reservableType = elementUtils
-                .getTypeElement("com.team766.framework.resources.Reservable")
-                .asType();
+        final var reservableType =
+                elementUtils.getTypeElement("com.team766.framework.resources.Reservable").asType();
         for (var annotatedElement : preventReservableFieldsElements) {
             final var annotatedClass = (TypeElement) annotatedElement;
             for (var element : annotatedClass.getEnclosedElements()) {

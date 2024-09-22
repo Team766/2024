@@ -82,18 +82,22 @@ public class ReflectionUtils {
         if (primitive.isPrimitive()) {
             return primitive;
         }
-        return boxedToPrimitive.computeIfAbsent(primitive, p -> {
-            throw new IllegalArgumentException("Error translating type: " + p);
-        });
+        return boxedToPrimitive.computeIfAbsent(
+                primitive,
+                p -> {
+                    throw new IllegalArgumentException("Error translating type: " + p);
+                });
     }
 
     public static Class<?> translateFromPrimitive(Class<?> primitive) {
         if (!primitive.isPrimitive()) {
             return primitive;
         }
-        return primitiveToBoxed.computeIfAbsent(primitive, p -> {
-            throw new IllegalArgumentException("Error translating type: " + p);
-        });
+        return primitiveToBoxed.computeIfAbsent(
+                primitive,
+                p -> {
+                    throw new IllegalArgumentException("Error translating type: " + p);
+                });
     }
 
     public static Class<?> getRawType(Type type) {

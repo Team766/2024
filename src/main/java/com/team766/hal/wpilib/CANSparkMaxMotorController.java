@@ -91,8 +91,9 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
         try {
             revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax) leader));
         } catch (ClassCastException ex) {
-            LoggerExceptionUtils.logException(new IllegalArgumentException(
-                    "Spark Max can only follow another Spark Max", ex));
+            LoggerExceptionUtils.logException(
+                    new IllegalArgumentException(
+                            "Spark Max can only follow another Spark Max", ex));
         }
     }
 
@@ -135,40 +136,42 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
     @Override
     public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
         switch (feedbackDevice) {
-            case Analog: {
-                SparkAnalogSensor analog = getAnalog(SparkAnalogSensor.Mode.kAbsolute);
-                revErrorToException(ExceptionTarget.LOG, analog.setInverted(sensorInverted));
-                sensorPositionSupplier = analog::getPosition;
-                sensorVelocitySupplier = analog::getVelocity;
-                sensorPositionSetter = (pos) -> REVLibError.kOk;
-                sensorInvertedSetter = analog::setInverted;
-                revErrorToException(
-                        ExceptionTarget.LOG, getPIDController().setFeedbackDevice(analog));
-                return;
-            }
+            case Analog:
+                {
+                    SparkAnalogSensor analog = getAnalog(SparkAnalogSensor.Mode.kAbsolute);
+                    revErrorToException(ExceptionTarget.LOG, analog.setInverted(sensorInverted));
+                    sensorPositionSupplier = analog::getPosition;
+                    sensorVelocitySupplier = analog::getVelocity;
+                    sensorPositionSetter = (pos) -> REVLibError.kOk;
+                    sensorInvertedSetter = analog::setInverted;
+                    revErrorToException(
+                            ExceptionTarget.LOG, getPIDController().setFeedbackDevice(analog));
+                    return;
+                }
             case CTRE_MagEncoder_Absolute:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
             case CTRE_MagEncoder_Relative:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
-            case IntegratedSensor: {
-                RelativeEncoder encoder = getEncoder();
-                // NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
-                // integrated sensor returns an error.
-                // revErrorToException(ExceptionTarget.LOG,
-                // encoder.setInverted(sensorInverted));
-                sensorPositionSupplier = encoder::getPosition;
-                sensorVelocitySupplier = encoder::getVelocity;
-                sensorPositionSetter = encoder::setPosition;
-                // NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
-                // integrated sensor returns an error.
-                // sensorInvertedSetter = encoder::setInverted;
-                sensorInvertedSetter = (inverted) -> REVLibError.kOk;
-                revErrorToException(
-                        ExceptionTarget.LOG, getPIDController().setFeedbackDevice(encoder));
-                return;
-            }
+            case IntegratedSensor:
+                {
+                    RelativeEncoder encoder = getEncoder();
+                    // NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
+                    // integrated sensor returns an error.
+                    // revErrorToException(ExceptionTarget.LOG,
+                    // encoder.setInverted(sensorInverted));
+                    sensorPositionSupplier = encoder::getPosition;
+                    sensorVelocitySupplier = encoder::getVelocity;
+                    sensorPositionSetter = encoder::setPosition;
+                    // NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
+                    // integrated sensor returns an error.
+                    // sensorInvertedSetter = encoder::setInverted;
+                    sensorInvertedSetter = (inverted) -> REVLibError.kOk;
+                    revErrorToException(
+                            ExceptionTarget.LOG, getPIDController().setFeedbackDevice(encoder));
+                    return;
+                }
             case None:
                 return;
             case PulseWidthEncodedPosition:
@@ -198,8 +201,9 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support SensorSum"));
             case SoftwareEmulatedSensor:
-                LoggerExceptionUtils.logException(new IllegalArgumentException(
-                        "SparkMax does not support SoftwareEmulatedSensor"));
+                LoggerExceptionUtils.logException(
+                        new IllegalArgumentException(
+                                "SparkMax does not support SoftwareEmulatedSensor"));
             case Tachometer:
                 LoggerExceptionUtils.logException(
                         new IllegalArgumentException("SparkMax does not support Tachometer"));

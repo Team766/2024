@@ -36,17 +36,19 @@ public abstract class LightsBase implements LoggingBase {
         }
         ContextImpl command = prevScheduledCommands.get(handle);
         if (command == null || command.isFinished()) {
-            command = new ContextImpl(new ProcedureInterface() {
-                @Override
-                public void execute(Context context) {
-                    animation.accept(context);
-                }
+            command =
+                    new ContextImpl(
+                            new ProcedureInterface() {
+                                @Override
+                                public void execute(Context context) {
+                                    animation.accept(context);
+                                }
 
-                @Override
-                public Set<Subsystem> getReservations() {
-                    return Set.of();
-                }
-            });
+                                @Override
+                                public Set<Subsystem> getReservations() {
+                                    return Set.of();
+                                }
+                            });
             command.initialize();
         }
         command.execute();
@@ -60,13 +62,16 @@ public abstract class LightsBase implements LoggingBase {
 
             dispatch(Statuses.getInstance());
 
-            prevScheduledCommands.entrySet().removeIf(entry -> {
-                if (scheduledCommands.contains(entry.getKey())) {
-                    return false;
-                }
-                entry.getValue().end(true);
-                return true;
-            });
+            prevScheduledCommands
+                    .entrySet()
+                    .removeIf(
+                            entry -> {
+                                if (scheduledCommands.contains(entry.getKey())) {
+                                    return false;
+                                }
+                                entry.getValue().end(true);
+                                return true;
+                            });
         } catch (Exception ex) {
             LoggerExceptionUtils.logException(ex);
         }

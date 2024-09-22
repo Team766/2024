@@ -67,12 +67,14 @@ public final class ResourceManager {
     }
 
     /* package */ void runOnceIfAvailable(FunctionBase callback, Consumer<Subsystem[]> doCallback) {
-        runIfAvailable(callback, subsystems -> {
-            if (activeRules.put(callback.getClass(), this) != null | initializing) {
-                return;
-            }
-            doCallback.accept(subsystems);
-        });
+        runIfAvailable(
+                callback,
+                subsystems -> {
+                    if (activeRules.put(callback.getClass(), this) != null | initializing) {
+                        return;
+                    }
+                    doCallback.accept(subsystems);
+                });
     }
 
     /* package */ boolean scheduleIfAvailable(
@@ -84,12 +86,14 @@ public final class ResourceManager {
 
     /* package */ void scheduleOnceIfAvailable(
             FunctionBase callback, Function<Subsystem[], Command> doCallback) {
-        scheduleIfAvailable(callback, subsystems -> {
-            if (activeRules.put(callback.getClass(), this) != null | initializing) {
-                return null;
-            }
-            return doCallback.apply(subsystems);
-        });
+        scheduleIfAvailable(
+                callback,
+                subsystems -> {
+                    if (activeRules.put(callback.getClass(), this) != null | initializing) {
+                        return null;
+                    }
+                    return doCallback.apply(subsystems);
+                });
     }
 
     private Subsystem[] tryReserve(Class<? extends Subsystem>[] resources) {

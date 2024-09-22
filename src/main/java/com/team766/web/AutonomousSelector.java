@@ -29,10 +29,11 @@ public class AutonomousSelector implements WebServer.Handler {
         final String savedAutonMode = getSavedAutonMode();
         m_autonModes = autonModes;
         m_autonModeNames = Arrays.stream(autonModes).map(m -> m.name()).toArray(String[]::new);
-        m_selectedAutonMode = Arrays.stream(autonModes)
-                .filter(m -> m.name().equals(savedAutonMode))
-                .findFirst()
-                .orElse(null);
+        m_selectedAutonMode =
+                Arrays.stream(autonModes)
+                        .filter(m -> m.name().equals(savedAutonMode))
+                        .findFirst()
+                        .orElse(null);
         if (m_selectedAutonMode == null) {
             if (m_autonModes.length > 0) {
                 if (savedAutonMode != null) {
@@ -68,9 +69,10 @@ public class AutonomousSelector implements WebServer.Handler {
         String locationReplaceScript = "";
         final String selectedAutonModeName = (String) params.get("AutoMode");
         if (selectedAutonModeName != null) {
-            final Optional<AutonomousModeBase> selectedAutonMode = Arrays.stream(m_autonModes)
-                    .filter(m -> m.name().equals(selectedAutonModeName))
-                    .findFirst();
+            final Optional<AutonomousModeBase> selectedAutonMode =
+                    Arrays.stream(m_autonModes)
+                            .filter(m -> m.name().equals(selectedAutonModeName))
+                            .findFirst();
             if (selectedAutonMode.isEmpty()) {
                 Logger.get(Category.AUTONOMOUS)
                         .logData(
@@ -90,34 +92,36 @@ public class AutonomousSelector implements WebServer.Handler {
         }
         final String selectedAutonModeNameUI =
                 m_selectedAutonMode != null ? m_selectedAutonMode.name() : "<none>";
-        return String.join("\n", new String[] {
-            locationReplaceScript,
-            "<h1>Autonomous Mode Selector</h1>",
-            "<h3 id=\"current-mode\">Current Mode: " + selectedAutonModeNameUI + "</h1>",
-            "<form>",
-            "<p>"
-                    + HtmlElements.buildDropDown(
-                            "AutoMode", selectedAutonModeNameUI, m_autonModeNames)
-                    + "</p>",
-            "<input type=\"submit\" value=\"Submit\"></form>",
-            "<script>",
-            "  function refreshAutoMode() {",
-            "    var xhttp = new XMLHttpRequest();",
-            "    xhttp.onreadystatechange = function() {",
-            "      if (this.readyState == 4 && this.status == 200) {",
-            "        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
-            "        var oldMode = document.getElementById('current-mode');",
-            "        oldMode.parentNode.replaceChild(",
-            "            document.importNode(newDoc.querySelector('#current-mode'), true),",
-            "            oldMode);",
-            "     }",
-            "    };",
-            "    xhttp.open('GET', \"" + ENDPOINT + "\", true);",
-            "    xhttp.send();",
-            "  }",
-            "  setInterval(refreshAutoMode, 1000);",
-            "</script>",
-        });
+        return String.join(
+                "\n",
+                new String[] {
+                    locationReplaceScript,
+                    "<h1>Autonomous Mode Selector</h1>",
+                    "<h3 id=\"current-mode\">Current Mode: " + selectedAutonModeNameUI + "</h1>",
+                    "<form>",
+                    "<p>"
+                            + HtmlElements.buildDropDown(
+                                    "AutoMode", selectedAutonModeNameUI, m_autonModeNames)
+                            + "</p>",
+                    "<input type=\"submit\" value=\"Submit\"></form>",
+                    "<script>",
+                    "  function refreshAutoMode() {",
+                    "    var xhttp = new XMLHttpRequest();",
+                    "    xhttp.onreadystatechange = function() {",
+                    "      if (this.readyState == 4 && this.status == 200) {",
+                    "        var newDoc = new DOMParser().parseFromString(this.responseText, 'text/html')",
+                    "        var oldMode = document.getElementById('current-mode');",
+                    "        oldMode.parentNode.replaceChild(",
+                    "            document.importNode(newDoc.querySelector('#current-mode'), true),",
+                    "            oldMode);",
+                    "     }",
+                    "    };",
+                    "    xhttp.open('GET', \"" + ENDPOINT + "\", true);",
+                    "    xhttp.send();",
+                    "  }",
+                    "  setInterval(refreshAutoMode, 1000);",
+                    "</script>",
+                });
     }
 
     @Override

@@ -46,26 +46,32 @@ public class ReflectionLogging {
         Class<?> fieldClass = ReflectionUtils.getRawType(fieldType);
 
         try {
-            var recordMethod = ReflectionUtils.searchForMethod(
-                    Logger.class, "recordOutput", String.class, objectClass);
-            var putMethod = ReflectionUtils.searchForMethod(
-                    LogTable.class, "put", String.class, objectClass);
-            var getMethod = ReflectionUtils.searchForMethod(
-                    LogTable.class, "get", String.class, objectClass);
+            var recordMethod =
+                    ReflectionUtils.searchForMethod(
+                            Logger.class, "recordOutput", String.class, objectClass);
+            var putMethod =
+                    ReflectionUtils.searchForMethod(
+                            LogTable.class, "put", String.class, objectClass);
+            var getMethod =
+                    ReflectionUtils.searchForMethod(
+                            LogTable.class, "get", String.class, objectClass);
             Object defaultValue;
             try {
-                defaultValue = fieldClass.isArray()
-                        ? Array.newInstance(fieldClass.getComponentType(), 0)
-                        : ReflectionUtils.isPrimitive(fieldClass)
-                                ? Array.get(
-                                        Array.newInstance(
-                                                ReflectionUtils.translateToPrimitive(fieldClass),
-                                                1),
-                                        0)
-                                : fieldClass.getConstructor().newInstance();
+                defaultValue =
+                        fieldClass.isArray()
+                                ? Array.newInstance(fieldClass.getComponentType(), 0)
+                                : ReflectionUtils.isPrimitive(fieldClass)
+                                        ? Array.get(
+                                                Array.newInstance(
+                                                        ReflectionUtils.translateToPrimitive(
+                                                                fieldClass),
+                                                        1),
+                                                0)
+                                        : fieldClass.getConstructor().newInstance();
             } catch (NoSuchMethodError ex) {
                 throw new UnsupportedOperationException(
-                        "WPILib type " + fieldClass
+                        "WPILib type "
+                                + fieldClass
                                 + " doesn't have a default constructor. Special support will need to be added.",
                         ex);
             }
@@ -91,9 +97,10 @@ public class ReflectionLogging {
         if (objectClass.isRecord()) {
             Constructor<?> constructor;
             constructor =
-                    objectClass.getConstructor(Arrays.stream(objectClass.getRecordComponents())
-                            .map(c -> c.getType())
-                            .toArray(Class<?>[]::new));
+                    objectClass.getConstructor(
+                            Arrays.stream(objectClass.getRecordComponents())
+                                    .map(c -> c.getType())
+                                    .toArray(Class<?>[]::new));
             var fields = objectClass.getRecordComponents();
             return new ObjectLogger() {
                 @Override
@@ -164,10 +171,12 @@ public class ReflectionLogging {
         if (Collection.class.isAssignableFrom(objectClass)) {
             Class<?> elementType;
             if (Collection.class.isAssignableFrom(fieldClass)) {
-                var collectionType = ((TypeToken<? extends Collection<?>>) TypeToken.of(fieldType))
-                        .getSupertype(Collection.class);
-                elementType = ReflectionUtils.getRawType(
-                        ReflectionUtils.getTypeArguments(collectionType)[0]);
+                var collectionType =
+                        ((TypeToken<? extends Collection<?>>) TypeToken.of(fieldType))
+                                .getSupertype(Collection.class);
+                elementType =
+                        ReflectionUtils.getRawType(
+                                ReflectionUtils.getTypeArguments(collectionType)[0]);
             } else {
                 elementType = null;
             }
@@ -175,15 +184,16 @@ public class ReflectionLogging {
             if (Collection.class.isAssignableFrom(fieldClass)
                     && !Modifier.isAbstract(fieldClass.getModifiers())) {
                 Constructor<?> ctor = fieldClass.getConstructor(Collection.class);
-                constructor = array -> {
-                    try {
-                        return (Collection<Object>) ctor.newInstance(Arrays.asList(array));
-                    } catch (InstantiationException
-                            | IllegalAccessException
-                            | InvocationTargetException ex) {
-                        throw ReflectionUtils.sneakyThrow(ex);
-                    }
-                };
+                constructor =
+                        array -> {
+                            try {
+                                return (Collection<Object>) ctor.newInstance(Arrays.asList(array));
+                            } catch (InstantiationException
+                                    | IllegalAccessException
+                                    | InvocationTargetException ex) {
+                                throw ReflectionUtils.sneakyThrow(ex);
+                            }
+                        };
             } else if (fieldClass.isAssignableFrom(List.class)) {
                 constructor = Arrays::asList;
             } else if (fieldClass.isAssignableFrom(Set.class)) {
@@ -232,8 +242,9 @@ public class ReflectionLogging {
             Class<?> keyType;
             Class<?> valueType;
             if (Map.class.isAssignableFrom(fieldClass)) {
-                var mapType = ((TypeToken<? extends Map<?, ?>>) TypeToken.of(fieldType))
-                        .getSupertype(Map.class);
+                var mapType =
+                        ((TypeToken<? extends Map<?, ?>>) TypeToken.of(fieldType))
+                                .getSupertype(Map.class);
                 keyType = ReflectionUtils.getRawType(ReflectionUtils.getTypeArguments(mapType)[0]);
                 valueType =
                         ReflectionUtils.getRawType(ReflectionUtils.getTypeArguments(mapType)[1]);
@@ -245,15 +256,16 @@ public class ReflectionLogging {
             Supplier<Map<Object, Object>> constructor;
             if (!Modifier.isAbstract(fieldClass.getModifiers())) {
                 Constructor<?> ctor = fieldClass.getConstructor();
-                constructor = () -> {
-                    try {
-                        return (Map<Object, Object>) ctor.newInstance();
-                    } catch (InstantiationException
-                            | IllegalAccessException
-                            | InvocationTargetException ex) {
-                        throw ReflectionUtils.sneakyThrow(ex);
-                    }
-                };
+                constructor =
+                        () -> {
+                            try {
+                                return (Map<Object, Object>) ctor.newInstance();
+                            } catch (InstantiationException
+                                    | IllegalAccessException
+                                    | InvocationTargetException ex) {
+                                throw ReflectionUtils.sneakyThrow(ex);
+                            }
+                        };
             } else if (fieldClass.isAssignableFrom(Map.class)) {
                 constructor = HashMap::new;
             } else {
@@ -322,8 +334,9 @@ public class ReflectionLogging {
         }
         var valueClass = value.getClass();
         if (fieldType == null
-                || !valueClass.equals(ReflectionUtils.translateFromPrimitive(
-                        ReflectionUtils.getRawType(fieldType)))) {
+                || !valueClass.equals(
+                        ReflectionUtils.translateFromPrimitive(
+                                ReflectionUtils.getRawType(fieldType)))) {
             table.put(typeKey(key), valueClass.descriptorString());
         }
         if (fieldType == null) {

@@ -35,15 +35,18 @@ public class Test {
 
     @SuppressWarnings("unchecked")
     private <T extends Subsystem> T lookupSubsystemInRegistry(Class<T> claz) {
-        return (T) subsystemRegistry.computeIfAbsent(claz, clazz -> {
-            if (Shooter.class.equals(clazz)) {
-                return new Shooter();
-            }
-            if (Intake.class.equals(clazz)) {
-                return new Intake();
-            }
-            throw new IllegalArgumentException(clazz.toString());
-        });
+        return (T)
+                subsystemRegistry.computeIfAbsent(
+                        claz,
+                        clazz -> {
+                            if (Shooter.class.equals(clazz)) {
+                                return new Shooter();
+                            }
+                            if (Intake.class.equals(clazz)) {
+                                return new Intake();
+                            }
+                            throw new IllegalArgumentException(clazz.toString());
+                        });
     }
 
     private final <SubsystemT extends Subsystem> SubsystemT reserve(Class<SubsystemT> c)
@@ -92,12 +95,15 @@ public class Test {
 
     public void test() {
         System.out.println("\nProgressive:");
-        tryRunning(() ->
-                new DriverShootVelocityAndIntake(reserve(Shooter.class), reserve(Intake.class)));
+        tryRunning(
+                () ->
+                        new DriverShootVelocityAndIntake(
+                                reserve(Shooter.class), reserve(Intake.class)));
 
         System.out.println("\nMagic:");
-        ifAvailable((Shooter shooter, Intake intake) ->
-                new DriverShootVelocityAndIntake(shooter, intake));
+        ifAvailable(
+                (Shooter shooter, Intake intake) ->
+                        new DriverShootVelocityAndIntake(shooter, intake));
 
         ifAvailable(DriverShootVelocityAndIntake::new);
 

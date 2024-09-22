@@ -32,9 +32,12 @@ public interface ResourcesMixin {
     @SuppressWarnings("unchecked")
     default <RobotSystem0 extends Subsystem & Reservable> boolean whileAvailable(
             Function1<RobotSystem0, Command> callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply((RobotSystem0) subsystems[0]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply((RobotSystem0) subsystems[0]);
+                        });
     }
 
     default <RobotSystem0 extends Subsystem & Reservable, T> boolean whileAvailable(
@@ -45,9 +48,12 @@ public interface ResourcesMixin {
     @SuppressWarnings("unchecked")
     default <RobotSystem0 extends Subsystem & Reservable> void onceAvailable(
             Function1<RobotSystem0, Command> callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply((RobotSystem0) subsystems[0]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply((RobotSystem0) subsystems[0]);
+                        });
     }
 
     default <RobotSystem0 extends Subsystem & Reservable, T> void onceAvailable(
@@ -56,17 +62,23 @@ public interface ResourcesMixin {
     @SuppressWarnings("unchecked")
     default <RobotSystem0 extends Subsystem & Reservable> boolean whileAvailable(
             Consumer1<RobotSystem0> callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept((RobotSystem0) subsystems[0]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept((RobotSystem0) subsystems[0]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
     default <RobotSystem0 extends Subsystem & Reservable> void onceAvailable(
             Consumer1<RobotSystem0> callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept((RobotSystem0) subsystems[0]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept((RobotSystem0) subsystems[0]);
+                        });
     }
 
     default <RobotSystem0 extends Subsystem & Reservable> void byDefault(
@@ -89,9 +101,13 @@ public interface ResourcesMixin {
                     RobotSystem0 extends Subsystem & Reservable,
                     RobotSystem1 extends Subsystem & Reservable>
             boolean whileAvailable(Function2<RobotSystem0, RobotSystem1, Command> callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+                        });
     }
 
     default <
@@ -108,9 +124,13 @@ public interface ResourcesMixin {
                     RobotSystem0 extends Subsystem & Reservable,
                     RobotSystem1 extends Subsystem & Reservable>
             void onceAvailable(Function2<RobotSystem0, RobotSystem1, Command> callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+                        });
     }
 
     default <
@@ -125,9 +145,13 @@ public interface ResourcesMixin {
                     RobotSystem0 extends Subsystem & Reservable,
                     RobotSystem1 extends Subsystem & Reservable>
             boolean whileAvailable(Consumer2<RobotSystem0, RobotSystem1> callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -135,9 +159,13 @@ public interface ResourcesMixin {
                     RobotSystem0 extends Subsystem & Reservable,
                     RobotSystem1 extends Subsystem & Reservable>
             void onceAvailable(Consumer2<RobotSystem0, RobotSystem1> callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept((RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1]);
+                        });
     }
 
     default <
@@ -169,11 +197,15 @@ public interface ResourcesMixin {
                     RobotSystem2 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Function3<RobotSystem0, RobotSystem1, RobotSystem2, Command> callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
-                            subsystems[2]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2]);
+                        });
     }
 
     default <
@@ -194,11 +226,15 @@ public interface ResourcesMixin {
                     RobotSystem2 extends Subsystem & Reservable>
             void onceAvailable(
                     Function3<RobotSystem0, RobotSystem1, RobotSystem2, Command> callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
-                            subsystems[2]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2]);
+                        });
     }
 
     default <
@@ -216,11 +252,15 @@ public interface ResourcesMixin {
                     RobotSystem1 extends Subsystem & Reservable,
                     RobotSystem2 extends Subsystem & Reservable>
             boolean whileAvailable(Consumer3<RobotSystem0, RobotSystem1, RobotSystem2> callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
-                            subsystems[2]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -229,11 +269,15 @@ public interface ResourcesMixin {
                     RobotSystem1 extends Subsystem & Reservable,
                     RobotSystem2 extends Subsystem & Reservable>
             void onceAvailable(Consumer3<RobotSystem0, RobotSystem1, RobotSystem2> callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0], (RobotSystem1) subsystems[1], (RobotSystem2)
-                            subsystems[2]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2]);
+                        });
     }
 
     default <
@@ -272,13 +316,16 @@ public interface ResourcesMixin {
             boolean whileAvailable(
                     Function4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, Command>
                             callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3]);
+                        });
     }
 
     default <
@@ -303,13 +350,16 @@ public interface ResourcesMixin {
             void onceAvailable(
                     Function4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, Command>
                             callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3]);
+                        });
     }
 
     default <
@@ -331,13 +381,16 @@ public interface ResourcesMixin {
                     RobotSystem3 extends Subsystem & Reservable>
             boolean whileAvailable(
                     Consumer4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3> callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -348,13 +401,16 @@ public interface ResourcesMixin {
                     RobotSystem3 extends Subsystem & Reservable>
             void onceAvailable(
                     Consumer4<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3> callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3]);
+                        });
     }
 
     default <
@@ -407,14 +463,17 @@ public interface ResourcesMixin {
                                     RobotSystem4,
                                     Command>
                             callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4]);
+                        });
     }
 
     default <
@@ -452,14 +511,17 @@ public interface ResourcesMixin {
                                     RobotSystem4,
                                     Command>
                             callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4]);
+                        });
     }
 
     default <
@@ -489,14 +551,17 @@ public interface ResourcesMixin {
             boolean whileAvailable(
                     Consumer5<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, RobotSystem4>
                             callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -509,14 +574,17 @@ public interface ResourcesMixin {
             void onceAvailable(
                     Consumer5<RobotSystem0, RobotSystem1, RobotSystem2, RobotSystem3, RobotSystem4>
                             callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4]);
+                        });
     }
 
     default <
@@ -586,15 +654,18 @@ public interface ResourcesMixin {
                                     RobotSystem5,
                                     Command>
                             callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5]);
+                        });
     }
 
     default <
@@ -636,15 +707,18 @@ public interface ResourcesMixin {
                                     RobotSystem5,
                                     Command>
                             callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5]);
+                        });
     }
 
     default <
@@ -683,15 +757,18 @@ public interface ResourcesMixin {
                                     RobotSystem4,
                                     RobotSystem5>
                             callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -711,15 +788,18 @@ public interface ResourcesMixin {
                                     RobotSystem4,
                                     RobotSystem5>
                             callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5]);
+                        });
     }
 
     default <
@@ -802,16 +882,19 @@ public interface ResourcesMixin {
                                     RobotSystem6,
                                     Command>
                             callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6]);
+                        });
     }
 
     default <
@@ -857,16 +940,19 @@ public interface ResourcesMixin {
                                     RobotSystem6,
                                     Command>
                             callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6]);
+                        });
     }
 
     default <
@@ -909,16 +995,19 @@ public interface ResourcesMixin {
                                     RobotSystem5,
                                     RobotSystem6>
                             callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -940,16 +1029,19 @@ public interface ResourcesMixin {
                                     RobotSystem5,
                                     RobotSystem6>
                             callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6]);
+                        });
     }
 
     default <
@@ -1040,17 +1132,20 @@ public interface ResourcesMixin {
                                     RobotSystem7,
                                     Command>
                             callback) {
-        return getResourceManager().scheduleIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6],
-                    (RobotSystem7) subsystems[7]);
-        });
+        return getResourceManager()
+                .scheduleIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6],
+                                    (RobotSystem7) subsystems[7]);
+                        });
     }
 
     default <
@@ -1100,17 +1195,20 @@ public interface ResourcesMixin {
                                     RobotSystem7,
                                     Command>
                             callback) {
-        getResourceManager().scheduleOnceIfAvailable(callback, subsystems -> {
-            return callback.apply(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6],
-                    (RobotSystem7) subsystems[7]);
-        });
+        getResourceManager()
+                .scheduleOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            return callback.apply(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6],
+                                    (RobotSystem7) subsystems[7]);
+                        });
     }
 
     default <
@@ -1157,17 +1255,20 @@ public interface ResourcesMixin {
                                     RobotSystem6,
                                     RobotSystem7>
                             callback) {
-        return getResourceManager().runIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6],
-                    (RobotSystem7) subsystems[7]);
-        });
+        return getResourceManager()
+                .runIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6],
+                                    (RobotSystem7) subsystems[7]);
+                        });
     }
 
     @SuppressWarnings("unchecked")
@@ -1191,17 +1292,20 @@ public interface ResourcesMixin {
                                     RobotSystem6,
                                     RobotSystem7>
                             callback) {
-        getResourceManager().runOnceIfAvailable(callback, subsystems -> {
-            callback.accept(
-                    (RobotSystem0) subsystems[0],
-                    (RobotSystem1) subsystems[1],
-                    (RobotSystem2) subsystems[2],
-                    (RobotSystem3) subsystems[3],
-                    (RobotSystem4) subsystems[4],
-                    (RobotSystem5) subsystems[5],
-                    (RobotSystem6) subsystems[6],
-                    (RobotSystem7) subsystems[7]);
-        });
+        getResourceManager()
+                .runOnceIfAvailable(
+                        callback,
+                        subsystems -> {
+                            callback.accept(
+                                    (RobotSystem0) subsystems[0],
+                                    (RobotSystem1) subsystems[1],
+                                    (RobotSystem2) subsystems[2],
+                                    (RobotSystem3) subsystems[3],
+                                    (RobotSystem4) subsystems[4],
+                                    (RobotSystem5) subsystems[5],
+                                    (RobotSystem6) subsystems[6],
+                                    (RobotSystem7) subsystems[7]);
+                        });
     }
 
     default <

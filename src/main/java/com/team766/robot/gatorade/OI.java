@@ -26,8 +26,7 @@ public class OI extends OIBase {
     private final JoystickReader boxopGamepad;
     private final DriverOI driverOI;
 
-    @AutoLogOutput
-    Optional<PlacementPosition> placementPosition = Optional.empty();
+    @AutoLogOutput Optional<PlacementPosition> placementPosition = Optional.empty();
 
     @AutoLogOutput(key = "Game Piece")
     GamePieceType gamePieceType = GamePieceType.CONE;
@@ -51,11 +50,15 @@ public class OI extends OIBase {
         driverOI.run();
 
         if (leftJoystick.getButton(InputConstants.BUTTON_INTAKE_OUT)) {
-            whileAvailable((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
+            whileAvailable(
+                    (Intake intake) ->
+                            intake.setGoal(
+                                    new Intake.Status(gamePieceType, Intake.MotorState.OUT)));
         } else {
-            byDefault((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
+            byDefault(
+                    (Intake intake) ->
+                            intake.setGoal(
+                                    new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         }
 
         // Respond to boxop commands
@@ -89,27 +92,34 @@ public class OI extends OIBase {
 
         // look for button hold to start intake, release to idle intake
         if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_IN)) {
-            whileAvailable((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
+            whileAvailable(
+                    (Intake intake) ->
+                            intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IN)));
         } else {
-            byDefault((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
+            byDefault(
+                    (Intake intake) ->
+                            intake.setGoal(
+                                    new Intake.Status(gamePieceType, Intake.MotorState.IDLE)));
         }
 
         if (boxopGamepad.getButton(InputConstants.BUTTON_INTAKE_STOP)) {
-            whileAvailable((Intake intake) ->
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
+            whileAvailable(
+                    (Intake intake) ->
+                            intake.setGoal(
+                                    new Intake.Status(gamePieceType, Intake.MotorState.STOP)));
         }
 
         // look for button hold to extend intake/wrist/elevator superstructure,
         // release to retract
         if (boxopGamepad.getButton(InputConstants.BUTTON_EXTEND_WRISTVATOR)) {
-            onceAvailable((Superstructure ss) -> {
-                if (placementPosition.isPresent()) {
-                    ss.setGoal(Superstructure.MoveToPosition.Extended(
-                            placementPosition.get(), gamePieceType));
-                }
-            });
+            onceAvailable(
+                    (Superstructure ss) -> {
+                        if (placementPosition.isPresent()) {
+                            ss.setGoal(
+                                    Superstructure.MoveToPosition.Extended(
+                                            placementPosition.get(), gamePieceType));
+                        }
+                    });
 
             // look for manual nudges
             // we only allow these if the extend elevator trigger is extended
@@ -143,12 +153,14 @@ public class OI extends OIBase {
                 }
             }
         } else {
-            byDefault((Superstructure ss, Intake intake) -> {
-                ss.setGoal(Superstructure.MoveToPosition.RETRACTED);
-                if (placementPosition.orElse(null) == PlacementPosition.HUMAN_PLAYER) {
-                    intake.setGoal(new Intake.Status(gamePieceType, Intake.MotorState.IDLE));
-                }
-            });
+            byDefault(
+                    (Superstructure ss, Intake intake) -> {
+                        ss.setGoal(Superstructure.MoveToPosition.RETRACTED);
+                        if (placementPosition.orElse(null) == PlacementPosition.HUMAN_PLAYER) {
+                            intake.setGoal(
+                                    new Intake.Status(gamePieceType, Intake.MotorState.IDLE));
+                        }
+                    });
         }
     }
 }

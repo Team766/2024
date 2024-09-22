@@ -30,12 +30,13 @@ public class Intake extends RobotSystem<Intake.Status, Intake.Goal> {
 
     private record IntakePosition(double intakePower, double proximityValue) {}
 
-    IntakePosition[] positions = new IntakePosition[] {
-        new IntakePosition(0, 150),
-        new IntakePosition(0.2, 200),
-        new IntakePosition(0.4, 400),
-        new IntakePosition(1.0, 480)
-    };
+    IntakePosition[] positions =
+            new IntakePosition[] {
+                new IntakePosition(0, 150),
+                new IntakePosition(0.2, 200),
+                new IntakePosition(0.4, 400),
+                new IntakePosition(1.0, 480)
+            };
 
     private static final double DEFAULT_POWER = 1.0;
     private static final double NUDGE_INCREMENT = 0.05;
@@ -46,8 +47,9 @@ public class Intake extends RobotSystem<Intake.Status, Intake.Goal> {
 
     // This should be the amount that getRange() should return less than for a note to be classified
     // as in
-    private static ValueProvider<Double> threshold = ConfigFileReader.getInstance()
-            .getDouble("RightProximitySensor.threshold"); // needs calibration
+    private static ValueProvider<Double> threshold =
+            ConfigFileReader.getInstance()
+                    .getDouble("RightProximitySensor.threshold"); // needs calibration
 
     private MotorController intakeMotor;
     private TimeOfFlight sensor;
@@ -95,11 +97,12 @@ public class Intake extends RobotSystem<Intake.Status, Intake.Goal> {
                 intakeMotor.set(Math.max(intakeMotor.get() - NUDGE_INCREMENT, MIN_POWER));
             }
             case SetPowerForSensorDistance g -> {
-                intakeMotor.set(com.team766.math.Math.interpolate(
-                        positions,
-                        sensor.getRange(),
-                        IntakePosition::proximityValue,
-                        IntakePosition::intakePower));
+                intakeMotor.set(
+                        com.team766.math.Math.interpolate(
+                                positions,
+                                sensor.getRange(),
+                                IntakePosition::proximityValue,
+                                IntakePosition::intakePower));
             }
         }
     }

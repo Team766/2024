@@ -60,8 +60,11 @@ public class GyroBalance extends Procedure {
     public void run(Context context) {
         // extend wristvator to put CG in a place where robot can climb ramp
         superstructure.setGoal(Superstructure.MoveToPosition.EXTENDED_TO_MID);
-        context.waitFor(() ->
-                superstructure.getStatus().isNearTo(Superstructure.MoveToPosition.EXTENDED_TO_MID));
+        context.waitFor(
+                () ->
+                        superstructure
+                                .getStatus()
+                                .isNearTo(Superstructure.MoveToPosition.EXTENDED_TO_MID));
 
         // initialY is robot y position when balancing starts
         final double initialY = drive.getStatus().currentPosition().getY();
@@ -97,10 +100,11 @@ public class GyroBalance extends Procedure {
         // State: RAMP_TRANSITION
         setDriveSpeed(SPEED_TRANSITION);
         log("Transition, curState: RAMP_TRANSITION");
-        context.waitFor(() -> {
-            final double tilt = getAbsoluteTilt();
-            return tilt < TOP_TILT && tilt > FLAP_TILT;
-        });
+        context.waitFor(
+                () -> {
+                    final double tilt = getAbsoluteTilt();
+                    return tilt < TOP_TILT && tilt > FLAP_TILT;
+                });
 
         // State: RAMP_TILT
         setDriveSpeed(SPEED_TILT);

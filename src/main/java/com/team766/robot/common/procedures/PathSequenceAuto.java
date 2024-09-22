@@ -52,10 +52,11 @@ public abstract class PathSequenceAuto extends Procedure {
         drive.setCurrentPosition(
                 shouldFlipAuton ? GeometryUtil.flipFieldPose(initialPosition) : initialPosition);
         // }
-        drive.resetGyro((shouldFlipAuton
-                        ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
-                        : initialPosition.getRotation())
-                .getDegrees());
+        drive.resetGyro(
+                (shouldFlipAuton
+                                ? GeometryUtil.flipFieldRotation(initialPosition.getRotation())
+                                : initialPosition.getRotation())
+                        .getDegrees());
         try {
             runSequence(context);
         } finally {

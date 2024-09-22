@@ -26,17 +26,18 @@ public class RobotMain extends LoggedRobot {
     private GenericRobotMain robot;
 
     public static void main(final String... args) {
-        Supplier<RobotMain> supplier = new Supplier<RobotMain>() {
-            RobotMain instance;
+        Supplier<RobotMain> supplier =
+                new Supplier<RobotMain>() {
+                    RobotMain instance;
 
-            @Override
-            public RobotMain get() {
-                if (instance == null) {
-                    instance = new RobotMain();
-                }
-                return instance;
-            }
-        };
+                    @Override
+                    public RobotMain get() {
+                        if (instance == null) {
+                            instance = new RobotMain();
+                        }
+                        return instance;
+                    }
+                };
 
         // periodically poll "caniv" in the background, if present
         CanivPoller canivPoller = null;

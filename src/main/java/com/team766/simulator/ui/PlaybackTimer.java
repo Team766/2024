@@ -40,21 +40,22 @@ public class PlaybackTimer {
      */
     public PlaybackTimer(double endTime) {
         this.endTime = endTime;
-        timer = new Timer(TIMER_PERIOD_MS, null) {
-            @Override
-            protected void fireActionPerformed(ActionEvent event) {
-                synchronized (timeLock) {
-                    playTime = System.currentTimeMillis() * 0.001 - startTime;
-                    if (playTime >= endTime) {
-                        playTime = endTime;
-                        timer.stop();
+        timer =
+                new Timer(TIMER_PERIOD_MS, null) {
+                    @Override
+                    protected void fireActionPerformed(ActionEvent event) {
+                        synchronized (timeLock) {
+                            playTime = System.currentTimeMillis() * 0.001 - startTime;
+                            if (playTime >= endTime) {
+                                playTime = endTime;
+                                timer.stop();
+                            }
+                            super.fireActionPerformed(event);
+                            listeners.firePropertyChange(PROPERTY_NAME, prevTime, playTime);
+                            prevTime = playTime;
+                        }
                     }
-                    super.fireActionPerformed(event);
-                    listeners.firePropertyChange(PROPERTY_NAME, prevTime, playTime);
-                    prevTime = playTime;
-                }
-            }
-        };
+                };
         timer.setRepeats(true);
         timer.setCoalesce(true);
     }

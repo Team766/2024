@@ -63,16 +63,19 @@ public abstract class VisionPIDProcedure extends Procedure {
                 if (i == 0) {
                     return scoringPositions.get(i).powerToSetShooter();
                 }
-                double powerToUse = ((scoringPositions.get(i).powerToSetShooter()
-                                        * (distanceFromCenterApriltag
-                                                - scoringPositions
-                                                        .get(i - 1)
-                                                        .distanceFromCenterApriltag()))
-                                + (scoringPositions.get(i - 1).powerToSetShooter()
-                                        * (scoringPositions.get(i).distanceFromCenterApriltag()
-                                                - distanceFromCenterApriltag)))
-                        / (scoringPositions.get(i).distanceFromCenterApriltag()
-                                - scoringPositions.get(i - 1).distanceFromCenterApriltag());
+                double powerToUse =
+                        ((scoringPositions.get(i).powerToSetShooter()
+                                                * (distanceFromCenterApriltag
+                                                        - scoringPositions
+                                                                .get(i - 1)
+                                                                .distanceFromCenterApriltag()))
+                                        + (scoringPositions.get(i - 1).powerToSetShooter()
+                                                * (scoringPositions
+                                                                .get(i)
+                                                                .distanceFromCenterApriltag()
+                                                        - distanceFromCenterApriltag)))
+                                / (scoringPositions.get(i).distanceFromCenterApriltag()
+                                        - scoringPositions.get(i - 1).distanceFromCenterApriltag());
                 return powerToUse;
             }
         }
@@ -88,16 +91,19 @@ public abstract class VisionPIDProcedure extends Procedure {
                     return scoringPositions.get(i).angleToSetArm();
                 }
 
-                double angleToUse = ((scoringPositions.get(i).angleToSetArm()
-                                        * (distanceFromCenterApriltag
-                                                - scoringPositions
-                                                        .get(i - 1)
-                                                        .distanceFromCenterApriltag()))
-                                + (scoringPositions.get(i - 1).angleToSetArm()
-                                        * (scoringPositions.get(i).distanceFromCenterApriltag()
-                                                - distanceFromCenterApriltag)))
-                        / (scoringPositions.get(i).distanceFromCenterApriltag()
-                                - scoringPositions.get(i - 1).distanceFromCenterApriltag());
+                double angleToUse =
+                        ((scoringPositions.get(i).angleToSetArm()
+                                                * (distanceFromCenterApriltag
+                                                        - scoringPositions
+                                                                .get(i - 1)
+                                                                .distanceFromCenterApriltag()))
+                                        + (scoringPositions.get(i - 1).angleToSetArm()
+                                                * (scoringPositions
+                                                                .get(i)
+                                                                .distanceFromCenterApriltag()
+                                                        - distanceFromCenterApriltag)))
+                                / (scoringPositions.get(i).distanceFromCenterApriltag()
+                                        - scoringPositions.get(i - 1).distanceFromCenterApriltag());
 
                 return angleToUse;
             }

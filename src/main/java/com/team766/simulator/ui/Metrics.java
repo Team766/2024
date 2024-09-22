@@ -54,17 +54,20 @@ public class Metrics extends JPanel {
                 if (index < 0) {
                     index = -index - 1;
                 }
-                System.out.println(String.format(
-                        "(%s, %f): %f", source.getName(), selectedTime, source.get(1, index)));
+                System.out.println(
+                        String.format(
+                                "(%s, %f): %f",
+                                source.getName(), selectedTime, source.get(1, index)));
             }
         }
 
         @Override
         public void mouseClicked(final MouseEvent e) {
             double x = e.getX() - plot.getPlotArea().getX();
-            selectedTime = plot.getAxisRenderer(XYPlot.AXIS_X)
-                    .viewToWorld(plot.getAxis(XYPlot.AXIS_X), x, false)
-                    .doubleValue();
+            selectedTime =
+                    plot.getAxisRenderer(XYPlot.AXIS_X)
+                            .viewToWorld(plot.getAxis(XYPlot.AXIS_X), x, false)
+                            .doubleValue();
             update();
         }
 
@@ -74,8 +77,7 @@ public class Metrics extends JPanel {
                 int index = e.getKeyChar() - '1';
                 if (index < plot.getData().size()) {
                     sourceIndex = index;
-                    System.out.println(
-                            "Selected " + plot.getData().get(sourceIndex).getName());
+                    System.out.println("Selected " + plot.getData().get(sourceIndex).getName());
                     update();
                 }
             }
@@ -140,18 +142,22 @@ public class Metrics extends JPanel {
         add(panel, BorderLayout.CENTER);
 
         final int TIMER_PERIOD_MS = 50;
-        playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                double deltaSteps = (TIMER_PERIOD_MS / 1000.0) / Parameters.TIME_STEP;
-                int newValue = slider.getValue() + (int) deltaSteps;
-                if (newValue > slider.getMaximum()) {
-                    newValue = slider.getMaximum();
-                    playbackTimer.stop();
-                }
-                slider.setValue(newValue);
-            }
-        });
+        playbackTimer =
+                new Timer(
+                        TIMER_PERIOD_MS,
+                        new ActionListener() {
+                            @Override
+                            public void actionPerformed(final ActionEvent e) {
+                                double deltaSteps =
+                                        (TIMER_PERIOD_MS / 1000.0) / Parameters.TIME_STEP;
+                                int newValue = slider.getValue() + (int) deltaSteps;
+                                if (newValue > slider.getMaximum()) {
+                                    newValue = slider.getMaximum();
+                                    playbackTimer.stop();
+                                }
+                                slider.setValue(newValue);
+                            }
+                        });
         playbackTimer.setRepeats(true);
 
         Inspector inspector = new Inspector(plot);

@@ -64,13 +64,15 @@ public class DebugOI extends OIFragment {
         // press down the climber control button and nudge the climber up and down
         if (macropad.getButton(InputConstants.CONTROL_CLIMBER)) {
             if (macropad.getButton(InputConstants.NUDGE_UP)) {
-                whileAvailable((Superstructure ss) -> {
-                    ss.setGoal(new Climber.MotorPowers(-0.25, -0.25, true));
-                });
+                whileAvailable(
+                        (Superstructure ss) -> {
+                            ss.setGoal(new Climber.MotorPowers(-0.25, -0.25, true));
+                        });
             } else if (macropad.getButton(InputConstants.NUDGE_DOWN)) {
-                whileAvailable((Superstructure ss) -> {
-                    ss.setGoal(new Climber.MotorPowers(0.25, 0.25, true));
-                });
+                whileAvailable(
+                        (Superstructure ss) -> {
+                            ss.setGoal(new Climber.MotorPowers(0.25, 0.25, true));
+                        });
             }
         } else {
             onceAvailable((Superstructure ss) -> ss.setGoal(new Climber.Stop()));

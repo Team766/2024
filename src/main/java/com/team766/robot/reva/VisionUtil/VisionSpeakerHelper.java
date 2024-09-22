@@ -49,11 +49,13 @@ public class VisionSpeakerHelper {
             Translation2d relativeTarget =
                     new Translation2d(transform3d.getX(), transform3d.getY());
 
-            absTargetPos = driveStatus
-                    .currentPosition()
-                    .getTranslation()
-                    .plus(relativeTarget.rotateBy(
-                            Rotation2d.fromDegrees((driveStatus.heading() + 180))));
+            absTargetPos =
+                    driveStatus
+                            .currentPosition()
+                            .getTranslation()
+                            .plus(
+                                    relativeTarget.rotateBy(
+                                            Rotation2d.fromDegrees((driveStatus.heading() + 180))));
 
             // SmartDashboard.putString("target pos", absTargetPos.toString());
 
@@ -84,9 +86,10 @@ public class VisionSpeakerHelper {
                 // Logger.get(Category.CAMERA).logRaw(Severity.WARNING, "Unable to use camera");
                 // LoggerExceptionUtils.logException(e);
             }
-            relativeTranslation2d = absTargetPos
-                    .minus(driveStatus.currentPosition().getTranslation())
-                    .rotateBy(Rotation2d.fromDegrees(-driveStatus.heading() - 180));
+            relativeTranslation2d =
+                    absTargetPos
+                            .minus(driveStatus.currentPosition().getTranslation())
+                            .rotateBy(Rotation2d.fromDegrees(-driveStatus.heading() - 180));
         }
     }
 

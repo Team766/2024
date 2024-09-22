@@ -19,14 +19,11 @@ public class SubsystemLoggingTest extends TestCase {
 
         public record TheGoal(List<Integer> ints) implements Goal {}
 
-        @StateVariable
-        public double value;
+        @StateVariable public double value;
 
-        @StateVariable
-        public Pose2d pose;
+        @StateVariable public Pose2d pose;
 
-        @StateVariable
-        public double[] array;
+        @StateVariable public double[] array;
 
         @Override
         protected Status updateState() {

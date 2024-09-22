@@ -40,13 +40,15 @@ public class DoubleJointedArm {
     private static final double J2_MASS = 5; // kg
     private static final double J1_FIRST_MOMENT_OF_MASS =
             J1_MASS * J1_LENGTH; // kg m, with the origin/axis at the first joint
-    private static final double J1_SECOND_MOMENT_OF_MASS = J1_MASS * J1_LENGTH
-            * J1_LENGTH; // kg m^2, with the origin/axis at the first joint - aka moment of
+    private static final double J1_SECOND_MOMENT_OF_MASS =
+            J1_MASS * J1_LENGTH
+                    * J1_LENGTH; // kg m^2, with the origin/axis at the first joint - aka moment of
     // inertia
     private static final double J2_FIRST_MOMENT_OF_MASS =
             J2_MASS * J2_LENGTH; // kg m, with the origin/axis at the second joint
-    private static final double J2_SECOND_MOMENT_OF_MASS = J2_MASS * J2_LENGTH
-            * J2_LENGTH; // kg m^2, with the origin/axis at the second joint - aka moment of
+    private static final double J2_SECOND_MOMENT_OF_MASS =
+            J2_MASS * J2_LENGTH
+                    * J2_LENGTH; // kg m^2, with the origin/axis at the second joint - aka moment of
     // inertia
 
     private static final double J1_GEAR_RATIO = 4. * 4. * 3. * (58. / 14.);
@@ -65,12 +67,13 @@ public class DoubleJointedArm {
     private Gears j1Gears = new Gears(J1_GEAR_RATIO, j1Motor);
     private Gears j2Gears = new Gears(J2_GEAR_RATIO, j2Motor);
 
-    private Matrix<N4, N1> state = VecBuilder.fill(
-            J1_INITIAL_ANGLE, // j1 angle, radians, relative to "down"
-            J2_INITIAL_ANGLE, // j2 angle, radians, relative to "down"
-            0, // j1 velocity, radians/sec
-            0 // j2 velocity, radians/sec
-            );
+    private Matrix<N4, N1> state =
+            VecBuilder.fill(
+                    J1_INITIAL_ANGLE, // j1 angle, radians, relative to "down"
+                    J2_INITIAL_ANGLE, // j2 angle, radians, relative to "down"
+                    0, // j1 velocity, radians/sec
+                    0 // j2 velocity, radians/sec
+                    );
 
     // Derivation of the equations of motion via Lagrangian mechanics.
     // This system is often referred to as a "double pendulum", and is a commonly studied problem,
@@ -219,27 +222,30 @@ public class DoubleJointedArm {
 
         final double Mx =
                 J2_FIRST_MOMENT_OF_MASS * J1_LENGTH * Math.cos(state.get(0, 0) - state.get(1, 0));
-        var M = Matrix.mat(N2.instance, N2.instance)
-                .fill(
-                        J1_SECOND_MOMENT_OF_MASS + J2_MASS * J1_LENGTH * J1_LENGTH,
-                        Mx,
-                        Mx,
-                        J2_SECOND_MOMENT_OF_MASS);
+        var M =
+                Matrix.mat(N2.instance, N2.instance)
+                        .fill(
+                                J1_SECOND_MOMENT_OF_MASS + J2_MASS * J1_LENGTH * J1_LENGTH,
+                                Mx,
+                                Mx,
+                                J2_SECOND_MOMENT_OF_MASS);
 
-        final double C = J2_FIRST_MOMENT_OF_MASS
-                * J1_LENGTH
-                * Math.sin(state.get(0, 0) - state.get(1, 0))
-                * state.get(2, 0)
-                * state.get(3, 0);
-        final var G = VecBuilder.fill(
-                C
-                        + (J1_FIRST_MOMENT_OF_MASS + J2_MASS * J1_LENGTH)
-                                * PhysicalConstants.GRAVITY_ACCELERATION
-                                * Math.sin(state.get(0, 0)),
-                -C
-                        + J2_FIRST_MOMENT_OF_MASS
-                                * PhysicalConstants.GRAVITY_ACCELERATION
-                                * Math.sin(state.get(1, 0)));
+        final double C =
+                J2_FIRST_MOMENT_OF_MASS
+                        * J1_LENGTH
+                        * Math.sin(state.get(0, 0) - state.get(1, 0))
+                        * state.get(2, 0)
+                        * state.get(3, 0);
+        final var G =
+                VecBuilder.fill(
+                        C
+                                + (J1_FIRST_MOMENT_OF_MASS + J2_MASS * J1_LENGTH)
+                                        * PhysicalConstants.GRAVITY_ACCELERATION
+                                        * Math.sin(state.get(0, 0)),
+                        -C
+                                + J2_FIRST_MOMENT_OF_MASS
+                                        * PhysicalConstants.GRAVITY_ACCELERATION
+                                        * Math.sin(state.get(1, 0)));
         var T = motorTorques.minus(G);
 
         if (T.get(0, 0) * jointLimits.get(0, 0) < 0) {
@@ -301,29 +307,43 @@ public class DoubleJointedArm {
      */
     public double getEnergy() {
         double y1 = -J1_FIRST_MOMENT_OF_MASS / J1_MASS * Math.cos(getJ1Angle());
-        double y2 = -J1_LENGTH * Math.cos(getJ1Angle())
-                - J2_FIRST_MOMENT_OF_MASS / J2_MASS * Math.cos(getJ2Angle());
+        double y2 =
+                -J1_LENGTH * Math.cos(getJ1Angle())
+                        - J2_FIRST_MOMENT_OF_MASS / J2_MASS * Math.cos(getJ2Angle());
         double dx1 = J1_FIRST_MOMENT_OF_MASS / J1_MASS * Math.cos(getJ1Angle()) * getJ1Velocity();
         double dy1 = J1_FIRST_MOMENT_OF_MASS / J1_MASS * Math.sin(getJ1Angle()) * getJ1Velocity();
-        double dx2 = J1_LENGTH * Math.cos(getJ1Angle()) * getJ1Velocity()
-                + J2_FIRST_MOMENT_OF_MASS / J2_MASS * Math.cos(getJ2Angle()) * getJ2Velocity();
-        double dy2 = J1_LENGTH * Math.sin(getJ1Angle()) * getJ1Velocity()
-                + J2_FIRST_MOMENT_OF_MASS / J2_MASS * Math.sin(getJ2Angle()) * getJ2Velocity();
+        double dx2 =
+                J1_LENGTH * Math.cos(getJ1Angle()) * getJ1Velocity()
+                        + J2_FIRST_MOMENT_OF_MASS
+                                / J2_MASS
+                                * Math.cos(getJ2Angle())
+                                * getJ2Velocity();
+        double dy2 =
+                J1_LENGTH * Math.sin(getJ1Angle()) * getJ1Velocity()
+                        + J2_FIRST_MOMENT_OF_MASS
+                                / J2_MASS
+                                * Math.sin(getJ2Angle())
+                                * getJ2Velocity();
 
-        double energy = 0.5 * J1_MASS * (dx1 * dx1 + dy1 * dy1)
-                + 0.5
-                        * (J1_SECOND_MOMENT_OF_MASS
-                                - J1_FIRST_MOMENT_OF_MASS * J1_FIRST_MOMENT_OF_MASS / J1_MASS)
-                        * getJ1Velocity()
-                        * getJ1Velocity()
-                + 0.5 * J2_MASS * (dx2 * dx2 + dy2 * dy2)
-                + 0.5
-                        * (J2_SECOND_MOMENT_OF_MASS
-                                - J2_FIRST_MOMENT_OF_MASS * J2_FIRST_MOMENT_OF_MASS / J2_MASS)
-                        * getJ2Velocity()
-                        * getJ2Velocity()
-                + J1_MASS * y1 * PhysicalConstants.GRAVITY_ACCELERATION
-                + J2_MASS * y2 * PhysicalConstants.GRAVITY_ACCELERATION;
+        double energy =
+                0.5 * J1_MASS * (dx1 * dx1 + dy1 * dy1)
+                        + 0.5
+                                * (J1_SECOND_MOMENT_OF_MASS
+                                        - J1_FIRST_MOMENT_OF_MASS
+                                                * J1_FIRST_MOMENT_OF_MASS
+                                                / J1_MASS)
+                                * getJ1Velocity()
+                                * getJ1Velocity()
+                        + 0.5 * J2_MASS * (dx2 * dx2 + dy2 * dy2)
+                        + 0.5
+                                * (J2_SECOND_MOMENT_OF_MASS
+                                        - J2_FIRST_MOMENT_OF_MASS
+                                                * J2_FIRST_MOMENT_OF_MASS
+                                                / J2_MASS)
+                                * getJ2Velocity()
+                                * getJ2Velocity()
+                        + J1_MASS * y1 * PhysicalConstants.GRAVITY_ACCELERATION
+                        + J2_MASS * y2 * PhysicalConstants.GRAVITY_ACCELERATION;
         return energy;
     }
 

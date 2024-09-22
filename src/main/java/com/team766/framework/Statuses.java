@@ -57,6 +57,7 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
     }
 
     private static final Statuses instance = new Statuses();
+
     /* package */ static Statuses getInstance() {
         return instance;
     }
@@ -119,14 +120,15 @@ public final class Statuses implements Iterable<Statuses.Entry<?>> {
     @SafeVarargs
     public final Optional<Entry<?>> getFirst(Class<? extends Record>... statusClasses) {
         return data.stream()
-                .filter(s -> {
-                    for (var statusClass : statusClasses) {
-                        if (statusClass.isInstance(s.status)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })
+                .filter(
+                        s -> {
+                            for (var statusClass : statusClasses) {
+                                if (statusClass.isInstance(s.status)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })
                 .findFirst();
     }
 

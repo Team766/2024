@@ -77,8 +77,9 @@ public class Shoulder extends RobotSubsystem<Shoulder.Status, Shoulder.Goal> {
 
         ffGain = ConfigFileReader.getInstance().getDouble("shoulder.leftMotor.ffGain");
 
-        absoluteEncoder = (REVThroughBoreDutyCycleEncoder)
-                RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
+        absoluteEncoder =
+                (REVThroughBoreDutyCycleEncoder)
+                        RobotProvider.instance.getEncoder(SHOULDER_ENCODER);
         leftMotor.setSensorPosition(DEFAULT_POSITION);
     }
 
@@ -158,8 +159,9 @@ public class Shoulder extends RobotSubsystem<Shoulder.Status, Shoulder.Goal> {
     }
 
     private void applyPID(Status status, double targetAngle) {
-        targetAngle = com.team766.math.Math.clamp(
-                targetAngle, RotateToPosition.BOTTOM.angle(), RotateToPosition.TOP.angle());
+        targetAngle =
+                com.team766.math.Math.clamp(
+                        targetAngle, RotateToPosition.BOTTOM.angle(), RotateToPosition.TOP.angle());
         final double targetRotations = degreesToRotations(targetAngle);
 
         // SmartDashboard.putBoolean("Shoulder at angle", status.isNearTo(g));

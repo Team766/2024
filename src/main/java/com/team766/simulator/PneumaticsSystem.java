@@ -42,13 +42,15 @@ public class PneumaticsSystem {
             throw new RuntimeException("Your pneumatics system has no storage volume");
         }
         if (!initialized) {
-            compressedAirVolume = systemVolume
-                    * (systemPressure + PhysicalConstants.ATMOSPHERIC_PRESSURE)
-                    / PhysicalConstants.ATMOSPHERIC_PRESSURE;
+            compressedAirVolume =
+                    systemVolume
+                            * (systemPressure + PhysicalConstants.ATMOSPHERIC_PRESSURE)
+                            / PhysicalConstants.ATMOSPHERIC_PRESSURE;
             initialized = true;
         }
-        systemPressure = compressedAirVolume / systemVolume * PhysicalConstants.ATMOSPHERIC_PRESSURE
-                - PhysicalConstants.ATMOSPHERIC_PRESSURE;
+        systemPressure =
+                compressedAirVolume / systemVolume * PhysicalConstants.ATMOSPHERIC_PRESSURE
+                        - PhysicalConstants.ATMOSPHERIC_PRESSURE;
     }
 
     public double getSystemPressure() {

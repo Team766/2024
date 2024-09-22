@@ -43,35 +43,41 @@ public class Superstructure extends RobotSystem<Superstructure.Status, Superstru
             Elevator.MoveToPosition elevatorSetpoint,
             Wrist.RotateToPosition wristSetpoint)
             implements Goal {
-        public static final MoveToPosition RETRACTED = new MoveToPosition(
-                Shoulder.RotateToPosition.BOTTOM,
-                Elevator.MoveToPosition.RETRACTED,
-                Wrist.RotateToPosition.RETRACTED);
+        public static final MoveToPosition RETRACTED =
+                new MoveToPosition(
+                        Shoulder.RotateToPosition.BOTTOM,
+                        Elevator.MoveToPosition.RETRACTED,
+                        Wrist.RotateToPosition.RETRACTED);
 
-        public static final MoveToPosition EXTENDED_TO_LOW = new MoveToPosition(
-                Shoulder.RotateToPosition.FLOOR,
-                Elevator.MoveToPosition.LOW,
-                Wrist.RotateToPosition.LEVEL);
+        public static final MoveToPosition EXTENDED_TO_LOW =
+                new MoveToPosition(
+                        Shoulder.RotateToPosition.FLOOR,
+                        Elevator.MoveToPosition.LOW,
+                        Wrist.RotateToPosition.LEVEL);
 
-        public static final MoveToPosition EXTENDED_TO_MID = new MoveToPosition(
-                Shoulder.RotateToPosition.RAISED,
-                Elevator.MoveToPosition.MID,
-                Wrist.RotateToPosition.MID_NODE);
+        public static final MoveToPosition EXTENDED_TO_MID =
+                new MoveToPosition(
+                        Shoulder.RotateToPosition.RAISED,
+                        Elevator.MoveToPosition.MID,
+                        Wrist.RotateToPosition.MID_NODE);
 
-        public static final MoveToPosition EXTENDED_TO_HIGH = new MoveToPosition(
-                Shoulder.RotateToPosition.RAISED,
-                Elevator.MoveToPosition.HIGH,
-                Wrist.RotateToPosition.HIGH_NODE);
+        public static final MoveToPosition EXTENDED_TO_HIGH =
+                new MoveToPosition(
+                        Shoulder.RotateToPosition.RAISED,
+                        Elevator.MoveToPosition.HIGH,
+                        Wrist.RotateToPosition.HIGH_NODE);
 
-        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CONE = new MoveToPosition(
-                Shoulder.RotateToPosition.RAISED,
-                Elevator.MoveToPosition.HUMAN_CONES,
-                Wrist.RotateToPosition.HUMAN_CONES);
+        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CONE =
+                new MoveToPosition(
+                        Shoulder.RotateToPosition.RAISED,
+                        Elevator.MoveToPosition.HUMAN_CONES,
+                        Wrist.RotateToPosition.HUMAN_CONES);
 
-        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CUBE = new MoveToPosition(
-                Shoulder.RotateToPosition.RAISED,
-                Elevator.MoveToPosition.HUMAN_CUBES,
-                Wrist.RotateToPosition.HUMAN_CUBES);
+        public static final MoveToPosition EXTENDED_TO_HUMAN_PLAYER_CUBE =
+                new MoveToPosition(
+                        Shoulder.RotateToPosition.RAISED,
+                        Elevator.MoveToPosition.HUMAN_CUBES,
+                        Wrist.RotateToPosition.HUMAN_CUBES);
 
         public static MoveToPosition Extended(
                 PlacementPosition position, GamePieceType gamePieceType) {

@@ -50,8 +50,10 @@ public class ForwardApriltagCamera
         }
 
         Result<Transform3d, AprilTagGeneralCheckedException> speakerTagTransform =
-                Result.capture(() -> GrayScaleCamera.getBestTargetTransform3d(
-                        camera.getTrackedTargetWithID(tagId)));
+                Result.capture(
+                        () ->
+                                GrayScaleCamera.getBestTargetTransform3d(
+                                        camera.getTrackedTargetWithID(tagId)));
 
         return new Status(
                 camera != null && camera.isConnected(),

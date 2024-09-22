@@ -75,16 +75,18 @@ public class DriveToAndScoreAt extends VisionPIDProcedure {
                     turnConstant = 0; // needed?
                     yPID.calculate(lastY);
                     xPID.calculate(lastX);
-                    drive.setGoal(new Drive.RobotOrientedVelocity(
-                            yPID.getOutput(), -xPID.getOutput(), turnConstant));
+                    drive.setGoal(
+                            new Drive.RobotOrientedVelocity(
+                                    yPID.getOutput(), -xPID.getOutput(), turnConstant));
                 }
             }
 
             tempShooter.setAngle(score.angle);
             tempShooter.runMotors(score.speed);
 
-            drive.setGoal(new Drive.RobotOrientedVelocity(
-                    yPID.getOutput(), -xPID.getOutput(), turnConstant));
+            drive.setGoal(
+                    new Drive.RobotOrientedVelocity(
+                            yPID.getOutput(), -xPID.getOutput(), turnConstant));
         }
 
         // Stand in for a full shoot procedure

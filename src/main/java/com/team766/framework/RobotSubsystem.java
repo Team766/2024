@@ -102,8 +102,9 @@ public abstract class RobotSubsystem<StatusRecord extends Record, Goal> extends 
             LoggerExceptionUtils.logException(ex);
         }
         try {
-            currentStatus = (StatusRecord)
-                    ReflectionLogging.fromLog(getStatusClass(), "currentStatus", table);
+            currentStatus =
+                    (StatusRecord)
+                            ReflectionLogging.fromLog(getStatusClass(), "currentStatus", table);
         } catch (Exception ex) {
             LoggerExceptionUtils.logException(ex);
         }
@@ -146,9 +147,12 @@ public abstract class RobotSubsystem<StatusRecord extends Record, Goal> extends 
     @SuppressWarnings("unchecked")
     private Class<StatusRecord> getStatusClass() {
         if (statusClass == null) {
-            statusClass = (Class<StatusRecord>) ReflectionUtils.getRawType(
-                    ReflectionUtils.getTypeArguments(
-                            TypeToken.of(this.getClass()).getSupertype(RobotSubsystem.class))[0]);
+            statusClass =
+                    (Class<StatusRecord>)
+                            ReflectionUtils.getRawType(
+                                    ReflectionUtils.getTypeArguments(
+                                            TypeToken.of(this.getClass())
+                                                    .getSupertype(RobotSubsystem.class))[0]);
         }
         return statusClass;
     }
@@ -158,9 +162,12 @@ public abstract class RobotSubsystem<StatusRecord extends Record, Goal> extends 
     @SuppressWarnings("unchecked")
     protected Class<Goal> getGoalClass() {
         if (goalClass == null) {
-            goalClass = (Class<Goal>) ReflectionUtils.getRawType(
-                    ReflectionUtils.getTypeArguments(
-                            TypeToken.of(this.getClass()).getSupertype(RobotSubsystem.class))[1]);
+            goalClass =
+                    (Class<Goal>)
+                            ReflectionUtils.getRawType(
+                                    ReflectionUtils.getTypeArguments(
+                                            TypeToken.of(this.getClass())
+                                                    .getSupertype(RobotSubsystem.class))[1]);
         }
         return goalClass;
     }

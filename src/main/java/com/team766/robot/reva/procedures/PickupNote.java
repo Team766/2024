@@ -32,8 +32,7 @@ public class PickupNote extends VisionPIDProcedure {
         intake.setGoal(new Intake.SetPowerForSensorDistance());
 
         while (!intake.getStatus().hasNoteInIntake()) {
-            Optional<Double> yawInDegrees =
-                    getStatus(NoteCamera.Status.class).get().yawOfRing();
+            Optional<Double> yawInDegrees = getStatus(NoteCamera.Status.class).get().yawOfRing();
             if (!yawInDegrees.isPresent()) {
                 break;
             }

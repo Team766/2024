@@ -114,16 +114,10 @@ public class ShootNow extends VisionPIDProcedure {
     }
 
     private Transform3d getTransform3dOfRobotToTag() throws AprilTagGeneralCheckedException {
-        return getStatus(ForwardApriltagCamera.Status.class)
-                .get()
-                .speakerTagTransform()
-                .get();
+        return getStatus(ForwardApriltagCamera.Status.class).get().speakerTagTransform().get();
     }
 
     private boolean seesTarget() {
-        return getStatus(ForwardApriltagCamera.Status.class)
-                .get()
-                .speakerTagTransform()
-                .hasValue();
+        return getStatus(ForwardApriltagCamera.Status.class).get().speakerTagTransform().hasValue();
     }
 }

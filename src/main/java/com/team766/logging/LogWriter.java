@@ -25,32 +25,35 @@ public class LogWriter {
         m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
         m_fileStream = new FileOutputStream(filename);
         m_dataStream = CodedOutputStream.newInstance(m_fileStream);
-        m_workerThread = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    LogEntry entry;
-                    try {
-                        entry = m_entriesQueue.poll();
-                    } catch (InterruptedException e) {
-                        System.out.println("Logger thread received interruption");
-                        continue;
-                    }
-                    if (entry == LogEntryComparator.TERMINATION_SENTINAL) {
-                        // close() sends this sentinel element when it's time to
-                        // exit
-                        return;
-                    }
-                    try {
-                        m_dataStream.writeMessageNoTag(entry);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Logger.get(Category.JAVA_EXCEPTION)
-                                .logOnlyInMemory(
-                                        Severity.ERROR, LoggerExceptionUtils.exceptionToString(e));
-                    }
-                }
-            }
-        });
+        m_workerThread =
+                new Thread(
+                        new Runnable() {
+                            public void run() {
+                                while (true) {
+                                    LogEntry entry;
+                                    try {
+                                        entry = m_entriesQueue.poll();
+                                    } catch (InterruptedException e) {
+                                        System.out.println("Logger thread received interruption");
+                                        continue;
+                                    }
+                                    if (entry == LogEntryComparator.TERMINATION_SENTINAL) {
+                                        // close() sends this sentinel element when it's time to
+                                        // exit
+                                        return;
+                                    }
+                                    try {
+                                        m_dataStream.writeMessageNoTag(entry);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        Logger.get(Category.JAVA_EXCEPTION)
+                                                .logOnlyInMemory(
+                                                        Severity.ERROR,
+                                                        LoggerExceptionUtils.exceptionToString(e));
+                                    }
+                                }
+                            }
+                        });
         m_workerThread.start();
     }
 
@@ -78,8 +81,9 @@ public class LogWriter {
             return;
         }
         if (!m_running) {
-            System.out.println("Log message during shutdown: "
-                    + LogEntryRenderer.renderLogEntry(entry.build(), null));
+            System.out.println(
+                    "Log message during shutdown: "
+                            + LogEntryRenderer.renderLogEntry(entry.build(), null));
             return;
         }
         final String format = entry.getMessageStr();

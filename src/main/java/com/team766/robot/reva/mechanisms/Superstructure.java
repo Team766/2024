@@ -39,9 +39,10 @@ public class Superstructure extends RobotSystem<Superstructure.Status, Superstru
 
     @Override
     protected void dispatch(Status status, Goal goal, boolean goalChanged) {
-        final boolean climberIsBelowArm = climber.getStatus().heightLeft()
-                        < Climber.MoveToPosition.BELOW_ARM.height()
-                && climber.getStatus().heightRight() < Climber.MoveToPosition.BELOW_ARM.height();
+        final boolean climberIsBelowArm =
+                climber.getStatus().heightLeft() < Climber.MoveToPosition.BELOW_ARM.height()
+                        && climber.getStatus().heightRight()
+                                < Climber.MoveToPosition.BELOW_ARM.height();
 
         switch (goal) {
             case ShoulderGoal g -> {

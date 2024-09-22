@@ -13,17 +13,20 @@ public class SimMotorController extends LocalMotorController {
     SimMotorController(
             final String configPrefix,
             final ProgramInterface.CANMotorControllerCommunication channel) {
-        super(configPrefix, new SimBasicMotorController(channel), new ControlInputReader() {
-            @Override
-            public double getPosition() {
-                return channel.status.sensorPosition;
-            }
+        super(
+                configPrefix,
+                new SimBasicMotorController(channel),
+                new ControlInputReader() {
+                    @Override
+                    public double getPosition() {
+                        return channel.status.sensorPosition;
+                    }
 
-            @Override
-            public double getRate() {
-                return channel.status.sensorVelocity;
-            }
-        });
+                    @Override
+                    public double getRate() {
+                        return channel.status.sensorVelocity;
+                    }
+                });
     }
 }
 

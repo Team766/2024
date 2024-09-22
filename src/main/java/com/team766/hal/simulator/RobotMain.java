@@ -28,46 +28,48 @@ public class RobotMain {
 
             robot.robotInit();
 
-            ProgramInterface.program = new Program() {
-                ProgramInterface.RobotMode prevRobotMode = null;
+            ProgramInterface.program =
+                    new Program() {
+                        ProgramInterface.RobotMode prevRobotMode = null;
 
-                @Override
-                public void step(double dt) {
-                    switch (ProgramInterface.robotMode) {
-                        case DISABLED:
-                            if (prevRobotMode != ProgramInterface.RobotMode.DISABLED) {
-                                robot.disabledInit();
-                                prevRobotMode = ProgramInterface.RobotMode.DISABLED;
+                        @Override
+                        public void step(double dt) {
+                            switch (ProgramInterface.robotMode) {
+                                case DISABLED:
+                                    if (prevRobotMode != ProgramInterface.RobotMode.DISABLED) {
+                                        robot.disabledInit();
+                                        prevRobotMode = ProgramInterface.RobotMode.DISABLED;
+                                    }
+                                    robot.disabledPeriodic();
+                                    break;
+                                case AUTON:
+                                    if (prevRobotMode != ProgramInterface.RobotMode.AUTON) {
+                                        robot.autonomousInit();
+                                        prevRobotMode = ProgramInterface.RobotMode.AUTON;
+                                    }
+                                    robot.autonomousPeriodic();
+                                    break;
+                                case TELEOP:
+                                    if (prevRobotMode != ProgramInterface.RobotMode.TELEOP) {
+                                        robot.teleopInit();
+                                        prevRobotMode = ProgramInterface.RobotMode.TELEOP;
+                                    }
+                                    robot.teleopPeriodic();
+                                    break;
+                                default:
+                                    LoggerExceptionUtils.logException(
+                                            new IllegalArgumentException(
+                                                    "Value of ProgramInterface.robotMode invalid. Provided value: "
+                                                            + ProgramInterface.robotMode));
+                                    break;
                             }
-                            robot.disabledPeriodic();
-                            break;
-                        case AUTON:
-                            if (prevRobotMode != ProgramInterface.RobotMode.AUTON) {
-                                robot.autonomousInit();
-                                prevRobotMode = ProgramInterface.RobotMode.AUTON;
-                            }
-                            robot.autonomousPeriodic();
-                            break;
-                        case TELEOP:
-                            if (prevRobotMode != ProgramInterface.RobotMode.TELEOP) {
-                                robot.teleopInit();
-                                prevRobotMode = ProgramInterface.RobotMode.TELEOP;
-                            }
-                            robot.teleopPeriodic();
-                            break;
-                        default:
-                            LoggerExceptionUtils.logException(new IllegalArgumentException(
-                                    "Value of ProgramInterface.robotMode invalid. Provided value: "
-                                            + ProgramInterface.robotMode));
-                            break;
-                    }
-                }
+                        }
 
-                @Override
-                public void reset() {
-                    robot.resetAutonomousMode("simulation reset");
-                }
-            };
+                        @Override
+                        public void reset() {
+                            robot.resetAutonomousMode("simulation reset");
+                        }
+                    };
         } catch (Exception exc) {
             exc.printStackTrace();
             LoggerExceptionUtils.logException(exc);
@@ -87,9 +89,10 @@ public class RobotMain {
                 }
                 break;
             default:
-                LoggerExceptionUtils.logException(new IllegalArgumentException(
-                        "Unknown simulator mode. ProgramInterface.robotMode: "
-                                + ProgramInterface.robotMode));
+                LoggerExceptionUtils.logException(
+                        new IllegalArgumentException(
+                                "Unknown simulator mode. ProgramInterface.robotMode: "
+                                        + ProgramInterface.robotMode));
                 break;
         }
     }

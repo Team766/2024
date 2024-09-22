@@ -30,22 +30,26 @@ public class BoxOpOI extends OIFragment {
             if (Math.abs(gamepad.getAxis(InputConstants.XBOX_LS_Y)) > InputConstants.XBOX_DEADZONE
                     || Math.abs(gamepad.getAxis(InputConstants.XBOX_RS_Y))
                             > InputConstants.XBOX_DEADZONE) {
-                whileAvailable((Superstructure ss) -> {
-                    boolean overrideSoftLimits = gamepad.getButton(InputConstants.XBOX_X)
-                            && gamepad.getButton(InputConstants.XBOX_Y);
-                    ss.setGoal(new Climber.MotorPowers(
-                            gamepad.getAxis(InputConstants.XBOX_LS_Y),
-                            gamepad.getAxis(InputConstants.XBOX_RS_Y),
-                            overrideSoftLimits));
-                });
+                whileAvailable(
+                        (Superstructure ss) -> {
+                            boolean overrideSoftLimits =
+                                    gamepad.getButton(InputConstants.XBOX_X)
+                                            && gamepad.getButton(InputConstants.XBOX_Y);
+                            ss.setGoal(
+                                    new Climber.MotorPowers(
+                                            gamepad.getAxis(InputConstants.XBOX_LS_Y),
+                                            gamepad.getAxis(InputConstants.XBOX_RS_Y),
+                                            overrideSoftLimits));
+                        });
             } else {
                 whileAvailable((Superstructure ss) -> ss.setGoal(new Climber.Stop()));
             }
         } else {
-            onceAvailable((Superstructure ss) -> {
-                // restore the shoulder (and stop the climber)
-                ss.setGoal(new Shoulder.RotateToPosition(85));
-            });
+            onceAvailable(
+                    (Superstructure ss) -> {
+                        // restore the shoulder (and stop the climber)
+                        ss.setGoal(new Shoulder.RotateToPosition(85));
+                    });
 
             // shoulder positions
             if (gamepad.getButton(InputConstants.XBOX_A)) {
@@ -61,13 +65,15 @@ public class BoxOpOI extends OIFragment {
                 whileAvailable((Superstructure ss) -> ss.setGoal(Shoulder.RotateToPosition.AMP));
             } else if (gamepad.getButton(InputConstants.XBOX_Y)) {
                 // shooter assist
-                whileAvailable((Superstructure ss) ->
-                        ss.setGoal(Shoulder.RotateToPosition.SHOOTER_ASSIST));
+                whileAvailable(
+                        (Superstructure ss) ->
+                                ss.setGoal(Shoulder.RotateToPosition.SHOOTER_ASSIST));
                 // Currently it will only modify the speed if the right trigger is already held.
                 // TODO: Make this more tolerant for when Y is pressed before right trigger.
                 if (getStatus(Shooter.Status.class).get().targetSpeed() != 0.0) {
-                    whileAvailable((Shooter shooter) ->
-                            shooter.setGoal(Shooter.ShootAtSpeed.SHOOTER_ASSIST_SPEED));
+                    whileAvailable(
+                            (Shooter shooter) ->
+                                    shooter.setGoal(Shooter.ShootAtSpeed.SHOOTER_ASSIST_SPEED));
                 }
             } else if (gamepad.getPOV() == 0) {
                 whileAvailable((Superstructure ss) -> ss.setGoal(new Shoulder.NudgeUp()));

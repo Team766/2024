@@ -153,15 +153,19 @@ public class Elevator extends RobotSubsystem<Elevator.Status, Elevator.Goal> {
             }
             case NudgeUp n -> {
                 // NOTE: this could artificially limit nudge range
-                double targetHeight = Math.min(
-                        status.height() + NUDGE_INCREMENT, MoveToPosition.EXTENDED.height());
+                double targetHeight =
+                        Math.min(
+                                status.height() + NUDGE_INCREMENT,
+                                MoveToPosition.EXTENDED.height());
 
                 setGoal(new MoveToPosition(targetHeight));
             }
             case NudgeDown n -> {
                 // NOTE: this could artificially limit nudge range
-                double targetHeight = Math.max(
-                        status.height() - NUDGE_INCREMENT, MoveToPosition.RETRACTED.height());
+                double targetHeight =
+                        Math.max(
+                                status.height() - NUDGE_INCREMENT,
+                                MoveToPosition.RETRACTED.height());
                 setGoal(new MoveToPosition(targetHeight));
             }
             case MoveToPosition position -> {

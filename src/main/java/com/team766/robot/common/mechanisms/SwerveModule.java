@@ -47,10 +47,11 @@ public class SwerveModule {
      * Multiply to convert from wheel tip speed to motor angular speed
      * Divide to convert from angular speed to wheel tip speed
      */
-    private static final double MOTOR_WHEEL_FACTOR_MPS = 1.
-            / WHEEL_RADIUS // Wheel radians/sec
-            * DRIVE_GEAR_RATIO // Motor radians/sec
-            / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
+    private static final double MOTOR_WHEEL_FACTOR_MPS =
+            1.
+                    / WHEEL_RADIUS // Wheel radians/sec
+                    * DRIVE_GEAR_RATIO // Motor radians/sec
+                    / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
     // TUNE THESE!
     private static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
@@ -116,13 +117,15 @@ public class SwerveModule {
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
 
         // Add 360 * number of full rotations to vectorTheta, then add offset
-        double realAngleDegrees = vectorTheta
-                + 360
-                        * (Math.round((steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR
-                                        - offset
-                                        - vectorTheta)
-                                / 360))
-                + offset;
+        double realAngleDegrees =
+                vectorTheta
+                        + 360
+                                * (Math.round(
+                                        (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR
+                                                        - offset
+                                                        - vectorTheta)
+                                                / 360))
+                        + offset;
         // double degreeChange =
         //         realAngleDegrees - (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR);
         // checks if it would be more efficient to move the wheel in the opposite direction

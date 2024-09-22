@@ -19,9 +19,10 @@ public class AirCompressor implements ElectricalDevice, PneumaticDevice {
         0.88, 0.50, 0.43, 0.36, 0.30, 0.27, 0.25, 0.24, 0.24, 0.23, 0.22, 0.22
     };
     private static final double[] CURRENTS = {7., 8., 8., 9., 9., 9., 10., 10., 10., 11., 11., 10.};
-    private static final double[] PRESSURES = Arrays.stream(PRESSURES_PSI)
-            .map(psi -> psi * PneumaticsSystem.PSI_TO_PASCALS)
-            .toArray();
+    private static final double[] PRESSURES =
+            Arrays.stream(PRESSURES_PSI)
+                    .map(psi -> psi * PneumaticsSystem.PSI_TO_PASCALS)
+                    .toArray();
     private static final double[] FLOW_RATES =
             Arrays.stream(FLOW_RATES_CFM).map(cfm -> cfm * CFM_TO_M3_PER_SEC).toArray();
 

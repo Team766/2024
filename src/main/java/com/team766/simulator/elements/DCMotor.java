@@ -54,11 +54,12 @@ public class DCMotor implements ElectricalDevice, MechanicalAngularDevice {
         m_name = name;
 
         this.motorResistance = referenceVoltage / stallCurrentAmps;
-        this.kV = freeSpeedRpm
-                / 60.0
-                * 2
-                * Math.PI
-                / (referenceVoltage - motorResistance * freeCurrentAmps);
+        this.kV =
+                freeSpeedRpm
+                        / 60.0
+                        * 2
+                        * Math.PI
+                        / (referenceVoltage - motorResistance * freeCurrentAmps);
         this.kT = stallTorqueNewtonMeters / stallCurrentAmps;
     }
 
@@ -71,8 +72,9 @@ public class DCMotor implements ElectricalDevice, MechanicalAngularDevice {
 
     @Override
     public ElectricalDevice.Output step(ElectricalDevice.Input input, double dt) {
-        electricalState = new ElectricalDevice.Output(
-                (input.voltage - mechanicalState.angularVelocity / kV) / motorResistance);
+        electricalState =
+                new ElectricalDevice.Output(
+                        (input.voltage - mechanicalState.angularVelocity / kV) / motorResistance);
         return electricalState;
     }
 

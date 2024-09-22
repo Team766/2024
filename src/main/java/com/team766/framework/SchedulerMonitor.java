@@ -15,9 +15,10 @@ public class SchedulerMonitor {
 
     public static void start() {
         if (c_thread != null) {
-            Commands.run(() -> {
-                ++c_iterationCount;
-            });
+            Commands.run(
+                    () -> {
+                        ++c_iterationCount;
+                    });
             CommandScheduler.getInstance()
                     .onCommandBeforeExecute(command -> c_currentCommand = command);
             CommandScheduler.getInstance().onCommandExecute(command -> c_currentCommand = null);
@@ -57,9 +58,12 @@ public class SchedulerMonitor {
                         .logRaw(
                                 Severity.INFO,
                                 Thread.getAllStackTraces().entrySet().stream()
-                                        .map(e -> e.getKey().getName()
-                                                + ":\n"
-                                                + StackTraceUtils.getStackTrace(e.getValue()))
+                                        .map(
+                                                e ->
+                                                        e.getKey().getName()
+                                                                + ":\n"
+                                                                + StackTraceUtils.getStackTrace(
+                                                                        e.getValue()))
                                         .collect(Collectors.joining("\n")));
             }
 

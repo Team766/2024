@@ -45,11 +45,12 @@ public class OI extends OIBase {
             whileAvailable(
                     (Drive drive,
                             TempShooter tempShooter,
-                            ForwardApriltagCamera forwardApriltagCamera) -> new DriveToAndScoreAt(
-                            ScoringPositions.makerSpace1R,
-                            drive,
-                            tempShooter,
-                            forwardApriltagCamera));
+                            ForwardApriltagCamera forwardApriltagCamera) ->
+                            new DriveToAndScoreAt(
+                                    ScoringPositions.makerSpace1R,
+                                    drive,
+                                    tempShooter,
+                                    forwardApriltagCamera));
         }
 
         /*
@@ -61,11 +62,12 @@ public class OI extends OIBase {
             whileAvailable(
                     (Drive drive,
                             TempShooter tempShooter,
-                            ForwardApriltagCamera forwardApriltagCamera) -> new DriveToAndScoreAt(
-                            ScoringPositions.makerSpace1L,
-                            drive,
-                            tempShooter,
-                            forwardApriltagCamera));
+                            ForwardApriltagCamera forwardApriltagCamera) ->
+                            new DriveToAndScoreAt(
+                                    ScoringPositions.makerSpace1L,
+                                    drive,
+                                    tempShooter,
+                                    forwardApriltagCamera));
         }
 
         /*
@@ -125,10 +127,13 @@ public class OI extends OIBase {
                         + Math.abs(joystick0.getAxis(1))
                         + Math.abs(joystick1.getAxis(0))
                 > 0.05) {
-            whileAvailable((Drive drive) -> drive.setGoal(new Drive.RobotOrientedVelocity(
-                    joystick0.getAxis(0) * .2,
-                    -joystick0.getAxis(1) * .2,
-                    joystick1.getAxis(0) * .2)));
+            whileAvailable(
+                    (Drive drive) ->
+                            drive.setGoal(
+                                    new Drive.RobotOrientedVelocity(
+                                            joystick0.getAxis(0) * .2,
+                                            -joystick0.getAxis(1) * .2,
+                                            joystick1.getAxis(0) * .2)));
         }
 
         byDefault((Drive drive) -> drive.setGoal(new Drive.StopDrive()));

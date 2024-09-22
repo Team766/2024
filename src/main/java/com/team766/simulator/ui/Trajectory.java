@@ -49,10 +49,11 @@ public class Trajectory extends JPanel {
         add(new PlaybackControls(playbackTimer), BorderLayout.SOUTH);
 
         // Add the callback that will update this window when playback time progresses.
-        playbackTimer.addListener(event -> {
-            this.time = (Double) event.getNewValue();
-            this.repaint();
-        });
+        playbackTimer.addListener(
+                event -> {
+                    this.time = (Double) event.getNewValue();
+                    this.repaint();
+                });
     }
 
     /**

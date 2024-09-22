@@ -38,55 +38,68 @@ public class ReadLogs implements WebServer.Handler {
                 break;
             }
             LogEntry entry = entries.next();
-            r += String.format(
-                    "<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-                    entry.getCategory(),
-                    entry.getTime(),
-                    entry.getSeverity(),
-                    LogEntryRenderer.renderLogEntry(entry, reader));
+            r +=
+                    String.format(
+                            "<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
+                            entry.getCategory(),
+                            entry.getTime(),
+                            entry.getSeverity(),
+                            LogEntryRenderer.renderLogEntry(entry, reader));
         }
         r += "</table>";
         return r;
     }
 
     private String makePage(final String id) {
-        String r = String.join("\n", new String[] {
-            "<form action=\"" + ENDPOINT + "\"><p>",
-            HtmlElements.buildForm(
-                    "logFilePathBase", logFilePathBase == null ? "" : logFilePathBase),
-            "<input type=\"submit\" value=\"Change Log Directory\">",
-            "</p></form>",
-            logFilePathBase == null
-                    ? ""
-                    : "<p>Free disk space: "
-                            + NumberFormat.getNumberInstance(Locale.US)
-                                    .format(new File(logFilePathBase).getUsableSpace())
-                            + "</p>",
-            "<form action=\"" + ENDPOINT + "\"><p>",
-            HtmlElements.buildDropDown(
-                    "logFile",
-                    "",
-                    logFilePathBase == null ? new String[0] : new File(logFilePathBase).list()),
-            HtmlElements.buildDropDown(
-                    "category",
-                    "",
-                    Stream.concat(
-                                    Stream.of("", ALL_ERRORS_NAME),
-                                    Arrays.stream(Category.values()).map(Category::name))
-                            .toArray(String[]::new)),
-            "<input type=\"submit\" value=\"Open Log\">",
-            "</p></form>",
-        });
+        String r =
+                String.join(
+                        "\n",
+                        new String[] {
+                            "<form action=\"" + ENDPOINT + "\"><p>",
+                            HtmlElements.buildForm(
+                                    "logFilePathBase",
+                                    logFilePathBase == null ? "" : logFilePathBase),
+                            "<input type=\"submit\" value=\"Change Log Directory\">",
+                            "</p></form>",
+                            logFilePathBase == null
+                                    ? ""
+                                    : "<p>Free disk space: "
+                                            + NumberFormat.getNumberInstance(Locale.US)
+                                                    .format(
+                                                            new File(logFilePathBase)
+                                                                    .getUsableSpace())
+                                            + "</p>",
+                            "<form action=\"" + ENDPOINT + "\"><p>",
+                            HtmlElements.buildDropDown(
+                                    "logFile",
+                                    "",
+                                    logFilePathBase == null
+                                            ? new String[0]
+                                            : new File(logFilePathBase).list()),
+                            HtmlElements.buildDropDown(
+                                    "category",
+                                    "",
+                                    Stream.concat(
+                                                    Stream.of("", ALL_ERRORS_NAME),
+                                                    Arrays.stream(Category.values())
+                                                            .map(Category::name))
+                                            .toArray(String[]::new)),
+                            "<input type=\"submit\" value=\"Open Log\">",
+                            "</p></form>",
+                        });
         if (id != null) {
-            r += String.join("\n", new String[] {
-                "<h1>Log: " + readerDescriptions.get(id) + "</h1>",
-                makeLogEntriesTable(logReaders.get(id), readerStreams.get(id)),
-                "<input type=\"button\" onclick=\"window.location = '"
-                        + ENDPOINT
-                        + "?id="
-                        + id
-                        + "'; this.disabled=true; this.value='Loading...';\" value=\"Next page\" />",
-            });
+            r +=
+                    String.join(
+                            "\n",
+                            new String[] {
+                                "<h1>Log: " + readerDescriptions.get(id) + "</h1>",
+                                makeLogEntriesTable(logReaders.get(id), readerStreams.get(id)),
+                                "<input type=\"button\" onclick=\"window.location = '"
+                                        + ENDPOINT
+                                        + "?id="
+                                        + id
+                                        + "'; this.disabled=true; this.value='Loading...';\" value=\"Next page\" />",
+                            });
         }
         return r;
     }
@@ -106,16 +119,18 @@ public class ReadLogs implements WebServer.Handler {
         readerDescriptions.put(id, logFile + " " + description);
         readerStreams.put(
                 id,
-                filter.apply(Stream.generate(() -> {
-                                    try {
-                                        return reader.readNext();
-                                    } catch (EOFException e) {
-                                        return null;
-                                    } catch (IOException e) {
-                                        throw ReflectionUtils.sneakyThrow(e);
-                                    }
-                                })
-                                .takeWhile(e -> e != null))
+                filter.apply(
+                                Stream.generate(
+                                                () -> {
+                                                    try {
+                                                        return reader.readNext();
+                                                    } catch (EOFException e) {
+                                                        return null;
+                                                    } catch (IOException e) {
+                                                        throw ReflectionUtils.sneakyThrow(e);
+                                                    }
+                                                })
+                                        .takeWhile(e -> e != null))
                         .iterator());
         return id;
     }

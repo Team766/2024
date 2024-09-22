@@ -20,9 +20,11 @@ public class ScoreHigh extends Procedure {
 
     public void run(Context context) {
         superstructure.setGoal(Superstructure.MoveToPosition.EXTENDED_TO_HIGH);
-        context.waitFor(() -> superstructure
-                .getStatus()
-                .isNearTo(Superstructure.MoveToPosition.EXTENDED_TO_HIGH));
+        context.waitFor(
+                () ->
+                        superstructure
+                                .getStatus()
+                                .isNearTo(Superstructure.MoveToPosition.EXTENDED_TO_HIGH));
         intake.setGoal(new Intake.Status(type, Intake.MotorState.OUT));
         context.waitForSeconds(1);
         intake.setGoal(new Intake.Status(type, Intake.MotorState.STOP));

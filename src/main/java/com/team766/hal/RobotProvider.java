@@ -114,8 +114,9 @@ public abstract class RobotProvider {
                     ConfigFileReader.getInstance().getBoolean(configName + ".inverted");
             final ValueProvider<Boolean> sensorInvertedConfig =
                     ConfigFileReader.getInstance().getBoolean(configName + ".sensorInverted");
-            final ValueProvider<MotorController.Type> type = ConfigFileReader.getInstance()
-                    .getEnum(MotorController.Type.class, configName + ".type");
+            final ValueProvider<MotorController.Type> type =
+                    ConfigFileReader.getInstance()
+                            .getEnum(MotorController.Type.class, configName + ".type");
 
             if (deviceId.hasValue() && port.hasValue()) {
                 Logger.get(Category.CONFIGURATION)
@@ -169,10 +170,12 @@ public abstract class RobotProvider {
                 ConfigFileReader.getInstance().getDouble(configName + PIDController.D_GAIN_KEY);
         ValueProvider<Double> ffValue =
                 ConfigFileReader.getInstance().getDouble(configName + PIDController.FF_GAIN_KEY);
-        ValueProvider<Double> outputMaxLowValue = ConfigFileReader.getInstance()
-                .getDouble(configName + PIDController.OUTPUT_MAX_LOW_KEY);
-        ValueProvider<Double> outputMaxHighValue = ConfigFileReader.getInstance()
-                .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY);
+        ValueProvider<Double> outputMaxLowValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + PIDController.OUTPUT_MAX_LOW_KEY);
+        ValueProvider<Double> outputMaxHighValue =
+                ConfigFileReader.getInstance()
+                        .getDouble(configName + PIDController.OUTPUT_MAX_HIGH_KEY);
 
         if (pValue.hasValue()) {
             motor.setP(pValue.get());
@@ -312,13 +315,15 @@ public abstract class RobotProvider {
             }
 
             SolenoidController forwardSolenoids =
-                    new MultiSolenoid(Arrays.stream(forwardPorts.valueOr(new Integer[0]))
-                            .<SolenoidController>map(this::getSolenoid)
-                            .toArray(SolenoidController[]::new));
+                    new MultiSolenoid(
+                            Arrays.stream(forwardPorts.valueOr(new Integer[0]))
+                                    .<SolenoidController>map(this::getSolenoid)
+                                    .toArray(SolenoidController[]::new));
             SolenoidController reverseSolenoids =
-                    new MultiSolenoid(Arrays.stream(reversePorts.valueOr(new Integer[0]))
-                            .<SolenoidController>map(this::getSolenoid)
-                            .toArray(SolenoidController[]::new));
+                    new MultiSolenoid(
+                            Arrays.stream(reversePorts.valueOr(new Integer[0]))
+                                    .<SolenoidController>map(this::getSolenoid)
+                                    .toArray(SolenoidController[]::new));
             return new DoubleSolenoid(forwardSolenoids, reverseSolenoids);
         } catch (IllegalArgumentException ex) {
             Logger.get(Category.CONFIGURATION)
