@@ -5,46 +5,6 @@ import java.util.function.BooleanSupplier;
 
 public class Conditions {
 
-    public static class And implements BooleanSupplier {
-        private final BooleanSupplier[] preds;
-
-        public And(BooleanSupplier... preds) {
-            this.preds = preds;
-        }
-
-        @Override
-        public boolean getAsBoolean() {
-            boolean returnValue = true;
-            for (BooleanSupplier pred : preds) {
-                returnValue &= pred.getAsBoolean();
-                if (!returnValue) {
-                    break;
-                }
-            }
-            return returnValue;
-        }
-    }
-
-    public static class Or implements BooleanSupplier {
-        private final BooleanSupplier[] preds;
-
-        public Or(BooleanSupplier... preds) {
-            this.preds = preds;
-        }
-
-        @Override
-        public boolean getAsBoolean() {
-            boolean returnValue = false;
-            for (BooleanSupplier pred : preds) {
-                returnValue |= pred.getAsBoolean();
-                if (returnValue) {
-                    break;
-                }
-            }
-            return returnValue;
-        }
-    }
-
     public static class StatusCheck<S extends Status> implements BooleanSupplier {
         public interface Checker<S> {
             boolean check(S status);
