@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Rule to be evaluated in the {@link RuleEngine}.  Rules contain a
@@ -33,14 +34,6 @@ import java.util.function.BooleanSupplier;
 public class Rule {
 
     /**
-     * Functional interface for creating new {@link Procedure}s.
-     */
-    @FunctionalInterface
-    public interface ProcedureCreator {
-        Procedure create();
-    }
-
-    /**
      * Rules will be in one of four "trigger" (based on rule predicate) states:
      *
      * NONE - rule is not triggering and was not triggering in the last evaluation.
@@ -65,9 +58,9 @@ public class Rule {
     public static class Builder {
         private final String name;
         private final BooleanSupplier predicate;
-        private ProcedureCreator newlyTriggeringProcedure;
-        private ProcedureCreator continuingTriggeringProcedure;
-        private ProcedureCreator finishedTriggeringProcedure;
+        private Supplier<Procedure> newlyTriggeringProcedure;
+        private Supplier<Procedure> continuingTriggeringProcedure;
+        private Supplier<Procedure> finishedTriggeringProcedure;
 
         private Builder(String name, BooleanSupplier predicate) {
             this.name = name;
@@ -75,7 +68,7 @@ public class Rule {
         }
 
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
-        public Builder withNewlyTriggeringProcedure(ProcedureCreator action) {
+        public Builder withNewlyTriggeringProcedure(Supplier<Procedure> action) {
             this.newlyTriggeringProcedure = action;
             return this;
         }
@@ -88,7 +81,7 @@ public class Rule {
         }
 
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is continuing to trigger. */
-        public Builder withContinuingTriggeringProcedure(ProcedureCreator action) {
+        public Builder withContinuingTriggeringProcedure(Supplier<Procedure> action) {
             this.continuingTriggeringProcedure = action;
             return this;
         }
@@ -101,7 +94,7 @@ public class Rule {
         }
 
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
-        public Builder withFinishedTriggeringProcedure(ProcedureCreator action) {
+        public Builder withFinishedTriggeringProcedure(Supplier<Procedure> action) {
             this.finishedTriggeringProcedure = action;
             return this;
         }
@@ -126,7 +119,7 @@ public class Rule {
 
     private final String name;
     private final BooleanSupplier predicate;
-    private final Map<TriggerType, ProcedureCreator> triggerProcedures =
+    private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
@@ -140,9 +133,9 @@ public class Rule {
     private Rule(
             String name,
             BooleanSupplier predicate,
-            ProcedureCreator newlyTriggeringProcedure,
-            ProcedureCreator continuingTriggeringProcedure,
-            ProcedureCreator finishedTriggeringProcedure) {
+            Supplier<Procedure> newlyTriggeringProcedure,
+            Supplier<Procedure> continuingTriggeringProcedure,
+            Supplier<Procedure> finishedTriggeringProcedure) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
@@ -173,9 +166,9 @@ public class Rule {
         }
     }
 
-    private Set<Mechanism<?>> getReservationsForProcedure(ProcedureCreator creator) {
-        if (creator != null) {
-            Procedure procedure = creator.create();
+    private Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+        if (supplier != null) {
+            Procedure procedure = supplier.get();
             if (procedure != null) {
                 return procedure.reservations();
             }
@@ -221,9 +214,9 @@ public class Rule {
     /* package */ Procedure getProcedureToRun() {
         if (currentTriggerType != TriggerType.NONE) {
             if (triggerProcedures.containsKey(currentTriggerType)) {
-                ProcedureCreator creator = triggerProcedures.get(currentTriggerType);
-                if (creator != null) {
-                    return creator.create();
+                Supplier<Procedure> supplier = triggerProcedures.get(currentTriggerType);
+                if (supplier != null) {
+                    return supplier.get();
                 }
             }
         }
