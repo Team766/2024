@@ -141,7 +141,7 @@ public class Rule {
         }
 
         if (newlyTriggeringProcedure == null) {
-            throw new IllegalArgumentException("Newly triggering rule is not defined.");
+            throw new IllegalArgumentException("Newly triggering Procedure is not defined.");
         }
 
         this.name = name;
@@ -149,7 +149,7 @@ public class Rule {
         if (newlyTriggeringProcedure != null) {
             triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
             triggerReservations.put(
-                    TriggerType.NEWLY, getReservationsForProcedure(finishedTriggeringProcedure));
+                    TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
         }
 
         if (continuingTriggeringProcedure != null) {
