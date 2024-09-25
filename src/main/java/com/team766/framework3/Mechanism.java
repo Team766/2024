@@ -6,7 +6,6 @@ import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// TODO: add javadoc
 public abstract class Mechanism<R extends Request<?>> extends SubsystemBase implements LoggingBase {
     private Thread m_runningPeriodic = null;
 

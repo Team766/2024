@@ -15,11 +15,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
+ * {@link #addRule(com.team766.framework3.Rule.Builder)}.  {@link Rule}s have an implicit priority based on insertion order - the first {@link Rule} to be added is highest priority, etc.
+ *
+ * Callers should then call {@link #run} once per iteration.  Each call to {@link #run} evaluates each of the contained {@link Rule}s, firing the associated {@link Procedure}
+ * {@link Supplier}s when {@link Rule}s are NEWLY triggering, are CONTINUING to trigger, or are FINISHED triggering.
+ *
+ * The {@link RuleEngine} also pays attention to the {@link Mechanism}s that these {@link Procedure}s reserve.
+ * For a {@link Rule} to trigger, its predicate must be satisfied -- and, the {@link Mechanism}s the corresponding {@link Procedure} would reserve
+ * must not be in use or about to be in use from a higher priority {@link Rule}.
+ */
 public class RuleEngine implements LoggingBase {
 
     private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
 
-    // TODO: should we check for, require uniqueness in rule names?  possibly store rules by name?
     private final List<Rule> rules = new LinkedList<>();
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
     private BiMap<Command, RuleAction> ruleMap = HashBiMap.create();
