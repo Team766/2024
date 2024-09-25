@@ -140,6 +140,7 @@ public final class Logger {
         if (stringLogEntry != null && (severity.compareTo(Severity.INFO) >= 0)) {
             stringLogEntry.append(message);
         }
+        System.out.println(message);
     }
 
     public void logRaw(final Severity severity, final String message) {
@@ -158,6 +159,7 @@ public final class Logger {
         if (stringLogEntry != null && (severity.compareTo(Severity.INFO) >= 0)) {
             stringLogEntry.append(message);
         }
+        System.out.println(message);
     }
 
     void logOnlyInMemory(final Severity severity, final String message) {

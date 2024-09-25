@@ -222,4 +222,17 @@ public class Rule {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[ name: ");
+        builder.append(name);
+        builder.append(", predicate: ");
+        builder.append(predicate);
+        builder.append(", currentTriggerType: ");
+        builder.append(currentTriggerType);
+        builder.append("]");
+        return builder.toString();
+    }
 }

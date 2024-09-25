@@ -25,8 +25,13 @@ public abstract class Procedure implements LoggingBase {
     private final Set<Mechanism<?>> reservations;
 
     protected Procedure() {
-        this.name = this.getClass().getName() + "/" + createNewId();
+        this.name = createName();
         this.reservations = Sets.newHashSet();
+    }
+
+    protected Procedure(Set<Mechanism<?>> reservations) {
+        this.name = createName();
+        this.reservations = reservations;
     }
 
     protected Procedure(String name, Set<Mechanism<?>> reservations) {
@@ -38,6 +43,10 @@ public abstract class Procedure implements LoggingBase {
 
     /* package */ Command createCommand() {
         return new ContextImpl(this);
+    }
+
+    private String createName() {
+        return this.getClass().getName() + "/" + createNewId();
     }
 
     @Override
