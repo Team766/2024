@@ -15,6 +15,7 @@ public class OI extends Procedure {
     private JoystickReader joystick0;
     private JoystickReader joystick1;
     private JoystickReader joystick2;
+    private JoystickReader controller;
 
     public OI() {
         loggerCategory = Category.OPERATOR_INTERFACE;
@@ -22,6 +23,7 @@ public class OI extends Procedure {
         joystick0 = RobotProvider.instance.getJoystick(0);
         joystick1 = RobotProvider.instance.getJoystick(1);
         joystick2 = RobotProvider.instance.getJoystick(2);
+        controller = RobotProvider.instance.getJoystick(4);
     }
 
     public void run(final Context context) {
@@ -32,6 +34,8 @@ public class OI extends Procedure {
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
+
+            Robot.drive.arcadeDrive((-1 * controller.getAxis(1)), controller.getAxis(0));
         }
     }
 }

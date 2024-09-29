@@ -1,7 +1,7 @@
 package com.team766.robot.rookie_bot;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.robot.example.procedures.*;
+import com.team766.robot.rookie_bot.procedures.*;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES =
@@ -15,5 +15,8 @@ public class AutonomousModes {
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 
                 new AutonomousMode("DoNothing", () -> new DoNothing()),
+                new AutonomousMode("DriveForward", () -> new DriveForward()),
+                new AutonomousMode("TurnAround", () -> new TurnAround()),
+                new AutonomousMode("DriveInSquare", () -> new DriveInSquare()),
             };
 }
