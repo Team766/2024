@@ -2,7 +2,7 @@ package com.team766.framework;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.team766.hal.mock.MockClock;
+import com.team766.hal.TestClock;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ public class TimedPredicateTest {
 
     @Test
     public void testTimedPredicateTimedOut() {
-        MockClock testClock = new MockClock(1710411240.0);
+        TestClock testClock = new TestClock(1710411240.0);
         ContextImpl.TimedPredicate predicate =
                 new ContextImpl.TimedPredicate(testClock, () -> false, 1.766);
         assertFalse(predicate.getAsBoolean());
@@ -23,7 +23,7 @@ public class TimedPredicateTest {
 
     @Test
     public void testTimedPredicateCondition() {
-        MockClock testClock = new MockClock(1710411240.0);
+        TestClock testClock = new TestClock(1710411240.0);
         ContextImpl.TimedPredicate predicate =
                 new ContextImpl.TimedPredicate(
                         testClock,

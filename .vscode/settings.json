@@ -35,7 +35,9 @@
   "java.checkstyle.configuration": "${workspaceFolder}/.github/linters/checkstyle.xml",
   "java.checkstyle.version": "9.3",
   "java.completion.favoriteStaticMembers": [
+    "com.team766.framework3.Conditions.*",
     "com.team766.framework3.RulePersistence.*",
+    "com.team766.framework3.StatusBus.*",
     "org.junit.Assert.*",
     "org.junit.Assume.*",
     "org.junit.jupiter.api.Assertions.*",

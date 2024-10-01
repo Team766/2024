@@ -4,6 +4,7 @@ import com.team766.config.ConfigFileReader;
 import com.team766.config.ConfigFileTestUtils;
 import com.team766.framework.Scheduler;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.TestClock;
 import com.team766.hal.mock.TestRobotProvider;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +17,7 @@ public abstract class TestCase {
         ConfigFileTestUtils.resetStatics();
         Scheduler.getInstance().reset();
 
-        RobotProvider.instance = new TestRobotProvider();
+        RobotProvider.instance = new TestRobotProvider(new TestClock());
     }
 
     protected void loadConfig(String configJson) throws IOException {

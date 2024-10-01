@@ -3,8 +3,10 @@ package com.team766;
 import com.team766.config.ConfigFileReader;
 import com.team766.config.ConfigFileTestUtils;
 import com.team766.framework3.SchedulerUtils;
+import com.team766.framework3.StatusBus;
 import com.team766.framework3.TestLoggerExtension;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.TestClock;
 import com.team766.hal.mock.TestRobotProvider;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
@@ -19,6 +21,7 @@ import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 
 @ExtendWith(TestLoggerExtension.class)
 public abstract class TestCase3 {
+    protected final TestClock testClock = new TestClock();
 
     @BeforeEach
     public final void setUpFramework() {
@@ -28,8 +31,9 @@ public abstract class TestCase3 {
 
         ConfigFileTestUtils.resetStatics();
         SchedulerUtils.reset();
+        StatusBus.clear();
 
-        RobotProvider.instance = new TestRobotProvider();
+        RobotProvider.instance = new TestRobotProvider(testClock);
     }
 
     protected void setRobotEnabled(boolean enabled) {
