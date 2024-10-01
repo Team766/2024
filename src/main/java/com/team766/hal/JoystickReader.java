@@ -9,6 +9,12 @@ public interface JoystickReader {
      */
     double getAxis(int axis);
 
+    boolean isAxisMoved(int axis);
+
+    void setAxisDeadzone(int axis, double deadzone);
+
+    void setAllAxisDeadzone(double deadzone);
+
     /**
      * Get the button value (starting at button 1)
      *

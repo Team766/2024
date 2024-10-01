@@ -1,6 +1,8 @@
 package com.team766.hal.mock;
 
 import com.team766.hal.JoystickReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MockJoystick implements JoystickReader {
 
@@ -8,6 +10,9 @@ public class MockJoystick implements JoystickReader {
     private boolean[] buttonValues;
     private boolean[] prevButtonValues;
     private int povValue;
+
+    private final Map<Integer, Double> axisDeadzoneMap = new HashMap<>();
+    private double defaultAxisDeadzone = 0.0;
 
     public MockJoystick() {
         axisValues = new double[12];
@@ -18,6 +23,22 @@ public class MockJoystick implements JoystickReader {
     @Override
     public double getAxis(final int axis) {
         return axisValues[axis];
+    }
+
+    @Override
+    public boolean isAxisMoved(int axis) {
+        return getAxis(axis) >= axisDeadzoneMap.getOrDefault(axis, defaultAxisDeadzone);
+    }
+
+    @Override
+    public void setAxisDeadzone(int axis, double deadzone) {
+        axisDeadzoneMap.put(axis, deadzone);
+    }
+
+    @Override
+    public void setAllAxisDeadzone(double deadzone) {
+        axisDeadzoneMap.clear();
+        defaultAxisDeadzone = deadzone;
     }
 
     @Override
