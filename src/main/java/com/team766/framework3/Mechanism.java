@@ -4,9 +4,12 @@ import com.team766.logging.Category;
 import com.team766.logging.LoggerExceptionUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Objects;
 
 public abstract class Mechanism<R extends Request<?>> extends SubsystemBase implements LoggingBase {
     private Thread m_runningPeriodic = null;
+
+    private Mechanism<?> superstructure = null;
 
     private R request = null;
     private boolean isRequestNew = false;
@@ -53,6 +56,20 @@ public abstract class Mechanism<R extends Request<?>> extends SubsystemBase impl
         return Category.MECHANISMS;
     }
 
+    public void setSuperstructure(Mechanism<?> s) {
+        Objects.requireNonNull(s);
+        if (superstructure != null) {
+            throw new IllegalStateException();
+        }
+        if (getIdleRequest() != null) {
+            throw new UnsupportedOperationException(
+                    "A Mechanism contained in a superstructure cannot define an idle request. "
+                            + "Use the superstructure's idle request to control the idle behavior "
+                            + "of the contained Mechanisms.");
+        }
+        superstructure = s;
+    }
+
     public final void setRequest(R request) {
         checkContextReservation();
         this.request = request;
@@ -88,6 +105,9 @@ public abstract class Mechanism<R extends Request<?>> extends SubsystemBase impl
 
     protected void checkContextReservation() {
         if (m_runningPeriodic != null) {
+            return;
+        }
+        if (superstructure != null && superstructure.m_runningPeriodic != null) {
             return;
         }
         ReservingCommand.checkCurrentCommandHasReservation(this);
