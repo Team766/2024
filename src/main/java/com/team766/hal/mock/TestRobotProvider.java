@@ -16,13 +16,17 @@ import com.team766.hal.PositionReader;
 import com.team766.hal.RelayOutput;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SolenoidController;
-import com.team766.hal.wpilib.SystemClock;
 
 public class TestRobotProvider extends RobotProvider {
 
+    private final Clock clock;
     private MotorController[] motors = new MotorController[64];
     private boolean m_hasDriverStationUpdate = false;
     private double m_batteryVoltage = 12.0;
+
+    public TestRobotProvider(Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public MotorController getMotor(
@@ -131,8 +135,7 @@ public class TestRobotProvider extends RobotProvider {
 
     @Override
     public Clock getClock() {
-        // TODO Replace this with a controlled clock
-        return SystemClock.instance;
+        return clock;
     }
 
     @Override

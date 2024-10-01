@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public abstract class Mechanism<R extends Request<?>> extends SubsystemBase implements LoggingBase {
+public abstract class Mechanism<R extends Request> extends SubsystemBase implements LoggingBase {
     private Thread m_runningPeriodic = null;
 
     private Mechanism<?> superstructure = null;
