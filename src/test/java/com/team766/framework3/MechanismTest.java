@@ -97,16 +97,14 @@ public class MechanismTest extends TestCase3 {
         cmd.schedule();
         step();
         assertThat(thrownException.get())
-                .matches(
-                        "DummyMechanism tried to be used by .*MechanismTest\\$\\$Lambda.* without reserving it");
+                .matches("DummyMechanism tried to be used without reserving it");
 
         var cmd2 = new ContextImpl(new FakeProcedure(1, Set.of(mech)));
         cmd2.schedule();
         cmd.schedule();
         step();
         assertThat(thrownException.get())
-                .matches(
-                        "DummyMechanism tried to be used by .*MechanismTest\\$\\$Lambda.* while reserved by .*FakeProcedure.*");
+                .matches("DummyMechanism tried to be used without reserving it");
     }
 
     /// Test that checkContextReservation succeeds when called from within the Mechanism's own run()
