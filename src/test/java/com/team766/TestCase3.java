@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.inputs.LoggedSystemStats;
 public abstract class TestCase3 {
 
     @BeforeEach
-    public void setUp() {
+    public final void setUpFramework() {
         assert HAL.initialize(500, 0);
 
         setRobotEnabled(true);

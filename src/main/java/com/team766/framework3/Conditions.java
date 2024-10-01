@@ -1,6 +1,5 @@
 package com.team766.framework3;
 
-import com.team766.hal.JoystickReader;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -45,34 +44,30 @@ public class Conditions {
         }
     }
 
-    // TODO: move this to a more suitable location
-    public static class JoystickAxisWithDeadzone {
-        private final JoystickReader joystick;
-        private final int axis;
-        private final double deadzone;
+    /**
+     * This predicate toggles its value (false -> true, or true -> false) whenever the provided
+     * predicate changes from false to true (rising edge). Otherwise, it retains its previous value.
+     *
+     * This is useful when you want a joystick button to switch between two different modes whenever
+     * it is pushed (pass `() -> joystick.getButton()` as the constructor argument).
+     */
+    public static final class Toggle implements BooleanSupplier {
+        private final BooleanSupplier predicate;
+        private boolean predicatePrevious = false;
+        private boolean toggleValue = false;
 
-        public JoystickAxisWithDeadzone(JoystickReader joystick, int axis, double deadzone) {
-            this.joystick = joystick;
-            this.axis = axis;
-            this.deadzone = deadzone;
-        }
-
-        public double getAxis() {
-            double rawValue = joystick.getAxis(axis);
-            return (rawValue > deadzone) ? rawValue : 0.0;
-        }
-    }
-
-    public static class JoystickMoved implements BooleanSupplier {
-        private JoystickAxisWithDeadzone axis;
-
-        public JoystickMoved(JoystickAxisWithDeadzone axis) {
-            this.axis = axis;
+        public Toggle(BooleanSupplier predicate) {
+            this.predicate = predicate;
         }
 
         @Override
         public boolean getAsBoolean() {
-            return axis.getAxis() > 0.0;
+            final var current = predicate.getAsBoolean();
+            if (current && !predicatePrevious) {
+                toggleValue = !toggleValue;
+            }
+            predicatePrevious = current;
+            return toggleValue;
         }
     }
 
