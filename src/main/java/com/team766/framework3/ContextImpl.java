@@ -263,11 +263,6 @@ import java.util.function.BooleanSupplier;
             }
             // Pass the baton.
             m_controlOwner = desiredOwner;
-            if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                SchedulerMonitor.currentCommand = this;
-            } else {
-                SchedulerMonitor.currentCommand = null;
-            }
             m_threadSync.notifyAll();
             // Wait for the baton to be passed back.
             waitForControl(thisOwner);
@@ -298,7 +293,6 @@ import java.util.function.BooleanSupplier;
         } finally {
             synchronized (m_threadSync) {
                 m_state = State.DONE;
-                SchedulerMonitor.currentCommand = null;
                 m_threadSync.notifyAll();
             }
         }
@@ -390,31 +384,44 @@ import java.util.function.BooleanSupplier;
 
     @Override
     public void end(boolean interrupted) {
-        synchronized (m_threadSync) {
-            if (m_state == State.DONE) {
-                return;
-            }
-            Logger.get(Category.FRAMEWORK)
-                    .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
-            m_state = State.CANCELED;
-            if (m_controlOwner == ControlOwner.SUBROUTINE) {
-                throw new IllegalStateException("A Procedure should not cancel() its own Context");
-            }
-            transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
-            if (m_state != State.DONE) {
+        ReservingCommand.enterCommand(this);
+        try {
+            synchronized (m_threadSync) {
+                if (m_state == State.DONE) {
+                    return;
+                }
                 Logger.get(Category.FRAMEWORK)
-                        .logRaw(Severity.ERROR, getContextName() + " did not end when requested");
+                        .logRaw(Severity.DEBUG, "Stopping requested of " + getContextName());
+                m_state = State.CANCELED;
+                if (m_controlOwner == ControlOwner.SUBROUTINE) {
+                    throw new IllegalStateException(
+                            "A Procedure should not cancel() its own Context");
+                }
+                transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+                if (m_state != State.DONE) {
+                    Logger.get(Category.FRAMEWORK)
+                            .logRaw(
+                                    Severity.ERROR,
+                                    getContextName() + " did not end when requested");
+                }
             }
+        } finally {
+            ReservingCommand.exitCommand(this);
         }
     }
 
     @Override
     public void execute() {
-        if (m_state == State.DONE) {
-            return;
-        }
-        if (m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
-            transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+        ReservingCommand.enterCommand(this);
+        try {
+            if (m_state == State.DONE) {
+                return;
+            }
+            if (m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
+                transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
+            }
+        } finally {
+            ReservingCommand.exitCommand(this);
         }
     }
 
