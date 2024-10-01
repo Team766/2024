@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
 import com.team766.framework3.FakeMechanism.FakeRequest;
+import com.team766.framework3.FakeMechanism.FakeStatus;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
@@ -71,14 +72,16 @@ public class MechanismTest extends TestCase3 {
     /// not reserved the Mechanism.
     @Test
     public void testFailedCheckContextReservationInProcedure() {
-        class DummyMechanism extends Mechanism<FakeRequest> {
+        class DummyMechanism extends Mechanism<FakeRequest, FakeStatus> {
             @Override
             protected FakeRequest getInitialRequest() {
                 return new FakeRequest(-1);
             }
 
             @Override
-            protected void run(FakeRequest request, boolean isRequestNew) {}
+            protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
+                return new FakeStatus(request.targetState());
+            }
         }
         var mech = new DummyMechanism();
 
@@ -116,12 +119,13 @@ public class MechanismTest extends TestCase3 {
         var mech =
                 new FakeMechanism() {
                     @Override
-                    protected void run(FakeRequest request, boolean isRequestNew) {
+                    protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
                         try {
                             checkContextReservation();
                         } catch (Throwable ex) {
                             thrownException.set(ex);
                         }
+                        return new FakeStatus(request.targetState());
                     }
                 };
         step();

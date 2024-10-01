@@ -134,7 +134,9 @@ public class Rule {
         }
 
         public Builder withOnTriggeringProcedure(
-                RulePersistence rulePersistence, Set<Mechanism<?>> reservations, Runnable action) {
+                RulePersistence rulePersistence,
+                Set<Mechanism<?, ?>> reservations,
+                Runnable action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
             return this;
@@ -142,7 +144,7 @@ public class Rule {
 
         public Builder withOnTriggeringProcedure(
                 RulePersistence rulePersistence,
-                Set<Mechanism<?>> reservations,
+                Set<Mechanism<?, ?>> reservations,
                 Consumer<Context> action) {
             applyRulePersistence(
                     rulePersistence, () -> new FunctionalProcedure(reservations, action));
@@ -156,7 +158,7 @@ public class Rule {
         }
 
         public Builder withFinishedTriggeringProcedure(
-                Set<Mechanism<?>> reservations, Runnable action) {
+                Set<Mechanism<?, ?>> reservations, Runnable action) {
             this.finishedTriggeringProcedure =
                     () -> new FunctionalInstantProcedure(reservations, action);
             return this;
@@ -204,7 +206,7 @@ public class Rule {
     private final BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
+    private final Map<TriggerType, Set<Mechanism<?, ?>>> triggerReservations =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Cancellation> triggerCancellation =
             Maps.newEnumMap(TriggerType.class);
@@ -246,7 +248,7 @@ public class Rule {
         }
     }
 
-    private static Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Mechanism<?, ?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
@@ -284,7 +286,7 @@ public class Rule {
         }
     }
 
-    /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
+    /* package */ Set<Mechanism<?, ?>> getMechanismsToReserve() {
         if (triggerReservations.containsKey(currentTriggerType)) {
             return triggerReservations.get(currentTriggerType);
         }

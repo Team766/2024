@@ -7,12 +7,12 @@ class FakeProcedure extends Procedure {
     private int age = 0;
     private boolean ended = false;
 
-    public FakeProcedure(int lifetime, Set<Mechanism<?>> reservations) {
+    public FakeProcedure(int lifetime, Set<Mechanism<?, ?>> reservations) {
         super(reservations);
         this.lifetime = lifetime;
     }
 
-    public FakeProcedure(String name, int lifetime, Set<Mechanism<?>> reservations) {
+    public FakeProcedure(String name, int lifetime, Set<Mechanism<?, ?>> reservations) {
         super(name, reservations);
         this.lifetime = lifetime;
     }

@@ -76,7 +76,7 @@ public class RuleEngine implements LoggingBase {
     }
 
     public final void run() {
-        Set<Mechanism<?>> mechanismsToUse = new HashSet<>();
+        Set<Mechanism<?, ?>> mechanismsToUse = new HashSet<>();
 
         // TODO(MF3): when creating a Procedure, check that the reservations are the same as
         // what the Rule pre-computed.
@@ -95,9 +95,9 @@ public class RuleEngine implements LoggingBase {
                     int priority = getPriorityForRule(rule);
 
                     // see if there are mechanisms a potential procedure would want to reserve
-                    Set<Mechanism<?>> reservations = rule.getMechanismsToReserve();
+                    Set<Mechanism<?, ?>> reservations = rule.getMechanismsToReserve();
                     log(Severity.INFO, "Rule " + rule.getName() + " would reserve " + reservations);
-                    for (Mechanism<?> mechanism : reservations) {
+                    for (Mechanism<?, ?> mechanism : reservations) {
                         // see if any of the mechanisms higher priority rules will use would also be
                         // used by this lower priority rule's procedure.
                         if (mechanismsToUse.contains(mechanism)) {

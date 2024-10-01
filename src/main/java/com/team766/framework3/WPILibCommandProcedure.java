@@ -21,14 +21,14 @@ public final class WPILibCommandProcedure extends Procedure {
     }
 
     @SuppressWarnings("unchecked")
-    private static Set<Mechanism<?>> checkSubsystemsAreMechanisms(Set<Subsystem> requirements) {
+    private static Set<Mechanism<?, ?>> checkSubsystemsAreMechanisms(Set<Subsystem> requirements) {
         for (var s : requirements) {
-            if (!(s instanceof Mechanism<?>)) {
+            if (!(s instanceof Mechanism<?, ?>)) {
                 throw new IllegalArgumentException(
                         "Maroon Framework requires the use of Mechanism instead of Subsystem");
             }
         }
-        return (Set<Mechanism<?>>) (Set<?>) requirements;
+        return (Set<Mechanism<?, ?>>) (Set<?>) requirements;
     }
 
     @Override
