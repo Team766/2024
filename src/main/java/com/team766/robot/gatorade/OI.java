@@ -1,11 +1,11 @@
 package com.team766.robot.gatorade;
 
-import static com.team766.framework3.RulePersistence.*;
-import static com.team766.framework3.StatusBus.publishStatus;
+import static com.team766.framework.RulePersistence.*;
+import static com.team766.framework.StatusBus.publishStatus;
 
-import com.team766.framework3.Rule;
-import com.team766.framework3.RuleEngine;
-import com.team766.framework3.Status;
+import com.team766.framework.Rule;
+import com.team766.framework.RuleEngine;
+import com.team766.framework.Status;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.robot.common.DriverOI;

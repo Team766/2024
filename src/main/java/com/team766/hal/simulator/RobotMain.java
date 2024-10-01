@@ -1,9 +1,8 @@
 package com.team766.hal.simulator;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.hal.GenericRobotMainBase;
+import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.RobotSelector;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.Program;
 import com.team766.simulator.ProgramInterface;
@@ -16,7 +15,7 @@ public class RobotMain {
         VrConnector,
     }
 
-    private GenericRobotMainBase robot;
+    private GenericRobotMain robot;
     private Runnable simulator;
 
     public RobotMain(final Mode mode) {
@@ -25,7 +24,7 @@ public class RobotMain {
             ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
             RobotProvider.instance = new SimulationRobotProvider();
 
-            robot = RobotSelector.createConfigurator().createRobotMain();
+            robot = new GenericRobotMain();
 
             robot.robotInit();
 

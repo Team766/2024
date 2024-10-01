@@ -1,7 +1,7 @@
 package com.team766.robot.example;
 
 import com.ctre.phoenix.led.CANdle;
-import com.team766.framework3.RuleEngine;
+import com.team766.framework.RuleEngine;
 
 public class Lights extends RuleEngine {
     private static final int CANID = 5;

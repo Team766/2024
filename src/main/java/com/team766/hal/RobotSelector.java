@@ -23,7 +23,7 @@ public final class RobotSelector {
      * Creates a configurator specified by the 'robotConfigurator' key in the config file.
      * If unable to create this configurator, backs off to the example one.
      */
-    public static RobotConfiguratorBase createConfigurator() {
+    public static RobotConfigurator createConfigurator() {
         ValueProvider<String> configuratorProvider =
                 ConfigFileReader.instance.getString(ROBOT_CONFIGURATOR_KEY);
         String robotConfigurator =
@@ -37,8 +37,8 @@ public final class RobotSelector {
 
         try {
             @SuppressWarnings("unchecked")
-            Class<RobotConfiguratorBase> clazz =
-                    (Class<RobotConfiguratorBase>) Class.forName(robotConfigurator);
+            Class<RobotConfigurator> clazz =
+                    (Class<RobotConfigurator>) Class.forName(robotConfigurator);
             return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             Logger.get(Category.CONFIGURATION)

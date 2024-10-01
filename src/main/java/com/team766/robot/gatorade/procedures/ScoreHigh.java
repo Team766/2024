@@ -1,7 +1,7 @@
 package com.team766.robot.gatorade.procedures;
 
-import com.team766.framework3.Context;
-import com.team766.framework3.Procedure;
+import com.team766.framework.Context;
+import com.team766.framework.Procedure;
 import com.team766.robot.gatorade.mechanisms.Arm;
 import com.team766.robot.gatorade.mechanisms.Intake;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;

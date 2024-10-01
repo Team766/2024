@@ -1,8 +1,8 @@
 package com.team766.robot.reva;
 
-import static com.team766.framework3.RulePersistence.*;
+import static com.team766.framework.RulePersistence.*;
 
-import com.team766.framework3.Rule;
+import com.team766.framework.Rule;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
 import com.team766.robot.reva.mechanisms.ArmAndClimber;

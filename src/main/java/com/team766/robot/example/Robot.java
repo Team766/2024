@@ -1,12 +1,12 @@
 package com.team766.robot.example;
 
-import com.team766.framework3.AutonomousMode;
-import com.team766.framework3.RuleEngine;
-import com.team766.hal.RobotConfigurator3;
+import com.team766.framework.AutonomousMode;
+import com.team766.framework.RuleEngine;
+import com.team766.hal.RobotConfigurator;
 import com.team766.robot.example.mechanisms.*;
 import com.team766.robot.example.procedures.*;
 
-public class Robot implements RobotConfigurator3 {
+public class Robot implements RobotConfigurator {
     private ExampleMechanism exampleMechanism;
 
     @Override

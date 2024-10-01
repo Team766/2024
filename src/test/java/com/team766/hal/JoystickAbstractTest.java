@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.team766.TestCase3;
+import com.team766.TestCase;
 import org.junit.jupiter.api.Test;
 
-public abstract class JoystickAbstractTest extends TestCase3 {
+public abstract class JoystickAbstractTest extends TestCase {
     protected JoystickReader joystick;
 
     protected abstract void setAxis(int axis, double value);

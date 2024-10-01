@@ -1,9 +1,9 @@
 package com.team766.robot.reva.procedures;
 
-import static com.team766.framework3.Conditions.waitForRequestOrTimeout;
+import static com.team766.framework.Conditions.waitForRequestOrTimeout;
 
-import com.team766.framework3.Context;
-import com.team766.framework3.Procedure;
+import com.team766.framework.Context;
+import com.team766.framework.Procedure;
 import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shoulder;

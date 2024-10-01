@@ -2,8 +2,8 @@ package com.team766.robot.reva.mechanisms;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.framework3.SensorMechanism;
-import com.team766.framework3.Status;
+import com.team766.framework.SensorMechanism;
+import com.team766.framework.Status;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Transform3d;

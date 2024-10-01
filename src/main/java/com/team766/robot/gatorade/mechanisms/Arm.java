@@ -1,11 +1,11 @@
 package com.team766.robot.gatorade.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
-import static com.team766.framework3.StatusBus.getStatusOrThrow;
+import static com.team766.framework.Conditions.checkForStatusWith;
+import static com.team766.framework.StatusBus.getStatusOrThrow;
 
-import com.team766.framework3.Request;
-import com.team766.framework3.Status;
-import com.team766.framework3.Superstructure;
+import com.team766.framework.Request;
+import com.team766.framework.Status;
+import com.team766.framework.Superstructure;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 
