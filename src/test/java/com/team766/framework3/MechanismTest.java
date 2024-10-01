@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.team766.TestCase3;
 import com.team766.framework3.FakeMechanism.FakeRequest;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
@@ -15,16 +14,7 @@ public class MechanismTest extends TestCase3 {
     /// called from a Procedure which reserves the Mechanism.
     @Test
     public void testRequests() {
-        var currentRequest = new AtomicReference<FakeRequest>();
-        var wasRequestNew = new AtomicBoolean();
-        var mech =
-                new Mechanism<FakeRequest>() {
-                    @Override
-                    protected void run(FakeRequest request, boolean isRequestNew) {
-                        currentRequest.set(request);
-                        wasRequestNew.set(isRequestNew);
-                    }
-                };
+        var mech = new FakeMechanism();
 
         var cmd =
                 new ContextImpl(
@@ -54,23 +44,23 @@ public class MechanismTest extends TestCase3 {
 
         // Step 1. Test running the Mechanism in its uninitialized state.
         step();
-        assertEquals(null, currentRequest.get());
-        assertFalse(wasRequestNew.get());
+        assertEquals(mech.getInitialRequest(), mech.currentRequest);
+        assertFalse(mech.wasRequestNew);
 
         // Step 2. The Mechanism receives the first request.
         step();
-        assertEquals(new FakeRequest(0), currentRequest.get());
-        assertTrue(wasRequestNew.get());
+        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertTrue(mech.wasRequestNew);
 
         // Step 3. The Mechanism continues with its first request.
         step();
-        assertEquals(new FakeRequest(0), currentRequest.get());
-        assertFalse(wasRequestNew.get());
+        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertFalse(mech.wasRequestNew);
 
         // Step 4. The Mechanism receives the second request.
         step();
-        assertEquals(new FakeRequest(1), currentRequest.get());
-        assertTrue(wasRequestNew.get());
+        assertEquals(new FakeRequest(1), mech.currentRequest);
+        assertTrue(mech.wasRequestNew);
 
         // Poke the Procedure to ensure it has finished.
         step();
@@ -82,6 +72,12 @@ public class MechanismTest extends TestCase3 {
     @Test
     public void testFailedCheckContextReservationInProcedure() {
         class DummyMechanism extends Mechanism<FakeRequest> {
+            @Override
+            protected FakeRequest getInitialRequest() {
+                return new FakeRequest(-1);
+            }
+
+            @Override
             protected void run(FakeRequest request, boolean isRequestNew) {}
         }
         var mech = new DummyMechanism();
@@ -120,7 +116,7 @@ public class MechanismTest extends TestCase3 {
         var thrownException = new AtomicReference<Throwable>();
         @SuppressWarnings("unused")
         var mech =
-                new Mechanism<FakeRequest>() {
+                new FakeMechanism() {
                     @Override
                     protected void run(FakeRequest request, boolean isRequestNew) {
                         try {
@@ -132,5 +128,70 @@ public class MechanismTest extends TestCase3 {
                 };
         step();
         assertNull(thrownException.get());
+    }
+
+    /// Test that the Initial request runs after Mechanism creation.
+    @Test
+    public void testInitialRequest() {
+        var mech = new FakeMechanism();
+        step();
+        assertEquals(new FakeRequest(-1), mech.currentRequest);
+        assertTrue(mech.wasRequestNew);
+        // Subsequent steps should continue to pass the Initial request to run(),
+        // but it should not be indicated as a new request.
+        mech.currentRequest = null;
+        step();
+        assertEquals(new FakeRequest(-1), mech.currentRequest);
+        assertFalse(mech.wasRequestNew);
+    }
+
+    /// Test that the Idle request runs if no other Command reserves this Mechanism.
+    @Test
+    public void testIdleRequest() {
+        var mech =
+                new FakeMechanism() {
+                    @Override
+                    protected FakeRequest getIdleRequest() {
+                        return new FakeRequest(0);
+                    }
+                };
+
+        // The first step should run the Initial request.
+        step();
+        assertEquals(new FakeRequest(-1), mech.currentRequest);
+        assertTrue(mech.wasRequestNew);
+        // On subsequent steps, the Idle request should take over (as long as a Command hasn't
+        // reserved this Mechanism).
+        step();
+        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertTrue(mech.wasRequestNew);
+        // Subsequent steps should continue to pass the Idle request to run(),
+        // but it should not be indicated as a new request.
+        mech.currentRequest = null;
+        step();
+        assertEquals(new FakeRequest(0), mech.currentRequest);
+        assertFalse(mech.wasRequestNew);
+
+        // When a Command is scheduled which reserves this Procedure, it should preempt
+        // the Idle request.
+        new FunctionalProcedure(
+                        Set.of(mech),
+                        context -> {
+                            mech.setRequest(new FakeRequest(1));
+                            context.waitFor(() -> false);
+                        })
+                .createCommandToRunProcedure()
+                .schedule();
+        step();
+        step(); // NOTE: Second step() is needed because Scheduler runs Procedures after Subsystems
+        assertEquals(new FakeRequest(1), mech.currentRequest);
+        assertTrue(mech.wasRequestNew);
+        // Subsequent steps should allow the scheduled Command to continue. It should not be
+        // interrupted by the Idle request, even if the scheduled Command does not set a
+        // new request.
+        mech.currentRequest = null;
+        step();
+        assertEquals(new FakeRequest(1), mech.currentRequest);
+        assertFalse(mech.wasRequestNew);
     }
 }
