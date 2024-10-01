@@ -10,15 +10,18 @@ class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest> {
         }
     }
 
-    private FakeRequest currentRequest;
+    FakeRequest currentRequest;
+    Boolean wasRequestNew = null;
 
-    public FakeRequest currentRequest() {
-        return currentRequest;
+    @Override
+    protected FakeRequest getInitialRequest() {
+        return new FakeRequest(-1);
     }
 
     @Override
     protected void run(FakeRequest request, boolean isRequestNew) {
-        this.currentRequest = request;
+        currentRequest = request;
+        wasRequestNew = isRequestNew;
     }
 }
 
