@@ -1,8 +1,8 @@
 package com.team766.robot.reva;
 
-import com.team766.framework3.AutonomousMode;
-import com.team766.framework3.RuleEngine;
-import com.team766.hal.RobotConfigurator3;
+import com.team766.framework.AutonomousMode;
+import com.team766.framework.RuleEngine;
+import com.team766.hal.RobotConfigurator;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
@@ -12,7 +12,7 @@ import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.auton_routines.*;
 
-public class Robot implements RobotConfigurator3 {
+public class Robot implements RobotConfigurator {
     private SwerveDrive drive;
     private Superstructure superstructure;
     private Intake intake;

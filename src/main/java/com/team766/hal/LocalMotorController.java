@@ -3,11 +3,12 @@ package com.team766.hal;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team766.controllers.PIDController;
-import com.team766.framework.Scheduler;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class LocalMotorController implements MotorController {
     private BasicMotorController motor;
@@ -34,13 +35,18 @@ public class LocalMotorController implements MotorController {
         }
         this.pidController = PIDController.loadFromConfig(configPrefix + "pid.");
 
-        // TODO(MF3): Use CommandScheduler.getInstance().registerSubsystem() when converted to MF3
-        Scheduler.getInstance()
-                .add(
-                        new Runnable() {
+        // Register for a periodic callback from the scheduler.
+        // Register as a Subsystem (rather than a Command) so that we are called in the same phase
+        // as the real Subsystems. Because this LocalMotorController is almost certainly created
+        // inside of a Subsystem and the scheduler keeps the Subsystems in insertion order, this has
+        // the effect that this callback will be called immediately after the periodic function of
+        // the Subsystem which owns this LocalMotorController. This has the desirable effect that
+        // any setpoints,etc which are set by the Subsystem immediately take effect.
+        CommandScheduler.getInstance()
+                .registerSubsystem(
+                        new Subsystem() {
                             @Override
-                            public void run() {
-
+                            public void periodic() {
                                 if (leader != null) {
                                     setPower(leader.get());
                                     return;
@@ -87,7 +93,7 @@ public class LocalMotorController implements MotorController {
                             }
 
                             @Override
-                            public String toString() {
+                            public String getName() {
                                 return LocalMotorController.this.toString();
                             }
                         });

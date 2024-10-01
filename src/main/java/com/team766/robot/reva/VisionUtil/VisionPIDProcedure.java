@@ -3,7 +3,7 @@ package com.team766.robot.reva.VisionUtil;
 import com.team766.ViSIONbase.AnywhereScoringPosition;
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.controllers.PIDController;
-import com.team766.framework3.Procedure;
+import com.team766.framework.Procedure;
 import java.util.ArrayList;
 
 public abstract class VisionPIDProcedure extends Procedure {

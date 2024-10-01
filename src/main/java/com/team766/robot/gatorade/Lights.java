@@ -1,15 +1,15 @@
 package com.team766.robot.gatorade;
 
-import static com.team766.framework3.Conditions.checkForStatus;
-import static com.team766.framework3.Conditions.checkForStatusEntryWith;
-import static com.team766.framework3.RulePersistence.*;
-import static com.team766.framework3.StatusBus.getStatusOrThrow;
+import static com.team766.framework.Conditions.checkForStatus;
+import static com.team766.framework.Conditions.checkForStatusEntryWith;
+import static com.team766.framework.RulePersistence.*;
+import static com.team766.framework.StatusBus.getStatusOrThrow;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.team766.framework3.Rule;
-import com.team766.framework3.RuleEngine;
+import com.team766.framework.Rule;
+import com.team766.framework.RuleEngine;
 import com.team766.logging.Severity;
 import com.team766.robot.gatorade.constants.SwerveDriveConstants;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;

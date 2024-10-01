@@ -1,7 +1,7 @@
 package com.team766.robot.reva.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
-import static com.team766.framework3.StatusBus.getStatusOrThrow;
+import static com.team766.framework.Conditions.checkForStatusWith;
+import static com.team766.framework.StatusBus.getStatusOrThrow;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_ENCODER;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_LEFT;
 import static com.team766.robot.reva.constants.ConfigConstants.SHOULDER_RIGHT;
@@ -10,9 +10,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework3.Mechanism;
-import com.team766.framework3.Request;
-import com.team766.framework3.Status;
+import com.team766.framework.Mechanism;
+import com.team766.framework.Request;
+import com.team766.framework.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;

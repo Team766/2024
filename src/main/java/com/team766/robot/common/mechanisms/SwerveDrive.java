@@ -1,6 +1,6 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.framework3.Conditions.checkForStatusWith;
+import static com.team766.framework.Conditions.checkForStatusWith;
 import static com.team766.math.Math.normalizeAngleDegrees;
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
@@ -9,9 +9,9 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PIDConstants;
 import com.team766.config.ConfigFileReader;
 import com.team766.controllers.PIDController;
-import com.team766.framework3.Mechanism;
-import com.team766.framework3.Request;
-import com.team766.framework3.Status;
+import com.team766.framework.Mechanism;
+import com.team766.framework.Request;
+import com.team766.framework.Status;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
