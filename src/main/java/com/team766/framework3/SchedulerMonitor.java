@@ -4,21 +4,10 @@ import com.team766.framework.StackTraceUtils;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.stream.Collectors;
 
 public class SchedulerMonitor {
-    /*
-     * The currently-executing Command (Context/InstantCommand).
-     *
-     * This is maintained for things like checking Mechanism ownership, but
-     * intentionally only has package-private visibility - code outside of the
-     * framework should pass around references to the current context object
-     * rather than cheating with this static accessor.
-     */
-    static Command currentCommand = null;
-
     private static Thread c_thread = null;
     private static int c_iterationCount = 0;
 
@@ -44,25 +33,21 @@ public class SchedulerMonitor {
             }
 
             if (c_iterationCount == lastIterationCount) {
-                final String commandName =
-                        currentCommand != null ? currentCommand.getName() : "non-Procedure code";
                 Logger.get(Category.FRAMEWORK)
                         .logRaw(
                                 Severity.ERROR,
-                                "The code has gotten stuck in "
-                                        + commandName
-                                        + ". You probably have an unintended infinite loop or need to add a call to context.yield()");
-                Logger.get(Category.FRAMEWORK)
-                        .logRaw(
-                                Severity.INFO,
-                                Thread.getAllStackTraces().entrySet().stream()
-                                        .map(
-                                                e ->
-                                                        e.getKey().getName()
-                                                                + ":\n"
-                                                                + StackTraceUtils.getStackTrace(
-                                                                        e.getValue()))
-                                        .collect(Collectors.joining("\n")));
+                                "The code has gotten stuck. You probably have an unintended infinite "
+                                        + "loop or need to add a call to context.yield() in a Procedure.\n"
+                                        + Thread.getAllStackTraces().entrySet().stream()
+                                                .map(
+                                                        e ->
+                                                                e.getKey().getName()
+                                                                        + ":\n"
+                                                                        + StackTraceUtils
+                                                                                .getStackTrace(
+                                                                                        e
+                                                                                                .getValue()))
+                                                .collect(Collectors.joining("\n")));
             }
 
             lastIterationCount = c_iterationCount;
