@@ -2,7 +2,7 @@ package com.team766.robot.reva.VisionUtil;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
 import com.team766.ViSIONbase.GrayScaleCamera;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.Robot;
 import com.team766.robot.reva.constants.VisionConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,12 +17,12 @@ public class VisionSpeakerHelper {
     int tagId;
     double angle;
     GrayScaleCamera camera;
-    Drive drive;
+    SwerveDrive drive;
     Translation2d absTargetPos;
     Translation2d relativeTranslation2d;
 
     // TODO: make this static
-    public VisionSpeakerHelper(Drive drive) {
+    public VisionSpeakerHelper(SwerveDrive drive) {
         camera = Robot.forwardApriltagCamera.getCamera();
         this.drive = drive;
     }

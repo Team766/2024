@@ -7,7 +7,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.common.constants.PathPlannerConstants;
-import com.team766.robot.common.mechanisms.Drive;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 
 public class FollowPath extends Procedure {
-    private final Drive drive;
+    private final SwerveDrive drive;
     private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
     private final PPHolonomicDriveController controller;
@@ -27,14 +27,14 @@ public class FollowPath extends Procedure {
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
             PPHolonomicDriveController controller,
-            Drive drive) {
+            SwerveDrive drive) {
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, Drive drive) {
+    public FollowPath(String autoName, PPHolonomicDriveController controller, SwerveDrive drive) {
         this(
                 PathPlannerPath.fromPathFile(autoName),
                 PathPlannerConstants.REPLANNING_CONFIG,
