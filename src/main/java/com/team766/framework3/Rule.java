@@ -11,11 +11,11 @@ import java.util.function.Supplier;
  * Rule to be evaluated in the {@link RuleEngine}.  Rules contain a
  * "predicate" that will be evaluated in each call to {@link RuleEngine#run}, typically
  * in an OperatorInterface loop or Display (LED lights, etc) loop.  The Rule keeps track of
- * when the predicate starts triggering, continues triggering, and has finished triggering, via
- * a {@link TriggerType}, eg when a driver or boxop starts pressing a button, continues holding down
- * the button, and releases the button.  Each Rule has optional {@link Procedure} actions
- * for each of these trigger types, which the {@link RuleEngine} will consider running, after checking
- * if higher priority rules have reserved the same {@link Mechanism}s that the candidate rule would use.
+ * when the predicate starts triggering and has finished triggering, via
+ * a {@link TriggerType}, eg when a driver or boxop starts pressing a button and then releases the button.
+ * Each Rule has optional {@link Procedure} actions for each of these trigger types, which the
+ * {@link RuleEngine} will consider running, after checking if higher priority rules have reserved the
+ * same {@link Mechanism}s that the candidate rule would use.
  *
  * {@link Rule}s are always created and used with a {@link RuleEngine}.  Typically creation would be:
  *
@@ -38,7 +38,7 @@ public class Rule {
      *
      * NONE - rule is not triggering and was not triggering in the last evaluation.
      * NEWLY - rule just started triggering this evaluation.
-     * CONTINUING - rule was triggering in the last evaluation and is still triggering.
+     * CONTINUING - rule was triggering in the last evaluation and is still triggering.  Only used internally.
      * FINISHED - rule was triggering in the last evaluation and is no longer triggering.
      *
      */
@@ -59,7 +59,6 @@ public class Rule {
         private final String name;
         private final BooleanSupplier predicate;
         private Supplier<Procedure> newlyTriggeringProcedure;
-        private Supplier<Procedure> continuingTriggeringProcedure;
         private Supplier<Procedure> finishedTriggeringProcedure;
 
         private Builder(String name, BooleanSupplier predicate) {
@@ -80,19 +79,6 @@ public class Rule {
             return this;
         }
 
-        /** Specify a creator for the Procedure that should be run when this rule was triggering before and is continuing to trigger. */
-        public Builder withContinuingTriggeringProcedure(Supplier<Procedure> action) {
-            this.continuingTriggeringProcedure = action;
-            return this;
-        }
-
-        public Builder withContinuingTriggeringProcedure(
-                Set<Mechanism<?>> reservations, Runnable action) {
-            this.continuingTriggeringProcedure =
-                    () -> new FunctionalInstantProcedure(reservations, action);
-            return this;
-        }
-
         /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
         public Builder withFinishedTriggeringProcedure(Supplier<Procedure> action) {
             this.finishedTriggeringProcedure = action;
@@ -108,12 +94,7 @@ public class Rule {
 
         // called by {@link RuleEngine#addRule}.
         /* package */ Rule build() {
-            return new Rule(
-                    name,
-                    predicate,
-                    newlyTriggeringProcedure,
-                    continuingTriggeringProcedure,
-                    finishedTriggeringProcedure);
+            return new Rule(name, predicate, newlyTriggeringProcedure, finishedTriggeringProcedure);
         }
     }
 
@@ -134,7 +115,6 @@ public class Rule {
             String name,
             BooleanSupplier predicate,
             Supplier<Procedure> newlyTriggeringProcedure,
-            Supplier<Procedure> continuingTriggeringProcedure,
             Supplier<Procedure> finishedTriggeringProcedure) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
@@ -150,13 +130,6 @@ public class Rule {
             triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
             triggerReservations.put(
                     TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
-        }
-
-        if (continuingTriggeringProcedure != null) {
-            triggerProcedures.put(TriggerType.CONTINUING, continuingTriggeringProcedure);
-            triggerReservations.put(
-                    TriggerType.CONTINUING,
-                    getReservationsForProcedure(continuingTriggeringProcedure));
         }
 
         if (finishedTriggeringProcedure != null) {

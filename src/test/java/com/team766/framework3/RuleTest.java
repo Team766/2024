@@ -86,13 +86,11 @@ public class RuleTest {
     public void testGetMechanismsToReserve() {
         final Set<Mechanism<?>> newlyMechanisms =
                 Set.of(new FakeMechanism1(), new FakeMechanism2());
-        final Set<Mechanism<?>> continuingMechanisms = Set.of(new FakeMechanism3());
         final Set<Mechanism<?>> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =
                 Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
                         .withNewlyTriggeringProcedure(newlyMechanisms, () -> {})
-                        .withContinuingTriggeringProcedure(continuingMechanisms, () -> {})
                         .withFinishedTriggeringProcedure(finishedMechanisms, () -> {})
                         .build();
 
@@ -103,9 +101,9 @@ public class RuleTest {
         duckDuckGooseGoose.evaluate();
         assertEquals(newlyMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
 
-        // CONTINUING
+        // nothing between NEWLLY and FINISHED
         duckDuckGooseGoose.evaluate();
-        assertEquals(continuingMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
+        assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
 
         // FINISHED
         duckDuckGooseGoose.evaluate();
@@ -125,7 +123,6 @@ public class RuleTest {
         Rule duckDuckGooseGoose =
                 Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
                         .withNewlyTriggeringProcedure(() -> new TrivialProcedure("newly"))
-                        .withContinuingTriggeringProcedure(() -> new TrivialProcedure("continuing"))
                         .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"))
                         .build();
 
@@ -136,9 +133,9 @@ public class RuleTest {
         duckDuckGooseGoose.evaluate();
         assertEquals("newly", duckDuckGooseGoose.getProcedureToRun().getName());
 
-        // CONTINUING
+        // no procedure between NEWLY and FINISHED
         duckDuckGooseGoose.evaluate();
-        assertEquals("continuing", duckDuckGooseGoose.getProcedureToRun().getName());
+        assertNull(duckDuckGooseGoose.getProcedureToRun());
 
         // FINISHED
         duckDuckGooseGoose.evaluate();
