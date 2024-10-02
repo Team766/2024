@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * {@link RuleEngine}s manage and process a set of {@link Rule}s.  Subclasses should add rules via
@@ -41,11 +42,12 @@ public class RuleEngine implements LoggingBase {
         return Category.RULES;
     }
 
-    protected void addRule(Rule.Builder builder) {
-        Rule rule = builder.build();
-        rules.add(rule);
-        int priority = rulePriorities.size();
-        rulePriorities.put(rule, priority);
+    public void addRule(Rule.RuleFactory builder) {
+        for (Rule rule : builder.build()) {
+            rules.add(rule);
+            int priority = rulePriorities.size();
+            rulePriorities.put(rule, priority);
+        }
     }
 
     @VisibleForTesting
@@ -134,6 +136,14 @@ public class RuleEngine implements LoggingBase {
                     }
 
                     // we're good to proceed
+                    if (rule.getCancellation() == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
+                        var newlyCommand =
+                                ruleMap.inverse().get(new RuleAction(rule, Rule.TriggerType.NEWLY));
+                        if (newlyCommand != null) {
+                            newlyCommand.cancel();
+                        }
+                    }
+
                     Procedure procedure = rule.getProcedureToRun();
                     if (procedure == null) {
                         continue;

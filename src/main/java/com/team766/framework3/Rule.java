@@ -1,10 +1,14 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -25,7 +29,7 @@ import java.util.function.Supplier;
  *     public MyRules() {
  *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
  *       rules.add(Rule.create("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT)).
- *         withNewlyTriggeringProcedure(() -> new ShooterSpin(shooter)));
+ *         withOnTriggeringProcedure(RulePersistence.ONCE_AND_HOLD, () -> new ShooterSpin(shooter)));
  *       ...
  *     }
  * }
@@ -49,33 +53,99 @@ public class Rule {
         FINISHED
     }
 
+    enum Cancellation {
+        DO_NOT_CANCEL,
+        CANCEL_NEWLY_ACTION,
+    }
+
+    public interface RuleFactory {
+        List<Rule> build(BooleanSupplier parentPredicate);
+
+        default List<Rule> build() {
+            return build(null);
+        }
+    }
+
     /**
      * Simple Builder for {@link Rule}s.  Configure Rules via this Builder; these fields will be immutable
      * in the rule the Builder constructs.
      *
      * Instances of this Builder are created via {@link Rule#create} to simplify syntax.
      */
-    public static class Builder {
+    public static class Builder implements RuleFactory {
         private final String name;
         private final BooleanSupplier predicate;
-        private Supplier<Procedure> newlyTriggeringProcedure;
+        private Supplier<Procedure> onTriggeringProcedure;
+        private Cancellation cancellationOnFinish = Cancellation.DO_NOT_CANCEL;
         private Supplier<Procedure> finishedTriggeringProcedure;
+        private final List<RuleFactory> composedRules = new ArrayList<>();
+        private final List<RuleFactory> negatedComposedRules = new ArrayList<>();
 
         private Builder(String name, BooleanSupplier predicate) {
             this.name = name;
             this.predicate = predicate;
         }
 
+        private void applyRulePersistence(
+                RulePersistence rulePersistence, Supplier<Procedure> action) {
+            switch (rulePersistence) {
+                case ONCE -> {
+                    this.onTriggeringProcedure = action;
+                    this.cancellationOnFinish = Cancellation.DO_NOT_CANCEL;
+                }
+                case ONCE_AND_HOLD -> {
+                    this.onTriggeringProcedure =
+                            () -> {
+                                final Procedure procedure = action.get();
+                                return new FunctionalProcedure(
+                                        procedure.getName(),
+                                        procedure.reservations(),
+                                        context -> {
+                                            procedure.run(context);
+                                            context.waitFor(() -> false);
+                                        });
+                            };
+                    this.cancellationOnFinish = Cancellation.CANCEL_NEWLY_ACTION;
+                }
+                case REPEATEDLY -> {
+                    this.onTriggeringProcedure =
+                            () -> {
+                                final Procedure procedure = action.get();
+                                return new FunctionalProcedure(
+                                        procedure.getName(),
+                                        procedure.reservations(),
+                                        context -> {
+                                            while (true) {
+                                                procedure.run(context);
+                                                context.yield();
+                                            }
+                                        });
+                            };
+                    this.cancellationOnFinish = Cancellation.CANCEL_NEWLY_ACTION;
+                }
+            }
+        }
+
         /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
-        public Builder withNewlyTriggeringProcedure(Supplier<Procedure> action) {
-            this.newlyTriggeringProcedure = action;
+        public Builder withOnTriggeringProcedure(
+                RulePersistence rulePersistence, Supplier<Procedure> action) {
+            applyRulePersistence(rulePersistence, action);
             return this;
         }
 
-        public Builder withNewlyTriggeringProcedure(
-                Set<Mechanism<?>> reservations, Runnable action) {
-            this.newlyTriggeringProcedure =
-                    () -> new FunctionalInstantProcedure(reservations, action);
+        public Builder withOnTriggeringProcedure(
+                RulePersistence rulePersistence, Set<Mechanism<?>> reservations, Runnable action) {
+            applyRulePersistence(
+                    rulePersistence, () -> new FunctionalInstantProcedure(reservations, action));
+            return this;
+        }
+
+        public Builder withOnTriggeringProcedure(
+                RulePersistence rulePersistence,
+                Set<Mechanism<?>> reservations,
+                Consumer<Context> action) {
+            applyRulePersistence(
+                    rulePersistence, () -> new FunctionalProcedure(reservations, action));
             return this;
         }
 
@@ -92,9 +162,41 @@ public class Rule {
             return this;
         }
 
+        public Builder whenTriggering(RuleFactory... rules) {
+            composedRules.addAll(Arrays.asList(rules));
+            return this;
+        }
+
+        public Builder whenNotTriggering(RuleFactory... rules) {
+            negatedComposedRules.addAll(Arrays.asList(rules));
+            return this;
+        }
+
         // called by {@link RuleEngine#addRule}.
-        /* package */ Rule build() {
-            return new Rule(name, predicate, newlyTriggeringProcedure, finishedTriggeringProcedure);
+        public List<Rule> build(BooleanSupplier parentPredicate) {
+            final BooleanSupplier fullPredicate =
+                    parentPredicate == null
+                            ? predicate
+                            : () -> parentPredicate.getAsBoolean() && predicate.getAsBoolean();
+            final BooleanSupplier negativePredicate =
+                    parentPredicate == null
+                            ? predicate
+                            : () -> parentPredicate.getAsBoolean() && !predicate.getAsBoolean();
+            final var rules = new ArrayList<Rule>();
+            rules.add(
+                    new Rule(
+                            name,
+                            fullPredicate,
+                            onTriggeringProcedure,
+                            cancellationOnFinish,
+                            finishedTriggeringProcedure));
+            for (var r : composedRules) {
+                rules.addAll(r.build(fullPredicate));
+            }
+            for (var r : negatedComposedRules) {
+                rules.addAll(r.build(negativePredicate));
+            }
+            return rules;
         }
     }
 
@@ -103,6 +205,8 @@ public class Rule {
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
             Maps.newEnumMap(TriggerType.class);
     private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
+            Maps.newEnumMap(TriggerType.class);
+    private final Map<TriggerType, Cancellation> triggerCancellation =
             Maps.newEnumMap(TriggerType.class);
 
     private TriggerType currentTriggerType = TriggerType.NONE;
@@ -114,23 +218,26 @@ public class Rule {
     private Rule(
             String name,
             BooleanSupplier predicate,
-            Supplier<Procedure> newlyTriggeringProcedure,
+            Supplier<Procedure> onTriggeringProcedure,
+            Cancellation cancellationOnFinish,
             Supplier<Procedure> finishedTriggeringProcedure) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
 
-        if (newlyTriggeringProcedure == null) {
-            throw new IllegalArgumentException("Newly triggering Procedure is not defined.");
+        if (onTriggeringProcedure == null) {
+            throw new IllegalArgumentException("On-triggering Procedure is not defined.");
         }
 
         this.name = name;
         this.predicate = predicate;
-        if (newlyTriggeringProcedure != null) {
-            triggerProcedures.put(TriggerType.NEWLY, newlyTriggeringProcedure);
+        if (onTriggeringProcedure != null) {
+            triggerProcedures.put(TriggerType.NEWLY, onTriggeringProcedure);
             triggerReservations.put(
-                    TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
+                    TriggerType.NEWLY, getReservationsForProcedure(onTriggeringProcedure));
         }
+
+        triggerCancellation.put(TriggerType.FINISHED, cancellationOnFinish);
 
         if (finishedTriggeringProcedure != null) {
             triggerProcedures.put(TriggerType.FINISHED, finishedTriggeringProcedure);
@@ -139,7 +246,7 @@ public class Rule {
         }
     }
 
-    private Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
+    private static Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
         if (supplier != null) {
             Procedure procedure = supplier.get();
             if (procedure != null) {
@@ -182,6 +289,10 @@ public class Rule {
             return triggerReservations.get(currentTriggerType);
         }
         return Collections.emptySet();
+    }
+
+    Cancellation getCancellation() {
+        return triggerCancellation.get(currentTriggerType);
     }
 
     /* package */ Procedure getProcedureToRun() {

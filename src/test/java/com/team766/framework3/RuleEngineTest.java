@@ -1,5 +1,6 @@
 package com.team766.framework3;
 
+import static com.team766.framework3.RulePersistence.ONCE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -51,12 +52,12 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new PeriodicPredicate(2))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new PeriodicPredicate(2))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
                     }
                 };
 
@@ -80,12 +81,12 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1", new PeriodicPredicate(4))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm2", new PeriodicPredicate(4))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm2))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm2))));
                     }
                 };
 
@@ -132,7 +133,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new PeriodicPredicate(4))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p0",
@@ -140,7 +142,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 Set.of(fm1, fm2))));
                         addRule(
                                 Rule.create("fm1_p1", new PeriodicPredicate(2))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p1",
@@ -149,7 +152,8 @@ public class RuleEngineTest extends TestCase3 {
 
                         addRule(
                                 Rule.create("fm3_p2", new PeriodicPredicate(4))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm3proc_p2", 0, Set.of(fm3))));
@@ -195,7 +199,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new PeriodicPredicate(4))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p0",
@@ -203,7 +208,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 Set.of(fm1, fm2))));
                         addRule(
                                 Rule.create("fm1_p1", new PeriodicPredicate(4, 1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p1",
@@ -212,7 +218,8 @@ public class RuleEngineTest extends TestCase3 {
 
                         addRule(
                                 Rule.create("fm1_p2", new PeriodicPredicate(4, 3))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p2",
@@ -267,7 +274,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new PeriodicPredicate(4, 1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p0",
@@ -275,7 +283,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 Set.of(fm1, fm2))));
                         addRule(
                                 Rule.create("fm1_p1", new PeriodicPredicate(4))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p1",
