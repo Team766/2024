@@ -1,6 +1,10 @@
 package com.team766.framework3;
 
+import static com.team766.framework3.RulePersistence.ONCE;
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+import static com.team766.framework3.RulePersistence.REPEATEDLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.Test;
 
@@ -68,12 +73,12 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
                     }
                 };
 
@@ -97,12 +102,12 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm1))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm2", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
-                                                () -> new FakeProcedure(2, Set.of(fm2))));
+                                        .withOnTriggeringProcedure(
+                                                ONCE, () -> new FakeProcedure(2, Set.of(fm2))));
                     }
                 };
 
@@ -147,7 +152,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 1, Set.of(fm1)))
@@ -189,7 +195,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p0",
@@ -197,7 +204,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 Set.of(fm1, fm2))));
                         addRule(
                                 Rule.create("fm1_p1", new PeriodicPredicate(2))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p1",
@@ -206,7 +214,8 @@ public class RuleEngineTest extends TestCase3 {
 
                         addRule(
                                 Rule.create("fm3_p2", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm3proc_p2", 0, Set.of(fm3))));
@@ -251,7 +260,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p0",
@@ -259,7 +269,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 Set.of(fm1, fm2))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p1",
@@ -268,7 +279,8 @@ public class RuleEngineTest extends TestCase3 {
 
                         addRule(
                                 Rule.create("fm1_p2", new ScheduledPredicate(3))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p2",
@@ -322,7 +334,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p0",
@@ -330,7 +343,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 Set.of(fm1, fm2))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1proc_p1",
@@ -364,13 +378,15 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p1", 1, Set.of(fm1)))
@@ -405,13 +421,15 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p1", 1, Set.of(fm1)))
@@ -454,13 +472,15 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 2, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(0))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p1", 2, Set.of(fm1)))
@@ -495,7 +515,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(0, 4))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 0, Set.of(fm1)))
@@ -505,7 +526,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 "fm1procfin_p0", 0, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p1", 0, Set.of(fm1)))
@@ -564,7 +586,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 0, Set.of(fm1)))
@@ -574,7 +597,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 "fm1procfin_p0", 0, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(0, 4))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p1", 1, Set.of(fm1)))
@@ -634,7 +658,8 @@ public class RuleEngineTest extends TestCase3 {
                     {
                         addRule(
                                 Rule.create("fm1_p0", new ScheduledPredicate(1))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 0, Set.of(fm1)))
@@ -644,7 +669,8 @@ public class RuleEngineTest extends TestCase3 {
                                                                 "fm1procfin_p0", 0, Set.of(fm1))));
                         addRule(
                                 Rule.create("fm1_p1", new ScheduledPredicate(0, 3))
-                                        .withNewlyTriggeringProcedure(
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p1", 1, Set.of(fm1)))
@@ -686,5 +712,213 @@ public class RuleEngineTest extends TestCase3 {
         assertNull(cmd);
 
         step(); // 3
+    }
+
+    /** Test ONCE RulePersistence policy */
+    @Test
+    public void testOncePersistence() {
+        AtomicReference<FakeProcedure> predicateEndsFirstProc = new AtomicReference<>();
+        AtomicReference<FakeProcedure> actionEndsFirstProc = new AtomicReference<>();
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                () -> {
+                                                    var proc =
+                                                            new FakeProcedure(
+                                                                    "predicate_ends_first_proc",
+                                                                    10,
+                                                                    Set.of(fm1));
+                                                    predicateEndsFirstProc.set(proc);
+                                                    return proc;
+                                                }));
+                        addRule(
+                                Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
+                                        .withOnTriggeringProcedure(
+                                                ONCE,
+                                                () -> {
+                                                    var proc =
+                                                            new FakeProcedure(
+                                                                    "action_ends_first_proc",
+                                                                    1,
+                                                                    Set.of(fm2));
+                                                    actionEndsFirstProc.set(proc);
+                                                    return proc;
+                                                }));
+                    }
+                };
+
+        myRules.run();
+
+        // check that both action Procedures are scheduled
+        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
+        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
+
+        step();
+        myRules.run();
+        step();
+        myRules.run();
+
+        // ONCE actions should be allowed to run after the rule has stopped triggering.
+        assertEquals(2, predicateEndsFirstProc.get().age());
+        assertFalse(predicateEndsFirstProc.get().isEnded());
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
+
+        // If a ONCE action completes, it should end and mechanism reservations released.
+        assertTrue(actionEndsFirstProc.get().isEnded());
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd2);
+    }
+
+    /** Test ONCE_AND_HOLD RulePersistence policy */
+    @Test
+    public void testOnceAndHoldPersistence() {
+        AtomicReference<FakeProcedure> predicateEndsFirstProc = new AtomicReference<>();
+        AtomicReference<FakeProcedure> actionEndsFirstProc = new AtomicReference<>();
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
+                                        .withOnTriggeringProcedure(
+                                                ONCE_AND_HOLD,
+                                                () -> {
+                                                    var proc =
+                                                            new FakeProcedure(
+                                                                    "predicate_ends_first_proc",
+                                                                    10,
+                                                                    Set.of(fm1));
+                                                    predicateEndsFirstProc.set(proc);
+                                                    return proc;
+                                                }));
+                        addRule(
+                                Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
+                                        .withOnTriggeringProcedure(
+                                                ONCE_AND_HOLD,
+                                                () -> {
+                                                    var proc =
+                                                            new FakeProcedure(
+                                                                    "action_ends_first_proc",
+                                                                    1,
+                                                                    Set.of(fm2));
+                                                    actionEndsFirstProc.set(proc);
+                                                    return proc;
+                                                }));
+                    }
+                };
+
+        myRules.run();
+
+        // check that both action Procedures are scheduled
+        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
+        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
+
+        step();
+        myRules.run();
+        step();
+        myRules.run();
+
+        // ONCE_AND_HOLD actions should be cancelled after the rule has stopped triggering.
+        assertTrue(predicateEndsFirstProc.get().isEnded());
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNull(cmd1);
+
+        // If a ONCE_AND_HOLD action completes, it should end but mechanism reservations are
+        // retained.
+        assertTrue(actionEndsFirstProc.get().isEnded());
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
+    }
+
+    /** Test REPEATEDLY RulePersistence policy */
+    @Test
+    public void testRepeatedlyPersistence() {
+        AtomicReference<FakeProcedure> predicateEndsFirstProc = new AtomicReference<>();
+        AtomicReference<FakeProcedure> actionEndsFirstProc = new AtomicReference<>();
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("predicate_ends_first", new ScheduledPredicate(0, 1))
+                                        .withOnTriggeringProcedure(
+                                                REPEATEDLY,
+                                                () -> {
+                                                    var proc =
+                                                            new FakeProcedure(
+                                                                    "predicate_ends_first_proc",
+                                                                    10,
+                                                                    Set.of(fm1));
+                                                    predicateEndsFirstProc.set(proc);
+                                                    return proc;
+                                                }));
+                        addRule(
+                                Rule.create("action_ends_first", new ScheduledPredicate(0, 10))
+                                        .withOnTriggeringProcedure(
+                                                REPEATEDLY,
+                                                () -> {
+                                                    var proc =
+                                                            new FakeProcedure(
+                                                                    "action_ends_first_proc",
+                                                                    1,
+                                                                    Set.of(fm2));
+                                                    actionEndsFirstProc.set(proc);
+                                                    return proc;
+                                                }));
+                    }
+                };
+
+        myRules.run();
+
+        // check that both action Procedures are scheduled
+        Command cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd1);
+        assertTrue(cmd1.getName().endsWith("predicate_ends_first_proc"));
+        Command cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
+
+        step();
+        myRules.run();
+        step();
+        myRules.run();
+        step();
+
+        // REPEATEDLY actions should be cancelled after the rule has stopped triggering.
+        assertTrue(predicateEndsFirstProc.get().isEnded());
+        cmd1 = CommandScheduler.getInstance().requiring(fm1);
+        assertNull(cmd1);
+
+        // If a REPEATEDLY action completes, another instance should be started.
+        assertFalse(actionEndsFirstProc.get().isEnded());
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
+
+        final FakeProcedure previousActionInstance = actionEndsFirstProc.get();
+
+        myRules.run();
+        step();
+        myRules.run();
+        step();
+
+        assertTrue(previousActionInstance.isEnded());
+        assertFalse(actionEndsFirstProc.get().isEnded());
+        cmd2 = CommandScheduler.getInstance().requiring(fm2);
+        assertNotNull(cmd2);
+        assertTrue(cmd2.getName().endsWith("action_ends_first_proc"));
     }
 }

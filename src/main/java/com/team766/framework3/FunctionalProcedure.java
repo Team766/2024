@@ -7,7 +7,12 @@ public final class FunctionalProcedure extends Procedure {
     private final Consumer<Context> runnable;
 
     public FunctionalProcedure(Set<Mechanism<?>> reservations, Consumer<Context> runnable) {
-        super(runnable.toString(), reservations);
+        this(runnable.toString(), reservations, runnable);
+    }
+
+    public FunctionalProcedure(
+            String name, Set<Mechanism<?>> reservations, Consumer<Context> runnable) {
+        super(name, reservations);
         this.runnable = runnable;
     }
 

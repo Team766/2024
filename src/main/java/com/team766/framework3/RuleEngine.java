@@ -148,6 +148,15 @@ public class RuleEngine implements LoggingBase {
                     }
 
                     // we're good to proceed
+
+                    if (rule.getCancellation() == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
+                        var newlyCommand =
+                                ruleMap.inverse().get(new RuleAction(rule, Rule.TriggerType.NEWLY));
+                        if (newlyCommand != null) {
+                            newlyCommand.cancel();
+                        }
+                    }
+
                     Procedure procedure = rule.getProcedureToRun();
                     if (procedure == null) {
                         continue;

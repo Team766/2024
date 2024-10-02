@@ -1,9 +1,13 @@
 package com.team766.framework3;
 
+import static com.team766.framework3.RulePersistence.ONCE;
+import static com.team766.framework3.RulePersistence.ONCE_AND_HOLD;
+import static com.team766.framework3.RulePersistence.REPEATEDLY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.team766.framework3.Rule.Cancellation;
 import com.team766.framework3.Rule.TriggerType;
 import java.util.Collections;
 import java.util.Set;
@@ -43,7 +47,7 @@ public class RuleTest {
     public void testCreate() {
         Rule alwaysTrue =
                 Rule.create("always true", () -> true)
-                        .withNewlyTriggeringProcedure(() -> Procedure.NO_OP)
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
                         .build();
         assertNotNull(alwaysTrue);
         assertEquals("always true", alwaysTrue.getName());
@@ -54,7 +58,7 @@ public class RuleTest {
         // start with simple test of a NONE->NEWLY->CONTINUING->CONTINUING sequence
         Rule alwaysTrue =
                 Rule.create("always true", () -> true)
-                        .withNewlyTriggeringProcedure(() -> Procedure.NO_OP)
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
                         .build();
         assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
         alwaysTrue.evaluate();
@@ -67,7 +71,7 @@ public class RuleTest {
         // test a full cycle: NONE->NEWLY->CONTINUING->FINISHED->NONE->NEWLY->...
         Rule duckDuckGooseGoose =
                 Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                        .withNewlyTriggeringProcedure(() -> Procedure.NO_OP)
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
                         .build();
         assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
         duckDuckGooseGoose.evaluate();
@@ -83,6 +87,45 @@ public class RuleTest {
     }
 
     @Test
+    public void testGetCancellation() {
+        Rule ruleWithOnce =
+                Rule.create("always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
+                        .build();
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellation());
+        ruleWithOnce.evaluate(); // NONE -> NEWLY
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellation());
+        ruleWithOnce.evaluate(); // NEWLY -> CONTINUING
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellation());
+        ruleWithOnce.evaluate(); // CONTINUING -> FINISHED
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnce.getCancellation());
+
+        Rule ruleWithOnceAndHold =
+                Rule.create("always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(ONCE_AND_HOLD, () -> Procedure.NO_OP)
+                        .build();
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnceAndHold.getCancellation());
+        ruleWithOnceAndHold.evaluate(); // NONE -> NEWLY
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnceAndHold.getCancellation());
+        ruleWithOnceAndHold.evaluate(); // NEWLY -> CONTINUING
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithOnceAndHold.getCancellation());
+        ruleWithOnceAndHold.evaluate(); // CONTINUING -> FINISHED
+        assertEquals(Cancellation.CANCEL_NEWLY_ACTION, ruleWithOnceAndHold.getCancellation());
+
+        Rule ruleWithRepeatedly =
+                Rule.create("always true", new DuckDuckGooseGoosePredicate())
+                        .withOnTriggeringProcedure(REPEATEDLY, () -> Procedure.NO_OP)
+                        .build();
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithRepeatedly.getCancellation());
+        ruleWithRepeatedly.evaluate(); // NONE -> NEWLY
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithRepeatedly.getCancellation());
+        ruleWithRepeatedly.evaluate(); // NEWLY -> CONTINUING
+        assertEquals(Cancellation.DO_NOT_CANCEL, ruleWithRepeatedly.getCancellation());
+        ruleWithRepeatedly.evaluate(); // CONTINUING -> FINISHED
+        assertEquals(Cancellation.CANCEL_NEWLY_ACTION, ruleWithRepeatedly.getCancellation());
+    }
+
+    @Test
     public void testGetMechanismsToReserve() {
         final Set<Mechanism<?>> newlyMechanisms =
                 Set.of(new FakeMechanism1(), new FakeMechanism2());
@@ -90,7 +133,7 @@ public class RuleTest {
 
         Rule duckDuckGooseGoose =
                 Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                        .withNewlyTriggeringProcedure(newlyMechanisms, () -> {})
+                        .withOnTriggeringProcedure(ONCE, newlyMechanisms, () -> {})
                         .withFinishedTriggeringProcedure(finishedMechanisms, () -> {})
                         .build();
 
@@ -122,7 +165,7 @@ public class RuleTest {
     public void testGetProcedureToRun() {
         Rule duckDuckGooseGoose =
                 Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                        .withNewlyTriggeringProcedure(() -> new TrivialProcedure("newly"))
+                        .withOnTriggeringProcedure(ONCE, () -> new TrivialProcedure("newly"))
                         .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"))
                         .build();
 
