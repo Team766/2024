@@ -4,7 +4,6 @@ import com.google.protobuf.CodedOutputStream;
 import com.team766.library.LossyPriorityQueue;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 
 public class LogWriter {
@@ -17,15 +16,15 @@ public class LogWriter {
 
     private HashMap<String, Integer> m_formatStringIndices = new HashMap<String, Integer>();
 
-    private OutputStream m_outputStream;
+    private FileOutputStream m_fileStream;
     private CodedOutputStream m_dataStream;
 
     private Severity m_minSeverity = Severity.INFO;
 
-    public LogWriter(OutputStream out) throws IOException {
+    public LogWriter(final String filename) throws IOException {
         m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
-        m_outputStream = out;
-        m_dataStream = CodedOutputStream.newInstance(m_outputStream);
+        m_fileStream = new FileOutputStream(filename);
+        m_dataStream = CodedOutputStream.newInstance(m_fileStream);
         m_workerThread =
                 new Thread(
                         new Runnable() {
@@ -58,10 +57,6 @@ public class LogWriter {
         m_workerThread.start();
     }
 
-    public LogWriter(final String filename) throws IOException {
-        this(new FileOutputStream(filename));
-    }
-
     public void close() throws IOException, InterruptedException {
         m_running = false;
         m_entriesQueue.add(LogEntryComparator.TERMINATION_SENTINAL);
@@ -70,14 +65,11 @@ public class LogWriter {
         m_workerThread.join();
 
         m_dataStream.flush();
-        m_outputStream.flush();
+        m_fileStream.flush();
 
-        if (m_outputStream instanceof FileOutputStream) {
-            FileOutputStream fos = (FileOutputStream) m_outputStream;
-            fos.getFD().sync();
-        }
+        m_fileStream.getFD().sync();
 
-        m_outputStream.close();
+        m_fileStream.close();
     }
 
     public void setSeverityFilter(final Severity threshold) {
