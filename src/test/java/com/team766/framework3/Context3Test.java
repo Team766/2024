@@ -49,6 +49,36 @@ public class Context3Test extends TestCase3 {
         assertTrue(context.isFinished());
     }
 
+    /// Test that a ContextImpl with a Procedure can be run multiple times.
+    /// We don't usually do this (because Procedures often have internal state and users don't
+    /// think to reset it at the beginning of run()), but it's fun to know we can.
+    @Test
+    public void testReusable() {
+        var proc = new FakeProcedure(2, Set.of());
+        var context = new ContextImpl(proc);
+
+        for (int i = 0; i < 3; ++i) {
+            // Schedule the Context for execution by the scheduler.
+            context.schedule();
+            assertFalse(context.isFinished());
+
+            // First step. The procedure does one step of work and then yields.
+            step();
+            assertEquals(1, proc.age());
+            assertFalse(context.isFinished());
+
+            // Second step. The procedure does another step of work and then yields.
+            step();
+            assertEquals(2, proc.age());
+            assertFalse(context.isFinished());
+
+            // Third step. The procedure finishes successfully and the Context ends.
+            step();
+            assertEquals(2, proc.age());
+            assertTrue(context.isFinished());
+        }
+    }
+
     /// Test early termination of a procedure running in a Context.
     @Test
     public void testCancel() {

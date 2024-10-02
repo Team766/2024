@@ -1,7 +1,6 @@
 package com.team766.framework3;
 
 import com.team766.framework.ContextStoppedException;
-import com.team766.framework.StackTraceUtils;
 import com.team766.hal.Clock;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
@@ -11,6 +10,8 @@ import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.lang.StackWalker.StackFrame;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -101,15 +102,19 @@ import java.util.function.BooleanSupplier;
         }
     }
 
+    private static ExecutorService threadPool = null;
+
+    private static ExecutorService getThreadPool() {
+        if (threadPool == null) {
+            threadPool = Executors.newCachedThreadPool();
+        }
+        return threadPool;
+    }
+
     /**
      * The top-level procedure being run by this Context.
      */
     private final Procedure m_procedure;
-
-    /**
-     * The OS thread that this Context is executing on.
-     */
-    private Thread m_thread;
 
     /**
      * Used to synchronize access to this Context's state variable.
@@ -175,14 +180,6 @@ import java.util.function.BooleanSupplier;
             repr += " running";
         }
         return repr;
-    }
-
-    public String getStackTrace() {
-        if (m_thread != null) {
-            return StackTraceUtils.getStackTrace(m_thread);
-        } else {
-            return "";
-        }
     }
 
     /**
@@ -279,6 +276,8 @@ import java.util.function.BooleanSupplier;
      */
     private void threadFunction() {
         try {
+            Thread.currentThread().setName(getContextName());
+
             // OS threads run independently of one another, so we need to wait until
             // the baton is passed to us before we can start running the user's code
             waitForControl(ControlOwner.SUBROUTINE);
@@ -379,8 +378,7 @@ import java.util.function.BooleanSupplier;
     @Override
     public void initialize() {
         m_state = State.RUNNING;
-        m_thread = new Thread(this::threadFunction, getContextName());
-        m_thread.start();
+        getThreadPool().submit(this::threadFunction);
     }
 
     @Override
