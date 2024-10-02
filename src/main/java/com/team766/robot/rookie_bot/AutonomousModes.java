@@ -1,7 +1,7 @@
 package com.team766.robot.rookie_bot;
 
 import com.team766.framework.AutonomousMode;
-import com.team766.robot.example.procedures.*;
+import com.team766.robot.rookie_bot.procedures.*;
 
 public class AutonomousModes {
     public static final AutonomousMode[] AUTONOMOUS_MODES =
