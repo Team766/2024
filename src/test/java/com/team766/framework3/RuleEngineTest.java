@@ -124,6 +124,45 @@ public class RuleEngineTest extends TestCase3 {
     }
 
     @Test
+    public void testFinishedProcedureBumpsNewlyProcedureForSameRule() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new PeriodicPredicate(4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 2, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p0",
+                                                                1,
+                                                                Set.of(fm1, fm2))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+
+        step(); // 0
+
+        // next iteration - check that the original procedure is new bumped by the finished procedure for the same rule
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
+
+        step(); // 1
+    }
+
+    @Test
     public void testRunRulePriorities() {
         // create simple RuleEngine with two rules with conflicting actions
         // we'll check that only the higher priority rule triggers
@@ -189,7 +228,6 @@ public class RuleEngineTest extends TestCase3 {
 
     @Test
     public void testRunHigherPriorityRuleStillBeingRun() {
-        // create a simple RuleEngine with two non-conflicting rules
         RuleEngine myRules =
                 new RuleEngine() {
                     {
@@ -261,7 +299,6 @@ public class RuleEngineTest extends TestCase3 {
 
     @Test
     public void testRunLowerPriorityRuleBumped() {
-        // create a simple RuleEngine with two non-conflicting rules
         RuleEngine myRules =
                 new RuleEngine() {
                     {
@@ -300,5 +337,136 @@ public class RuleEngineTest extends TestCase3 {
         assertTrue(cmd.getName().endsWith("fm1proc_p0"));
 
         step(); // 1
+    }
+
+    @Test
+    public void testRuleResetIgnoredLowerPriorityRule() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new PeriodicPredicate(4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 2, Set.of(fm1))));
+                        addRule(
+                                Rule.create("fm1_p1", new PeriodicPredicate(4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p1", 1, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p1", 1, Set.of(fm2))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+
+        step(); // 0
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd);
+
+        step();
+    }
+
+    @Test
+    public void testRuleResetIgnoredLowerPriorityRuleHigherPriorityRulePreviouslyScheduled() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new PeriodicPredicate(4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 2, Set.of(fm1))));
+                        addRule(
+                                Rule.create("fm1_p1", new PeriodicPredicate(4, 1))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p1", 1, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p1", 1, Set.of(fm2))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+
+        step(); // 0
+
+        // next iteration - even with the second rule firing, the procedure from the first rule
+        // should continue
+        // executing, since the first rule is higher priority
+        myRules.run();
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+        step(); // 1
+
+        // next iteration - the second rule's finished procedure should *not* execute
+        myRules.run();
+        cmd = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd);
+        step(); // 2
+    }
+
+    @Test
+    public void testRuleResetBumpedLowerPriorityRule() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new PeriodicPredicate(4, 1))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 2, Set.of(fm1))));
+                        addRule(
+                                Rule.create("fm1_p1", new PeriodicPredicate(4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p1", 2, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p1", 2, Set.of(fm2))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
+
+        step(); // 0
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm2);
+        assertNull(cmd);
+
+        step();
     }
 }
