@@ -152,7 +152,8 @@ public class RuleEngineTest extends TestCase3 {
 
         step(); // 0
 
-        // next iteration - check that the original procedure is new bumped by the finished procedure for the same rule
+        // next iteration - check that the original procedure is new bumped by the finished
+        // procedure for the same rule
         myRules.run();
 
         cmd = CommandScheduler.getInstance().requiring(fm1);
