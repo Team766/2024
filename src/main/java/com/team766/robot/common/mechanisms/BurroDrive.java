@@ -19,7 +19,6 @@ public class BurroDrive extends Drive {
 
     private final MotorController leftMotor;
     private final MotorController rightMotor;
-    private final GyroReader gyro;
     private DifferentialDriveKinematics differentialDriveKinematics;
     private DifferentialDriveOdometry differentialDriveOdometry;
 
@@ -40,7 +39,6 @@ public class BurroDrive extends Drive {
 
         leftMotor = RobotProvider.instance.getMotor(DRIVE_LEFT);
         rightMotor = RobotProvider.instance.getMotor(DRIVE_RIGHT);
-        gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
         differentialDriveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
         differentialDriveOdometry =
@@ -73,13 +71,11 @@ public class BurroDrive extends Drive {
     }
 
     public Pose2d getCurrentPosition() {
-        // FIXME: add code using driveOdometry
         return differentialDriveOdometry.getCurrentPosition();
     }
 
     public void resetCurrentPosition() {
         differentialDriveOdometry.setCurrentPosition(new Pose2d(0, 0, new Rotation2d()));
-        // FIXME: add code using driveOdometry
     }
 
     /*

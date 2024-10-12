@@ -112,6 +112,7 @@ public class FollowPath extends Procedure {
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "targetState", targetState.getTargetHolonomicPose());
+            
             drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
@@ -119,7 +120,7 @@ public class FollowPath extends Procedure {
         if (path.getGoalEndState().getVelocity() < 0.1) {
             drive.stopDrive();
             if (controller.isHolonomic()) {
-                drive.setCross(); // FIXME: figure out how to do this without erroring
+                drive.setCross(); 
             }
         }
     }
