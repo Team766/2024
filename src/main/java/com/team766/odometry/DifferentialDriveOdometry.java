@@ -78,7 +78,7 @@ public class DifferentialDriveOdometry {
     }
 
     /**
-     * Calculates the robot's position and heading based on dead reckoning.
+     * Calculates the robot's position and heading (guess)
      */
     private void updatePosition() {
         // Get the change in encoder values (how much each wheel moved)
@@ -93,10 +93,8 @@ public class DifferentialDriveOdometry {
         double distanceTraveled = (deltaLeft + deltaRight) / 2;
         double rotationChange = (deltaRight - deltaLeft) / wheelBaseWidth;
 
-        // Get the current heading of the robot (in radians)
         double currentHeading = currentPosition.getRotation().getRadians();
 
-        // Update the robot's position using trigonometry
         double deltaX = distanceTraveled * Math.cos(currentHeading + rotationChange / 2);
         double deltaY = distanceTraveled * Math.sin(currentHeading + rotationChange / 2);
 
