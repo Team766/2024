@@ -12,6 +12,7 @@ import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Lights;
 import com.team766.robot.reva.mechanisms.NoteCamera;
+import com.team766.robot.reva.mechanisms.Orin;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
 
@@ -26,6 +27,7 @@ public class Robot implements RobotConfigurator {
     public static ForwardApriltagCamera forwardApriltagCamera;
     public static NoteCamera noteCamera;
     public static Lights lights;
+    public static Orin orin;
 
     @Override
     public void initializeMechanisms() {
@@ -42,6 +44,7 @@ public class Robot implements RobotConfigurator {
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
         }
+        orin = new Orin();
     }
 
     @Override
