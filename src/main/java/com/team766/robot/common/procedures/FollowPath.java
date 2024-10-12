@@ -81,8 +81,8 @@ public class FollowPath extends Procedure {
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
             if (!controller.isHolonomic() && path.isReversed()) {
                 targetState = targetState.reverse();
-              }
-              
+            }
+
             curPose = drive.getCurrentPosition();
             currentSpeeds = drive.getChassisSpeeds();
 
@@ -118,8 +118,8 @@ public class FollowPath extends Procedure {
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
             drive.stopDrive();
-            if (controller.isHolonomic()){
-                drive.setCross(); //FIXME: figure out how to do this without erroring
+            if (controller.isHolonomic()) {
+                drive.setCross(); // FIXME: figure out how to do this without erroring
             }
         }
     }
