@@ -86,7 +86,7 @@ public class RobotMain extends LoggedRobot {
         try {
             boolean configFromUSB = true;
             String filename = null;
-            filename = checkForAndReturnPathToConfigFile(USB_CONFIG_FILE);
+            filename = isReal() ? checkForAndReturnPathToConfigFile(USB_CONFIG_FILE) : "WPISimConfig.txt";
 
             if (filename == null) {
                 filename = INTERNAL_CONFIG_FILE;
