@@ -6,8 +6,9 @@ import com.team766.robot.rookie_bot.Robot;
 
 public class TurnRight extends Procedure{
 	public void run(Context context) {
-		Robot.drive.setDrivePower(0.5, 0.0);
-		context.waitForSeconds(1);
+			context.takeOwnership(Robot.drive);
+		Robot.drive.setDrivePower(0.25, -0.25);
+		context.waitForSeconds(0);
 		Robot.drive.setDrivePower(0,0);
 
 	}
