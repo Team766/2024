@@ -86,7 +86,7 @@ public class Lights extends Mechanism {
         return handleErrorCode(e);
     }
 
-    public boolean signalHasTag(){
+    public boolean signalHasTag() {
         ErrorCode e = m_candle.setLEDs(255, 215, 0);
         return handleErrorCode(e);
     }

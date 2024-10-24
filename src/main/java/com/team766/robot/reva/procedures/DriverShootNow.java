@@ -45,7 +45,7 @@ public class DriverShootNow extends VisionPIDProcedure {
         Transform3d toUse;
         try {
             /* Interchange the following two lines for Orin vs. Orange Pi! */
-            //toUse = getTransform3dOfRobotToTag();
+            // toUse = getTransform3dOfRobotToTag();
             toUse = getTransform3dOfRobotToTagOrin();
         } catch (NoTagFoundError e) {
             LoggerExceptionUtils.logException(e);
@@ -127,8 +127,9 @@ public class DriverShootNow extends VisionPIDProcedure {
         AprilTag tag = Robot.orin.getTagById(tagId);
 
         Pose3d pose = tag.pose;
-        
-        Transform3d poseNew = new Transform3d(pose.getX(),pose.getY(), pose.getZ(), new Rotation3d());
+
+        Transform3d poseNew =
+                new Transform3d(pose.getX(), pose.getY(), pose.getZ(), new Rotation3d());
         return poseNew;
     }
 }
