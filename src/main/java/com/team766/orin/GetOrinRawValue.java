@@ -2,8 +2,6 @@ package com.team766.orin;
 
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayTopic;
-import edu.wpi.first.networktables.IntegerArrayEntry;
-import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -25,10 +23,6 @@ public class GetOrinRawValue {
     private static double[] arr = new double[] {Double.NEGATIVE_INFINITY};
     private static DoubleArrayEntry poseValues = pose.getEntry(arr);
 
-    private static IntegerArrayTopic tagId = table.getIntegerArrayTopic("tag_id");
-    private static long[] array1 = new long[] {0l};
-    private static IntegerArrayEntry tagIdValues = tagId.getEntry(array1);
-
     public static double[] getRawPoseData() throws ValueNotFoundOnTableError {
         if (poseValues.get().length == 1 && poseValues.get()[0] == Double.NEGATIVE_INFINITY) {
             throw new ValueNotFoundOnTableError("Pose Data Not Present on Table");
@@ -37,24 +31,8 @@ public class GetOrinRawValue {
         return poseValues.get();
     }
 
-    public static int[] getTagIds() throws ValueNotFoundOnTableError {
-        long[] longValues = tagIdValues.get();
-
-        if (longValues.length == 0
-                || (longValues[0] == Integer.MIN_VALUE && longValues.length == 1)) {
-            throw new ValueNotFoundOnTableError("Tag ID Data Not Present on Table");
-        }
-
-        int[] toReturn = new int[longValues.length];
-        for (int i = 0; i < longValues.length; i++) {
-            toReturn[i] = (int) longValues[i];
-        }
-        return toReturn;
-    }
-
     public static void closeAll() {
         poseValues.close();
-        tagIdValues.close();
     }
 }
 

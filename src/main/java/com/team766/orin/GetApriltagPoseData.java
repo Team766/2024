@@ -15,25 +15,21 @@ public class GetApriltagPoseData {
         double[] tagData;
 
         try {
-            tagIds = GetOrinRawValue.getTagIds();
             tagData = GetOrinRawValue.getRawPoseData();
         } catch (ValueNotFoundOnTableError e) {
             return apriltags; // Can just return an array of zero apriltags here
         }
 
-        int counter = 0;
-        for (int i = 0; i < tagIds.length; i++) {
+        if (tagData.length % 4 != 0 || tagData.length == 0) return apriltags;
+
+        for (int i = 0; i < tagData.length; i += 4) {
             AprilTag tag =
                     new AprilTag(
-                            tagIds[i],
+                            (int) tagData[i],
                             new Pose3d(
                                     new Translation3d(
-                                            tagData[counter++],
-                                            tagData[counter++],
-                                            tagData[counter++]),
+                                            tagData[i + 1], tagData[i + 2], tagData[i + 3]),
                                     new Rotation3d()));
-            // Remove used values from array
-
             apriltags.add(tag);
         }
         return apriltags;
