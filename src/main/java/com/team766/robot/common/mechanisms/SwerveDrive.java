@@ -1,42 +1,38 @@
 package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.common.constants.ConfigConstants.*;
+import static com.team766.math.Math.normalizeAngleDegrees;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.Pigeon2SimState;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.hal.wpilib.CANTalonFxMotorController;
+import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
-import com.team766.robot.common.constants.SwerveConstants;
+import com.team766.robot.common.mechanisms.simulation.QuadSwerveSim;
+import com.team766.simulator.Parameters;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
+
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -44,14 +40,9 @@ public class SwerveDrive extends Mechanism {
 
     private final SwerveConfig config;
 
-    private DCMotorSim driveFRSim;
-    private TalonFXSimState driveFRSimState;
-    private DCMotorSim steerFRSim;
-    private TalonFXSimState steerFRSimState;
-    private EncoderSim encoderFRSim;
-    private CANcoderSimState encoderFRSimState;
-    private AnalogGyroSim gyroSim;
-    private Pigeon2SimState gyroSimState;
+    private final QuadSwerveSim sim;
+
+    private final Pigeon2SimState gyroSimState;
 
     // SwerveModules
     private final SwerveModule swerveFR;
@@ -73,12 +64,18 @@ public class SwerveDrive extends Mechanism {
             NetworkTableInstance.getDefault()
                     .getStructArrayTopic("SwerveStates", SwerveModuleState.struct)
                     .publish();
+    
+    private final StructPublisher<Pose2d> simPosePublisher =
+            NetworkTableInstance.getDefault().getStructTopic("SimRobotPose", Pose2d.struct).publish();
 
     private PIDController rotationPID;
 
     private boolean movingToTarget = false;
     private double x;
     private double y;
+
+    private double simPrevTime;
+    private double simPrevYaw;
 
     public SwerveDrive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -91,27 +88,17 @@ public class SwerveDrive extends Mechanism {
         MotorController driveBR = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_RIGHT);
         MotorController driveBL = RobotProvider.instance.getMotor(DRIVE_DRIVE_BACK_LEFT);
 
-        driveFRSim = new DCMotorSim(DCMotor.getKrakenX60Foc(1), SwerveConstants.DRIVE_GEAR_RATIO, 0.001);
-        driveFRSimState = ((TalonFX) driveFR).getSimState();
-
         // create the steering motors
         MotorController steerFR = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_RIGHT);
         MotorController steerFL = RobotProvider.instance.getMotor(DRIVE_STEER_FRONT_LEFT);
         MotorController steerBR = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_RIGHT);
         MotorController steerBL = RobotProvider.instance.getMotor(DRIVE_STEER_BACK_LEFT);
 
-        steerFRSim = new DCMotorSim(DCMotor.getKrakenX60Foc(1), SwerveConstants.STEER_GEAR_RATIO, 0.001);
-        steerFRSimState = ((TalonFX) steerFR).getSimState();
-
         // create the encoders
         CANcoder encoderFR = new CANcoder(2, config.canBus());
         CANcoder encoderFL = new CANcoder(4, config.canBus());
         CANcoder encoderBR = new CANcoder(3, config.canBus());
         CANcoder encoderBL = new CANcoder(1, config.canBus());
-
-        // FIXME: not 0
-        encoderFRSim = new EncoderSim(new Encoder(0, 0));
-        encoderFRSimState = encoderFR.getSimState();
 
         // initialize the swerve modules
         swerveFR =
@@ -150,9 +137,7 @@ public class SwerveDrive extends Mechanism {
         // Sets up odometry
         gyro = RobotProvider.instance.getGyro(DRIVE_GYRO);
 
-        // FIXME: not 0 
-        gyroSim = new AnalogGyroSim(0);
-        gyroSimState = ((Pigeon2) gyro).getSimState();
+        gyroSimState = ((PigeonGyro) gyro).getCTRE().getSimState();
 
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
@@ -180,6 +165,18 @@ public class SwerveDrive extends Mechanism {
                         config.wheelCircumference(),
                         config.driveGearRatio(),
                         config.encoderToRevolutionConstant());
+
+        sim = new QuadSwerveSim(
+                halfDistanceBetweenWheels * 2,
+                halfDistanceBetweenWheels * 2,
+                Parameters.ROBOT_MASS,
+                Parameters.ROBOT_MOMENT_OF_INERTIA,
+                List.of(
+                        swerveFR.getSim(),
+                        swerveFL.getSim(),
+                        swerveBR.getSim(),
+                        swerveBL.getSim()));
+        simPrevTime = RobotProvider.instance.getClock().getTime();
     }
 
     /**
@@ -463,47 +460,22 @@ public class SwerveDrive extends Mechanism {
     }
 
     public void runSim() {
+        swerveFR.runSim();
+        swerveFL.runSim();
+        swerveBR.runSim();
+        swerveBL.runSim();
 
-        // set the supply voltage of the TalonFX
-        driveFRSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        final double now = RobotProvider.instance.getClock().getTime();
+        final double dt = now - simPrevTime;
+        simPrevTime = now;
 
-        // get the motor voltage of the TalonFX
-        double driveFRMotorVoltage = driveFRSimState.getMotorVoltage();
+        sim.update(dt);
 
-        // use the motor voltage to calculate new position and velocity
-        // using WPILib's DCMotorSim class for physics simulation
-        driveFRSim.setInputVoltage(driveFRMotorVoltage);
-        driveFRSim.update(0.020); // assume 20 ms loop time
+        final Pose2d pose = sim.getCurPose();
+        simPosePublisher.set(pose);
 
-        // apply the new rotor position and velocity to the TalonFX;
-        // note that this is rotor position/velocity (before gear ratio), but
-        // DCMotorSim returns mechanism position/velocity (after gear ratio)
-        driveFRSimState.setRawRotorPosition(
-            SwerveConstants.DRIVE_GEAR_RATIO * driveFRSim.getAngularPositionRotations()
-        );
-        driveFRSimState.setRotorVelocity(
-            SwerveConstants.DRIVE_GEAR_RATIO * driveFRSim.getAngularVelocityRadPerSec() / (2 * Math.PI)
-        );
-
-        // set the supply voltage of the TalonFX
-        steerFRSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-        // get the motor voltage of the TalonFX
-        double steerFRMotorVoltage = steerFRSimState.getMotorVoltage();
-
-        // use the motor voltage to calculate new position and velocity
-        // using WPILib's DCMotorSim class for physics simulation
-        steerFRSim.setInputVoltage(steerFRMotorVoltage);
-        steerFRSim.update(0.020); // assume 20 ms loop time
-
-        // apply the new rotor position and velocity to the TalonFX;
-        // note that this is rotor position/velocity (before gear ratio), but
-        // DCMotorSim returns mechanism position/velocity (after gear ratio)
-        steerFRSimState.setRawRotorPosition(
-            SwerveConstants.DRIVE_GEAR_RATIO * steerFRSim.getAngularPositionRotations()
-        );
-        steerFRSimState.setRotorVelocity(
-            SwerveConstants.DRIVE_GEAR_RATIO * steerFRSim.getAngularVelocityRadPerSec() / (2 * Math.PI)
-        );
+        final double yaw = pose.getRotation().getDegrees();
+        gyroSimState.addYaw(normalizeAngleDegrees(yaw - simPrevYaw));
+        simPrevYaw = yaw;
     }
 }

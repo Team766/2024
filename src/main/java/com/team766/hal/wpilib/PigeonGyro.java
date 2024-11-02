@@ -63,4 +63,8 @@ public class PigeonGyro implements GyroReader {
     public double getRate() {
         return pigeon.getRate();
     }
+
+    public Pigeon2 getCTRE() {
+        return pigeon;
+    }
 }

@@ -36,6 +36,11 @@ public final class SwerveConstants {
                     * DRIVE_GEAR_RATIO // Motor radians/sec
                     / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
+    public static final double WHEEL_COEFF_FRICTION_STATIC = 1.1;
+    public static final double WHEEL_COEFF_FRICTION_DYNAMIC = 0.8;
+
+    public static final double NUM_WHEELS = 4;
+
     // TUNE THESE!
     public static final double DRIVE_STATOR_CURRENT_LIMIT = 80.0;
     public static final double STEER_STATOR_CURRENT_LIMIT = 80.0;

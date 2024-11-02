@@ -4,14 +4,24 @@ import static com.team766.robot.common.constants.SwerveConstants.*;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.CANcoderSimState;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
+import com.team766.robot.common.constants.SwerveConstants;
+import com.team766.robot.common.mechanisms.simulation.SwerveModuleSim;
 import com.team766.robot.reva.mechanisms.MotorUtil;
+import com.team766.simulator.Parameters;
+import com.team766.simulator.PhysicalConstants;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
@@ -25,6 +35,11 @@ public class SwerveModule {
     private final MotorController steer;
     private final CANcoder encoder;
     private final double offset;
+
+    private SwerveModuleSim sim;
+    private TalonFXSimState driveSimState;
+    private TalonFXSimState steerSimState;
+    private CANcoderSimState encoderSimState;
 
     /**
      * Creates a new SwerveModule.
@@ -54,6 +69,22 @@ public class SwerveModule {
         // TODO: tune these values!
         MotorUtil.setTalonFXStatorCurrentLimit(drive, DRIVE_STATOR_CURRENT_LIMIT);
         MotorUtil.setTalonFXStatorCurrentLimit(steer, STEER_STATOR_CURRENT_LIMIT);
+
+        this.sim = new SwerveModuleSim(
+                DCMotor.getKrakenX60Foc(1),
+                DCMotor.getKrakenX60Foc(1),
+                SwerveConstants.WHEEL_RADIUS,
+                SwerveConstants.STEER_GEAR_RATIO,
+                SwerveConstants.DRIVE_GEAR_RATIO,
+                1., // CANCoder is directly on the shaft
+                SwerveConstants.DRIVE_GEAR_RATIO,
+                SwerveConstants.WHEEL_COEFF_FRICTION_STATIC,
+                SwerveConstants.WHEEL_COEFF_FRICTION_DYNAMIC,
+                Parameters.ROBOT_MASS * PhysicalConstants.GRAVITY_ACCELERATION / SwerveConstants.NUM_WHEELS,
+                0.01);
+        this.driveSimState = ((TalonFX) drive).getSimState();
+        this.steerSimState = ((TalonFX) steer).getSimState();
+        this.encoderSimState = encoder.getSimState();
     }
 
     private double computeEncoderOffset() {
@@ -181,5 +212,24 @@ public class SwerveModule {
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + " drive stator current",
         //         MotorUtil.getStatorCurrentUsage(drive));
+    }
+
+    public SwerveModuleSim getSim() {
+        return sim;
+    }
+
+    public void runSim() {
+        driveSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        driveSimState.setRawRotorPosition(sim.getWheelEncoderPositionRev());
+        driveSimState.setRotorVelocity(sim.getWheelEncoderVelocityRPM() / 60.);
+        steerSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        steerSimState.setRawRotorPosition(sim.getAzimuthMotorPositionRev());
+        steerSimState.setRotorVelocity(sim.getAzimuthMotorVelocityRPM() / 60.);
+        encoderSimState.setRawPosition(sim.getAzimuthEncoderPositionRev());
+        encoderSimState.setVelocity(sim.getAzimuthEncoderVelocityRPM() / 60.);
+
+        sim.setInputVoltages(
+                driveSimState.getMotorVoltage(),
+                steerSimState.getMotorVoltage());
     }
 }

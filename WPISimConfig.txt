@@ -1,101 +1,170 @@
 {
-	"drive": {
-		"leftMotor": {
-			"deviceId": 6,
-			"sensorScale": 0.0524
-		},
-		"rightMotor": {
-			"deviceId": 4,
-			"sensorScale": 0.0524
-		},
-		"leftEncoder": {
-			"ports": [0, 1],
-			"distancePerPulse": 0.0524
-		},
-		"rightEncoder": {
-			"ports": [2, 3],
-			"distancePerPulse": 0.0524
-		},
-		"gyro": {
-			"port": 12
-		},
-		"frontLeftDriveMotor": {
-			"deviceId": 84,
-			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
-		},
-		"backLeftDriveMotor": {
-			"deviceId": 85,
-			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
-		},
-		"frontRightDriveMotor": {
-			"deviceId": 86,
-			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
-		},
-		"backRightDriveMotor": {
-			"deviceId": 87,
-			"sensorScale": 0.0008866,
-			"sensorScaledUnits": "meter"
-		},
-		"frontLeftSteerMotor": {
-			"deviceId": 88,
-			"inverted": true,
-			"sensorScaledUnits": "degree"
-		},
-		"backLeftSteerMotor": {
-			"deviceId": 89,
-			"inverted": true,
-			"sensorScaledUnits": "degree"
-		},
-		"frontRightSteerMotor": {
-			"deviceId": 90,
-			"inverted": true,
-			"sensorScaledUnits": "degree"
-		},
-		"backRightSteerMotor": {
-			"deviceId": 91,
-			"inverted": true,
-			"sensorScaledUnits": "degree"
-		}
-	},
-	"intakeWheels": {
-		"deviceId": 10
-	},
-	"intakeArm": {
-		"port": 0
-	},
-	"launch": {
-		"port": 1
-	},
-	"climber": {
-		"elevator": {
-			"deviceId": 10
-		},
-		"arms": {"port": 0}
-	},
-	"lineSensorLeft": {
-		"port": 4
-	},
-	"lineSensorCenter": {
-		"port": 5
-	},
-	"lineSensorRight": {
-		"port": 6
-	},
-
-	"intake": {
-		"extend": {"port": 0},
-		"frontWheels": {"deviceId": 10},
-		"topWheels": {"deviceId": 12}
-	},
-	"shooter": {
-		"motor": {"deviceId": 14}
-	},
-	"storage": {
-		"proximitySensor": {"port": 2},
-		"left": {"deviceId": 6},
-		"right": {"deviceId": 4}
-	}
+  "robotConfigurator": "com.team766.robot.reva.Robot",
+  "logFilePath": null,
+  "drive": {
+    "SteerFrontRight": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 10,
+      "CANBus": null
+    },
+    "SteerBackRight": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 11,
+      "CANBus": null
+    },
+    "DriveBackRight": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 12,
+      "CANBus": null
+    },
+    "DriveFrontRight": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 13,
+      "CANBus": null
+    },
+    "SteerBackLeft": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 14,
+      "CANBus": null
+    },
+    "SteerFrontLeft": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 15,
+      "CANBus": null
+    },
+    "DriveFrontLeft": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 16,
+      "CANBus": null
+    },
+    "DriveBackLeft": {
+      "sensorScale": null,
+      "port": null,
+      "sensorInverted": null,
+      "analogInput": null,
+      "pid": {
+        "outputMaxHigh": null,
+        "iGain": null,
+        "dGain": null,
+        "ffGain": null,
+        "pGain": 0.1,
+        "outputMaxLow": null,
+        "threshold": null
+      },
+      "inverted": null,
+      "type": "TalonFX",
+      "encoder": null,
+      "deviceId": 17,
+      "CANBus": null
+    },
+    "Gyro": {
+      "port": 0,
+      "type": "Pigeon2"
+    }
+  }
 }
