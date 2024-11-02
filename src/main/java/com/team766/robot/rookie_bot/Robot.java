@@ -8,11 +8,13 @@ import com.team766.robot.rookie_bot.mechanisms.*;
 public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
     public static Drive drive;
+    public static Elevator elevator;
 
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new Drive();
+        elevator = new Elevator();
     }
 
     @Override
@@ -24,4 +26,7 @@ public class Robot implements RobotConfigurator {
     public AutonomousMode[] getAutonomousModes() {
         return AutonomousModes.AUTONOMOUS_MODES;
     }
+    
+    
+
 }
