@@ -9,8 +9,8 @@ public class Drive extends Mechanism {
     public MotorController rightMotor;
 
     public Drive() {
-        leftMotor = RobotProvider.instance.getMotor("drive.Left");
-        rightMotor = RobotProvider.instance.getMotor("drive.Right");
+        leftMotor = RobotProvider.instance.getMotor("drive.leftMotor");
+        rightMotor = RobotProvider.instance.getMotor("drive.rightMotor");
     }
 
     public void drive(double leftPower, double rightPower) {

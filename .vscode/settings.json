@@ -33,5 +33,6 @@
   "diffEditor.ignoreTrimWhitespace": false,
   "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
   "java.checkstyle.configuration": "${workspaceFolder}/.github/linters/checkstyle.xml",
-  "java.checkstyle.version": "9.3"
+  "java.checkstyle.version": "9.3",
+  "java.debug.settings.onBuildFailureProceed": true
 }
