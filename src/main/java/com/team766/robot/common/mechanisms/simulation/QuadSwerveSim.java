@@ -92,6 +92,7 @@ public class QuadSwerveSim {
      * @param dtSeconds size of the discrete step to take
      */
     public void update(double dtSeconds) {
+        if (dtSeconds == 0.0) return;
 
         Pose2d fieldRF = new Pose2d(); // global origin
         Transform2d fieldToRobot = new Transform2d(fieldRF, m_curPose);

@@ -9,8 +9,9 @@ public class SwerveModuleSim {
     private SimpleMotorWithMassModel m_azmthMotor;
     private MotorGearboxWheelSim m_wheelMotor;
 
-    private final double m_azimuthEncGearRatio;    //Motor-to-azimuth-encoder reduction
-    private final double m_wheelEncGearRatio;      //Motor-to-wheel-encoder reduction
+    private final double m_azimuthEncGearRatio;    //Encoder-to-azimuth reduction
+    private final double m_azimuthMotorGearRatio;  //Motor-to-azimuth reduction
+    private final double m_wheelEncGearRatio;      //Encoder-to-wheel reduction
     private final double m_treadStaticFricForce;
     private final double m_treadKineticFricForce;
     //TODO - make the "how much grease" factor configurable?
@@ -72,6 +73,7 @@ public class SwerveModuleSim {
                                                      m_wheelGearboxLossFactor);
 
         this.m_azimuthEncGearRatio   = azimuthEncGearRatio;
+        this.m_azimuthMotorGearRatio = azimuthGearRatio;
         this.m_wheelEncGearRatio     = wheelEncGearRatio;
         this.m_treadStaticFricForce  = treadStaticCoefFric * moduleNormalForce;
         this.m_treadKineticFricForce = treadKineticCoefFric * moduleNormalForce;
@@ -109,11 +111,11 @@ public class SwerveModuleSim {
     }
 
     public double getAzimuthMotorPositionRev(){
-        return m_azmthMotor.getMechanismPositionRev();
+        return m_azmthMotor.getMechanismPositionRev() * m_azimuthMotorGearRatio;
     }
 
     public double getAzimuthMotorVelocityRPM(){
-        return m_azmthMotor.getMechanismSpeed_RPM();
+        return m_azmthMotor.getMechanismSpeed_RPM() * m_azimuthMotorGearRatio;
     }
 
     public double getAzimuthEncoderVelocityRPM(){
@@ -121,7 +123,7 @@ public class SwerveModuleSim {
     }
 
     public double getWheelEncoderVelocityRPM(){
-        return m_azmthMotor.getMechanismSpeed_RPM() * m_wheelEncGearRatio;
+        return m_wheelMotor.getWheelSpeed_RPM() * m_wheelEncGearRatio;
     }
 
     void reset(Pose2d initModulePose) {
