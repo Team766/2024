@@ -5,6 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.common.DriverOI;
 import com.team766.robot.reva.constants.InputConstants;
 
 /**
@@ -17,7 +18,7 @@ public class OI extends Procedure {
     private final JoystickReader rightJoystick;
     private final JoystickReader macropad;
     private final JoystickReader gamepad;
-    private final DriverOI driverOI;
+    private final com.team766.robot.common.DriverOI driverOI;
     private final DebugOI debugOI;
     private final BoxOpOI boxOpOI;
 
@@ -32,9 +33,6 @@ public class OI extends Procedure {
         driverOI =
                 new DriverOI(
                         Robot.drive,
-                        Robot.shoulder,
-                        Robot.intake,
-                        Robot.shooter,
                         leftJoystick,
                         rightJoystick);
         debugOI = new DebugOI(macropad, Robot.shoulder, Robot.climber, Robot.intake, Robot.shooter);
@@ -55,9 +53,9 @@ public class OI extends Procedure {
             // Driver OI: take input from left, right joysticks.  control drive.
             driverOI.runOI(context);
             // Debug OI: allow for finer-grain testing of each mechanism.
-            debugOI.runOI(context);
+            // debugOI.runOI(context);
 
-            boxOpOI.runOI(context);
+            // boxOpOI.runOI(context);
         }
     }
 }

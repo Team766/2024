@@ -30,18 +30,18 @@ public class Robot implements RobotConfigurator {
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig();
-        lights = new Lights();
+        // lights = new Lights();
         drive = new SwerveDrive(config);
-        climber = new Climber();
-        shoulder = new Shoulder();
-        intake = new Intake();
-        shooter = new Shooter();
-        noteCamera = new NoteCamera();
-        try {
-            forwardApriltagCamera = new ForwardApriltagCamera();
-        } catch (AprilTagGeneralCheckedException e) {
-            LoggerExceptionUtils.logException(e);
-        }
+        // climber = new Climber();
+        // shoulder = new Shoulder();
+        // intake = new Intake();
+        // shooter = new Shooter();
+        // noteCamera = new NoteCamera();
+        // try {
+        //     forwardApriltagCamera = new ForwardApriltagCamera();
+        // } catch (AprilTagGeneralCheckedException e) {
+        //     LoggerExceptionUtils.logException(e);
+        // }
     }
 
     @Override

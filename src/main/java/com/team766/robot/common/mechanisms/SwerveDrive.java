@@ -31,7 +31,8 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -49,6 +50,8 @@ public class SwerveDrive extends Mechanism {
     private final SwerveModule swerveFL;
     private final SwerveModule swerveBR;
     private final SwerveModule swerveBL;
+
+    private SwerveModuleState[] swerveModuleStates;
 
     private final GyroReader gyro;
     private Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -76,6 +79,8 @@ public class SwerveDrive extends Mechanism {
 
     private double simPrevTime;
     private double simPrevYaw;
+
+    private Field2d m_field;
 
     public SwerveDrive(SwerveConfig config) {
         loggerCategory = Category.DRIVE;
@@ -177,6 +182,9 @@ public class SwerveDrive extends Mechanism {
                         swerveBR.getSim(),
                         swerveBL.getSim()));
         simPrevTime = RobotProvider.instance.getClock().getTime();
+        m_field = new Field2d();
+        SmartDashboard.putData("Field", m_field);
+        // SmartDashboard.putData("SwerveStates", swerveModuleStates);
     }
 
     /**
@@ -442,8 +450,7 @@ public class SwerveDrive extends Mechanism {
         swerveBR.dashboardCurrentUsage();
         swerveBL.dashboardCurrentUsage();
 
-        SwerveModuleState[] states =
-                new SwerveModuleState[] {
+        swerveModuleStates = new SwerveModuleState[] {
                     swerveFR.getModuleState(),
                     swerveFL.getModuleState(),
                     swerveBR.getModuleState(),
@@ -453,9 +460,10 @@ public class SwerveDrive extends Mechanism {
             org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
-            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", states);
+            org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
         }
-        swerveModuleStatePublisher.set(states);
+        
+        swerveModuleStatePublisher.set(swerveModuleStates);
         runSim();
     }
 
@@ -477,5 +485,6 @@ public class SwerveDrive extends Mechanism {
         final double yaw = pose.getRotation().getDegrees();
         gyroSimState.addYaw(normalizeAngleDegrees(yaw - simPrevYaw));
         simPrevYaw = yaw;
+        m_field.setRobotPose(pose);
     }
 }

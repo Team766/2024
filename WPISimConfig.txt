@@ -50,9 +50,9 @@
       "pid": {
         "outputMaxHigh": null,
         "iGain": null,
-        "dGain": null,
+        "dGain": 1,
         "ffGain": null,
-        "pGain": 0.1,
+        "pGain": 3,
         "outputMaxLow": null,
         "threshold": null
       },
@@ -70,9 +70,9 @@
       "pid": {
         "outputMaxHigh": null,
         "iGain": null,
-        "dGain": null,
+        "dGain": 1,
         "ffGain": null,
-        "pGain": 0.1,
+        "pGain": 3,
         "outputMaxLow": null,
         "threshold": null
       },
@@ -130,9 +130,9 @@
       "pid": {
         "outputMaxHigh": null,
         "iGain": null,
-        "dGain": null,
+        "dGain": 1,
         "ffGain": null,
-        "pGain": 0.1,
+        "pGain": 3,
         "outputMaxLow": null,
         "threshold": null
       },
@@ -150,9 +150,9 @@
       "pid": {
         "outputMaxHigh": null,
         "iGain": null,
-        "dGain": null,
+        "dGain": 1,
         "ffGain": null,
-        "pGain": 0.1,
+        "pGain": 3,
         "outputMaxLow": null,
         "threshold": null
       },
