@@ -1,11 +1,12 @@
-package com.team766.rookie_bot.mechanisms;
+package com.team766.robot.rookie_bot.mechanisms;
 
 import com.team766.hal.RobotProvider;
-import com.team766.hal.SpeedController;
+import com.team766.hal.MotorController;
+import com.team766.framework.Mechanism;
 import com.team766.hal.EncoderReader;
 
-public class Elevator extends Mechanism{
-    private SpeedController m_elevator;
+public class Elevator extends Mechanism {
+    private MotorController m_elevator;
     private EncoderReader m_elevatorEncoder;
 
     public Elevator() {
