@@ -1,10 +1,13 @@
 package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.common.constants.SwerveConstants.*;
-
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team766.hal.MotorController;
@@ -17,7 +20,7 @@ import com.team766.robot.common.mechanisms.simulation.SwerveModuleSim;
 import com.team766.robot.reva.mechanisms.MotorUtil;
 import com.team766.simulator.Parameters;
 import com.team766.simulator.PhysicalConstants;
-
+import de.erichseifert.gral.graphics.Orientation;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -85,6 +88,8 @@ public class SwerveModule {
         this.driveSimState = ((TalonFX) drive).getSimState();
         this.steerSimState = ((TalonFX) steer).getSimState();
         this.encoderSimState = encoder.getSimState();
+
+        encoder.getConfigurator().apply(new CANcoderConfiguration().withMagnetSensor(new MagnetSensorConfigs().withMagnetOffset(0.25)));
     }
 
     private double computeEncoderOffset() {
@@ -109,9 +114,9 @@ public class SwerveModule {
      */
     public void steer(Vector2D vector) {
         boolean reversed = false;
-        // SmartDashboard.putString(
-        //         "[" + modulePlacement + "]" + "x, y",
-        //         String.format("%.2f, %.2f", vector.getX(), vector.getY()));
+        SmartDashboard.putString(
+                "[" + modulePlacement + "]" + "x, y",
+                String.format("%.2f, %.2f", vector.getX(), vector.getY()));
 
         // Calculates the angle of the vector from -180° to 180°
         final double vectorTheta = Math.toDegrees(Math.atan2(vector.getY(), vector.getX()));
@@ -144,11 +149,11 @@ public class SwerveModule {
         // Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor
         // understands
         // SmartDashboard.putNumber(
-        //         "[" + modulePlacement + "]" + "Steer", ENCODER_CONVERSION_FACTOR * angleDegrees);
+        //         "[" + modulePlacement + "]" + "Steer", angleDegrees);
 
         steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR * angleDegrees);
 
-        // SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + "TargetAngle", vectorTheta);
         // SmartDashboard.putNumber(
         //         "[" + modulePlacement + "]" + "RelativeAngle",
         //         (steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset) % 360);
@@ -228,6 +233,8 @@ public class SwerveModule {
         encoderSimState.setRawPosition(sim.getAzimuthEncoderPositionRev());
         encoderSimState.setVelocity(sim.getAzimuthEncoderVelocityRPM() / 60.);
 
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + " absolute encoder", (360 * encoder.getAbsolutePosition().getValueAsDouble()));
+        SmartDashboard.putNumber("[" + modulePlacement + "]" + " offset", offset);
         sim.setInputVoltages(
                 driveSimState.getMotorVoltage(),
                 steerSimState.getMotorVoltage());

@@ -71,6 +71,9 @@ public class SwerveDrive extends Mechanism {
     private final StructPublisher<Pose2d> simPosePublisher =
             NetworkTableInstance.getDefault().getStructTopic("SimRobotPose", Pose2d.struct).publish();
 
+    private final StructPublisher<Pose2d> odometryPosePublisher =
+            NetworkTableInstance.getDefault().getStructTopic("OdometryRobotPose", Pose2d.struct).publish();
+
     private PIDController rotationPID;
 
     private boolean movingToTarget = false;
@@ -177,14 +180,13 @@ public class SwerveDrive extends Mechanism {
                 Parameters.ROBOT_MASS,
                 Parameters.ROBOT_MOMENT_OF_INERTIA,
                 List.of(
-                        swerveFR.getSim(),
                         swerveFL.getSim(),
-                        swerveBR.getSim(),
-                        swerveBL.getSim()));
+                        swerveFR.getSim(),
+                        swerveBL.getSim(),
+                        swerveBR.getSim()));
         simPrevTime = RobotProvider.instance.getClock().getTime();
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
-        // SmartDashboard.putData("SwerveStates", swerveModuleStates);
     }
 
     /**
@@ -243,12 +245,14 @@ public class SwerveDrive extends Mechanism {
     private void controlFieldOrientedBase(double x, double y, double turn) {
         checkContextOwnership();
 
+        SmartDashboard.putString("Swerve Commands", "x: " + x + ", y: " + y + ", turn: " + turn);
         double yawRad =
                 Math.toRadians(
                         getHeading()
                                 + (alliance.isPresent() && alliance.get() == Alliance.Blue
                                         ? 0
                                         : 180));
+        SmartDashboard.putNumber("rotate by: ", Math.toDegrees(yawRad));
         // Applies a rotational translation to controlRobotOriented
         // Counteracts the forward direction changing when the robot turns
         // TODO: change to inverse rotation matrix (rather than negative angle)
@@ -357,7 +361,8 @@ public class SwerveDrive extends Mechanism {
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
     public void resetGyro() {
-        resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
+        alliance = DriverStation.getAlliance();
+        resetGyro(alliance.isPresent() && alliance.get().equals(Alliance.Blue) ? 0 : 180);
     }
 
     /**
@@ -482,9 +487,12 @@ public class SwerveDrive extends Mechanism {
         final Pose2d pose = sim.getCurPose();
         simPosePublisher.set(pose);
 
+        odometryPosePublisher.set(getCurrentPosition());
+
         final double yaw = pose.getRotation().getDegrees();
         gyroSimState.addYaw(normalizeAngleDegrees(yaw - simPrevYaw));
         simPrevYaw = yaw;
+        SmartDashboard.putNumber("sim yaw", yaw);
         m_field.setRobotPose(pose);
     }
 }
