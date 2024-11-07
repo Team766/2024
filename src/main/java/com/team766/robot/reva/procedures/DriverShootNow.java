@@ -53,13 +53,14 @@ public class DriverShootNow extends VisionPIDProcedure {
         }
 
         double x = toUse.getX();
-        double y = toUse.getY();
+        double z = toUse.getZ();
 
         anglePID.setSetpoint(0);
 
         double distanceOfRobotToTag =
-                Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getY(), 2));
-
+                Math.sqrt(Math.pow(toUse.getX(), 2) + Math.pow(toUse.getZ(), 2));
+            
+        log("DIST: " + distanceOfRobotToTag);
         if (distanceOfRobotToTag
                 > VisionPIDProcedure.scoringPositions
                         .get(VisionPIDProcedure.scoringPositions.size() - 1)
@@ -79,10 +80,15 @@ public class DriverShootNow extends VisionPIDProcedure {
         // Robot.shooter.shoot(power);
 
         Robot.shoulder.rotate(armAngle);
+        log("ArmAngle: " + armAngle);
 
-        angle = Math.atan2(y, x);
+        angle = Math.atan2(x,z);
+
+        log("ROBOT ANGLE: " + angle);
 
         anglePID.calculate(angle);
+
+        log("ANGLE PID: " + anglePID.getOutput());
 
         while (Math.abs(anglePID.getOutput()) > 0.075) {
             context.yield();
@@ -90,19 +96,19 @@ public class DriverShootNow extends VisionPIDProcedure {
             // SmartDashboard.putNumber("[ANGLE PID OUTPUT]", anglePID.getOutput());
             // SmartDashboard.putNumber("[ANGLE PID ROTATION]", angle);
             try {
-                toUse = getTransform3dOfRobotToTag();
+                toUse = getTransform3dOfRobotToTagOrin();
 
-                y = toUse.getY();
+                z = toUse.getZ();
                 x = toUse.getX();
 
-                angle = Math.atan2(y, x);
+                angle = Math.atan2(x,z);
 
                 anglePID.calculate(angle);
-            } catch (AprilTagGeneralCheckedException e) {
+            } catch (NoTagFoundError e) {
                 continue;
             }
 
-            Robot.drive.controlRobotOriented(0, 0, -anglePID.getOutput());
+            Robot.drive.controlRobotOriented(0, 0, anglePID.getOutput());
         }
 
         Robot.drive.stopDrive();
@@ -126,6 +132,7 @@ public class DriverShootNow extends VisionPIDProcedure {
     private Transform3d getTransform3dOfRobotToTagOrin() throws NoTagFoundError {
         AprilTag tag = Robot.orin.getTagById(tagId);
 
+        log(tag.toString());
         Pose3d pose = tag.pose;
 
         Transform3d poseNew =

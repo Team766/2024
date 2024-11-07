@@ -12,8 +12,8 @@ public abstract class VisionPIDProcedure extends Procedure {
 
     protected PIDController yawPID = new PIDController(0.02, 0.001, 0, 0, -0.25, 0.25, 3);
 
-    protected PIDController anglePID = new PIDController(1.8, 0, 0, 0, -0.8, 0.8, 0.05);
-
+    //protected PIDController anglePID = new PIDController(1.8, 0, 0, 0, -0.8, 0.8, 0.05);
+    protected PIDController anglePID = new PIDController(0.9, 0, 0, 0, -0.8, 0.8, 0.05);
     /*
      * Scoringposition distances need to be in sequential order. Ie, the first one added needs to be the closest distance.
      */
