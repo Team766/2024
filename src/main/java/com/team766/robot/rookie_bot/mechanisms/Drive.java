@@ -19,8 +19,8 @@ public class Drive extends Mechanism {
     }
     
     public void setArcadeDrivePower(double forward, double turn) {
-        double leftMotorPower= turn + forward;
-        double rightMotorPower= -turn + forward;
+        double leftMotorPower= turn - forward;
+        double rightMotorPower= -turn - forward;
         drive(leftMotorPower, rightMotorPower);
         
         
