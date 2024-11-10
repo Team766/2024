@@ -1,4 +1,4 @@
-package.com.team766.robot.rookie_bot.mechanisms;
+package com.team766.robot.rookie_bot.mechanisms;
 
 
 import com.team766.framework.Mechanism;

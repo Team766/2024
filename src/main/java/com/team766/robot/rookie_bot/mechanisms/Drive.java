@@ -4,6 +4,14 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
+/*
+ * Motor IDs:
+ * Drive_L - 2
+ * Drive_R - 11
+ * Intake_L - 30
+ * Intake_R - 3
+ * Elevator - 8
+ */
 public class Drive extends Mechanism {
     public MotorController leftMotor;
     public MotorController rightMotor;
