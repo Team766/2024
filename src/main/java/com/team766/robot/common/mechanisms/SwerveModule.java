@@ -197,11 +197,20 @@ public class SwerveModule {
         drive.stopMotor();
     }
 
+    public Rotation2d getSteerAngle() {
+        Logger.get(Category.DRIVE).logRaw(Severity.DEBUG, "Get Steer Angle");
+        return Rotation2d.fromDegrees(steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset);
+    }
+
+    public double getDriveDisplacement() {
+        Logger.get(Category.DRIVE).logRaw(Severity.DEBUG, "Get Drive Displacement");
+        return drive.getSensorPosition();
+    }
+
     public SwerveModuleState getModuleState() {
         return new SwerveModuleState(
-                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS,
-                Rotation2d.fromDegrees(
-                        steer.getSensorPosition() / ENCODER_CONVERSION_FACTOR - offset));
+                drive.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS, 
+                getSteerAngle());
     }
 
     public void dashboardCurrentUsage() {

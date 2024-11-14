@@ -5,6 +5,7 @@ import static com.team766.math.Math.normalizeAngleDegrees;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.sim.Pigeon2SimState;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
@@ -59,6 +60,7 @@ public class SwerveDrive extends Mechanism {
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
+    Pose2d curPose;
 
     private Translation2d[] wheelPositions;
     private SwerveDriveKinematics swerveDriveKinematics;
@@ -149,8 +151,7 @@ public class SwerveDrive extends Mechanism {
 
         rotationPID = PIDController.loadFromConfig(ConfigConstants.DRIVE_TARGET_ROTATION_PID);
 
-        MotorController[] motorList = new MotorController[] {driveFR, driveFL, driveBR, driveBL};
-        CANcoder[] encoderList = new CANcoder[] {encoderFR, encoderFL, encoderBR, encoderBL};
+        SwerveModule[] moduleList = new SwerveModule[] {swerveFR, swerveFL, swerveBR, swerveBL};
         double halfDistanceBetweenWheels = config.distanceBetweenWheels() / 2;
         this.wheelPositions =
                 new Translation2d[] {
@@ -162,13 +163,10 @@ public class SwerveDrive extends Mechanism {
 
         swerveDriveKinematics = new SwerveDriveKinematics(wheelPositions);
 
-        log("MotorList Length: " + motorList.length);
-        log("CANCoderList Length: " + encoderList.length);
         swerveOdometry =
                 new Odometry(
                         gyro,
-                        motorList,
-                        encoderList,
+                        moduleList,
                         wheelPositions,
                         config.wheelCircumference(),
                         config.driveGearRatio(),
@@ -187,6 +185,7 @@ public class SwerveDrive extends Mechanism {
         simPrevTime = RobotProvider.instance.getClock().getTime();
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
+        curPose = new Pose2d();
     }
 
     /**
@@ -391,16 +390,19 @@ public class SwerveDrive extends Mechanism {
     }
 
     public Pose2d getCurrentPosition() {
-        return swerveOdometry.getCurrPosition();
+        return curPose;
+        // return swerveOdometry.getCurrPosition();
     }
 
     public void setCurrentPosition(Pose2d P) {
+        curPose = P;
         // log("setCurrentPosition(): " + P);
-        swerveOdometry.setCurrentPosition(P);
+        // swerveOdometry.setCurrentPosition(P);
     }
 
     public void resetCurrentPosition() {
-        swerveOdometry.setCurrentPosition(new Pose2d());
+        curPose = new Pose2d();
+        // swerveOdometry.setCurrentPosition(new Pose2d());
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -428,7 +430,7 @@ public class SwerveDrive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        swerveOdometry.run();
+        curPose = new Pose2d(curPose.getTranslation().plus(swerveOdometry.predictCurrentPositionChange()), Rotation2d.fromDegrees(getHeading()));
         // log(currentPosition.toString());
         // SmartDashboard.putString("pos", getCurrentPosition().toString());
 
