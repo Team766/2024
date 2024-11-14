@@ -9,9 +9,13 @@ public class PIDElevator extends Procedure {
     double setpoint;
     PIDController controller;
 
-    public PIDElevator(){
-
-    this.setpoint = 1; 
+    public PIDElevator(boolean top){
+        if (top == true ){
+        this.setpoint = 400;
+        }
+        else {
+            this.setpoint = 1 ;
+        }
     }
 
     public void run(Context context){
