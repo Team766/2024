@@ -14,6 +14,7 @@ import com.team766.hal.RobotProvider;
 import com.team766.hal.wpilib.PigeonGyro;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.odometry.KalmanFilter;
 import com.team766.odometry.Odometry;
 import com.team766.robot.common.SwerveConfig;
 import com.team766.robot.common.constants.ConfigConstants;
@@ -60,7 +61,7 @@ public class SwerveDrive extends Mechanism {
     // declaration of odometry object
     private Odometry swerveOdometry;
     // variable representing current position
-    Pose2d curPose;
+    private KalmanFilter kalmanFilter;
 
     private Translation2d[] wheelPositions;
     private SwerveDriveKinematics swerveDriveKinematics;
@@ -185,7 +186,7 @@ public class SwerveDrive extends Mechanism {
         simPrevTime = RobotProvider.instance.getClock().getTime();
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
-        curPose = new Pose2d();
+        kalmanFilter = new KalmanFilter();
     }
 
     /**
@@ -390,18 +391,17 @@ public class SwerveDrive extends Mechanism {
     }
 
     public Pose2d getCurrentPosition() {
-        return curPose;
-        // return swerveOdometry.getCurrPosition();
+        SmartDashboard.putNumber("filtered X value", kalmanFilter.getPos().getX());
+        return new Pose2d(kalmanFilter.getPos(), Rotation2d.fromDegrees(getHeading()));
     }
 
     public void setCurrentPosition(Pose2d P) {
-        curPose = P;
+        kalmanFilter.setPos(P.getTranslation());
         // log("setCurrentPosition(): " + P);
-        // swerveOdometry.setCurrentPosition(P);
     }
 
     public void resetCurrentPosition() {
-        curPose = new Pose2d();
+        kalmanFilter.setPos(new Translation2d());
         // swerveOdometry.setCurrentPosition(new Pose2d());
     }
 
@@ -430,7 +430,8 @@ public class SwerveDrive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        curPose = new Pose2d(curPose.getTranslation().plus(swerveOdometry.predictCurrentPositionChange()), Rotation2d.fromDegrees(getHeading()));
+        kalmanFilter.predictPeriodic(swerveOdometry.predictCurrentPositionChange());
+        // curPose = new Pose2d(curPose.getTranslation().plus(swerveOdometry.predictCurrentPositionChange()), Rotation2d.fromDegrees(getHeading()));
         // log(currentPosition.toString());
         // SmartDashboard.putString("pos", getCurrentPosition().toString());
 
@@ -487,6 +488,16 @@ public class SwerveDrive extends Mechanism {
         sim.update(dt);
 
         final Pose2d pose = sim.getCurPose();
+
+        if (Math.random() < 0.01) {
+            double randX = pose.getX() + 0.2 * (Math.random() - 0.5);
+            double randY = pose.getY() + 0.2 * (Math.random() - 0.5);
+            kalmanFilter.updateWithMeasurement(new Translation2d(randX, randY));
+            SmartDashboard.putNumber("sensor X measurement", randX);
+        }
+
+        SmartDashboard.putNumber("true X value", pose.getX());
+
         simPosePublisher.set(pose);
 
         odometryPosePublisher.set(getCurrentPosition());
