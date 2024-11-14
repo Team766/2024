@@ -6,6 +6,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.example.procedures.*;
+import com.team766.robot.rookie_bot.procedures.PIDElevator;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -36,6 +37,13 @@ public class OI extends Procedure {
 
             Robot.drive.setArcadeDrivePower(-1 * joystick0.getAxis(1), joystick0.getAxis(3));
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
+            if (joystick0.getButtonPressed(1)) {
+                context.startAsync(new PIDElevator(true));
+            
+            }
+            if (joystick0.getButtonPressed(2)) {
+                context.startAsync(new PIDElevator(false));
+            }
         }
     }
 }
