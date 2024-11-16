@@ -1,0 +1,33 @@
+package com.team766.robot.rookie_bot;
+
+import com.team766.framework.AutonomousMode;
+import com.team766.framework.Procedure;
+import com.team766.hal.RobotConfigurator;
+import com.team766.robot.gatorade.mechanisms.Elevator;
+import com.team766.robot.rookie_bot.mechanisms.Drive;
+
+public class PIDElevator extends Procedure{
+    double setpoint;
+    PIDController controller;
+
+    public PIDElevator(){
+        this.setpoint = 1; //this assumes the encoder is setup in units of meters
+    }
+
+    public void run(Context context){
+        context.takeOwnership(Robot.elevator);
+        Robot.elevator.resetEncoder(); //clear the encoder
+
+        controller  = new PIDController(0, 0, 0, 0, 1, 0.01); //values are (P, I, D, min, max, threshold)
+        controller.setSetpoint(setpoint); //tell the PID controller our setpoint
+        while(!controller.isDone()) //stop the loop when we hit the setpoint
+        {
+            controller.calculate(Robot.elevator.getElevatorDistance(), true); //pass ht efeedback into the PID
+            double motor_effort = controller.getOutput(); //get the PID controller output for this cycle
+            Robot.elevator.move(motor_effort); //move the elevator!
+        }
+        Robot.elevator.move(0); //make sure the elevtor stopped moving
+        context.yield();
+
+    }
+}

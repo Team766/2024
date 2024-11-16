@@ -4,14 +4,14 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.rookie_bot.Robot;
 
-public class TurnRight extends Procedure {
+public class TurnLeft extends Procedure {
 
     public void run (Context context) {
         context.takeOwnership(Robot.drive);
 
-        Robot.drive.setMotorSpeed(0.25, -0.25);
+        Robot.drive.setMotorSpeed(-0.25, 0.25);
 
-        context.waitForSeconds(0.85);
+        context.waitForSeconds(0.75);
 
         Robot.drive.setMotorSpeed(0.0, 0.0);
     }
