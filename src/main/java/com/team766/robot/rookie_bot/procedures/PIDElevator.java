@@ -5,16 +5,18 @@ import com.team766.controllers.PIDController;
 import com.team766.framework.Context;
 import com.team766.robot.rookie_bot.Robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class PIDElevator extends Procedure {
     double setpoint;
     PIDController controller;
 
     public PIDElevator(boolean top){
         if (top == true ){
-        this.setpoint = 400;
+        this.setpoint = 45;
         }
         else {
-            this.setpoint = 1 ;
+            this.setpoint = 0 ;
         }
     }
 
@@ -26,12 +28,13 @@ public class PIDElevator extends Procedure {
         controller.setSetpoint(setpoint);
         while (!controller.isDone())
         {
+            SmartDashboard.putNumber("ElevatorPosition", Robot.elevator.getElevatorDistance());
             controller.calculate(Robot.elevator.getElevatorDistance());
             double motor_effort = controller.getOutput();
             Robot.elevator.move(motor_effort);
+            context.yield();
         }
         Robot.elevator.move(0);
-        context.yield();
     }
 }
 
