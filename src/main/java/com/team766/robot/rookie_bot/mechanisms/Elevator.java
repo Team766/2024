@@ -12,7 +12,7 @@ public class Elevator extends Mechanism{
 
     public Elevator() {
         m_elevator = RobotProvider.instance.getMotor("elevator");
-        m_elevatorEncoder = RobotProvider   .instance.getEncoder("elevator_encoder");
+        m_elevatorEncoder = RobotProvider.instance.getEncoder("elevator_encoder");
         resetEncoder();
 
     }

@@ -35,10 +35,10 @@ public class OI extends Procedure {
 
             Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(3));
 
-            if ( joystick0.getButtonPressed(4) ){
+            if ( joystick0.getButtonPressed(5) ){
                 context.startAsync(new PIDElevator(false));
             }
-            if ( joystick0.getButtonPressed(5) ){
+            if ( joystick0.getButtonPressed(6) ){
                 context.startAsync(new PIDElevator(true));
             }
             

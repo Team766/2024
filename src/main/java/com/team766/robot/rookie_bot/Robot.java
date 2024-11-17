@@ -11,6 +11,7 @@ public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
     public static Drive drive;
     public static Elevator elevator;
+    //public static Launcher launcher;
 
     @Override
     public void initializeMechanisms() {
