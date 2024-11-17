@@ -41,8 +41,7 @@ public class OI extends Procedure {
             if ( joystick0.getButtonPressed(6) ){
                 context.startAsync(new PIDElevator(true));
             }
-            
-
+        
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
