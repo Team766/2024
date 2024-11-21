@@ -9,12 +9,13 @@ public class Robot implements RobotConfigurator {
     // Declare mechanisms (as static fields) here
     public static Drive drive;
     public static Elevator elevator;
-
+    public static intake intake;
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
         drive = new Drive();
         elevator = new Elevator();
+        intake = new intake();
     }
 
     @Override
