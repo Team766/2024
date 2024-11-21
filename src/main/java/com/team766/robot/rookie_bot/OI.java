@@ -30,6 +30,8 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
+            Robot.drive.drive(joystick0.getAxis(1), joystick0.getAxis(4));
+
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
         }

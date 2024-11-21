@@ -21,10 +21,10 @@ public class BurroDrive extends Drive {
     private DifferentialDriveKinematics differentialDriveKinematics;
     private DifferentialDriveOdometry differentialDriveOdometry;
 
-    // todo set actual ratio
+    // TODO: set actual ratio
     private static final double DRIVE_GEAR_RATIO = 1; // Gear ratio
 
-    // todo set actual radius
+    // TODO: set actual radius
     private static final double WHEEL_RADIUS = 1; // Radius of the wheels
 
     private static final double MOTOR_WHEEL_FACTOR_MPS =
@@ -33,13 +33,16 @@ public class BurroDrive extends Drive {
                     * DRIVE_GEAR_RATIO // Motor radians/sec
                     / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
-    public BurroDrive(double trackWidthMeters) {
+    // TODO: set actual track width
+    private static final double TRACK_WIDTH_METERS = 1.; // distance between left wheel and right wheel
+
+    public BurroDrive() {
         loggerCategory = Category.DRIVE;
 
         leftMotor = RobotProvider.instance.getMotor(DRIVE_LEFT);
         rightMotor = RobotProvider.instance.getMotor(DRIVE_RIGHT);
 
-        differentialDriveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
+        differentialDriveKinematics = new DifferentialDriveKinematics(TRACK_WIDTH_METERS);
         differentialDriveOdometry =
                 new DifferentialDriveOdometry(
                         leftMotor,
@@ -47,8 +50,7 @@ public class BurroDrive extends Drive {
                         WHEEL_RADIUS * 2 * Math.PI,
                         DRIVE_GEAR_RATIO,
                         1.,
-                        0 // TODO
-                        );
+                        TRACK_WIDTH_METERS);
     }
 
     /**
