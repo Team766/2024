@@ -1,4 +1,5 @@
 {
+	"robotConfigurator": "com.team766.robot.rookie_bot.Robot",
 	"drive": {
 		"leftMotor": {
 			"deviceId": 6,
