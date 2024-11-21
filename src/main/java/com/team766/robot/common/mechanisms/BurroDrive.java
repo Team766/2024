@@ -2,7 +2,6 @@ package com.team766.robot.common.mechanisms;
 
 import static com.team766.robot.common.constants.ConfigConstants.*;
 
-import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
 import com.team766.hal.RobotProvider;
@@ -45,10 +44,11 @@ public class BurroDrive extends Drive {
                 new DifferentialDriveOdometry(
                         leftMotor,
                         rightMotor,
-                        5 /* todo */,
+                        WHEEL_RADIUS * 2 * Math.PI,
                         DRIVE_GEAR_RATIO,
-                        0 /* todo */,
-                        WHEEL_RADIUS);
+                        1.,
+                        0 // TODO
+                        );
     }
 
     /**
@@ -78,6 +78,20 @@ public class BurroDrive extends Drive {
         differentialDriveOdometry.setCurrentPosition(new Pose2d(0, 0, new Rotation2d()));
     }
 
+    public void setCurrentPosition(Pose2d P) {
+        differentialDriveOdometry.setCurrentPosition(P);
+    }
+
+    public void resetHeading(double angle) {
+        Pose2d curPose = getCurrentPosition();
+        differentialDriveOdometry.setCurrentPosition(
+                new Pose2d(curPose.getX(), curPose.getY(), Rotation2d.fromDegrees(angle)));
+    }
+
+    public double getHeading() {
+        return getCurrentPosition().getRotation().getDegrees();
+    }
+
     /*
      * Stops each drive motor
      */
@@ -88,7 +102,10 @@ public class BurroDrive extends Drive {
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return new ChassisSpeeds(); // todo
+        return differentialDriveKinematics.toChassisSpeeds(
+                new DifferentialDriveWheelSpeeds(
+                        leftMotor.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS,
+                        rightMotor.getSensorVelocity() / MOTOR_WHEEL_FACTOR_MPS));
     }
 
     public void setCross() {}

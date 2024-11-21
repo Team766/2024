@@ -314,15 +314,15 @@ public class SwerveDrive extends Drive {
      * Resets gyro to zero degrees relative to the driver
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
-    public void resetGyro() {
-        resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
+    public void resetHeading() {
+        resetHeading(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
 
     /**
      * Sets gyro to value in degrees
      * @param angle in degrees
      */
-    public void resetGyro(double angle) {
+    public void resetHeading(double angle) {
         checkContextOwnership();
         gyro.setAngle(angle);
     }

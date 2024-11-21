@@ -80,7 +80,7 @@ public class DriverOI extends OIFragment {
     protected void handleOI(Context context) {
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
-            drive.resetGyro();
+            drive.resetHeading();
         }
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_POS)) {

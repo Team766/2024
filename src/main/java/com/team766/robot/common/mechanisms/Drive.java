@@ -21,6 +21,12 @@ public abstract class Drive extends Mechanism {
 
     public abstract void resetCurrentPosition();
 
+    public abstract double getHeading();
+
+    public abstract void resetHeading(double angle);
+
+    public abstract void setCurrentPosition(Pose2d P);
+
     public abstract ChassisSpeeds getChassisSpeeds();
 
     public abstract void setCross(); // dummy method

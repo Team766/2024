@@ -38,7 +38,7 @@ public class OI extends Procedure {
             // General drive util
 
             if (joystick0.getButtonPressed(2)) {
-                Robot.drive.resetGyro();
+                Robot.drive.resetHeading();
             }
             if (Math.abs(joystick0.getAxis(0))
                             + Math.abs(joystick0.getAxis(1))
