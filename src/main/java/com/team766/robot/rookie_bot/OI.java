@@ -6,6 +6,7 @@ import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.robot.example.procedures.*;
+import com.team766.robot.rookie_bot.mechanisms.Intake;
 import com.team766.robot.rookie_bot.procedures.PIDElevator;
 
 /**
@@ -42,13 +43,13 @@ public class OI extends Procedure {
                 context.startAsync(new PIDElevator(true));
             }
             if(joystick0.getAxis(2)>=0.5 && joystick0.getAxis(3)<0.1){
-                Robot.Intake.inout(true);
+                Robot.Intake.inout(Intake.State.IN);
             }
             else if(joystick0.getAxis(3)>=0.5 && joystick0.getAxis(2)<0.1){
-                Robot.Intake.inout(false);
+                Robot.Intake.inout(Intake.State.OUT);
             }
             else{
-                
+                Robot.Intake.inout(Intake.State.STOP);
             }
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.

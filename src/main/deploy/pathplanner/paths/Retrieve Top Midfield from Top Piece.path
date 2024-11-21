@@ -81,7 +81,7 @@
     "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Main Season Paths",
   "previewStartingState": {
     "rotation": 31.5,
     "velocity": 0
