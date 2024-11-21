@@ -33,7 +33,7 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(3));
+            Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(4));
 
             if ( joystick0.getButtonPressed(5) ){
                 context.startAsync(new PIDElevator(false));
@@ -41,8 +41,15 @@ public class OI extends Procedure {
             if ( joystick0.getButtonPressed(6) ){
                 context.startAsync(new PIDElevator(true));
             }
-        
-
+            if(joystick0.getAxis(2)>=0.5 && joystick0.getAxis(3)<0.1){
+                Robot.Intake.inout(true);
+            }
+            else if(joystick0.getAxis(3)>=0.5 && joystick0.getAxis(2)<0.1){
+                Robot.Intake.inout(false);
+            }
+            else{
+                
+            }
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
         }
