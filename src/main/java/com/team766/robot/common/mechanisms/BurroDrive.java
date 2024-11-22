@@ -25,7 +25,7 @@ public class BurroDrive extends Drive {
     private static final double DRIVE_GEAR_RATIO = 1; // Gear ratio
 
     // TODO: set actual radius
-    private static final double WHEEL_RADIUS = 1; // Radius of the wheels
+    private static final double WHEEL_RADIUS = 0.05; // Radius of the wheels
 
     private static final double MOTOR_WHEEL_FACTOR_MPS =
             1.
@@ -34,7 +34,7 @@ public class BurroDrive extends Drive {
                     / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
 
     // TODO: set actual track width
-    private static final double TRACK_WIDTH_METERS = 1.; // distance between left wheel and right wheel
+    private static final double TRACK_WIDTH_METERS = 1.05; // distance between left wheel and right wheel
 
     public BurroDrive() {
         loggerCategory = Category.DRIVE;
@@ -49,7 +49,7 @@ public class BurroDrive extends Drive {
                         rightMotor,
                         WHEEL_RADIUS * 2 * Math.PI,
                         DRIVE_GEAR_RATIO,
-                        1.,
+                        20,
                         TRACK_WIDTH_METERS);
     }
 
@@ -111,4 +111,10 @@ public class BurroDrive extends Drive {
     }
 
     public void setCross() {}
+
+    @Override
+    public void run() {
+        differentialDriveOdometry.run();
+        log(differentialDriveOdometry.getCurrentPosition().toString());
+    }
 }

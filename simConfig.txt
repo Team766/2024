@@ -1,10 +1,11 @@
 {
+	"robotConfigurator": "com.team766.robot.rookie_bot.Robot",
 	"drive": {
-		"leftMotor": {
+		"Left": {
 			"deviceId": 6,
 			"sensorScale": 0.0524
 		},
-		"rightMotor": {
+		"Right": {
 			"deviceId": 4,
 			"sensorScale": 0.0524
 		},

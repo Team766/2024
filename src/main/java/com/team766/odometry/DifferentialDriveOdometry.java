@@ -1,7 +1,9 @@
 package com.team766.odometry;
-
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
+import com.team766.logging.Category;
+import com.team766.logging.Logger;
+import com.team766.logging.Severity;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -70,11 +72,11 @@ public class DifferentialDriveOdometry {
      * Updates the encoder values for both the left and right wheels.
      */
     private void setCurrentEncoderValues() {
-        currLeftEncoderValue = leftMotor.getSensorPosition();
-        currRightEncoderValue = rightMotor.getSensorPosition();
-
         prevLeftEncoderValue = currLeftEncoderValue;
         prevRightEncoderValue = currRightEncoderValue;
+
+        currLeftEncoderValue = leftMotor.getSensorPosition();
+        currRightEncoderValue = rightMotor.getSensorPosition();
     }
 
     /**
@@ -88,6 +90,9 @@ public class DifferentialDriveOdometry {
         double deltaRight =
                 (currRightEncoderValue - prevRightEncoderValue)
                         * (wheelCircumference / (gearRatio * encoderToRevolutionConstant));
+
+        Logger.get(Category.ODOMETRY).logRaw(Severity.DEBUG, "left: " + deltaLeft);
+        Logger.get(Category.ODOMETRY).logRaw(Severity.DEBUG, "right: " + deltaRight);
 
         // Calculate the distance the robot traveled and the rotation change
         double distanceTraveled = (deltaLeft + deltaRight) / 2;
