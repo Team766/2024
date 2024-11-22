@@ -1,6 +1,6 @@
 package com.team766.odometry;
 
-import com.team766.hal.MotorController;
+import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.library.RateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,7 +10,7 @@ public class DifferentialDriveOdometry {
     private static final double RATE_LIMITER_TIME = 0.05;
 
     private RateLimiter odometryLimiter;
-    private MotorController leftMotor, rightMotor;
+    private REVThroughBoreDutyCycleEncoder leftEncoder, rightEncoder;
 
     private Pose2d currentPosition;
 
@@ -34,15 +34,15 @@ public class DifferentialDriveOdometry {
      * @param wheelBaseWidth The distance between the left and right wheels (in meters).
      */
     public DifferentialDriveOdometry(
-            MotorController leftMotor,
-            MotorController rightMotor,
+            REVThroughBoreDutyCycleEncoder leftEncoder,
+            REVThroughBoreDutyCycleEncoder rightEncoder,
             double wheelCircumference,
             double gearRatio,
             double encoderToRevolutionConstant,
             double wheelBaseWidth) {
 
-        this.leftMotor = leftMotor;
-        this.rightMotor = rightMotor;
+        this.leftEncoder = leftEncoder;
+        this.rightEncoder = rightEncoder;
         this.wheelCircumference = wheelCircumference;
         this.gearRatio = gearRatio;
         this.encoderToRevolutionConstant = encoderToRevolutionConstant;
@@ -70,11 +70,11 @@ public class DifferentialDriveOdometry {
      * Updates the encoder values for both the left and right wheels.
      */
     private void setCurrentEncoderValues() {
-        currLeftEncoderValue = leftMotor.getSensorPosition();
-        currRightEncoderValue = rightMotor.getSensorPosition();
-
         prevLeftEncoderValue = currLeftEncoderValue;
         prevRightEncoderValue = currRightEncoderValue;
+
+        currLeftEncoderValue = leftEncoder.getAbsolutePosition();
+        currRightEncoderValue = rightEncoder.getAbsolutePosition();
     }
 
     /**

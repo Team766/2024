@@ -4,6 +4,7 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.team766.hal.MotorController;
 import com.team766.hal.MotorController.ControlMode;
+import com.team766.hal.wpilib.REVThroughBoreDutyCycleEncoder;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
 import com.team766.odometry.DifferentialDriveOdometry;
@@ -18,37 +19,48 @@ public class BurroDrive extends Drive {
 
     private final MotorController leftMotor;
     private final MotorController rightMotor;
+    private final REVThroughBoreDutyCycleEncoder leftEncoder;
+    private final REVThroughBoreDutyCycleEncoder rightEncoder;
     private DifferentialDriveKinematics differentialDriveKinematics;
     private DifferentialDriveOdometry differentialDriveOdometry;
 
-    // todo set actual ratio
+    // TODO set actual ratio
     private static final double DRIVE_GEAR_RATIO = 1; // Gear ratio
 
-    // todo set actual radius
+    // TODO set actual radius
     private static final double WHEEL_RADIUS = 1; // Radius of the wheels
+
+    // TODO
+    private static final double ENCODER_UNIT_TO_REVOLUTION_CONSTANT = 1.; 
 
     private static final double MOTOR_WHEEL_FACTOR_MPS =
             1.
                     / WHEEL_RADIUS // Wheel radians/sec
                     * DRIVE_GEAR_RATIO // Motor radians/sec
-                    / (2 * Math.PI); // Motor rotations/sec (what velocity mode takes));
+                    / (2 * Math.PI) // Motor rotations/sec (what velocity mode takes))
+                    * ENCODER_UNIT_TO_REVOLUTION_CONSTANT; // Encoder units/sec
+    
+    // TODO
+    private static final double TRACK_WIDTH_METERS = 0.4; // Distance between left and right wheel
 
-    public BurroDrive(double trackWidthMeters) {
+    public BurroDrive() {
         loggerCategory = Category.DRIVE;
 
         leftMotor = RobotProvider.instance.getMotor(DRIVE_LEFT);
         rightMotor = RobotProvider.instance.getMotor(DRIVE_RIGHT);
 
-        differentialDriveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
+        leftEncoder = null; //FIXME
+        rightEncoder = null; //FIXME
+
+        differentialDriveKinematics = new DifferentialDriveKinematics(TRACK_WIDTH_METERS);
         differentialDriveOdometry =
                 new DifferentialDriveOdometry(
-                        leftMotor,
-                        rightMotor,
+                        leftEncoder,
+                        rightEncoder,
                         WHEEL_RADIUS * 2 * Math.PI,
                         DRIVE_GEAR_RATIO,
-                        1.,
-                        0 // TODO
-                        );
+                        ENCODER_UNIT_TO_REVOLUTION_CONSTANT,
+                        TRACK_WIDTH_METERS);
     }
 
     /**
@@ -109,4 +121,9 @@ public class BurroDrive extends Drive {
     }
 
     public void setCross() {}
+
+    @Override
+    public void run() {
+        differentialDriveOdometry.run();
+    }
 }
