@@ -14,11 +14,10 @@ public class Elevator extends Mechanism{
     public Elevator() {
         m_elevator = RobotProvider.instance.getMotor("elevator");
 
-        ((CANSparkMaxMotorController)m_elevator).setSmartCurrentLimit(10, 80, 200);
+        ((CANSparkMaxMotorController) m_elevator).setSmartCurrentLimit(10, 80, 200);
 
         m_elevatorEncoder = RobotProvider.instance.getEncoder("elevator_encoder");
         resetEncoder();
-
     }
 
     public void move(double power){
