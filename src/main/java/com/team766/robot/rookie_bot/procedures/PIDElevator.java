@@ -28,8 +28,7 @@ public class PIDElevator extends Procedure {
         controller.setSetpoint(setpoint);
         SmartDashboard.putNumber("Setpoint", setpoint);
 
-        while (!controller.isDone())
-        {
+        while (!controller.isDone()){
             
             SmartDashboard.putNumber("ElevatorPosition", Robot.elevator.getElevatorDistance());
             controller.calculate(Robot.elevator.getElevatorDistance());
