@@ -15,11 +15,15 @@ public class  Intake extends Mechanism  {
 
     public MotorController intakeWheelLeft;
     public MotorController intakeWheelRight;
-    double Power= -0.35;
+    double Power = -0.35;
 public Intake(){
     intakeWheelLeft = RobotProvider.instance.getMotor("intakeWheelLeft");
     intakeWheelRight = RobotProvider.instance.getMotor("intakeWheelRight");
+
+    intakeWheelLeft.setCurrentLimit(80);
+    intakeWheelRight.setCurrentLimit(80);
 }
+
 public void intake() {
     
         intakeWheelLeft.set(Power);
