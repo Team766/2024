@@ -39,24 +39,22 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             if (joystick0.getButtonPressed(4)) {
                 context.startAsync(new PIDElevator(true));
-            
             }
             if (joystick0.getButtonPressed(2)) {
                 context.startAsync(new PIDElevator(false));
-
             }
             if (joystick0.getButtonPressed(7)) {
                 Robot.intake.setintakePower(1, 1);
-            
-        }   if (joystick0.getButtonReleased(7)) {
-            Robot.intake.setintakePower(0, 0);
-
-        }   if (joystick0.getButtonPressed(8)) {
-                Robot.intake.setintakePower(-1,-1);
-
-        }   if (joystick0.getButtonReleased(8)) {
-            Robot.intake.setintakePower(0,0);
+            }
+            if (joystick0.getButtonReleased(7)) {
+                Robot.intake.setintakePower(0, 0);
+            }
+            if (joystick0.getButtonPressed(8)) {
+                Robot.intake.setintakePower(-1, -1);
+            }
+            if (joystick0.getButtonReleased(8)) {
+                Robot.intake.setintakePower(0, 0);
+            }
         }
-    
     }
 }

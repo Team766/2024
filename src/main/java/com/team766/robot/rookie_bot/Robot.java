@@ -10,6 +10,7 @@ public class Robot implements RobotConfigurator {
     public static Drive drive;
     public static Elevator elevator;
     public static Intake intake;
+
     @Override
     public void initializeMechanisms() {
         // Initialize mechanisms here
@@ -27,7 +28,4 @@ public class Robot implements RobotConfigurator {
     public AutonomousMode[] getAutonomousModes() {
         return AutonomousModes.AUTONOMOUS_MODES;
     }
-    
-    
-
 }

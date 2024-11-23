@@ -7,16 +7,15 @@ import com.team766.hal.RobotProvider;
 public class Intake extends Mechanism {
     private MotorController leftMotor;
     private MotorController rightMotor;
-    
-public Intake() {
-    leftMotor = RobotProvider.instance.getMotor("intake.leftMotor");
-    rightMotor = RobotProvider.instance.getMotor("intake.rightMotor");
-}
 
-public void setintakePower(double leftPower, double rightPower) {
-    checkContextOwnership();
-    leftMotor.set(leftPower);
-    rightMotor.set(rightPower);
-}
+    public Intake() {
+        leftMotor = RobotProvider.instance.getMotor("intake.leftMotor");
+        rightMotor = RobotProvider.instance.getMotor("intake.rightMotor");
+    }
 
-} 
+    public void setintakePower(double leftPower, double rightPower) {
+        checkContextOwnership();
+        leftMotor.set(leftPower);
+        rightMotor.set(rightPower);
+    }
+}

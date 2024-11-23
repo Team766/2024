@@ -1,9 +1,9 @@
 package com.team766.robot.rookie_bot.mechanisms;
 
-import com.team766.hal.RobotProvider;
-import com.team766.hal.MotorController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.EncoderReader;
+import com.team766.hal.MotorController;
+import com.team766.hal.RobotProvider;
 
 public class Elevator extends Mechanism {
     private MotorController m_elevator;
@@ -15,15 +15,15 @@ public class Elevator extends Mechanism {
         resetEncoder();
     }
 
-    public void move(double power){
+    public void move(double power) {
         m_elevator.set(power);
     }
 
-    public double getElevatorDistance(){
+    public double getElevatorDistance() {
         return m_elevatorEncoder.getDistance();
     }
 
-    public void resetEncoder(){
+    public void resetEncoder() {
         m_elevatorEncoder.reset();
     }
 }
