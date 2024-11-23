@@ -46,8 +46,8 @@ public class BurroDrive extends Drive {
     public BurroDrive() {
         loggerCategory = Category.DRIVE;
 
-        leftMotor = RobotProvider.instance.getMotor(DRIVE_LEFT);
-        rightMotor = RobotProvider.instance.getMotor(DRIVE_RIGHT);
+        leftMotor = RobotProvider.instance.getMotor("drive.leftMotor");
+        rightMotor = RobotProvider.instance.getMotor("drive.rightMotor");
 
         leftEncoder = null; //FIXME
         rightEncoder = null; //FIXME

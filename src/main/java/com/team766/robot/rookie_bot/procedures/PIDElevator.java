@@ -12,7 +12,7 @@ public class PIDElevator extends Procedure {
     PIDController controller;
 
     public PIDElevator(boolean top){
-        if (top == true ){
+        if (top == true){
         this.setpoint = 165;
         }
         else {
@@ -22,7 +22,6 @@ public class PIDElevator extends Procedure {
 
     public void run(Context context){
         context.takeOwnership(Robot.elevator);
-        Robot.elevator.resetEncoder();
 
         controller = new PIDController(0.1, 0, 0.0002, -1, 1, 0.01);
         controller.setSetpoint(setpoint);
