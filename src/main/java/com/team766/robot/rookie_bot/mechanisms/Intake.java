@@ -4,11 +4,11 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
-public class intake extends Mechanism {
+public class Intake extends Mechanism {
     private MotorController leftMotor;
     private MotorController rightMotor;
     
-public intake() {
+public Intake() {
     leftMotor = RobotProvider.instance.getMotor("intake.leftMotor");
     rightMotor = RobotProvider.instance.getMotor("intake.rightMotor");
 }
