@@ -14,8 +14,8 @@ import com.team766.robot.rookie_bot.procedures.*;
 public class Intake extends Mechanism {
     private MotorController intakeChainLeft;
     private MotorController intakeChainRight;
-    private final double INNER_LIMIT = 20;
-    private final double OUTER_LIMIT = -400;
+    private final double INNER_LIMIT = 2;
+    private final double OUTER_LIMIT = -6;
 
     public Intake() {
         intakeChainLeft = RobotProvider.instance.getMotor("intake.ChainLeft");
@@ -45,6 +45,10 @@ public class Intake extends Mechanism {
     public void setPowerBoth(double powerBoth) {
         setIntake(powerBoth, powerBoth);
     }
-        
+     public void run(){
+        log("left: " + intakeChainLeft.getSensorPosition());
+        log("right: " + intakeChainRight.getSensorPosition());
+
+     }   
 }
 
