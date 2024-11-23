@@ -13,7 +13,7 @@ public class PIDElevator extends Procedure {
 
     public PIDElevator(boolean top){
         if (top == true){
-        this.setpoint = 165;
+        this.setpoint = 130;
         }
         else {
             this.setpoint = 0 ;
