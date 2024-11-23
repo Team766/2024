@@ -35,7 +35,7 @@ public class OI extends Procedure {
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
-            Robot.drive.setArcadeDrivePower(-1 * joystick0.getAxis(1), joystick0.getAxis(3));
+            Robot.drive.setArcadeDrivePower(-0.5 * joystick0.getAxis(1), joystick0.getAxis(4));
             log("Elevator height: " + Robot.elevator.getElevatorDistance());
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             if (joystick0.getButtonPressed(4)) {
