@@ -15,7 +15,7 @@ public class Intake extends Mechanism {
 
     public void setintakePower(double leftPower, double rightPower) {
         checkContextOwnership();
-        leftMotor.set(leftPower);
+        leftMotor.set(-leftPower);
         rightMotor.set(rightPower);
     }
 }

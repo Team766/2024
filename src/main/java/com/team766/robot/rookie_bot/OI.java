@@ -27,6 +27,7 @@ public class OI extends Procedure {
 
     public void run(final Context context) {
         context.takeOwnership(Robot.drive);
+        context.takeOwnership(Robot.intake);
         while (true) {
             // wait for driver station data (and refresh it using the WPILib APIs)
 
@@ -34,7 +35,6 @@ public class OI extends Procedure {
 
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
-
             Robot.drive.setArcadeDrivePower(-1 * joystick0.getAxis(1), joystick0.getAxis(3));
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             if (joystick0.getButtonPressed(4)) {
@@ -43,16 +43,16 @@ public class OI extends Procedure {
             if (joystick0.getButtonPressed(2)) {
                 context.startAsync(new PIDElevator(false));
             }
-            if (joystick0.getButtonPressed(7)) {
-                Robot.intake.setintakePower(1, 1);
+            if (joystick0.getButtonPressed(5)) {
+                Robot.intake.setintakePower(0.3, 0.3);
             }
-            if (joystick0.getButtonReleased(7)) {
+            if (joystick0.getButtonReleased(5)) {
                 Robot.intake.setintakePower(0, 0);
             }
-            if (joystick0.getButtonPressed(8)) {
-                Robot.intake.setintakePower(-1, -1);
+            if (joystick0.getButtonPressed(6)) {
+                Robot.intake.setintakePower(-.3, -.3);
             }
-            if (joystick0.getButtonReleased(8)) {
+            if (joystick0.getButtonReleased(6)) {
                 Robot.intake.setintakePower(0, 0);
             }
         }
