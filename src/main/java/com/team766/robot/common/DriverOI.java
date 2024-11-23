@@ -52,7 +52,7 @@ public class DriverOI extends OIFragment {
                         * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
-            drive.resetGyro();
+            drive.resetHeading();
         }
 
         if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_POS)) {

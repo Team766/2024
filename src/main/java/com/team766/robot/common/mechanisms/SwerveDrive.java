@@ -4,7 +4,6 @@ import static com.team766.robot.common.constants.ConfigConstants.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.team766.controllers.PIDController;
-import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
@@ -27,7 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Optional;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
-public class SwerveDrive extends Mechanism {
+public class SwerveDrive extends Drive {
 
     private final SwerveConfig config;
 
@@ -315,15 +314,15 @@ public class SwerveDrive extends Mechanism {
      * Resets gyro to zero degrees relative to the driver
      * Sets to 180 degrees if the driver is on red (facing backwards)
      */
-    public void resetGyro() {
-        resetGyro(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
+    public void resetHeading() {
+        resetHeading(alliance.isPresent() && alliance.get() == Alliance.Blue ? 0 : 180);
     }
 
     /**
      * Sets gyro to value in degrees
      * @param angle in degrees
      */
-    public void resetGyro(double angle) {
+    public void resetHeading(double angle) {
         checkContextOwnership();
         gyro.setAngle(angle);
     }

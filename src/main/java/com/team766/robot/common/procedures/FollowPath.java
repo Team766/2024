@@ -1,13 +1,13 @@
 package com.team766.robot.common.procedures;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.robot.common.constants.PathPlannerConstants;
-import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.common.mechanisms.Drive;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -16,25 +16,25 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 
 public class FollowPath extends Procedure {
-    private final SwerveDrive drive;
+    private final Drive drive;
     private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
-    private final PPHolonomicDriveController controller;
+    private final PathFollowingController controller;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
     public FollowPath(
             PathPlannerPath path,
             ReplanningConfig replanningConfig,
-            PPHolonomicDriveController controller,
-            SwerveDrive drive) {
+            PathFollowingController controller,
+            Drive drive) {
         this.path = path;
         this.replanningConfig = replanningConfig;
         this.controller = controller;
         this.drive = drive;
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, SwerveDrive drive) {
+    public FollowPath(String autoName, PathFollowingController controller, Drive drive) {
         this(
                 PathPlannerPath.fromPathFile(autoName),
                 PathPlannerConstants.REPLANNING_CONFIG,
@@ -79,6 +79,10 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
+            if (!controller.isHolonomic() && path.isReversed()) {
+                targetState = targetState.reverse();
+            }
+
             curPose = drive.getCurrentPosition();
             currentSpeeds = drive.getChassisSpeeds();
 
@@ -108,13 +112,16 @@ public class FollowPath extends Procedure {
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "targetState", targetState.getTargetHolonomicPose());
+
             drive.controlRobotOriented(targetSpeeds);
             context.yield();
         }
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
             drive.stopDrive();
-            drive.setCross();
+            if (controller.isHolonomic()) {
+                drive.setCross();
+            }
         }
     }
 

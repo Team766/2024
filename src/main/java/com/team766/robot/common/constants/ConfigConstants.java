@@ -5,7 +5,7 @@ public final class ConfigConstants {
     // utility class
     private ConfigConstants() {}
 
-    // drive config values
+    // swerve drive config values
     public static final String DRIVE_GYRO = "drive.Gyro";
     public static final String DRIVE_DRIVE_FRONT_RIGHT = "drive.DriveFrontRight";
     public static final String DRIVE_DRIVE_FRONT_LEFT = "drive.DriveFrontLeft";
@@ -18,6 +18,10 @@ public final class ConfigConstants {
     public static final String DRIVE_STEER_BACK_LEFT = "drive.SteerBackLeft";
 
     public static final String DRIVE_TARGET_ROTATION_PID = "drive.setpointPid";
+
+    // burro drive config values
+    public static final String DRIVE_RIGHT = "drive.Right";
+    public static final String DRIVE_LEFT = "drive.Left";
 
     // pathplanner config values
     public static final String PATH_FOLLOWING_MAX_MODULE_SPEED_MPS =

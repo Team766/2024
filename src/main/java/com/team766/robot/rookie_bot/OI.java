@@ -34,7 +34,7 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
-            Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(4));
+            Robot.drive.drive(joystick0.getAxis(1), joystick0.getAxis(4);
 
             if ( joystick0.getButtonPressed(5) ){
                 context.startAsync(new PIDElevator(false));
