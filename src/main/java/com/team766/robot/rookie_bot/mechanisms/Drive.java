@@ -4,6 +4,11 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
 
+//Drive_R - ID 3
+//Drive_L - ID 4
+//Right grabber - ID 6
+//Left grabber - ID 5
+
 public class Drive extends Mechanism {
     private MotorController leftMotor;
     private MotorController rightMotor;

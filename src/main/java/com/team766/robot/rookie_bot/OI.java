@@ -30,11 +30,29 @@ public class OI extends Procedure {
             "  J0 A1: " + joystick0.getAxis(1) +
             "  J1 A0: " + joystick1.getAxis(0) +
             "  J1 A1: " + joystick1.getAxis(1) +
-            "  J0 B1: " + joystick0.getButton(1) +
-            "  J0 B2: " + joystick0.getButton(2) +
-            "  J0 B3: " + joystick0.getButton(3));
+            "  J0 B1: " + joystick0.getButton(3) +
+            "  J0 B2: " + joystick0.getButton(1) +
+            "  J0 B3: " + joystick0.getButton(2));
 
         Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
+
+        if (joystick0.getButtonPressed(1)) {
+            Robot.elevator.move(0.3);
+        } else if (joystick0.getButtonPressed(2)) {
+            Robot.elevator.move(-0.3);
+        } else if (joystick0.getButtonReleased(1) || joystick0.getButtonReleased(1)) {
+            Robot.elevator.move(0);
+        }
+
+        if (joystick0.getButtonPressed(3)) {
+            Robot.intake.setPowerBoth(0.3);
+        } else if (joystick0.getButtonPressed(4)) {
+            Robot.intake.setPowerBoth(-0.3);
+        } else if (joystick0.getButtonReleased(3) || joystick0.getButtonReleased(4)) {
+            Robot.intake.setPowerBoth(0);
+        }
+
+
         context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData()); 
         }
 

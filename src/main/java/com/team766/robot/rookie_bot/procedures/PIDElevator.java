@@ -1,9 +1,12 @@
-package com.team766.robot.rookie_bot;
+package com.team766.robot.rookie_bot.procedures;
 
+import com.team766.controllers.PIDController;
 import com.team766.framework.AutonomousMode;
+import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.hal.RobotConfigurator;
 import com.team766.robot.gatorade.mechanisms.Elevator;
+import com.team766.robot.rookie_bot.Robot;
 import com.team766.robot.rookie_bot.mechanisms.Drive;
 
 public class PIDElevator extends Procedure{
@@ -22,7 +25,7 @@ public class PIDElevator extends Procedure{
         controller.setSetpoint(setpoint); //tell the PID controller our setpoint
         while(!controller.isDone()) //stop the loop when we hit the setpoint
         {
-            controller.calculate(Robot.elevator.getElevatorDistance(), true); //pass ht efeedback into the PID
+            controller.calculate(Robot.elevator.getElevatorDistance()); //pass ht efeedback into the PID
             double motor_effort = controller.getOutput(); //get the PID controller output for this cycle
             Robot.elevator.move(motor_effort); //move the elevator!
         }
