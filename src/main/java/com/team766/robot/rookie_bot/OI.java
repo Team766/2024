@@ -51,7 +51,7 @@ public class OI extends Procedure {
                 Robot.intake.setintakePower(0, 0);
             }
             if (joystick0.getButtonPressed(6)) {
-                Robot.intake.setintakePower(-.1, -.55);
+                Robot.intake.setintakePower(-0.13, -0.55);
             }
             if (joystick0.getButtonReleased(6)) {
                 Robot.intake.setintakePower(0, 0);

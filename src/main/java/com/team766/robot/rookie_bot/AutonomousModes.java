@@ -13,11 +13,8 @@ public class AutonomousModes {
                 // define one or more different autonomous modes with it like this:
                 //    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
                 //    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
-                new AutonomousMode("TurnRight", () -> new TurnRight()),
-                new AutonomousMode("DoNothing", () -> new DoNothing()),
-                new AutonomousMode("DriveStraight", () -> new DriveStraight()),
-                new AutonomousMode("DriveinaSquare", () -> new DriveinaSquare()),
-                new AutonomousMode("Auton", () -> new DriveinaSquare())
+                new AutonomousMode("Auton", () -> new Auton()),
             };
+        
 
 }

@@ -5,6 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.robot.rookie_bot.Robot;
 
 public class Auton extends Procedure{
+   
      public void run(final Context context) {
         Robot.intake.setintakePower(0.3, 0.75);
         context.takeOwnership(Robot.drive);
