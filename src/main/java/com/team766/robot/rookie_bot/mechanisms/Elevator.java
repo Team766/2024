@@ -10,7 +10,7 @@ import com.team766.hal.wpilib.CANSparkMaxMotorController;
 public class Elevator extends Mechanism{
     private MotorController m_elevator;
     private EncoderReader m_elevatorEncoder;
-    private final double TOP_LIMIT = 400;
+    private final double TOP_LIMIT = -130;
     private final double BOTTOM_LIMIT = 0;
 
 
@@ -22,8 +22,8 @@ public class Elevator extends Mechanism{
     }
 
     public void move(double power) {
-        if (!((power > 0 && getElevatorDistance() > TOP_LIMIT) || (power < 0 && getElevatorDistance() < BOTTOM_LIMIT))) {
-            m_elevator.set(power);
+        if (!((power < 0 && (getElevatorDistance() < TOP_LIMIT)) || (power > 0 && (getElevatorDistance() > BOTTOM_LIMIT)))) {
+            m_elevator.set(-power);
         } else {
             m_elevator.set(0);
         }
@@ -31,12 +31,15 @@ public class Elevator extends Mechanism{
     }
 
     public double getElevatorDistance(){
-        return m_elevatorEncoder.getDistance();
+        return m_elevator.getSensorPosition();
     }
 
     public void resetEncoder(){
-        m_elevatorEncoder.reset();
+        m_elevator.setSensorPosition(0);
     }
 
+    public void run() {
+        log("elevator: " + getElevatorDistance());
+    }
 }
 

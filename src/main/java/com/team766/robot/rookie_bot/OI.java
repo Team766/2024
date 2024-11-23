@@ -36,19 +36,23 @@ public class OI extends Procedure {
 
         Robot.drive.setArcadeDrivePower(joystick0.getAxis(1), joystick0.getAxis(0));
 
-        if (joystick0.getButtonPressed(1)) {
+        if (joystick0.getButton(1)) {
             Robot.elevator.move(0.3);
-        } else if (joystick0.getButtonPressed(2)) {
+        } else if (joystick0.getButton(2)) {
             Robot.elevator.move(-0.3);
-        } else if (joystick0.getButtonReleased(1) || joystick0.getButtonReleased(1)) {
+        } 
+        
+        if (joystick0.getButtonReleased(1) || joystick0.getButtonReleased(2)) {
             Robot.elevator.move(0);
         }
 
-        if (joystick0.getButtonPressed(3)) {
-            Robot.intake.setPowerBoth(0.3);
-        } else if (joystick0.getButtonPressed(4)) {
-            Robot.intake.setPowerBoth(-0.3);
-        } else if (joystick0.getButtonReleased(3) || joystick0.getButtonReleased(4)) {
+        if (joystick0.getButton(3)) {
+            Robot.intake.setPowerBoth(0.5);
+        } else if (joystick0.getButton(4)) {
+            Robot.intake.setPowerBoth(-0.5);
+        } 
+        
+        if (joystick0.getButtonReleased(3) || joystick0.getButtonReleased(4)) {
             Robot.intake.setPowerBoth(0);
         }
 
