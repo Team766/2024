@@ -21,4 +21,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+          
+      - run: ./gradlew spotlessApply
+      
       - run: ./gradlew spotlessCheck
