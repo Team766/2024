@@ -13,6 +13,11 @@ public interface EncoderReader extends ControlInputReader {
     void reset();
 
     /**
+     * Return true iff the encoder's readings are up-to-date.
+     */
+    boolean isConnected();
+
+    /**
      * Get the distance the robot has driven since the last reset.
      *
      * @return The distance driven since the last reset as scaled by the value from
