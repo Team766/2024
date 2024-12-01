@@ -1,11 +1,21 @@
 package com.team766.robot.common.mechanisms;
 
-import static com.team766.robot.common.constants.ConfigConstants.*;
 import static com.team766.math.Math.normalizeAngleDegrees;
-
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_BACK_LEFT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_BACK_RIGHT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_FRONT_LEFT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_DRIVE_FRONT_RIGHT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_GYRO;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_BACK_LEFT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_BACK_RIGHT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_FRONT_LEFT;
+import static com.team766.robot.common.constants.ConfigConstants.DRIVE_STEER_FRONT_RIGHT;
+import java.util.List;
+import java.util.Optional;
+import java.util.TreeMap;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.sim.Pigeon2SimState;
-import com.fasterxml.jackson.databind.node.POJONode;
 import com.team766.controllers.PIDController;
 import com.team766.framework.Mechanism;
 import com.team766.hal.GyroReader;
@@ -21,7 +31,6 @@ import com.team766.robot.common.constants.ConfigConstants;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.simulation.QuadSwerveSim;
 import com.team766.simulator.Parameters;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -35,9 +44,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SwerveDrive extends Mechanism {
 
@@ -84,6 +90,7 @@ public class SwerveDrive extends Mechanism {
     private double y;
 
     private double simPrevTime;
+    private TreeMap<Double, Pose2d> simPrevPoses;
     private double simPrevYaw;
 
     private Field2d m_field;
@@ -168,7 +175,6 @@ public class SwerveDrive extends Mechanism {
                 new Odometry(
                         gyro,
                         moduleList,
-                        wheelPositions,
                         config.wheelCircumference(),
                         config.driveGearRatio(),
                         config.encoderToRevolutionConstant());
@@ -184,6 +190,7 @@ public class SwerveDrive extends Mechanism {
                         swerveBL.getSim(),
                         swerveBR.getSim()));
         simPrevTime = RobotProvider.instance.getClock().getTime();
+        simPrevPoses = new TreeMap<>();
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
         kalmanFilter = new KalmanFilter();
@@ -405,13 +412,25 @@ public class SwerveDrive extends Mechanism {
         // swerveOdometry.setCurrentPosition(new Pose2d());
     }
 
-    public ChassisSpeeds getChassisSpeeds() {
+    /**
+     * @return robot relative chassis speeds
+    */
+    public ChassisSpeeds getRelativeChassisSpeeds() {
         return swerveDriveKinematics.toChassisSpeeds(
                 swerveFR.getModuleState(),
                 swerveFL.getModuleState(),
                 swerveBR.getModuleState(),
                 swerveBL.getModuleState());
     }
+    
+    /**
+     * @return field relative robot velocity
+     */
+    public Translation2d getAbsoluteRobotVelocity() {
+        ChassisSpeeds relSpeeds = getRelativeChassisSpeeds();
+        return new Translation2d(relSpeeds.vxMetersPerSecond, relSpeeds.vyMetersPerSecond).rotateBy(Rotation2d.fromDegrees(getHeading()));
+    }
+
 
     public double maxWheelDistToCenter() {
         double max = 0;
@@ -430,8 +449,8 @@ public class SwerveDrive extends Mechanism {
     // Odometry
     @Override
     public void run() {
-        kalmanFilter.predictPeriodic(swerveOdometry.predictCurrentPositionChange());
-        // curPose = new Pose2d(curPose.getTranslation().plus(swerveOdometry.predictCurrentPositionChange()), Rotation2d.fromDegrees(getHeading()));
+        kalmanFilter.addVelocityInput(getAbsoluteRobotVelocity(), RobotProvider.instance.getClock().getTime());
+        
         // log(currentPosition.toString());
         // SmartDashboard.putString("pos", getCurrentPosition().toString());
 
@@ -467,7 +486,7 @@ public class SwerveDrive extends Mechanism {
         if (Logger.isLoggingToDataLog()) {
             org.littletonrobotics.junction.Logger.recordOutput("curPose", getCurrentPosition());
             org.littletonrobotics.junction.Logger.recordOutput(
-                    "current rotational velocity", getChassisSpeeds().omegaRadiansPerSecond);
+                    "current rotational velocity", getRelativeChassisSpeeds().omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput("SwerveStates", swerveModuleStates);
         }
         
@@ -489,10 +508,19 @@ public class SwerveDrive extends Mechanism {
 
         final Pose2d pose = sim.getCurPose();
 
-        if (Math.random() < 0.01) {
-            double randX = pose.getX() + 0.2 * (Math.random() - 0.5);
-            double randY = pose.getY() + 0.2 * (Math.random() - 0.5);
-            kalmanFilter.updateWithMeasurement(new Translation2d(randX, randY));
+        simPrevPoses.put(now, pose);
+        if(now - simPrevPoses.firstKey() > 1) {
+            simPrevPoses.remove(simPrevPoses.firstKey()); // delete old values
+        } 
+
+        kalmanFilter.updateWithOdometry(swerveOdometry.predictCurrentPositionChange(), now - dt, now);
+
+        if (Math.random() < 0.03) {
+            double delay = Math.random() * 0.5;
+            Pose2d prevPose = simPrevPoses.ceilingEntry(now - delay).getValue();
+            double randX = prevPose.getX() + 0.2 * (Math.random() - 0.5);
+            double randY = prevPose.getY() + 0.2 * (Math.random() - 0.5);
+            kalmanFilter.updateWithVisionMeasurement(new Translation2d(randX, randY), now - delay /* - 0.1 * Math.random() */);
             SmartDashboard.putNumber("sensor X measurement", randX);
         }
 

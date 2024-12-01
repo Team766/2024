@@ -1,5 +1,6 @@
 package com.team766.robot.common.procedures;
 
+import java.util.Optional;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -13,7 +14,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.Optional;
 
 public class FollowPath extends Procedure {
     private final SwerveDrive drive;
@@ -60,7 +60,7 @@ public class FollowPath extends Procedure {
         // intitialization
 
         Pose2d curPose = drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
+        ChassisSpeeds currentSpeeds = drive.getRelativeChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
 
         controller.reset(curPose, currentSpeeds);
 
@@ -80,7 +80,7 @@ public class FollowPath extends Procedure {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
             curPose = drive.getCurrentPosition();
-            currentSpeeds = drive.getChassisSpeeds();
+            currentSpeeds = drive.getRelativeChassisSpeeds(); // FIXME: MIGHT HAVE TO BE ABSOLUTE
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?

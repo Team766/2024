@@ -1,6 +1,7 @@
 package com.team766.odometry;
 
 import com.team766.hal.GyroReader;
+import com.team766.hal.RobotProvider;
 import com.team766.library.RateLimiter;
 import com.team766.robot.common.mechanisms.SwerveModule;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,22 +25,18 @@ public class Odometry {
     private int moduleCount;
 
     private Rotation2d[] prevWheelRotation;
+    private Rotation2d[] currentWheelRotation;
     private Rotation2d[] wheelRotationChange;
 
     private double[] prevDriveDisplacement;
     private double[] driveDisplacementChange;
-    
 
-    private Rotation2d gyroPosition;
-
+    private double prevTime;
 
     // In meters
     private double wheelCircumference;
     public double gearRatio;
     public int encoderToRevolutionConstant;
-
-    // In the same order as motorList, relative to the center of the robot
-    private Translation2d[] wheelPositions;
 
     /**
      * Constructor for Odometry, taking in several defines for the robot.
@@ -54,7 +51,6 @@ public class Odometry {
     public Odometry(
             GyroReader gyro,
             SwerveModule[] moduleList,
-            Translation2d[] wheelLocations,
             double wheelCircumference,
             double gearRatio,
             int encoderToRevolutionConstant) {
@@ -65,18 +61,19 @@ public class Odometry {
         moduleCount = moduleList.length;
 
         prevWheelRotation = new Rotation2d[moduleCount];
+        currentWheelRotation = new Rotation2d[moduleCount];
         wheelRotationChange = new Rotation2d[moduleCount];
 
         prevDriveDisplacement = new double[moduleCount];
         driveDisplacementChange = new double[moduleCount];
 
-        wheelPositions = wheelLocations;
         this.wheelCircumference = wheelCircumference;
         this.gearRatio = gearRatio;
         this.encoderToRevolutionConstant = encoderToRevolutionConstant;
 
         for (int i = 0; i < moduleCount; i++) {
             prevWheelRotation[i] = new Rotation2d();
+            currentWheelRotation[i] = new Rotation2d();
             wheelRotationChange[i] = new Rotation2d();
 
             prevDriveDisplacement[i] = 0;
@@ -89,9 +86,9 @@ public class Odometry {
      */
     private void updateDisplacementAndRotation() {
         for (int i = 0; i < moduleCount; i++) {
-            Rotation2d currentWheelRotation = gyroPosition.plus(moduleList[i].getSteerAngle());
-            wheelRotationChange[i] = currentWheelRotation.minus(prevWheelRotation[i]);
-            prevWheelRotation[i] = currentWheelRotation;
+            currentWheelRotation[i] = Rotation2d.fromDegrees(gyro.getAngle()).plus(moduleList[i].getSteerAngle());
+            wheelRotationChange[i] = currentWheelRotation[i].minus(prevWheelRotation[i]);
+            prevWheelRotation[i] = currentWheelRotation[i];
 
             double currentDriveDisplacement = moduleList[i].getDriveDisplacement();
             driveDisplacementChange[i] = currentDriveDisplacement - prevDriveDisplacement[i];
@@ -106,7 +103,6 @@ public class Odometry {
         double radius;
         double deltaX;
         double deltaY;
-        gyroPosition = Rotation2d.fromDegrees(gyro.getAngle());
 
         double sumX = 0;
         double sumY = 0;
@@ -115,27 +111,23 @@ public class Odometry {
         
         for (int i = 0; i < moduleCount; i++) {
 
-            double yaw = Math.toRadians(gyro.getAngle());
-            double roll = Math.toRadians(gyro.getRoll());
-            double pitch = Math.toRadians(gyro.getPitch());
+            // FOR SLOPES:
+            // double yaw = Math.toRadians(gyro.getAngle());
+            // double roll = Math.toRadians(gyro.getRoll());
+            // double pitch = Math.toRadians(gyro.getPitch());
 
-            double w = moduleList[i].getSteerAngle().getRadians();
-            Vector2D u =
-                    new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
-            Vector2D v =
-                    new Vector2D(
-                            Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)
-                                    - Math.sin(yaw) * Math.cos(roll),
-                            Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll)
-                                    + Math.cos(yaw) * Math.cos(roll));
-            Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
-            Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
-            Vector2D wheelMotion;
-            // log("u: " + u + " v: " + v + " a: " + a + " b: " + b);
-
-            // double oldWheelX;
-            // double oldWheelY;
-
+            // double w = moduleList[i].getSteerAngle().getRadians();
+            // Vector2D u =
+            //         new Vector2D(Math.cos(yaw) * Math.cos(pitch), Math.sin(yaw) * Math.cos(pitch));
+            // Vector2D v =
+            //         new Vector2D(
+            //                 Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)
+            //                         - Math.sin(yaw) * Math.cos(roll),
+            //                 Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll)
+            //                         + Math.cos(yaw) * Math.cos(roll));
+            // Vector2D a = u.scalarMultiply(Math.cos(w)).add(v.scalarMultiply(Math.sin(w)));
+            // Vector2D b = u.scalarMultiply(-Math.sin(w)).add(v.scalarMultiply(Math.cos(w)));
+            // Vector2D wheelMotion;
             
             if (Math.abs(wheelRotationChange[i].getDegrees()) != 0) {
                 // estimates the bot moved in a circle to calculate new position
@@ -144,15 +136,14 @@ public class Odometry {
                 deltaX = radius * Math.sin(wheelRotationChange[i].getRadians());
                 deltaY = radius * (1 - Math.cos(wheelRotationChange[i].getRadians()));
 
-                wheelMotion = a.scalarMultiply(deltaX).add(b.scalarMultiply(-deltaY));
-
             } else {
-                wheelMotion = a.scalarMultiply(driveDisplacementChange[i]);
+
+                deltaX = driveDisplacementChange[i];
+                deltaY = 0;
 
             }
-            wheelMotion =
-                    wheelMotion.scalarMultiply(
-                            wheelCircumference / (gearRatio * encoderToRevolutionConstant));
+
+            Translation2d wheelMotion = new Translation2d(deltaX, deltaY).rotateBy(currentWheelRotation[i]).times(wheelCircumference / (gearRatio * encoderToRevolutionConstant));
             
             sumX += wheelMotion.getX();
             sumY += wheelMotion.getY();
