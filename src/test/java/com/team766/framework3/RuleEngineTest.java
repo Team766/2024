@@ -32,10 +32,8 @@ public class RuleEngineTest extends TestCase3 {
 
         @Override
         public boolean getAsBoolean() {
-            System.err.println("CYCLE: " + currentCycle);
             boolean value = currentCycle >= start && currentCycle < end;
             ++currentCycle;
-            System.err.println("VALUE: " + value);
             return value;
         }
     }
