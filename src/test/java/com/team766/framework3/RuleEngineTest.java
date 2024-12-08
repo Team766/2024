@@ -487,4 +487,204 @@ public class RuleEngineTest extends TestCase3 {
 
         step();
     }
+
+    @Test
+    public void testLowerPriorityRuleRunsWhenProcedureFromHigherPriorityRuleFinishes() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new ScheduledPredicate(0, 4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 0, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p0", 0, Set.of(fm1))));
+                        addRule(
+                                Rule.create("fm1_p1", new ScheduledPredicate(1))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p1", 0, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p1", 0, Set.of(fm1))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+
+        step(); // 0
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
+
+        step(); // 1
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procfin_p1"));
+
+        step(); // 2
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNull(cmd);
+
+        step(); // 3
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
+
+        step(); // 4
+    }
+
+    @Test
+    public void testRuleCalledAgainAfterBeingReset() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new ScheduledPredicate(1))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 0, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p0", 0, Set.of(fm1))));
+                        addRule(
+                                Rule.create("fm1_p1", new ScheduledPredicate(0, 4))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p1", 1, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p1", 1, Set.of(fm1))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
+
+        step(); // 0
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+
+        step(); // 1
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
+
+        step(); // 2
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
+
+        step(); // 3
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procfin_p1"));
+
+        step(); // 4
+    }
+
+    @Test
+    public void testRuleResetPreventsFinishedForLongTrigger() {
+        RuleEngine myRules =
+                new RuleEngine() {
+                    {
+                        addRule(
+                                Rule.create("fm1_p0", new ScheduledPredicate(1))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p0", 0, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p0", 0, Set.of(fm1))));
+                        addRule(
+                                Rule.create("fm1_p1", new ScheduledPredicate(0, 3))
+                                        .withNewlyTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procnew_p1", 1, Set.of(fm1)))
+                                        .withFinishedTriggeringProcedure(
+                                                () ->
+                                                        new FakeProcedure(
+                                                                "fm1procfin_p1", 1, Set.of(fm1))));
+                    }
+                };
+
+        myRules.run();
+
+        // check that the expected Procedure is scheduled
+        Command cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p1"));
+
+        step(); // 0
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procnew_p0"));
+
+        step(); // 1
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNotNull(cmd);
+        assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
+
+        step(); // 2
+
+        myRules.run();
+
+        cmd = CommandScheduler.getInstance().requiring(fm1);
+        assertNull(cmd);
+
+        step(); // 3
+    }
 }
