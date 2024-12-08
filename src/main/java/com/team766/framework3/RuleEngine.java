@@ -106,6 +106,7 @@ public class RuleEngine implements LoggingBase {
                                             + "; mechanism "
                                             + mechanism.getName()
                                             + " already reserved by higher priority rule.");
+                            rule.reset();
                             continue ruleLoop;
                         }
                         // see if a previously triggered rule is still using the mechanism
@@ -123,11 +124,24 @@ public class RuleEngine implements LoggingBase {
                                     log(
                                             Severity.INFO,
                                             "RULE CONFLICT!  Ignoring rule: "
-                                                    + rule
+                                                    + rule.getName()
                                                     + "; mechanism "
                                                     + mechanism.getName()
                                                     + " already being used in CommandScheduler by higher priority rule.");
+                                    rule.reset();
                                     continue ruleLoop;
+                                } else if (rule != existingRule) {
+                                    // new rule takes priority
+                                    // reset existing rule
+                                    log(
+                                            Severity.INFO,
+                                            "Pre-empting rule: "
+                                                    + existingRule.getName()
+                                                    + "; mechanism "
+                                                    + mechanism.getName()
+                                                    + " will now be reserved by higher priority rule "
+                                                    + rule.getName());
+                                    existingRule.reset();
                                 }
                             }
                         }
