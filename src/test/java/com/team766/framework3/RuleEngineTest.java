@@ -32,10 +32,9 @@ public class RuleEngineTest extends TestCase3 {
 
         @Override
         public boolean getAsBoolean() {
+            System.err.println("CYCLE: " + currentCycle);
             boolean value = currentCycle >= start && currentCycle < end;
             ++currentCycle;
-
-            System.err.println("CYCLE: " + currentCycle);
             System.err.println("VALUE: " + value);
             return value;
         }
@@ -43,27 +42,15 @@ public class RuleEngineTest extends TestCase3 {
 
     private static class PeriodicPredicate implements BooleanSupplier {
         private final int period;
-        private final int start;
-        private final int end;
         private int currentCycle = 0;
 
-        public PeriodicPredicate(int period, int start, int end) {
-            this.period = period;
-            this.start = start;
-            this.end = end;
-        }
-
-        public PeriodicPredicate(int period, int start) {
-            this(period, start, 1);
-        }
-
         public PeriodicPredicate(int period) {
-            this(period, 0);
+            this.period = period;
         }
 
         @Override
         public boolean getAsBoolean() {
-            boolean value = currentCycle % period >= start && currentCycle % period < end;
+            boolean value = currentCycle % period == 0;
             ++currentCycle;
             return value;
         }
@@ -190,7 +177,7 @@ public class RuleEngineTest extends TestCase3 {
 
         cmd = CommandScheduler.getInstance().requiring(fm1);
         assertNotNull(cmd);
-        assertTrue(cmd.getName().endsWith("fm1procfin_p1"));
+        assertTrue(cmd.getName().endsWith("fm1procfin_p0"));
 
         step(); // 1
     }
@@ -336,7 +323,7 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new PeriodicPredicate(4, 1))
+                                Rule.create("fm1_p0", new ScheduledPredicate(1))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
@@ -344,7 +331,7 @@ public class RuleEngineTest extends TestCase3 {
                                                                 2,
                                                                 Set.of(fm1, fm2))));
                         addRule(
-                                Rule.create("fm1_p1", new PeriodicPredicate(4, 0))
+                                Rule.create("fm1_p1", new ScheduledPredicate(0))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
@@ -378,13 +365,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new PeriodicPredicate(4))
+                                Rule.create("fm1_p0", new ScheduledPredicate(0))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 2, Set.of(fm1))));
                         addRule(
-                                Rule.create("fm1_p1", new PeriodicPredicate(4))
+                                Rule.create("fm1_p1", new ScheduledPredicate(0))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
@@ -419,13 +406,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new PeriodicPredicate(4))
+                                Rule.create("fm1_p0", new ScheduledPredicate(0))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 2, Set.of(fm1))));
                         addRule(
-                                Rule.create("fm1_p1", new PeriodicPredicate(4, 1))
+                                Rule.create("fm1_p1", new ScheduledPredicate(1))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
@@ -468,13 +455,13 @@ public class RuleEngineTest extends TestCase3 {
                 new RuleEngine() {
                     {
                         addRule(
-                                Rule.create("fm1_p0", new PeriodicPredicate(4, 1))
+                                Rule.create("fm1_p0", new ScheduledPredicate(1))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
                                                                 "fm1procnew_p0", 2, Set.of(fm1))));
                         addRule(
-                                Rule.create("fm1_p1", new PeriodicPredicate(4))
+                                Rule.create("fm1_p1", new ScheduledPredicate(0))
                                         .withNewlyTriggeringProcedure(
                                                 () ->
                                                         new FakeProcedure(
