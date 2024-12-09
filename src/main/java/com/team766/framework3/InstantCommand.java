@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 
     @Override
     public void execute() {
+        ReservingCommand.enterCommand(this);
         try {
-            SchedulerMonitor.currentCommand = this;
             procedure.run();
         } finally {
-            SchedulerMonitor.currentCommand = null;
+            ReservingCommand.exitCommand(this);
         }
     }
 
