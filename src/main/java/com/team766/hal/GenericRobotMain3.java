@@ -162,11 +162,11 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
     public void teleopPeriodic() {
         if (faultInRobotInit || faultInTeleopInit) return;
 
+        CommandScheduler.getInstance().run();
         if (m_oi != null && RobotProvider.instance.hasNewDriverStationData()) {
             RobotProvider.instance.refreshDriverStationData();
             m_oi.run();
         }
-        CommandScheduler.getInstance().run();
         if (m_lights != null && m_lightUpdateLimiter.next()) {
             m_lights.run();
         }
