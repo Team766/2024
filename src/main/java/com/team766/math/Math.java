@@ -13,6 +13,10 @@ public class Math {
         return x;
     }
 
+    public static double deadzone(double value, double deadzone) {
+        return java.lang.Math.abs(value) >= deadzone ? value : 0;
+    }
+
     /**
      * Returns the given angle, normalized to be within the range [-180, 180)
      */
