@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class RuleEngine implements LoggingBase {
 
-    private static record RuleAction(Rule rule, Rule.TriggerType triggerType) {}
+    private static record RuleAction(Rule rule, Rule.TriggerState triggerState) {}
 
     private final List<Rule> rules = new LinkedList<>();
     private final Map<Rule, Integer> rulePriorities = new HashMap<>();
@@ -87,9 +87,9 @@ public class RuleEngine implements LoggingBase {
                 rule.evaluate();
 
                 // see if the rule is triggering
-                final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
-                if (triggerType != Rule.TriggerType.NONE) {
-                    log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerType);
+                final Rule.TriggerState triggerState = rule.getCurrentTriggerState();
+                if (triggerState != Rule.TriggerState.NONE) {
+                    log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerState);
 
                     int priority = getPriorityForRule(rule);
 
@@ -150,11 +150,12 @@ public class RuleEngine implements LoggingBase {
 
                     // we're good to proceed
 
-                    if (triggerType == Rule.TriggerType.FINISHED
+                    if (triggerState == Rule.TriggerState.FINISHED
                             && rule.getCancellationOnFinish()
                                     == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
                         var newlyCommand =
-                                ruleMap.inverse().get(new RuleAction(rule, Rule.TriggerType.NEWLY));
+                                ruleMap.inverse()
+                                        .get(new RuleAction(rule, Rule.TriggerState.NEWLY));
                         if (newlyCommand != null) {
                             newlyCommand.cancel();
                         }
@@ -174,7 +175,7 @@ public class RuleEngine implements LoggingBase {
                     // TODO(MF3): check that the reservations have not changed
                     Command command = procedure.createCommandToRunProcedure();
                     mechanismsToUse.addAll(reservations);
-                    ruleMap.forcePut(command, new RuleAction(rule, triggerType));
+                    ruleMap.forcePut(command, new RuleAction(rule, triggerState));
                     command.schedule();
                 }
             } catch (Exception ex) {

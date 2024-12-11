@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.team766.framework3.Rule.Cancellation;
-import com.team766.framework3.Rule.TriggerType;
+import com.team766.framework3.Rule.TriggerState;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -68,13 +68,13 @@ public class RuleTest {
                         Rule.create("always true", () -> true)
                                 .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
                                 .build());
-        assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
+        assertEquals(Rule.TriggerState.NONE, alwaysTrue.getCurrentTriggerState());
         alwaysTrue.evaluate();
-        assertEquals(TriggerType.NEWLY, alwaysTrue.getCurrentTriggerType());
+        assertEquals(TriggerState.NEWLY, alwaysTrue.getCurrentTriggerState());
         alwaysTrue.evaluate();
-        assertEquals(TriggerType.CONTINUING, alwaysTrue.getCurrentTriggerType());
+        assertEquals(TriggerState.CONTINUING, alwaysTrue.getCurrentTriggerState());
         alwaysTrue.evaluate();
-        assertEquals(TriggerType.CONTINUING, alwaysTrue.getCurrentTriggerType());
+        assertEquals(TriggerState.CONTINUING, alwaysTrue.getCurrentTriggerState());
 
         // test a full cycle: NONE->NEWLY->CONTINUING->FINISHED->NONE->NEWLY->...
         Rule duckDuckGooseGoose =
@@ -82,17 +82,17 @@ public class RuleTest {
                         Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
                                 .withOnTriggeringProcedure(ONCE, () -> Procedure.NO_OP)
                                 .build());
-        assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(Rule.TriggerState.NONE, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.NEWLY, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.CONTINUING, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.CONTINUING, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.FINISHED, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.FINISHED, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.NONE, duckDuckGooseGoose.getCurrentTriggerState());
         duckDuckGooseGoose.evaluate();
-        assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
+        assertEquals(TriggerState.NEWLY, duckDuckGooseGoose.getCurrentTriggerState());
     }
 
     @Test

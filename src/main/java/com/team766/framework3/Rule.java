@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * "predicate" that will be evaluated in each call to {@link RuleEngine#run}, typically
  * in an OperatorInterface loop or Display (LED lights, etc) loop.  The Rule keeps track of
  * when the predicate starts triggering and has finished triggering, via
- * a {@link TriggerType}, eg when a driver or boxop starts pressing a button and then releases the button.
+ * a {@link TriggerState}, eg when a driver or boxop starts pressing a button and then releases the button.
  * Each Rule has optional {@link Procedure} actions for each of these trigger types, which the
  * {@link RuleEngine} will consider running, after checking if higher priority rules have reserved the
  * same {@link Mechanism}s that the candidate rule would use.
@@ -46,7 +46,7 @@ public class Rule {
      * FINISHED - rule was triggering in the last evaluation and is no longer triggering.
      *
      */
-    enum TriggerType {
+    enum TriggerState {
         NONE,
         NEWLY,
         CONTINUING,
@@ -219,13 +219,13 @@ public class Rule {
 
     private final String name;
     private final BooleanSupplier predicate;
-    private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
-            Maps.newEnumMap(TriggerType.class);
-    private final Map<TriggerType, Set<Mechanism<?>>> triggerReservations =
-            Maps.newEnumMap(TriggerType.class);
+    private final Map<TriggerState, Supplier<Procedure>> triggerProcedures =
+            Maps.newEnumMap(TriggerState.class);
+    private final Map<TriggerState, Set<Mechanism<?>>> triggerReservations =
+            Maps.newEnumMap(TriggerState.class);
     private final Cancellation cancellationOnFinish;
 
-    private TriggerType currentTriggerType = TriggerType.NONE;
+    private TriggerState currentTriggerState = TriggerState.NONE;
 
     public static Builder create(String name, BooleanSupplier predicate) {
         return new Builder(name, predicate);
@@ -248,17 +248,18 @@ public class Rule {
         this.name = name;
         this.predicate = predicate;
         if (onTriggeringProcedure != null) {
-            triggerProcedures.put(TriggerType.NEWLY, onTriggeringProcedure);
+            triggerProcedures.put(TriggerState.NEWLY, onTriggeringProcedure);
             triggerReservations.put(
-                    TriggerType.NEWLY, getReservationsForProcedure(onTriggeringProcedure));
+                    TriggerState.NEWLY, getReservationsForProcedure(onTriggeringProcedure));
         }
 
         this.cancellationOnFinish = cancellationOnFinish;
 
         if (finishedTriggeringProcedure != null) {
-            triggerProcedures.put(TriggerType.FINISHED, finishedTriggeringProcedure);
+            triggerProcedures.put(TriggerState.FINISHED, finishedTriggeringProcedure);
             triggerReservations.put(
-                    TriggerType.FINISHED, getReservationsForProcedure(finishedTriggeringProcedure));
+                    TriggerState.FINISHED,
+                    getReservationsForProcedure(finishedTriggeringProcedure));
         }
     }
 
@@ -276,12 +277,12 @@ public class Rule {
         return name;
     }
 
-    /* package */ TriggerType getCurrentTriggerType() {
-        return currentTriggerType;
+    /* package */ TriggerState getCurrentTriggerState() {
+        return currentTriggerState;
     }
 
     /* package */ boolean isTriggering() {
-        return switch (currentTriggerType) {
+        return switch (currentTriggerState) {
             case NEWLY -> true;
             case CONTINUING -> true;
             case FINISHED -> false;
@@ -290,31 +291,31 @@ public class Rule {
     }
 
     /* package */ void reset() {
-        currentTriggerType = TriggerType.NONE;
+        currentTriggerState = TriggerState.NONE;
     }
 
     /* package */ void evaluate() {
         if (predicate.getAsBoolean()) {
-            currentTriggerType =
-                    switch (currentTriggerType) {
-                        case NONE -> TriggerType.NEWLY;
-                        case NEWLY -> TriggerType.CONTINUING;
-                        case CONTINUING -> TriggerType.CONTINUING;
-                        case FINISHED -> TriggerType.NEWLY;
+            currentTriggerState =
+                    switch (currentTriggerState) {
+                        case NONE -> TriggerState.NEWLY;
+                        case NEWLY -> TriggerState.CONTINUING;
+                        case CONTINUING -> TriggerState.CONTINUING;
+                        case FINISHED -> TriggerState.NEWLY;
                     };
         } else {
-            currentTriggerType =
-                    switch (currentTriggerType) {
-                        case NONE -> TriggerType.NONE;
-                        case NEWLY -> TriggerType.FINISHED;
-                        case CONTINUING -> TriggerType.FINISHED;
-                        case FINISHED -> TriggerType.NONE;
+            currentTriggerState =
+                    switch (currentTriggerState) {
+                        case NONE -> TriggerState.NONE;
+                        case NEWLY -> TriggerState.FINISHED;
+                        case CONTINUING -> TriggerState.FINISHED;
+                        case FINISHED -> TriggerState.NONE;
                     };
         }
     }
 
     /* package */ Set<Mechanism<?>> getMechanismsToReserve() {
-        return triggerReservations.getOrDefault(currentTriggerType, Collections.emptySet());
+        return triggerReservations.getOrDefault(currentTriggerState, Collections.emptySet());
     }
 
     /* package */ Cancellation getCancellationOnFinish() {
@@ -322,9 +323,9 @@ public class Rule {
     }
 
     /* package */ Procedure getProcedureToRun() {
-        if (currentTriggerType != TriggerType.NONE) {
-            if (triggerProcedures.containsKey(currentTriggerType)) {
-                Supplier<Procedure> supplier = triggerProcedures.get(currentTriggerType);
+        if (currentTriggerState != TriggerState.NONE) {
+            if (triggerProcedures.containsKey(currentTriggerState)) {
+                Supplier<Procedure> supplier = triggerProcedures.get(currentTriggerState);
                 if (supplier != null) {
                     return supplier.get();
                 }
@@ -340,8 +341,8 @@ public class Rule {
         builder.append(name);
         builder.append(", predicate: ");
         builder.append(predicate);
-        builder.append(", currentTriggerType: ");
-        builder.append(currentTriggerType);
+        builder.append(", currentTriggerState: ");
+        builder.append(currentTriggerState);
         builder.append("]");
         return builder.toString();
     }
