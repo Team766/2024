@@ -1,7 +1,10 @@
 package com.team766.framework3;
 
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -70,6 +73,8 @@ public class Rule {
         private Supplier<Procedure> onTriggeringProcedure;
         private Cancellation cancellationOnFinish = Cancellation.DO_NOT_CANCEL;
         private Supplier<Procedure> finishedTriggeringProcedure;
+        private final List<Rule.Builder> composedRules = new ArrayList<>();
+        private final List<Rule.Builder> negatedComposedRules = new ArrayList<>();
 
         private Builder(String name, BooleanSupplier predicate) {
             this.name = name;
@@ -157,14 +162,58 @@ public class Rule {
             return this;
         }
 
+        /** Specify Rules which should only trigger when this Rule is also triggering. */
+        public Builder whenTriggering(Rule.Builder... rules) {
+            composedRules.addAll(Arrays.asList(rules));
+            return this;
+        }
+
+        /** Specify Rules which should only trigger when this Rule is not triggering. */
+        public Builder whenNotTriggering(Rule.Builder... rules) {
+            negatedComposedRules.addAll(Arrays.asList(rules));
+            return this;
+        }
+
         // called by {@link RuleEngine#addRule}.
-        /* package */ Rule build() {
-            return new Rule(
-                    name,
-                    predicate,
-                    onTriggeringProcedure,
-                    cancellationOnFinish,
-                    finishedTriggeringProcedure);
+        /* package */ List<Rule> build() {
+            return build(null);
+        }
+
+        private List<Rule> build(BooleanSupplier parentPredicate) {
+            final var rules = new ArrayList<Rule>();
+
+            final BooleanSupplier fullPredicate =
+                    parentPredicate == null
+                            ? predicate
+                            : () -> parentPredicate.getAsBoolean() && predicate.getAsBoolean();
+            final var thisRule =
+                    new Rule(
+                            name,
+                            fullPredicate,
+                            onTriggeringProcedure,
+                            cancellationOnFinish,
+                            finishedTriggeringProcedure);
+            rules.add(thisRule);
+
+            // Important! These composed predicates shouldn't invoke `predicate`. `predicate` should
+            // only be invoked once per call to RuleEngine.run(), so having all rules in the
+            // hierarchy call it would not work as expected. Instead, we have the child rules query
+            // the triggering state of the parent rule.
+            final BooleanSupplier composedPredicate =
+                    parentPredicate == null
+                            ? () -> thisRule.isTriggering()
+                            : () -> parentPredicate.getAsBoolean() && thisRule.isTriggering();
+            final BooleanSupplier negativeComposedPredicate =
+                    parentPredicate == null
+                            ? () -> !thisRule.isTriggering()
+                            : () -> parentPredicate.getAsBoolean() && !thisRule.isTriggering();
+            for (var r : composedRules) {
+                rules.addAll(r.build(composedPredicate));
+            }
+            for (var r : negatedComposedRules) {
+                rules.addAll(r.build(negativeComposedPredicate));
+            }
+            return rules;
         }
     }
 
@@ -229,6 +278,15 @@ public class Rule {
 
     /* package */ TriggerType getCurrentTriggerType() {
         return currentTriggerType;
+    }
+
+    /* package */ boolean isTriggering() {
+        return switch (currentTriggerType) {
+            case NEWLY -> true;
+            case CONTINUING -> true;
+            case FINISHED -> false;
+            case NONE -> false;
+        };
     }
 
     /* package */ void reset() {
