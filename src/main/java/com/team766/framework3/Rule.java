@@ -157,6 +157,10 @@ public class Rule {
         return currentTriggerType;
     }
 
+    /* package */ void reset() {
+        currentTriggerType = TriggerType.NONE;
+    }
+
     /* package */ void evaluate() {
         if (predicate.getAsBoolean()) {
             currentTriggerType =
