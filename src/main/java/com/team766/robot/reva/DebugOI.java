@@ -5,11 +5,11 @@ import static com.team766.framework3.RulePersistence.*;
 import com.team766.framework3.Rule;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Superstructure;
 import java.util.Set;
 
 /**
@@ -37,7 +37,7 @@ import java.util.Set;
  */
 public class DebugOI {
     public DebugOI(
-            OI oi, JoystickReader macropad, Superstructure ss, Intake intake, Shooter shooter) {
+            OI oi, JoystickReader macropad, ArmAndClimber ss, Intake intake, Shooter shooter) {
         // fine-grained control of the shoulder
         // used for testing and tuning
         // press down the shoulder control button and nudge the angle up and down

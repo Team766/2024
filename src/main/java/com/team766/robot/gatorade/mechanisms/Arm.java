@@ -3,18 +3,16 @@ package com.team766.robot.gatorade.mechanisms;
 import static com.team766.framework3.Conditions.checkForStatusWith;
 import static com.team766.framework3.StatusBus.getStatusOrThrow;
 
-import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.Superstructure;
 import com.team766.robot.gatorade.PlacementPosition;
 import com.team766.robot.gatorade.mechanisms.Intake.GamePieceType;
 
-public class Superstructure
-        extends Mechanism<
-                Superstructure.SuperstructureRequest, Superstructure.SuperstructureStatus> {
-    public record SuperstructureStatus() implements Status {}
+public class Arm extends Superstructure<Arm.ArmRequest, Arm.ArmStatus> {
+    public record ArmStatus() implements Status {}
 
-    public sealed interface SuperstructureRequest extends Request {}
+    public sealed interface ArmRequest extends Request {}
 
     // NOTE: This request type is private because we don't want to expose the ability
     // to send arbitrary requests to the individual mechanisms.
@@ -22,7 +20,7 @@ public class Superstructure
             Shoulder.ShoulderRequest shoulderRequest,
             Elevator.ElevatorRequest elevatorRequest,
             Wrist.WristRequest wristRequest)
-            implements SuperstructureRequest {
+            implements ArmRequest {
         @Override
         public boolean isDone() {
             return shoulderRequest().isDone()
@@ -31,41 +29,41 @@ public class Superstructure
         }
     }
 
-    public SuperstructureRequest makeStop() {
+    public ArmRequest makeStop() {
         return new SimpleRequest(new Shoulder.Stop(), new Elevator.Stop(), new Wrist.Stop());
     }
 
-    public SuperstructureRequest makeHoldPosition() {
+    public ArmRequest makeHoldPosition() {
         return new SimpleRequest(
                 Shoulder.makeHoldPosition(), Elevator.makeHoldPosition(), Wrist.makeHoldPosition());
     }
 
-    public static SuperstructureRequest makeNudgeShoulderUp() {
+    public static ArmRequest makeNudgeShoulderUp() {
         return new SimpleRequest(
                 Shoulder.makeNudgeUp(), Elevator.makeHoldPosition(), Wrist.makeHoldPosition());
     }
 
-    public static SuperstructureRequest makeNudgeShoulderDown() {
+    public static ArmRequest makeNudgeShoulderDown() {
         return new SimpleRequest(
                 Shoulder.makeNudgeDown(), Elevator.makeHoldPosition(), Wrist.makeHoldPosition());
     }
 
-    public static SuperstructureRequest makeNudgeElevatorUp() {
+    public static ArmRequest makeNudgeElevatorUp() {
         return new SimpleRequest(
                 Shoulder.makeHoldPosition(), Elevator.makeNudgeUp(), Wrist.makeHoldPosition());
     }
 
-    public static SuperstructureRequest makeNudgeElevatorDown() {
+    public static ArmRequest makeNudgeElevatorDown() {
         return new SimpleRequest(
                 Shoulder.makeHoldPosition(), Elevator.makeNudgeDown(), Wrist.makeHoldPosition());
     }
 
-    public static SuperstructureRequest makeNudgeWristUp() {
+    public static ArmRequest makeNudgeWristUp() {
         return new SimpleRequest(
                 Shoulder.makeHoldPosition(), Elevator.makeHoldPosition(), Wrist.makeNudgeUp());
     }
 
-    public static SuperstructureRequest makeNudgeWristDown() {
+    public static ArmRequest makeNudgeWristDown() {
         return new SimpleRequest(
                 Shoulder.makeHoldPosition(), Elevator.makeHoldPosition(), Wrist.makeNudgeDown());
     }
@@ -74,7 +72,7 @@ public class Superstructure
             Shoulder.RotateToPosition shoulderSetpoint,
             Elevator.MoveToPosition elevatorSetpoint,
             Wrist.RotateToPosition wristSetpoint)
-            implements SuperstructureRequest {
+            implements ArmRequest {
         public static final MoveToPosition RETRACTED =
                 new MoveToPosition(
                         Shoulder.RotateToPosition.BOTTOM,
@@ -139,26 +137,28 @@ public class Superstructure
     private final Elevator elevator;
     private final Wrist wrist;
 
-    public Superstructure() {
-        shoulder = new Shoulder();
-        shoulder.setSuperstructure(this);
-        elevator = new Elevator();
-        elevator.setSuperstructure(this);
-        wrist = new Wrist();
-        wrist.setSuperstructure(this);
+    public Arm() {
+        this(new Shoulder(), new Elevator(), new Wrist());
+    }
+
+    public Arm(Shoulder shoulder, Elevator elevator, Wrist wrist) {
+        super(shoulder, elevator, wrist);
+        this.shoulder = shoulder;
+        this.elevator = elevator;
+        this.wrist = wrist;
     }
 
     @Override
-    protected SuperstructureRequest getInitialRequest() {
+    protected ArmRequest getInitialRequest() {
         return makeStop();
     }
 
-    protected SuperstructureRequest getIdleRequest() {
+    protected ArmRequest getIdleRequest() {
         return makeHoldPosition();
     }
 
     @Override
-    protected SuperstructureStatus run(SuperstructureRequest request, boolean isRequestNew) {
+    protected ArmStatus run(ArmRequest request, boolean isRequestNew) {
         switch (request) {
             case SimpleRequest g -> {
                 if (!isRequestNew) break;
@@ -228,6 +228,6 @@ public class Superstructure
                 }
             }
         }
-        return new SuperstructureStatus();
+        return new ArmStatus();
     }
 }

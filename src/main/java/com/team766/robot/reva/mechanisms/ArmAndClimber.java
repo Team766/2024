@@ -2,13 +2,13 @@ package com.team766.robot.reva.mechanisms;
 
 import static com.team766.framework3.StatusBus.getStatusOrThrow;
 
-import com.team766.framework3.Mechanism;
 import com.team766.framework3.Request;
 import com.team766.framework3.Status;
+import com.team766.framework3.Superstructure;
 
-public class Superstructure
-        extends Mechanism<
-                Superstructure.SuperstructureRequest, Superstructure.SuperstructureStatus> {
+public class ArmAndClimber
+        extends Superstructure<
+                ArmAndClimber.SuperstructureRequest, ArmAndClimber.SuperstructureStatus> {
     public record SuperstructureStatus() implements Status {}
 
     public sealed interface SuperstructureRequest extends Request {}
@@ -51,11 +51,14 @@ public class Superstructure
     private final Shoulder shoulder;
     private final Climber climber;
 
-    public Superstructure() {
-        shoulder = new Shoulder();
-        shoulder.setSuperstructure(this);
-        climber = new Climber();
-        climber.setSuperstructure(this);
+    public ArmAndClimber() {
+        this(new Shoulder(), new Climber());
+    }
+
+    public ArmAndClimber(Shoulder shoulder, Climber climber) {
+        super(shoulder, climber);
+        this.shoulder = shoulder;
+        this.climber = climber;
     }
 
     public void setRequest(Shoulder.ShoulderRequest shoulderRequest) {

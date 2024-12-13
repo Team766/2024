@@ -29,7 +29,7 @@ public class OI extends RuleEngine {
 
     GamePieceType gamePieceType = GamePieceType.CONE;
 
-    public OI(SwerveDrive drive, Superstructure ss, Intake intake) {
+    public OI(SwerveDrive drive, Arm arm, Intake intake) {
         final JoystickReader leftJoystick =
                 RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         final JoystickReader rightJoystick =
@@ -180,18 +180,18 @@ public class OI extends RuleEngine {
                                                 InputConstants.BUTTON_EXTEND_WRISTVATOR))
                         .withOnTriggeringProcedure(
                                 ONCE,
-                                Set.of(ss),
+                                Set.of(arm),
                                 () -> {
                                     if (placementPosition != PlacementPosition.NONE) {
-                                        ss.setRequest(
-                                                Superstructure.MoveToPosition.Extended(
+                                        arm.setRequest(
+                                                Arm.MoveToPosition.Extended(
                                                         placementPosition, gamePieceType));
                                     }
                                 })
                         .withFinishedTriggeringProcedure(
-                                Set.of(ss, intake),
+                                Set.of(arm, intake),
                                 () -> {
-                                    ss.setRequest(Superstructure.MoveToPosition.RETRACTED);
+                                    arm.setRequest(Arm.MoveToPosition.RETRACTED);
                                     if (placementPosition == PlacementPosition.HUMAN_PLAYER) {
                                         intake.setRequest(
                                                 new Intake.IntakeState(
@@ -215,7 +215,7 @@ public class OI extends RuleEngine {
                                                         InputConstants.AXIS_ELEVATOR_MOVEMENT))
                         .withOnTriggeringProcedure(
                                 REPEATEDLY,
-                                Set.of(ss),
+                                Set.of(arm),
                                 () -> {
                                     final double elevatorNudgeAxis =
                                             -1
@@ -224,9 +224,9 @@ public class OI extends RuleEngine {
                                     // elevator.setRequest(new
                                     // Elevator.NudgeNoPID(elevatorNudgeAxis)));
                                     if (elevatorNudgeAxis > 0) {
-                                        ss.setRequest(Superstructure.makeNudgeElevatorUp());
+                                        arm.setRequest(Arm.makeNudgeElevatorUp());
                                     } else {
-                                        ss.setRequest(Superstructure.makeNudgeElevatorDown());
+                                        arm.setRequest(Arm.makeNudgeElevatorDown());
                                     }
                                 }));
         // look for wrist nudges
@@ -240,7 +240,7 @@ public class OI extends RuleEngine {
                                                         InputConstants.AXIS_WRIST_MOVEMENT))
                         .withOnTriggeringProcedure(
                                 REPEATEDLY,
-                                Set.of(ss),
+                                Set.of(arm),
                                 () -> {
                                     final double wristNudgeAxis =
                                             -1
@@ -248,9 +248,9 @@ public class OI extends RuleEngine {
                                                             InputConstants.AXIS_WRIST_MOVEMENT);
                                     // wrist.setRequest(new Wrist.NudgeNoPID(wristNudgeAxis));
                                     if (wristNudgeAxis > 0) {
-                                        ss.setRequest(Superstructure.makeNudgeWristUp());
+                                        arm.setRequest(Arm.makeNudgeWristUp());
                                     } else {
-                                        ss.setRequest(Superstructure.makeNudgeWristDown());
+                                        arm.setRequest(Arm.makeNudgeWristDown());
                                     }
                                 }));
     }

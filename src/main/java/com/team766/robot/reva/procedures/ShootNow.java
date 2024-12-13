@@ -11,23 +11,23 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionPIDProcedure;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.ForwardApriltagCamera;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Superstructure;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.Optional;
 
 public class ShootNow extends VisionPIDProcedure {
 
     private final SwerveDrive drive;
-    private final Superstructure superstructure;
+    private final ArmAndClimber superstructure;
     private final Shooter shooter;
     private final Intake intake;
 
     public ShootNow(
-            SwerveDrive drive, Superstructure superstructure, Shooter shooter, Intake intake) {
+            SwerveDrive drive, ArmAndClimber superstructure, Shooter shooter, Intake intake) {
         this.drive = reserve(drive);
         this.superstructure = reserve(superstructure);
         this.shooter = reserve(shooter);

@@ -13,19 +13,19 @@ import com.team766.robot.gatorade.procedures.TestPathAuto;
 public class Robot implements RobotConfigurator3 {
     private SwerveDrive drive;
     private Intake intake;
-    private Superstructure superstructure;
+    private Arm arm;
 
     @Override
     public void initializeMechanisms() {
         SwerveConfig config = new SwerveConfig().withCanBus(SwerveDriveConstants.SWERVE_CANBUS);
         drive = new SwerveDrive(config);
-        superstructure = new Superstructure();
+        arm = new Arm();
         intake = new Intake();
     }
 
     @Override
     public RuleEngine createOI() {
-        return new OI(drive, superstructure, intake);
+        return new OI(drive, arm, intake);
     }
 
     @Override

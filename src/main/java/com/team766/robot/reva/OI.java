@@ -12,7 +12,7 @@ import com.team766.robot.reva.mechanisms.*;
  * interface to the code that allow control of the robot.
  */
 public class OI extends RuleEngine {
-    public OI(SwerveDrive drive, Superstructure ss, Intake intake, Shooter shooter) {
+    public OI(SwerveDrive drive, ArmAndClimber ss, Intake intake, Shooter shooter) {
         final JoystickReader leftJoystick =
                 RobotProvider.instance.getJoystick(InputConstants.LEFT_JOYSTICK);
         final JoystickReader rightJoystick =

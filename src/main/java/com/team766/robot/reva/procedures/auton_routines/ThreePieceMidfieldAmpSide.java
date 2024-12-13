@@ -2,9 +2,9 @@ package com.team766.robot.reva.procedures.auton_routines;
 
 import com.team766.framework3.Context;
 import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
-import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.ShootAtSubwoofer;
 import com.team766.robot.reva.procedures.ShootNow;
 import com.team766.robot.reva.procedures.StartAutoIntake;
@@ -13,12 +13,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ThreePieceMidfieldAmpSide extends AutoBase {
     private final SwerveDrive drive;
-    private final Superstructure superstructure;
+    private final ArmAndClimber superstructure;
     private final Shooter shooter;
     private final Intake intake;
 
     public ThreePieceMidfieldAmpSide(
-            SwerveDrive drive, Superstructure superstructure, Shooter shooter, Intake intake) {
+            SwerveDrive drive, ArmAndClimber superstructure, Shooter shooter, Intake intake) {
         super(drive, superstructure, shooter, new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
         this.drive = reserve(drive);
         this.superstructure = reserve(superstructure);

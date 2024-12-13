@@ -8,8 +8,8 @@ import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
 import java.util.Set;
@@ -20,7 +20,7 @@ public class DriverOI {
             JoystickReader leftJoystick,
             JoystickReader rightJoystick,
             SwerveDrive drive,
-            Superstructure ss,
+            ArmAndClimber ss,
             Intake intake) {
         leftJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
         rightJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);

@@ -8,15 +8,15 @@ import com.team766.framework3.Procedure;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Superstructure;
 
 public class NoRotateShootNow extends Procedure {
 
     private final SwerveDrive drive;
-    private final Superstructure superstructure;
+    private final ArmAndClimber superstructure;
     private final Shooter shooter;
     private final Intake intake;
     private final VisionSpeakerHelper visionSpeakerHelper;
@@ -25,7 +25,7 @@ public class NoRotateShootNow extends Procedure {
     public NoRotateShootNow(
             boolean amp,
             SwerveDrive drive,
-            Superstructure superstructure,
+            ArmAndClimber superstructure,
             Shooter shooter,
             Intake intake) {
         this.drive = reserve(drive);

@@ -7,18 +7,13 @@ import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public abstract class Mechanism<R extends Request, S extends Record & Status> extends SubsystemBase
         implements LoggingBase {
     private Thread m_runningPeriodic = null;
 
-    private Mechanism<?, ?> superstructure = null;
-
-    // If this Mechanism is a superstructure, this is a list of its constituent Mechanisms.
-    private ArrayList<Mechanism<?, ?>> submechanisms = new ArrayList<>();
+    Mechanism<?, ?> superstructure = null;
 
     private R request = null;
     private boolean isRequestNew = false;
@@ -64,30 +59,6 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
     @Override
     public Category getLoggerCategory() {
         return Category.MECHANISMS;
-    }
-
-    /**
-     * Indicate that this Mechanism is part of a superstructure.
-     *
-     * A Mechanism in a superstructure cannot be reserved individually by Procedures (Procedures
-     * should reserve the entire superstructure) and cannot have an Idle request. Only the
-     * superstructure should set requests on this Mechanism in its {@link #run(R, boolean)} method.
-     *
-     * @param superstructure The superstructure this Mechanism is part of.
-     */
-    public void setSuperstructure(Mechanism<?, ?> superstructure) {
-        Objects.requireNonNull(superstructure);
-        if (this.superstructure != null) {
-            throw new IllegalStateException("Mechanism is already part of a superstructure");
-        }
-        if (getIdleRequest() != null) {
-            throw new UnsupportedOperationException(
-                    "A Mechanism contained in a superstructure cannot define an idle request. "
-                            + "Use the superstructure's idle request to control the idle behavior "
-                            + "of the contained Mechanisms.");
-        }
-        this.superstructure = superstructure;
-        superstructure.submechanisms.add(this);
     }
 
     public final void setRequest(R request) {
@@ -157,19 +128,7 @@ public abstract class Mechanism<R extends Request, S extends Record & Status> ex
     public final void periodic() {
         super.periodic();
 
-        if (superstructure != null) {
-            // This Mechanism's periodic() will be run by its superstructure.
-            return;
-        }
-
-        periodicInternal();
-    }
-
-    private void periodicInternal() {
         try {
-            for (var m : submechanisms) {
-                m.periodicInternal();
-            }
             m_runningPeriodic = Thread.currentThread();
             if (request == null) {
                 setRequest(getInitialRequest());

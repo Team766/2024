@@ -8,11 +8,11 @@ import com.team766.framework3.RuleEngine;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Climber;
 import com.team766.robot.reva.mechanisms.Intake;
 import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.mechanisms.Shoulder;
-import com.team766.robot.reva.mechanisms.Superstructure;
 import com.team766.robot.reva.procedures.IntakeUntilIn;
 import java.util.Set;
 
@@ -20,7 +20,7 @@ public class BoxOpOI {
     public BoxOpOI(
             RuleEngine oi,
             JoystickReader gamepad,
-            Superstructure ss,
+            ArmAndClimber ss,
             Intake intake,
             Shooter shooter) {
         gamepad.setAxisDeadzone(InputConstants.XBOX_LS_Y, ControlConstants.JOYSTICK_DEADZONE);

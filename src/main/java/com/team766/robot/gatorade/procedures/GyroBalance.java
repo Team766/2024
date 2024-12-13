@@ -6,7 +6,7 @@ import com.team766.framework3.Context;
 import com.team766.framework3.Procedure;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.gatorade.constants.ChargeConstants;
-import com.team766.robot.gatorade.mechanisms.Superstructure;
+import com.team766.robot.gatorade.mechanisms.Arm;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
@@ -23,7 +23,7 @@ public class GyroBalance extends Procedure {
     }
 
     private final SwerveDrive drive;
-    private final Superstructure superstructure;
+    private final Arm arm;
 
     // absSpeed is unsigned speed value
     private Direction direction;
@@ -45,10 +45,10 @@ public class GyroBalance extends Procedure {
      * Constructor to create a new GyroBalance instance
      * @param alliance Alliance for setting direction towards charge station
      */
-    public GyroBalance(Alliance alliance, SwerveDrive drive, Superstructure superstructure) {
+    public GyroBalance(Alliance alliance, SwerveDrive drive, Arm arm) {
         this.alliance = alliance;
         this.drive = reserve(drive);
-        this.superstructure = reserve(superstructure);
+        this.arm = reserve(arm);
     }
 
     private double getAbsoluteTilt() {
@@ -60,8 +60,8 @@ public class GyroBalance extends Procedure {
 
     public void run(Context context) {
         // extend wristvator to put CG in a place where robot can climb ramp
-        superstructure.setRequest(Superstructure.MoveToPosition.EXTENDED_TO_MID);
-        context.waitFor(() -> Superstructure.MoveToPosition.EXTENDED_TO_MID.isDone());
+        arm.setRequest(Arm.MoveToPosition.EXTENDED_TO_MID);
+        context.waitFor(() -> Arm.MoveToPosition.EXTENDED_TO_MID.isDone());
 
         // initialY is robot y position when balancing starts
         final double initialY =
@@ -107,7 +107,7 @@ public class GyroBalance extends Procedure {
         // State: RAMP_TILT
         setDriveSpeed(SPEED_TILT);
         log("Tilt, curState: RAMP_TILT");
-        superstructure.setRequest(Superstructure.MoveToPosition.RETRACTED);
+        arm.setRequest(Arm.MoveToPosition.RETRACTED);
 
         double overshootSpeed = -SPEED_OVERSHOOT;
         while (true) {
