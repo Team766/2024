@@ -2,8 +2,8 @@ package com.team766.framework3;
 
 import static com.team766.framework3.Conditions.checkForStatusWith;
 
-class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest> {
-    record FakeStatus(int currentState) implements Status {}
+class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest, FakeMechanism.FakeStatus> {
+    public record FakeStatus(int currentState) implements Status {}
 
     public record FakeRequest(int targetState) implements Request {
         @Override
@@ -21,9 +21,10 @@ class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest> {
     }
 
     @Override
-    protected void run(FakeRequest request, boolean isRequestNew) {
+    protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
         currentRequest = request;
         wasRequestNew = isRequestNew;
+        return new FakeStatus(request.targetState());
     }
 }
 
