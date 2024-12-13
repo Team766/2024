@@ -8,18 +8,21 @@ import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public abstract class Mechanism<R extends Request> extends SubsystemBase implements LoggingBase {
+public abstract class Mechanism<R extends Request, S extends Record & Status> extends SubsystemBase
+        implements LoggingBase {
     private Thread m_runningPeriodic = null;
 
-    private Mechanism<?> superstructure = null;
+    private Mechanism<?, ?> superstructure = null;
 
     // If this Mechanism is a superstructure, this is a list of its constituent Mechanisms.
-    private ArrayList<Mechanism<?>> submechanisms = new ArrayList<>();
+    private ArrayList<Mechanism<?, ?>> submechanisms = new ArrayList<>();
 
     private R request = null;
     private boolean isRequestNew = false;
+    private S status = null;
 
     /**
      * This Command runs when no other Command (i.e. Procedure) is reserving this Mechanism.
@@ -72,7 +75,7 @@ public abstract class Mechanism<R extends Request> extends SubsystemBase impleme
      *
      * @param superstructure The superstructure this Mechanism is part of.
      */
-    public void setSuperstructure(Mechanism<?> superstructure) {
+    public void setSuperstructure(Mechanism<?, ?> superstructure) {
         Objects.requireNonNull(superstructure);
         if (this.superstructure != null) {
             throw new IllegalStateException("Mechanism is already part of a superstructure");
@@ -143,6 +146,13 @@ public abstract class Mechanism<R extends Request> extends SubsystemBase impleme
         ReservingCommand.checkCurrentCommandHasReservation(this);
     }
 
+    public S getMechanismStatus() {
+        if (status == null) {
+            throw new NoSuchElementException(getName() + " has not published a status yet");
+        }
+        return status;
+    }
+
     @Override
     public final void periodic() {
         super.periodic();
@@ -166,7 +176,8 @@ public abstract class Mechanism<R extends Request> extends SubsystemBase impleme
             }
             boolean wasRequestNew = isRequestNew;
             isRequestNew = false;
-            run(request, wasRequestNew);
+            status = run(request, wasRequestNew);
+            StatusBus.publishStatus(status);
         } catch (Exception ex) {
             ex.printStackTrace();
             LoggerExceptionUtils.logException(ex);
@@ -175,5 +186,5 @@ public abstract class Mechanism<R extends Request> extends SubsystemBase impleme
         }
     }
 
-    protected abstract void run(R request, boolean isRequestNew);
+    protected abstract S run(R request, boolean isRequestNew);
 }

@@ -8,7 +8,7 @@ public abstract class InstantProcedure extends Procedure implements Runnable {
         super();
     }
 
-    protected InstantProcedure(String name, Set<Mechanism<?>> reservations) {
+    protected InstantProcedure(String name, Set<Mechanism<?, ?>> reservations) {
         super(name, reservations);
     }
 

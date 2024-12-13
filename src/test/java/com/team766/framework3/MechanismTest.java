@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.team766.TestCase3;
 import com.team766.framework3.FakeMechanism.FakeRequest;
+import com.team766.framework3.FakeMechanism.FakeStatus;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
@@ -67,18 +68,42 @@ public class MechanismTest extends TestCase3 {
         assertTrue(cmd.isFinished());
     }
 
+    /// Test a Mechanism publishing a Status via its run() method return value.
+    @Test
+    public void testStatuses() {
+        // FakeMechanism publishes a FakeStatus with the state value which was most recently set in
+        // its Request.
+        var mech =
+                new FakeMechanism() {
+                    @Override
+                    protected FakeRequest getIdleRequest() {
+                        return new FakeRequest(10);
+                    }
+                };
+        step();
+        // Status set from Initial request
+        assertEquals(new FakeStatus(-1), StatusBus.getStatusOrThrow(FakeStatus.class));
+        assertEquals(new FakeStatus(-1), mech.getMechanismStatus());
+        step();
+        // Status set from Idle request
+        assertEquals(new FakeStatus(10), StatusBus.getStatusOrThrow(FakeStatus.class));
+        assertEquals(new FakeStatus(10), mech.getMechanismStatus());
+    }
+
     /// Test that checkContextReservation throws an exception when called from a Procedure which has
     /// not reserved the Mechanism.
     @Test
     public void testFailedCheckContextReservationInProcedure() {
-        class DummyMechanism extends Mechanism<FakeRequest> {
+        class DummyMechanism extends Mechanism<FakeRequest, FakeStatus> {
             @Override
             protected FakeRequest getInitialRequest() {
                 return new FakeRequest(-1);
             }
 
             @Override
-            protected void run(FakeRequest request, boolean isRequestNew) {}
+            protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
+                return new FakeStatus(request.targetState());
+            }
         }
         var mech = new DummyMechanism();
 
@@ -116,12 +141,13 @@ public class MechanismTest extends TestCase3 {
         var mech =
                 new FakeMechanism() {
                     @Override
-                    protected void run(FakeRequest request, boolean isRequestNew) {
+                    protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
                         try {
                             checkContextReservation();
                         } catch (Throwable ex) {
                             thrownException.set(ex);
                         }
+                        return new FakeStatus(request.targetState());
                     }
                 };
         step();
@@ -196,7 +222,7 @@ public class MechanismTest extends TestCase3 {
     /// Test making a Mechanism part of a superstructure.
     @Test
     public void testSuperstructure() {
-        class Superstructure extends Mechanism<FakeRequest> {
+        class Superstructure extends Mechanism<FakeRequest, FakeStatus> {
             // NOTE: Real superstructures should have their members be private. This is public
             // to test handling of bad code patterns, and to allow us to inspect the state of the
             // inner mechanism for purposes of testing the framework.
@@ -213,14 +239,15 @@ public class MechanismTest extends TestCase3 {
             }
 
             @Override
-            protected void run(FakeRequest request, boolean isRequestNew) {
-                if (!isRequestNew) return;
-
-                if (request.targetState() == 0) {
-                    submechanism.setRequest(new FakeRequest(2));
-                } else {
-                    submechanism.setRequest(new FakeRequest(4));
+            protected FakeStatus run(FakeRequest request, boolean isRequestNew) {
+                if (isRequestNew) {
+                    if (request.targetState() == 0) {
+                        submechanism.setRequest(new FakeRequest(2));
+                    } else {
+                        submechanism.setRequest(new FakeRequest(4));
+                    }
                 }
+                return new FakeStatus(request.targetState());
             }
         }
         var superstructure = new Superstructure();

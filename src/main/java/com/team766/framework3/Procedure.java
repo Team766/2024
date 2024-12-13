@@ -22,19 +22,19 @@ public abstract class Procedure implements LoggingBase {
     }
 
     private final String name;
-    private final Set<Mechanism<?>> reservations;
+    private final Set<Mechanism<?, ?>> reservations;
 
     protected Procedure() {
         this.name = createName();
         this.reservations = Sets.newHashSet();
     }
 
-    protected Procedure(Set<Mechanism<?>> reservations) {
+    protected Procedure(Set<Mechanism<?, ?>> reservations) {
         this.name = createName();
         this.reservations = reservations;
     }
 
-    protected Procedure(String name, Set<Mechanism<?>> reservations) {
+    protected Procedure(String name, Set<Mechanism<?, ?>> reservations) {
         this.name = name;
         this.reservations = reservations;
     }
@@ -59,22 +59,22 @@ public abstract class Procedure implements LoggingBase {
         return Category.PROCEDURES;
     }
 
-    protected final <M extends Mechanism<?>> M reserve(M m) {
+    protected final <M extends Mechanism<?, ?>> M reserve(M m) {
         reservations.add(m);
         return m;
     }
 
-    protected final void reserve(Mechanism<?>... ms) {
+    protected final void reserve(Mechanism<?, ?>... ms) {
         for (var m : ms) {
             reservations.add(m);
         }
     }
 
-    protected final void reserve(Collection<? extends Mechanism<?>> ms) {
+    protected final void reserve(Collection<? extends Mechanism<?, ?>> ms) {
         reservations.addAll(ms);
     }
 
-    public final Set<Mechanism<?>> reservations() {
+    public final Set<Mechanism<?, ?>> reservations() {
         return reservations;
     }
 
