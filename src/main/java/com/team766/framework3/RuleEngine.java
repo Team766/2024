@@ -86,7 +86,7 @@ public class RuleEngine implements LoggingBase {
                 rule.evaluate();
 
                 // see if the rule is triggering
-                Rule.TriggerType triggerType = rule.getCurrentTriggerType();
+                final Rule.TriggerType triggerType = rule.getCurrentTriggerType();
                 if (triggerType != Rule.TriggerType.NONE) {
                     log(Severity.INFO, "Rule " + rule.getName() + " triggering: " + triggerType);
 
@@ -148,6 +148,17 @@ public class RuleEngine implements LoggingBase {
                     }
 
                     // we're good to proceed
+
+                    if (triggerType == Rule.TriggerType.FINISHED
+                            && rule.getCancellationOnFinish()
+                                    == Rule.Cancellation.CANCEL_NEWLY_ACTION) {
+                        var newlyCommand =
+                                ruleMap.inverse().get(new RuleAction(rule, Rule.TriggerType.NEWLY));
+                        if (newlyCommand != null) {
+                            newlyCommand.cancel();
+                        }
+                    }
+
                     Procedure procedure = rule.getProcedureToRun();
                     if (procedure == null) {
                         continue;
