@@ -192,4 +192,71 @@ public class MechanismTest extends TestCase3 {
         assertEquals(new FakeRequest(1), mech.currentRequest);
         assertFalse(mech.wasRequestNew);
     }
+
+    /// Test making a Mechanism part of a superstructure.
+    @Test
+    public void testSuperstructure() {
+        class TestSuperstructure extends Superstructure<FakeRequest> {
+            // NOTE: Real superstructures should have their members be private. This is public
+            // to test handling of bad code patterns, and to allow us to inspect the state of the
+            // inner mechanism for purposes of testing the framework.
+            public final FakeMechanism submechanism;
+
+            public TestSuperstructure() {
+                submechanism = addMechanism(new FakeMechanism());
+            }
+
+            @Override
+            protected FakeRequest getInitialRequest() {
+                return new FakeRequest(0);
+            }
+
+            @Override
+            protected void run(FakeRequest request, boolean isRequestNew) {
+                if (!isRequestNew) return;
+
+                if (request.targetState() == 0) {
+                    submechanism.setRequest(new FakeRequest(2));
+                } else {
+                    submechanism.setRequest(new FakeRequest(4));
+                }
+            }
+        }
+        var superstructure = new TestSuperstructure();
+
+        step();
+        // Sub-mechanisms should run their periodic() method before the superstructure's periodic(),
+        // so we will see the sub-mechanism's initial request after the first step.
+        assertEquals(new FakeRequest(-1), superstructure.submechanism.currentRequest);
+
+        step();
+        // After the second step, the request set by the superstructure on the first step will have
+        // propagated to the sub-mechanism.
+        assertEquals(new FakeRequest(2), superstructure.submechanism.currentRequest);
+
+        // Test error conditions
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> superstructure.submechanism.setRequest(new FakeRequest(0)),
+                "is part of a superstructure");
+
+        assertThrows(NullPointerException.class, () -> superstructure.addMechanism(null));
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> superstructure.addMechanism(superstructure.submechanism),
+                "Mechanism is already part of a superstructure");
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () ->
+                        superstructure.addMechanism(
+                                new FakeMechanism() {
+                                    protected FakeRequest getIdleRequest() {
+                                        return new FakeRequest(0);
+                                    }
+                                }),
+                "A Mechanism contained in a superstructure cannot define an idle request");
+    }
 }
