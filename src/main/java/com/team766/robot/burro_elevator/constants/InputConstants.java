@@ -15,7 +15,4 @@ public final class InputConstants {
     public static final int BUTTON_ELEVATOR_DOWN = 6;
     public static final int BUTTON_INTAKE = 7;
     public static final int BUTTON_OUTTAKE = 8;
-
-    public static final double NUDGE_UP_INCREMENT = 1.0; // inches
-    public static final double NUDGE_DOWN_INCREMENT = 1.0; // inches
 }

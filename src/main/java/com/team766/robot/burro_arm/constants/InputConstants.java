@@ -15,7 +15,4 @@ public final class InputConstants {
     public static final int BUTTON_ARM_DOWN = 6;
     public static final int BUTTON_INTAKE = 7;
     public static final int BUTTON_OUTTAKE = 8;
-
-    public static final double NUDGE_UP_INCREMENT = 5.0; // degrees
-    public static final double NUDGE_DOWN_INCREMENT = 5.0; // degrees
 }
