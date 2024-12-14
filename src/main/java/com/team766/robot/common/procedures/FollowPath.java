@@ -1,11 +1,12 @@
 package com.team766.robot.common.procedures;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import static com.team766.framework3.Conditions.waitForStatus;
+
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
 import com.team766.robot.common.constants.PathPlannerConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,33 +20,21 @@ public class FollowPath extends Procedure {
     private final SwerveDrive drive;
     private PathPlannerPath path; // may be flipped
     private final ReplanningConfig replanningConfig;
-    private final PPHolonomicDriveController controller;
     private final Timer timer = new Timer();
     private PathPlannerTrajectory generatedTrajectory;
 
-    public FollowPath(
-            PathPlannerPath path,
-            ReplanningConfig replanningConfig,
-            PPHolonomicDriveController controller,
-            SwerveDrive drive) {
+    public FollowPath(PathPlannerPath path, ReplanningConfig replanningConfig, SwerveDrive drive) {
         this.path = path;
         this.replanningConfig = replanningConfig;
-        this.controller = controller;
-        this.drive = drive;
+        this.drive = reserve(drive);
     }
 
-    public FollowPath(String autoName, PPHolonomicDriveController controller, SwerveDrive drive) {
-        this(
-                PathPlannerPath.fromPathFile(autoName),
-                PathPlannerConstants.REPLANNING_CONFIG,
-                controller,
-                drive);
+    public FollowPath(String autoName, SwerveDrive drive) {
+        this(PathPlannerPath.fromPathFile(autoName), PathPlannerConstants.REPLANNING_CONFIG, drive);
     }
 
     @Override
     public void run(Context context) {
-        context.takeOwnership(drive);
-
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
             boolean flip = (alliance.get() == Alliance.Red);
@@ -59,10 +48,11 @@ public class FollowPath extends Procedure {
 
         // intitialization
 
-        Pose2d curPose = drive.getCurrentPosition();
-        ChassisSpeeds currentSpeeds = drive.getChassisSpeeds();
+        var driveStatus = waitForStatus(context, SwerveDrive.DriveStatus.class);
+        Pose2d curPose = driveStatus.currentPosition();
+        ChassisSpeeds currentSpeeds = driveStatus.chassisSpeeds();
 
-        controller.reset(curPose, currentSpeeds);
+        drive.controller.reset(curPose, currentSpeeds);
 
         if (replanningConfig.enableInitialReplanning
                 && curPose.getTranslation().getDistance(path.getPoint(0).position) > 0.25) {
@@ -79,12 +69,13 @@ public class FollowPath extends Procedure {
         while (!timer.hasElapsed(generatedTrajectory.getTotalTimeSeconds())) {
             double currentTime = timer.get();
             PathPlannerTrajectory.State targetState = generatedTrajectory.sample(currentTime);
-            curPose = drive.getCurrentPosition();
-            currentSpeeds = drive.getChassisSpeeds();
+            driveStatus = waitForStatus(context, SwerveDrive.DriveStatus.class);
+            curPose = driveStatus.currentPosition();
+            currentSpeeds = driveStatus.chassisSpeeds();
 
             if (replanningConfig.enableDynamicReplanning) {
                 // TODO: why abs?
-                double previousError = Math.abs(controller.getPositionalError());
+                double previousError = Math.abs(drive.controller.getPositionalError());
                 double currentError =
                         curPose.getTranslation().getDistance(targetState.positionMeters);
 
@@ -99,7 +90,7 @@ public class FollowPath extends Procedure {
             }
 
             ChassisSpeeds targetSpeeds =
-                    controller.calculateRobotRelativeSpeeds(curPose, targetState);
+                    drive.controller.calculateRobotRelativeSpeeds(curPose, targetState);
 
             org.littletonrobotics.junction.Logger.recordOutput(
                     "current heading", curPose.getRotation().getRadians());
@@ -108,13 +99,12 @@ public class FollowPath extends Procedure {
                     "input rotational velocity", targetSpeeds.omegaRadiansPerSecond);
             org.littletonrobotics.junction.Logger.recordOutput(
                     "targetState", targetState.getTargetHolonomicPose());
-            drive.controlRobotOriented(targetSpeeds);
+            drive.setRequest(new SwerveDrive.RobotOrientedVelocity(targetSpeeds));
             context.yield();
         }
 
         if (path.getGoalEndState().getVelocity() < 0.1) {
-            drive.stopDrive();
-            drive.setCross();
+            drive.setRequest(new SwerveDrive.SetCross());
         }
     }
 

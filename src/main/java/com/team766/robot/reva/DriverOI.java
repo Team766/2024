@@ -1,170 +1,130 @@
 package com.team766.robot.reva;
 
-import com.team766.framework.Context;
-import com.team766.framework.LaunchedContext;
-import com.team766.framework.OIFragment;
+import static com.team766.framework3.RulePersistence.*;
+
+import com.team766.framework3.Conditions;
+import com.team766.framework3.Rule;
 import com.team766.hal.JoystickReader;
 import com.team766.robot.common.constants.ControlConstants;
 import com.team766.robot.common.mechanisms.SwerveDrive;
-import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
 import com.team766.robot.reva.constants.InputConstants;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
 import com.team766.robot.reva.mechanisms.Intake;
-import com.team766.robot.reva.mechanisms.Shooter;
-import com.team766.robot.reva.mechanisms.Shoulder;
 import com.team766.robot.reva.procedures.DriverShootNow;
 import com.team766.robot.reva.procedures.DriverShootVelocityAndIntake;
+import java.util.Set;
 
-public class DriverOI extends OIFragment {
-
-    protected static final double FINE_DRIVING_COEFFICIENT = 0.25;
-
-    protected VisionSpeakerHelper visionSpeakerHelper;
-    protected final SwerveDrive drive;
-    protected final Shoulder shoulder;
-    protected final Intake intake;
-    protected final Shooter shooter;
-    protected final JoystickReader leftJoystick;
-    protected final JoystickReader rightJoystick;
-    protected double rightJoystickY = 0;
-    protected double leftJoystickX = 0;
-    protected double leftJoystickY = 0;
-    protected boolean isCross = false;
-
-    private final OICondition movingJoysticks;
-
-    private LaunchedContext visionContext;
-
+public class DriverOI {
     public DriverOI(
-            SwerveDrive drive,
-            Shoulder shoulder,
-            Intake intake,
-            Shooter shooter,
+            OI oi,
             JoystickReader leftJoystick,
-            JoystickReader rightJoystick) {
-        super("DriverOI");
-        this.drive = drive;
-        this.shoulder = shoulder;
-        this.intake = intake;
-        this.shooter = shooter;
-        this.leftJoystick = leftJoystick;
-        this.rightJoystick = rightJoystick;
-        visionSpeakerHelper = new VisionSpeakerHelper(drive);
+            JoystickReader rightJoystick,
+            SwerveDrive drive,
+            ArmAndClimber ss,
+            Intake intake) {
+        leftJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
+        rightJoystick.setAllAxisDeadzone(ControlConstants.JOYSTICK_DEADZONE);
 
-        movingJoysticks =
-                new OICondition(
-                        () ->
-                                !isCross
-                                        && Math.abs(leftJoystickX)
-                                                        + Math.abs(leftJoystickY)
-                                                        + Math.abs(rightJoystickY)
-                                                > 0);
-    }
+        oi.addRule(
+                Rule.create(
+                                "Reset Gyro",
+                                () -> leftJoystick.getButton(InputConstants.BUTTON_RESET_GYRO))
+                        .withOnTriggeringProcedure(ONCE, Set.of(drive), () -> drive.resetGyro()));
 
-    @Override
-    protected void handlePre() {
-        // Negative because forward is negative in driver station
-        leftJoystickX =
-                -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_FORWARD_BACKWARD))
-                        * ControlConstants.MAX_POSITIONAL_VELOCITY; // For fwd/rv
-        // Negative because left is negative in driver station
-        leftJoystickY =
-                -createJoystickDeadzone(leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                        * ControlConstants.MAX_POSITIONAL_VELOCITY; // For left/right
-        // Negative because left is negative in driver station
-        rightJoystickY =
-                -createJoystickDeadzone(rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT))
-                        * ControlConstants.MAX_ROTATIONAL_VELOCITY; // For steer
-    }
+        oi.addRule(
+                Rule.create(
+                                "Reset Pos",
+                                () -> leftJoystick.getButton(InputConstants.BUTTON_RESET_POS))
+                        .withOnTriggeringProcedure(
+                                ONCE, Set.of(drive), () -> drive.resetCurrentPosition()));
 
-    @Override
-    protected void handleOI(Context context) {
+        oi.addRule(
+                Rule.create(
+                                "Cross wheels",
+                                new Conditions.Toggle(
+                                        () ->
+                                                rightJoystick.getButton(
+                                                        InputConstants.BUTTON_CROSS_WHEELS)))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD,
+                                Set.of(drive),
+                                () -> drive.setRequest(new SwerveDrive.SetCross())));
 
-        if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_GYRO)) {
-            drive.resetGyro();
-        }
+        oi.addRule(
+                Rule.create(
+                                "Target Shooter",
+                                () -> leftJoystick.getButton(InputConstants.BUTTON_TARGET_SHOOTER))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD, () -> new DriverShootNow(drive, ss, intake)));
 
-        if (leftJoystick.getButtonPressed(InputConstants.BUTTON_RESET_POS)) {
-            drive.resetCurrentPosition();
-        }
-
-        // Sets the wheels to the cross position if the cross button is pressed
-        // if (rightJoystick.getButtonPressed(InputConstants.BUTTON_CROSS_WHEELS)) {
-        //     if (!isCross) {
-        //         context.takeOwnership(drive);
-        //         drive.stopDrive();
-        //         drive.setCross();
-        //     }
-        //     isCross = !isCross;
-        // }
-
-        visionSpeakerHelper.update();
-
-        if (leftJoystick.getButtonPressed(InputConstants.BUTTON_TARGET_SHOOTER)) {
-
-            visionContext = context.startAsync(new DriverShootNow());
-
-        } else if (leftJoystick.getButtonReleased(InputConstants.BUTTON_TARGET_SHOOTER)) {
-            visionContext.stop();
-            context.takeOwnership(drive);
-            context.takeOwnership(intake);
-
-            intake.stop();
-            drive.stopDrive();
-
-            context.releaseOwnership(drive);
-            context.releaseOwnership(intake);
-        }
-
-        if (rightJoystick.getButtonPressed(InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-
-            visionContext = context.startAsync(new DriverShootVelocityAndIntake());
-
-        } else if (rightJoystick.getButtonReleased(
-                InputConstants.BUTTON_START_SHOOTING_PROCEDURE)) {
-
-            visionContext.stop();
-
-            context.takeOwnership(intake);
-            intake.stop();
-            context.releaseOwnership(intake);
-        }
+        oi.addRule(
+                Rule.create(
+                                "Start Shooting",
+                                () ->
+                                        rightJoystick.getButton(
+                                                InputConstants.BUTTON_START_SHOOTING_PROCEDURE))
+                        .withOnTriggeringProcedure(
+                                ONCE_AND_HOLD, () -> new DriverShootVelocityAndIntake(intake)));
 
         // Moves the robot if there are joystick inputs
-        if (movingJoysticks.isTriggering()) {
-            double drivingCoefficient = 1;
-            // If a button is pressed, drive is just fine adjustment
-            if (rightJoystick.getButton(InputConstants.BUTTON_FINE_DRIVING)) {
-                drivingCoefficient = FINE_DRIVING_COEFFICIENT;
-            }
+        oi.addRule(
+                Rule.create(
+                                "Move robot",
+                                () ->
+                                        leftJoystick.isAxisMoved(
+                                                        InputConstants.AXIS_FORWARD_BACKWARD)
+                                                || leftJoystick.isAxisMoved(
+                                                        InputConstants.AXIS_LEFT_RIGHT)
+                                                || rightJoystick.isAxisMoved(
+                                                        InputConstants.AXIS_LEFT_RIGHT))
+                        .withOnTriggeringProcedure(
+                                REPEATEDLY,
+                                Set.of(drive),
+                                () -> {
+                                    // If a button is pressed, drive is just fine adjustment
+                                    final double drivingCoefficient =
+                                            rightJoystick.getButton(
+                                                            InputConstants.BUTTON_FINE_DRIVING)
+                                                    ? ControlConstants.FINE_DRIVING_COEFFICIENT
+                                                    : 1;
+                                    // For fwd/rv
+                                    // Negative because forward is negative in driver station
+                                    final double leftJoystickX =
+                                            -leftJoystick.getAxis(
+                                                            InputConstants.AXIS_FORWARD_BACKWARD)
+                                                    * ControlConstants.MAX_TRANSLATIONAL_VELOCITY;
+                                    // For left/right
+                                    // Negative because left is negative in driver station
+                                    final double leftJoystickY =
+                                            -leftJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)
+                                                    * ControlConstants.MAX_TRANSLATIONAL_VELOCITY;
+                                    // For steer
+                                    // Negative because left is negative in driver station
+                                    final double rightJoystickY =
+                                            -rightJoystick.getAxis(InputConstants.AXIS_LEFT_RIGHT)
+                                                    * ControlConstants.MAX_ROTATIONAL_VELOCITY;
 
-            context.takeOwnership(drive);
-            drive.controlFieldOriented(
-                    (drivingCoefficient
-                            * curvedJoystickPower(
-                                    leftJoystickX, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
-                    (drivingCoefficient
-                            * curvedJoystickPower(
-                                    leftJoystickY, ControlConstants.TRANSLATIONAL_CURVE_POWER)),
-                    (drivingCoefficient
-                            * curvedJoystickPower(
-                                    rightJoystickY, ControlConstants.ROTATIONAL_CURVE_POWER)));
-        } else if (movingJoysticks.isFinishedTriggering()) {
-            context.takeOwnership(drive);
-            drive.stopDrive();
-            drive.setCross();
-        }
+                                    drive.setRequest(
+                                            new SwerveDrive.FieldOrientedVelocity(
+                                                    (drivingCoefficient
+                                                            * curvedJoystickPower(
+                                                                    leftJoystickX,
+                                                                    ControlConstants
+                                                                            .TRANSLATIONAL_CURVE_POWER)),
+                                                    (drivingCoefficient
+                                                            * curvedJoystickPower(
+                                                                    leftJoystickY,
+                                                                    ControlConstants
+                                                                            .TRANSLATIONAL_CURVE_POWER)),
+                                                    (drivingCoefficient
+                                                            * curvedJoystickPower(
+                                                                    rightJoystickY,
+                                                                    ControlConstants
+                                                                            .ROTATIONAL_CURVE_POWER))));
+                                }));
     }
 
-    /**
-     * Helper method to ignore joystick values below JOYSTICK_DEADZONE
-     * @param joystickValue the value to trim
-     * @return the trimmed joystick value
-     */
-    private double createJoystickDeadzone(double joystickValue) {
-        return Math.abs(joystickValue) > ControlConstants.JOYSTICK_DEADZONE ? joystickValue : 0;
-    }
-
-    private double curvedJoystickPower(double value, double power) {
+    private static double curvedJoystickPower(double value, double power) {
         return Math.signum(value) * Math.pow(Math.abs(value), power);
     }
 }

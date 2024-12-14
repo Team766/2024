@@ -1,5 +1,7 @@
 package com.team766.robot.gatorade.mechanisms;
 
+import static com.team766.framework3.Conditions.checkForStatusWith;
+import static com.team766.framework3.StatusBus.getStatusOrThrow;
 import static com.team766.robot.gatorade.constants.ConfigConstants.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -7,10 +9,11 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Mechanism;
+import com.team766.framework3.Mechanism;
+import com.team766.framework3.Request;
+import com.team766.framework3.Status;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
-import com.team766.library.RateLimiter;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
@@ -22,32 +25,85 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * and {@link Intake} closer to a game piece or game element (eg node in the
  * field, human player station).
  */
-public class Elevator extends Mechanism {
-    public enum Position {
-
-        /** Elevator is fully retracted.  Starting position. */
-        RETRACTED(0),
-        /** Elevator is the appropriate height to place game pieces at the low node. */
-        LOW(0),
-        /** Elevator is the appropriate height to place game pieces at the mid node. */
-        MID(18),
-        /** Elevator is at appropriate height to place game pieces at the high node. */
-        HIGH(40),
-        /** Elevator is at appropriate height to grab cubes from the human player. */
-        HUMAN_CUBES(39),
-        /** Elevator is at appropriate height to grab cones from the human player. */
-        HUMAN_CONES(40),
-        /** Elevator is fully extended. */
-        EXTENDED(40);
-
-        private final double height;
-
-        Position(double position) {
-            this.height = position;
+public class Elevator extends Mechanism<Elevator.ElevatorRequest, Elevator.ElevatorStatus> {
+    /**
+     * @param height the current height of the elevator, in inches ('Murica).
+     */
+    public record ElevatorStatus(double rotations, double height) implements Status {
+        public boolean isNearTo(MoveToPosition position) {
+            return isNearTo(position.height());
         }
 
-        private double getHeight() {
-            return height;
+        public boolean isNearTo(double position) {
+            return Math.abs(position - height) < NEAR_THRESHOLD;
+        }
+    }
+
+    public sealed interface ElevatorRequest extends Request {}
+
+    public record Stop() implements ElevatorRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+    }
+
+    public record NudgeNoPID(double value) implements ElevatorRequest {
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+    }
+
+    public static ElevatorRequest makeHoldPosition() {
+        final double currentHeight = getStatusOrThrow(ElevatorStatus.class).height();
+        return new MoveToPosition(currentHeight);
+    }
+
+    public static ElevatorRequest makeNudgeUp() {
+        final double currentHeight = getStatusOrThrow(ElevatorStatus.class).height();
+        // NOTE: this could artificially limit nudge range
+        final double targetHeight =
+                Math.min(currentHeight + NUDGE_INCREMENT, MoveToPosition.EXTENDED.height());
+        return new MoveToPosition(targetHeight);
+    }
+
+    public static ElevatorRequest makeNudgeDown() {
+        final double currentHeight = getStatusOrThrow(ElevatorStatus.class).height();
+        // NOTE: this could artificially limit nudge range
+        final double targetHeight =
+                Math.max(currentHeight - NUDGE_INCREMENT, MoveToPosition.RETRACTED.height());
+        return new MoveToPosition(targetHeight);
+    }
+
+    /**
+     * Moves the elevator to a specific position (in inches).
+     */
+    public record MoveToPosition(double height) implements ElevatorRequest {
+        /** Elevator is fully retracted.  Starting position. */
+        public static final MoveToPosition RETRACTED = new MoveToPosition(0);
+
+        /** Elevator is the appropriate height to place game pieces at the low node. */
+        public static final MoveToPosition LOW = new MoveToPosition(0);
+
+        /** Elevator is the appropriate height to place game pieces at the mid node. */
+        public static final MoveToPosition MID = new MoveToPosition(18);
+
+        /** Elevator is at appropriate height to place game pieces at the high node. */
+        public static final MoveToPosition HIGH = new MoveToPosition(40);
+
+        /** Elevator is at appropriate height to grab cubes from the human player. */
+        public static final MoveToPosition HUMAN_CUBES = new MoveToPosition(39);
+
+        /** Elevator is at appropriate height to grab cones from the human player. */
+        public static final MoveToPosition HUMAN_CONES = new MoveToPosition(40);
+
+        /** Elevator is fully extended. */
+        public static final MoveToPosition EXTENDED = new MoveToPosition(40);
+
+        @Override
+        public boolean isDone() {
+            return checkForStatusWith(ElevatorStatus.class, s -> s.isNearTo(this));
         }
     }
 
@@ -66,8 +122,6 @@ public class Elevator extends Mechanism {
     private final ValueProvider<Double> maxVelocity;
     private final ValueProvider<Double> minOutputVelocity;
     private final ValueProvider<Double> maxAccel;
-
-    private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 
     /**
      * Contructs a new Elevator.
@@ -92,7 +146,7 @@ public class Elevator extends Mechanism {
         leftMotor
                 .getEncoder()
                 .setPosition(
-                        EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
+                        EncoderUtils.elevatorHeightToRotations(MoveToPosition.RETRACTED.height()));
 
         pidController = leftMotor.getPIDController();
         pidController.setFeedbackDevice(leftMotor.getEncoder());
@@ -106,68 +160,40 @@ public class Elevator extends Mechanism {
         maxAccel = ConfigFileReader.getInstance().getDouble(ELEVATOR_MAX_ACCEL);
     }
 
-    public double getRotations() {
-        return leftMotor.getEncoder().getPosition();
+    @Override
+    protected ElevatorRequest getInitialRequest() {
+        return new Stop();
     }
 
-    /**
-     * Returns the current height of the elevator, in inches ('Murica).
-     */
-    public double getHeight() {
-        return EncoderUtils.elevatorRotationsToHeight(leftMotor.getEncoder().getPosition());
+    @Override
+    protected ElevatorStatus run(ElevatorRequest request, boolean isRequestNew) {
+        final var status =
+                new ElevatorStatus(
+                        leftMotor.getEncoder().getPosition(),
+                        EncoderUtils.elevatorRotationsToHeight(
+                                leftMotor.getEncoder().getPosition()));
+
+        switch (request) {
+            case NudgeNoPID nudge -> {
+                if (!isRequestNew) break;
+                double clampedValue = MathUtil.clamp(nudge.value, -1, 1);
+                clampedValue *=
+                        NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
+                leftMotor.set(clampedValue);
+            }
+            case Stop s -> {
+                if (!isRequestNew) break;
+                leftMotor.stopMotor();
+            }
+            case MoveToPosition position -> {
+                applyPID(position.height);
+            }
+        }
+
+        return status;
     }
 
-    public boolean isNearTo(Position position) {
-        return isNearTo(position.getHeight());
-    }
-
-    public boolean isNearTo(double position) {
-        return Math.abs(position - getHeight()) < NEAR_THRESHOLD;
-    }
-
-    public void nudgeNoPID(double value) {
-        checkContextOwnership();
-        double clampedValue = MathUtil.clamp(value, -1, 1);
-        clampedValue *= NUDGE_DAMPENER; // make nudges less forceful.  TODO: make this non-linear
-        leftMotor.set(clampedValue);
-    }
-
-    public void stopElevator() {
-        checkContextOwnership();
-        leftMotor.set(0);
-    }
-
-    public void nudgeUp() {
-        System.err.println("Nudging up.");
-
-        double height = getHeight();
-        // NOTE: this could artificially limit nudge range
-        double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
-
-        moveTo(targetHeight);
-    }
-
-    public void nudgeDown() {
-        double height = getHeight();
-        // NOTE: this could artificially limit nudge range
-        double targetHeight = Math.max(height - NUDGE_INCREMENT, Position.RETRACTED.getHeight());
-        moveTo(targetHeight);
-    }
-
-    /**
-     * Moves the elevator to a pre-set {@link Position}.
-     */
-    public void moveTo(Position position) {
-        moveTo(position.getHeight());
-    }
-
-    /**
-     * Moves the elevator to a specific position (in inches).
-     */
-    public void moveTo(double position) {
-        checkContextOwnership();
-
-        System.err.println("Setting target position to " + position);
+    private void applyPID(double targetHeight) {
         // set the PID controller values with whatever the latest is in the config
         pidController.setP(pGain.get());
         pidController.setI(iGain.get());
@@ -183,20 +209,12 @@ public class Elevator extends Mechanism {
         // pidController.setSmartMotionMaxAccel(maxAccel.get(), 0);
 
         // convert the desired target degrees to encoder units
-        double rotations = EncoderUtils.elevatorHeightToRotations(position);
+        double rotations = EncoderUtils.elevatorHeightToRotations(targetHeight);
 
         // SmartDashboard.putNumber("[ELEVATOR] ff", ff);
         SmartDashboard.putNumber("[ELEVATOR] reference", rotations);
 
         // set the reference point for the wrist
         pidController.setReference(rotations, ControlType.kPosition, 0, ff);
-    }
-
-    @Override
-    public void run() {
-        if (rateLimiter.next()) {
-            SmartDashboard.putNumber("[ELEVATOR] Height", getHeight());
-            SmartDashboard.putNumber("[ELEVATOR] Rotations", getRotations());
-        }
     }
 }

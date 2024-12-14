@@ -1,22 +1,39 @@
 package com.team766.robot.reva.procedures.auton_routines;
 
-import com.team766.robot.common.procedures.PathSequenceAuto;
-import com.team766.robot.reva.Robot;
+import com.team766.framework3.Context;
+import com.team766.robot.common.mechanisms.SwerveDrive;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shooter;
 import com.team766.robot.reva.procedures.ShootAtSubwoofer;
 import com.team766.robot.reva.procedures.ShootNow;
 import com.team766.robot.reva.procedures.StartAutoIntake;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class ThreePieceAmpSide extends PathSequenceAuto {
-    public ThreePieceAmpSide() {
-        super(Robot.drive, new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
-        addProcedure(new ShootAtSubwoofer());
-        addProcedure(new StartAutoIntake());
-        addPath("Amp Side Start to Top Piece");
-        addProcedure(new ShootNow());
-        addProcedure(new StartAutoIntake());
-        addPath("Top Piece to Middle Piece");
-        addProcedure(new ShootNow());
+public class ThreePieceAmpSide extends AutoBase {
+    private final SwerveDrive drive;
+    private final ArmAndClimber superstructure;
+    private final Shooter shooter;
+    private final Intake intake;
+
+    public ThreePieceAmpSide(
+            SwerveDrive drive, ArmAndClimber superstructure, Shooter shooter, Intake intake) {
+        super(drive, superstructure, shooter, new Pose2d(0.71, 6.72, Rotation2d.fromDegrees(60)));
+        this.drive = reserve(drive);
+        this.superstructure = reserve(superstructure);
+        this.shooter = reserve(shooter);
+        this.intake = reserve(intake);
+    }
+
+    @Override
+    protected void runAuto(Context context) {
+        context.runSync(new ShootAtSubwoofer(superstructure, shooter, intake));
+        context.runSync(new StartAutoIntake(superstructure, intake));
+        runPath(context, "Amp Side Start to Top Piece");
+        context.runSync(new ShootNow(drive, superstructure, shooter, intake));
+        context.runSync(new StartAutoIntake(superstructure, intake));
+        runPath(context, "Top Piece to Middle Piece");
+        context.runSync(new ShootNow(drive, superstructure, shooter, intake));
     }
 }

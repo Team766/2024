@@ -1,58 +1,63 @@
 package com.team766.robot.reva.procedures;
 
 import com.team766.ViSIONbase.AprilTagGeneralCheckedException;
-import com.team766.framework.Context;
-import com.team766.framework.Procedure;
+import com.team766.framework3.Context;
+import com.team766.framework3.Procedure;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.robot.reva.Robot;
+import com.team766.robot.common.mechanisms.SwerveDrive;
 import com.team766.robot.reva.VisionUtil.VisionSpeakerHelper;
-import edu.wpi.first.math.geometry.Rotation2d;
+import com.team766.robot.reva.mechanisms.ArmAndClimber;
+import com.team766.robot.reva.mechanisms.Intake;
+import com.team766.robot.reva.mechanisms.Shooter;
+import com.team766.robot.reva.mechanisms.Shoulder;
 
 public class RotateAndShootNow extends Procedure {
 
-    VisionSpeakerHelper visionSpeakerHelper;
+    private final SwerveDrive drive;
+    private final ArmAndClimber superstructure;
+    private final Shooter shooter;
+    private final Intake intake;
 
-    public RotateAndShootNow() {
-        visionSpeakerHelper = new VisionSpeakerHelper(Robot.drive);
+    private final VisionSpeakerHelper visionSpeakerHelper;
+
+    public RotateAndShootNow(
+            SwerveDrive drive, ArmAndClimber superstructure, Shooter shooter, Intake intake) {
+        this.drive = reserve(drive);
+        this.superstructure = reserve(superstructure);
+        this.shooter = reserve(shooter);
+        this.intake = reserve(intake);
+        visionSpeakerHelper = new VisionSpeakerHelper();
     }
 
     // TODO: ADD LED COMMANDS BASED ON EXCEPTIONS
     public void run(Context context) {
-        context.takeOwnership(Robot.shooter);
-        context.takeOwnership(Robot.shoulder);
-        context.takeOwnership(Robot.drive);
-
-        Robot.drive.stopDrive();
-        // context.releaseOwnership(Robot.drive);
+        drive.setRequest(new SwerveDrive.Stop());
 
         // double power;
-        double armAngle;
-        Rotation2d heading;
+        Shoulder.RotateToPosition armRequest;
+        SwerveDrive.DriveRequest headingRequest;
 
         visionSpeakerHelper.update();
 
         try {
             // power = visionSpeakerHelper.getShooterPower();
-            armAngle = visionSpeakerHelper.getArmAngle();
-            heading = visionSpeakerHelper.getHeadingToTarget();
+            armRequest = new Shoulder.RotateToPosition(visionSpeakerHelper.getArmAngle());
+            headingRequest =
+                    new SwerveDrive.FieldOrientedVelocityWithRotationTarget(
+                            0, 0, visionSpeakerHelper.getHeadingToTarget());
         } catch (AprilTagGeneralCheckedException e) {
             LoggerExceptionUtils.logException(e);
             return;
         }
 
-        // context.takeOwnership(Robot.drive);
-        Robot.shoulder.rotate(armAngle);
-        Robot.drive.controlFieldOrientedWithRotationTarget(0, 0, heading);
-        // Robot.shooter.shoot(power);
-        context.releaseOwnership(Robot.shoulder);
+        superstructure.setRequest(armRequest);
+        drive.setRequest(headingRequest);
+        // shooter.shoot(power);
 
-        context.waitForConditionOrTimeout(Robot.shoulder::isFinished, 0.5);
-        context.waitForConditionOrTimeout(Robot.drive::isAtRotationTarget, 3.0);
-        Robot.drive.stopDrive();
+        context.waitForConditionOrTimeout(armRequest::isDone, 0.5);
+        context.waitForConditionOrTimeout(headingRequest::isDone, 3.0);
+        drive.setRequest(new SwerveDrive.Stop());
 
-        // context.releaseOwnership(Robot.shoulder);
-        context.releaseOwnership(Robot.drive);
-        context.releaseOwnership(Robot.shooter);
-        context.runSync(new ShootVelocityAndIntake());
+        context.runSync(new ShootVelocityAndIntake(shooter, intake));
     }
 }
