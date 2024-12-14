@@ -1,11 +1,8 @@
 package com.team766.framework3;
 
 import com.team766.logging.Category;
-import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.Severity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Objects;
 
@@ -29,14 +26,16 @@ public abstract class Mechanism<R extends Request<?>> extends SubsystemBase impl
             try {
                 final var r = getIdleRequest();
                 if (r != null) {
-                    SchedulerMonitor.currentCommand = this;
-                    setRequest(r);
+                    ReservingCommand.enterCommand(this);
+                    try {
+                        setRequest(r);
+                    } finally {
+                        ReservingCommand.exitCommand(this);
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
                 LoggerExceptionUtils.logException(ex);
-            } finally {
-                SchedulerMonitor.currentCommand = null;
             }
         }
 
@@ -90,22 +89,10 @@ public abstract class Mechanism<R extends Request<?>> extends SubsystemBase impl
     }
 
     protected void checkContextReservation() {
-        var owningCommand = CommandScheduler.getInstance().requiring(this);
-        if ((owningCommand == null || SchedulerMonitor.currentCommand != owningCommand)
-                && m_runningPeriodic == null) {
-            final String commandName =
-                    SchedulerMonitor.currentCommand != null
-                            ? SchedulerMonitor.currentCommand.getName()
-                            : "non-Procedure code";
-            String message = getName() + " tried to be used by " + commandName;
-            if (owningCommand != null) {
-                message += " while reserved by " + owningCommand.getName();
-            } else {
-                message += " without reserving it";
-            }
-            Logger.get(Category.FRAMEWORK).logRaw(Severity.ERROR, message);
-            throw new IllegalStateException(message);
+        if (m_runningPeriodic != null) {
+            return;
         }
+        ReservingCommand.checkCurrentCommandHasReservation(this);
     }
 
     @Override
