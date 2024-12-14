@@ -41,11 +41,12 @@ public class RuleEngine implements LoggingBase {
         return Category.RULES;
     }
 
-    protected void addRule(Rule.Builder builder) {
-        Rule rule = builder.build();
-        rules.add(rule);
-        int priority = rulePriorities.size();
-        rulePriorities.put(rule, priority);
+    public void addRule(Rule.Builder builder) {
+        for (Rule rule : builder.build()) {
+            rules.add(rule);
+            int priority = rulePriorities.size();
+            rulePriorities.put(rule, priority);
+        }
     }
 
     @VisibleForTesting
