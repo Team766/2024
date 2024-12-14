@@ -1,12 +1,14 @@
 package com.team766.framework3;
 
+import static com.team766.framework3.Conditions.checkForStatusWith;
+
 class FakeMechanism extends Mechanism<FakeMechanism.FakeRequest> {
     record FakeStatus(int currentState) implements Status {}
 
-    public record FakeRequest(int targetState) implements Request<FakeStatus> {
+    public record FakeRequest(int targetState) implements Request {
         @Override
-        public boolean isDone(FakeStatus status) {
-            return status.currentState() == targetState;
+        public boolean isDone() {
+            return checkForStatusWith(FakeStatus.class, s -> s.currentState() == targetState);
         }
     }
 

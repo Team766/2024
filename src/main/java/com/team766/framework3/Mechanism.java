@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Objects;
 
-public abstract class Mechanism<R extends Request<?>> extends SubsystemBase implements LoggingBase {
+public abstract class Mechanism<R extends Request> extends SubsystemBase implements LoggingBase {
     private boolean isRunningPeriodic = false;
 
     private Superstructure<?> superstructure = null;
