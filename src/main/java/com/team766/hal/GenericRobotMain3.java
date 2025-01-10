@@ -1,13 +1,10 @@
 package com.team766.hal;
 
-import com.team766.framework3.AutonomousMode;
+import com.team766.framework3.AutonomousModeStateMachine;
 import com.team766.framework3.RuleEngine;
 import com.team766.framework3.SchedulerMonitor;
 import com.team766.framework3.SchedulerUtils;
 import com.team766.library.RateLimiter;
-import com.team766.logging.Category;
-import com.team766.logging.Logger;
-import com.team766.logging.Severity;
 import com.team766.web.AutonomousSelector;
 import com.team766.web.ConfigUI;
 import com.team766.web.Dashboard;
@@ -15,7 +12,6 @@ import com.team766.web.DriverInterface;
 import com.team766.web.LogViewer;
 import com.team766.web.ReadLogs;
 import com.team766.web.WebServer;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // Team 766 - Robot Interface Base class
@@ -26,9 +22,7 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
     private RuleEngine m_lights;
 
     private WebServer m_webServer;
-    private AutonomousSelector<AutonomousMode> m_autonSelector;
-    private AutonomousMode m_autonMode = null;
-    private Command m_autonomous = null;
+    private AutonomousModeStateMachine autonomous;
 
     // Reset the autonomous routine if the robot is disabled for more than this
     // number of seconds.
@@ -46,14 +40,15 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
         SchedulerMonitor.start();
 
         this.configurator = configurator;
-        m_autonSelector = new AutonomousSelector<>(configurator.getAutonomousModes());
+        var autonSelector = new AutonomousSelector<>(configurator.getAutonomousModes());
+        autonomous = new AutonomousModeStateMachine(autonSelector::getSelectedAutonMode);
         m_webServer = new WebServer();
         m_webServer.addHandler(new Dashboard());
-        m_webServer.addHandler(new DriverInterface(m_autonSelector));
+        m_webServer.addHandler(new DriverInterface(autonSelector));
         m_webServer.addHandler(new ConfigUI());
         m_webServer.addHandler(new LogViewer());
         m_webServer.addHandler(new ReadLogs());
-        m_webServer.addHandler(m_autonSelector);
+        m_webServer.addHandler(autonSelector);
         m_webServer.start();
     }
 
@@ -89,14 +84,14 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
         // when the communications are restored, we want to continue executing
         // the routine that was interrupted, since it has knowledge of where the
         // robot is on the field, the state of the robot's mechanisms, etc.
-        // Thus, we set a threshold on the amount of time spent in autonomous of
+        // Thus, we set a threshold on the amount of time spent in disabled of
         // 10 seconds. It is almost certain that it will take longer than 10
         // seconds to reset the field if a match is to be replayed, but it is
         // also almost certain that a communication drop will be much shorter
         // than 10 seconds.
         double timeInState = RobotProvider.instance.getClock().getTime() - m_disabledModeStartTime;
         if (timeInState > RESET_IN_DISABLED_PERIOD) {
-            resetAutonomousMode("time in disabled mode");
+            autonomous.reinitializeAutonomousMode("time in disabled mode");
         }
         CommandScheduler.getInstance().run();
         if (m_lights != null && m_lightUpdateLimiter.next()) {
@@ -105,42 +100,20 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
     }
 
     public void resetAutonomousMode(final String reason) {
-        if (m_autonomous != null) {
-            m_autonomous.cancel();
-            m_autonomous = null;
-            m_autonMode = null;
-            Logger.get(Category.AUTONOMOUS)
-                    .logRaw(Severity.INFO, "Resetting autonomus procedure from " + reason);
-        }
+        autonomous.reinitializeAutonomousMode(reason);
     }
 
     public void autonomousInit() {
         faultInAutoInit = true;
 
-        if (m_autonomous != null) {
-            Logger.get(Category.AUTONOMOUS)
-                    .logRaw(
-                            Severity.INFO,
-                            "Continuing previous autonomus procedure " + m_autonomous.getName());
-        } else if (m_autonSelector.getSelectedAutonMode() == null) {
-            Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
-        }
+        autonomous.startAutonomousMode();
+
         faultInAutoInit = false;
     }
 
     public void autonomousPeriodic() {
         if (faultInRobotInit || faultInAutoInit) return;
 
-        final AutonomousMode autonomousMode = m_autonSelector.getSelectedAutonMode();
-        if (autonomousMode != null && m_autonMode != autonomousMode) {
-            m_autonomous = autonomousMode.instantiate();
-            m_autonomous.schedule();
-            m_autonMode = autonomousMode;
-            Logger.get(Category.AUTONOMOUS)
-                    .logRaw(
-                            Severity.INFO,
-                            "Starting new autonomus procedure " + m_autonomous.getName());
-        }
         CommandScheduler.getInstance().run();
         if (m_lights != null && m_lightUpdateLimiter.next()) {
             m_lights.run();
@@ -150,11 +123,7 @@ public final class GenericRobotMain3 implements GenericRobotMainBase {
     public void teleopInit() {
         faultInTeleopInit = true;
 
-        if (m_autonomous != null) {
-            m_autonomous.cancel();
-            m_autonomous = null;
-            m_autonMode = null;
-        }
+        autonomous.stopAutonomousMode("entering teleop");
 
         faultInTeleopInit = false;
     }
