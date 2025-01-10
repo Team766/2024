@@ -41,10 +41,7 @@ public class RuleTest {
 
     @Test
     public void testCreate() {
-        Rule alwaysTrue =
-                Rule.create("always true", () -> true)
-                        .withNewlyTriggeringProcedure(() -> Procedure.NO_OP)
-                        .build();
+        Rule alwaysTrue = new Rule("always true", () -> true, () -> Procedure.NO_OP);
         assertNotNull(alwaysTrue);
         assertEquals("always true", alwaysTrue.getName());
     }
@@ -52,10 +49,7 @@ public class RuleTest {
     @Test
     public void testEvaluate() {
         // start with simple test of a NONE->NEWLY->CONTINUING->CONTINUING sequence
-        Rule alwaysTrue =
-                Rule.create("always true", () -> true)
-                        .withNewlyTriggeringProcedure(() -> Procedure.NO_OP)
-                        .build();
+        Rule alwaysTrue = new Rule("always true", () -> true, () -> Procedure.NO_OP);
         assertEquals(Rule.TriggerType.NONE, alwaysTrue.getCurrentTriggerType());
         alwaysTrue.evaluate();
         assertEquals(TriggerType.NEWLY, alwaysTrue.getCurrentTriggerType());
@@ -66,9 +60,10 @@ public class RuleTest {
 
         // test a full cycle: NONE->NEWLY->CONTINUING->FINISHED->NONE->NEWLY->...
         Rule duckDuckGooseGoose =
-                Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                        .withNewlyTriggeringProcedure(() -> Procedure.NO_OP)
-                        .build();
+                new Rule(
+                        "duck duck goose goose",
+                        new DuckDuckGooseGoosePredicate(),
+                        () -> Procedure.NO_OP);
         assertEquals(Rule.TriggerType.NONE, duckDuckGooseGoose.getCurrentTriggerType());
         duckDuckGooseGoose.evaluate();
         assertEquals(TriggerType.NEWLY, duckDuckGooseGoose.getCurrentTriggerType());
@@ -89,10 +84,11 @@ public class RuleTest {
         final Set<Mechanism<?>> finishedMechanisms = Set.of(new FakeMechanism());
 
         Rule duckDuckGooseGoose =
-                Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                        .withNewlyTriggeringProcedure(newlyMechanisms, () -> {})
-                        .withFinishedTriggeringProcedure(finishedMechanisms, () -> {})
-                        .build();
+                new Rule(
+                                "duck duck goose goose",
+                                new DuckDuckGooseGoosePredicate(),
+                                () -> new FunctionalInstantProcedure(newlyMechanisms, () -> {}))
+                        .withFinishedTriggeringProcedure(finishedMechanisms, () -> {});
 
         // NONE
         assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
@@ -101,12 +97,13 @@ public class RuleTest {
         duckDuckGooseGoose.evaluate();
         assertEquals(newlyMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
 
-        // nothing between NEWLLY and FINISHED
+        // nothing between NEWLY and FINISHED
         duckDuckGooseGoose.evaluate();
         assertEquals(Collections.emptySet(), duckDuckGooseGoose.getMechanismsToReserve());
 
         // FINISHED
         duckDuckGooseGoose.evaluate();
+        System.out.println("X: " + duckDuckGooseGoose.toString());
         assertEquals(finishedMechanisms, duckDuckGooseGoose.getMechanismsToReserve());
 
         // check NONE again
@@ -121,10 +118,11 @@ public class RuleTest {
     @Test
     public void testGetProcedureToRun() {
         Rule duckDuckGooseGoose =
-                Rule.create("duck duck goose goose", new DuckDuckGooseGoosePredicate())
-                        .withNewlyTriggeringProcedure(() -> new TrivialProcedure("newly"))
-                        .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"))
-                        .build();
+                new Rule(
+                                "duck duck goose goose",
+                                new DuckDuckGooseGoosePredicate(),
+                                () -> new TrivialProcedure("newly"))
+                        .withFinishedTriggeringProcedure(() -> new TrivialProcedure("finished"));
 
         // NONE
         assertNull(duckDuckGooseGoose.getProcedureToRun());

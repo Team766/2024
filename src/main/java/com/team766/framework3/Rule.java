@@ -24,8 +24,8 @@ import java.util.function.Supplier;
  *   public class MyRules extends RuleEngine {
  *     public MyRules() {
  *       // add rule to spin up the shooter when the boxop presses the right trigger on the gamepad
- *       rules.add(Rule.create("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT)).
- *         withNewlyTriggeringProcedure(() -> new ShooterSpin(shooter)));
+ *       rules.add("spin up shooter", gamepad.getButton(InputConstants.XBOX_RT),
+ *                 () -> new ShooterSpin(shooter)));
  *       ...
  *     }
  * }
@@ -49,55 +49,6 @@ public class Rule {
         FINISHED
     }
 
-    /**
-     * Simple Builder for {@link Rule}s.  Configure Rules via this Builder; these fields will be immutable
-     * in the rule the Builder constructs.
-     *
-     * Instances of this Builder are created via {@link Rule#create} to simplify syntax.
-     */
-    public static class Builder {
-        private final String name;
-        private final BooleanSupplier predicate;
-        private Supplier<Procedure> newlyTriggeringProcedure;
-        private Supplier<Procedure> finishedTriggeringProcedure;
-
-        private Builder(String name, BooleanSupplier predicate) {
-            this.name = name;
-            this.predicate = predicate;
-        }
-
-        /** Specify a creator for the Procedure that should be run when this rule starts triggering. */
-        public Builder withNewlyTriggeringProcedure(Supplier<Procedure> action) {
-            this.newlyTriggeringProcedure = action;
-            return this;
-        }
-
-        public Builder withNewlyTriggeringProcedure(
-                Set<Mechanism<?>> reservations, Runnable action) {
-            this.newlyTriggeringProcedure =
-                    () -> new FunctionalInstantProcedure(reservations, action);
-            return this;
-        }
-
-        /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
-        public Builder withFinishedTriggeringProcedure(Supplier<Procedure> action) {
-            this.finishedTriggeringProcedure = action;
-            return this;
-        }
-
-        public Builder withFinishedTriggeringProcedure(
-                Set<Mechanism<?>> reservations, Runnable action) {
-            this.finishedTriggeringProcedure =
-                    () -> new FunctionalInstantProcedure(reservations, action);
-            return this;
-        }
-
-        // called by {@link RuleEngine#addRule}.
-        /* package */ Rule build() {
-            return new Rule(name, predicate, newlyTriggeringProcedure, finishedTriggeringProcedure);
-        }
-    }
-
     private final String name;
     private final BooleanSupplier predicate;
     private final Map<TriggerType, Supplier<Procedure>> triggerProcedures =
@@ -106,16 +57,10 @@ public class Rule {
             Maps.newEnumMap(TriggerType.class);
 
     private TriggerType currentTriggerType = TriggerType.NONE;
+    private boolean sealed = false;
 
-    public static Builder create(String name, BooleanSupplier predicate) {
-        return new Builder(name, predicate);
-    }
-
-    private Rule(
-            String name,
-            BooleanSupplier predicate,
-            Supplier<Procedure> newlyTriggeringProcedure,
-            Supplier<Procedure> finishedTriggeringProcedure) {
+    /* package */ Rule(
+            String name, BooleanSupplier predicate, Supplier<Procedure> newlyTriggeringProcedure) {
         if (predicate == null) {
             throw new IllegalArgumentException("Rule predicate has not been set.");
         }
@@ -131,12 +76,23 @@ public class Rule {
             triggerReservations.put(
                     TriggerType.NEWLY, getReservationsForProcedure(newlyTriggeringProcedure));
         }
+    }
 
-        if (finishedTriggeringProcedure != null) {
-            triggerProcedures.put(TriggerType.FINISHED, finishedTriggeringProcedure);
-            triggerReservations.put(
-                    TriggerType.FINISHED, getReservationsForProcedure(finishedTriggeringProcedure));
+    /** Specify a creator for the Procedure that should be run when this rule was triggering before and is no longer triggering. */
+    public Rule withFinishedTriggeringProcedure(Supplier<Procedure> action) {
+        if (sealed) {
+            throw new IllegalStateException(
+                    "Cannot modify rules once they've been evaluated in the RuleEngine");
         }
+
+        triggerProcedures.put(TriggerType.FINISHED, action);
+        triggerReservations.put(TriggerType.FINISHED, getReservationsForProcedure(action));
+        return this;
+    }
+
+    public Rule withFinishedTriggeringProcedure(Set<Mechanism<?>> reservations, Runnable action) {
+        return withFinishedTriggeringProcedure(
+                () -> new FunctionalInstantProcedure(reservations, action));
     }
 
     private Set<Mechanism<?>> getReservationsForProcedure(Supplier<Procedure> supplier) {
@@ -155,6 +111,10 @@ public class Rule {
 
     /* package */ TriggerType getCurrentTriggerType() {
         return currentTriggerType;
+    }
+
+    /* package */ void seal() {
+        sealed = true;
     }
 
     /* package */ void reset() {
